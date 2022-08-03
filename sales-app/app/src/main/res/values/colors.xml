@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <color name="peyess_blue_light">#FF4e6179</color>
+    <color name="peyess_blue">#FF23374D</color>
+    <color name="peyess_blue_dark">#FF3700B3</color>
+
+    <color name="peyess_grey_light">#FFa2a3a4</color>
+    <color name="peyess_grey">#FF7a7b7c</color>
+    <color name="peyess_grey_dark">#FF4e4f50</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">@color/peyess_blue</color>
+    <color name="accent">@color/peyess_grey</color>
+</resources>

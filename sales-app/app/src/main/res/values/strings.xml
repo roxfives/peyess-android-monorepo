@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Peyess: vendas</string>
+
+    <!-- UI Component: Password  -->
+    <string name="password_input">Digite a sua senha</string>
+    <string name="show_password">Mostrar senha</string>
+    <string name="hide_password">Esconder senha</string>
+
+    <!--  UI Component: Topbar  -->
+    <string name="desc_navigate_back">Voltar</string>
+    <string name="title">Peyess</string>
+</resources>

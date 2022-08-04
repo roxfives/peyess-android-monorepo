@@ -5,6 +5,8 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.R
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.authenticateStore
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -13,6 +15,12 @@ import dagger.assisted.AssistedInject
 class AuthenticationViewModel @AssistedInject constructor(
     @Assisted initialState: AuthenticationState,
 ): MavericksViewModel<AuthenticationState>(initialState) {
+
+    init {
+        setState {
+            copy(errorMessage = SalesApplication.string(R.string.error_msg_default))
+        }
+    }
 
     fun updatePassword(password: String) {
         setState {

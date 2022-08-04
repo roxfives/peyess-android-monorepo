@@ -1,6 +1,7 @@
 package com.peyess.salesapp.screen.authentication.state
 
 import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
@@ -17,7 +18,7 @@ data class AuthenticationState(
     val username: String = "",
     val password: String = "",
 
-): MavericksState {
+    ): MavericksState {
     val isLoading = authState is Loading
-    val hasError = authError !== AuthenticationError.None
+    val hasError = authState is Fail
 }

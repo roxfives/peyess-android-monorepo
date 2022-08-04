@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,7 +14,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -58,8 +63,6 @@ fun AuthScreen(modifier: Modifier = Modifier) {
     val onUsernameChanged = viewModel::updateUsername
     val onPasswordChanged = viewModel::updatePassword
 
-    val systemUiController = rememberSystemUiController()
-
     AuthScreenComposable(
         modifier = modifier,
         isLoading = isLoading,
@@ -72,6 +75,8 @@ fun AuthScreen(modifier: Modifier = Modifier) {
 
         hasError = hasError,
         errorMessage = errorMessage,
+
+        attemptSignIn = viewModel::signIn,
     )
 }
 
@@ -88,9 +93,11 @@ fun AuthScreenComposable(
 
     hasError: Boolean = false,
     errorMessage: String = "",
+
+    attemptSignIn: () -> Unit = {},
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.height(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -102,17 +109,24 @@ fun AuthScreenComposable(
         ) {
             Spacer(modifier = Modifier.weight(totalLogoSpacerWeight))
 
-            CompanyLogo(
-                modifier = Modifier
-                    .weight(totalLogoWeight)
-            )
+
+
+            if (isLoading) {
+                PeyessProgressIndicatorInfinite(
+                    modifier = Modifier
+                        .weight(totalLogoWeight),
+                )
+            } else {
+                CompanyLogo(
+                    modifier = Modifier
+                        .weight(totalLogoWeight)
+                )
+            }
 
             Spacer(modifier = Modifier.weight(totalLogoSpacerWeight))
         }
 
-        if (isLoading) {
-            PeyessProgressIndicatorInfinite()
-        } else {
+        if (!isLoading) {
             CredentialsInput(
                 username = username,
                 onUsernameChanged = onUsernameChanged,
@@ -122,6 +136,8 @@ fun AuthScreenComposable(
 
                 hasError = hasError,
                 errorMessage = errorMessage,
+
+                attemptSignIn = attemptSignIn
             )
         }
     }
@@ -155,7 +171,7 @@ fun CredentialsInput(
             value = username,
             onValueChange = { onUsernameChanged(it) },
             isError = hasError,
-            errorMessage = errorMessage,
+            errorMessage = stringResource(id = R.string.empty_string),
             placeholder = { EmailInputPlaceHolder() },
             label = { EmailInputLabel() },
             keyboardOptions = KeyboardOptions(
@@ -171,7 +187,7 @@ fun CredentialsInput(
             password = password,
             onValueChange = { onPasswordChanged(it) },
             isError = hasError,
-            errorMessage = errorMessage,
+            errorMessage = stringResource(id = R.string.empty_string),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
@@ -194,6 +210,31 @@ fun CredentialsInput(
                 text = stringResource(id = R.string.btn_sign_in_store)
                     .capitalize(Locale.current)
             )
+        }
+
+        if (hasError) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    tint = MaterialTheme.colors.error,
+                    imageVector = Icons.Filled.Error,
+                    contentDescription = "",
+                )
+
+                Spacer(
+                    modifier = Modifier
+                        .width(SalesAppTheme.dimensions.grid_1)
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = SalesAppTheme.dimensions.grid_3),
+                    text = errorMessage
+                        .capitalize(Locale.current),
+                    color = MaterialTheme.colors.error,
+                )
+            }
         }
     }
 }

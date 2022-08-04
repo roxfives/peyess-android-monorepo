@@ -7,6 +7,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.auth.AuthState
 import com.peyess.salesapp.auth.AuthenticationError
+import com.peyess.salesapp.utils.string.isEmailValid
 
 
 data class AuthenticationState(
@@ -15,10 +16,24 @@ data class AuthenticationState(
     val authError: AuthenticationError = AuthenticationError.None,
     val errorMessage: String = "",
 
-    val username: String = "",
-    val password: String = "",
+    val signInAttempts: Int = 0,
 
-    ): MavericksState {
+    val username: String = "",
+    val usernameErrorMessage: String = "",
+
+    val password: String = "",
+    val passwordErrorMessage: String = "",
+): MavericksState {
+
     val isLoading = authState is Loading
     val hasError = authState is Fail
+
+    val hasUsernameError = signInAttempts > 0 && !isEmailValid(email = username)
+    val hasPasswordError = signInAttempts > 0 && password.isEmpty()
+
+    val canSignIn = !hasUsernameError
+            && !hasPasswordError
+            && password.isNotEmpty()
+            && username.isNotEmpty()
+
 }

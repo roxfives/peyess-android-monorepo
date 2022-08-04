@@ -13,9 +13,11 @@ dependencies {
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
-    val koinVersion = rootProject.extra["koin_version"]
     val hiltVersion = rootProject.extra["hilt_version"]
     val mavericksVersion = rootProject.extra["mavericks_version"]
+    val lottieVersion = rootProject.extra["lottie_version"]
+    val firebaseBOM = rootProject.extra["firebase_bom"]
+
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -45,6 +47,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
     // Compose UI tooling
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
@@ -65,4 +68,10 @@ dependencies {
     // Hilt local unit tests
     testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:$firebaseBOM"))
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+
 }

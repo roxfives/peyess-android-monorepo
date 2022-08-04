@@ -9,4 +9,10 @@
     <!--  UI Component: Topbar  -->
     <string name="desc_navigate_back">Voltar</string>
     <string name="title">Peyess</string>
+
+    <!--  UI Component: AuthScreen  -->
+    <string name="label_username_input">Entre com o e-mail da loja</string>
+    <string name="label_password_input">Digite a senha criada para conta da loja</string>
+    <string name="placeholder_username_input">loja.calcadao@diniz.com.br</string>
+    <string name="btn_sign_in_store">Entrar na loja</string>
 </resources>

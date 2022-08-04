@@ -4,6 +4,8 @@ buildscript {
         set("compose_nav_version", "2.4.0-rc01")
         set("compose_compiler_version", "1.3.0-rc01")
         set("compose_accompanist_version", "0.23.1")
+        set("lottie_version", "5.2.0")
+        set("firebase_bom", "30.3.1")
 
         set ("koin_version", "3.2.0")
         set ("hilt_version", "2.43.1")

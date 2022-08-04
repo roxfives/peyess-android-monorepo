@@ -27,6 +27,8 @@ class Dimensions(
     val plane_3: Dp,
     val plane_4: Dp,
     val plane_5: Dp,
+    val plane_6: Dp,
+    val plane_7: Dp,
     val minimum_touch_target: Dp = 48.dp,
 )
 
@@ -50,6 +52,8 @@ val smallDimensions = Dimensions(
     plane_3 = 3.dp,
     plane_4 = 6.dp,
     plane_5 = 12.dp,
+    plane_6 = 24.dp,
+    plane_7 = 48.dp,
 )
 
 val sw360Dimensions = Dimensions(
@@ -72,9 +76,11 @@ val sw360Dimensions = Dimensions(
     plane_3 = 4.dp,
     plane_4 = 8.dp,
     plane_5 = 16.dp,
+    plane_6 = 32.dp,
+    plane_7 = 64.dp,
 )
 
-private val LocalAppDimens = staticCompositionLocalOf {
+val LocalAppDimens = staticCompositionLocalOf {
     smallDimensions
 }
 

@@ -5,13 +5,13 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.auth.AuthState
+import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.utils.string.isEmailValid
 
 
 data class AuthenticationState(
-    val authState: Async<AuthState> = Uninitialized,
+    val authState: Async<StoreAuthState> = Uninitialized,
 
     val authError: AuthenticationError = AuthenticationError.None,
     val errorMessage: String = "",

@@ -10,7 +10,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.auth.AuthState
+import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.auth.authenticateStore
 import com.peyess.salesapp.auth.exception.WrongAccountType
@@ -105,7 +105,7 @@ class AuthenticationViewModel @AssistedInject constructor(
             setState {
                 copy(
                     authError = AuthenticationError.InvalidCredentials,
-                    authState = Fail(Exception("Invalid credentials"), AuthState.Unauthenticated)
+                    authState = Fail(Exception("Invalid credentials"), StoreAuthState.Unauthenticated)
                 )
             }
 

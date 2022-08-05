@@ -1,10 +1,10 @@
 package com.peyess.salesapp.auth
 
-sealed class AuthState {
-    object Unauthenticated: AuthState()
+sealed class StoreAuthState {
+    object Unauthenticated: StoreAuthState()
 
-    object Unauthorized: AuthState() // Authenticated, but not authorized
-    object Away: AuthState()
+    object Authenticated: StoreAuthState() // Authenticated, but not authorized
+//    object Away: StoreAuthState()
 //    object StoreEmailNotVerified: AuthState() // Authenticated, but email has to be verified
 //    object UserEmailNotVerified: AuthState() // Authenticated, but email has to be verified
 

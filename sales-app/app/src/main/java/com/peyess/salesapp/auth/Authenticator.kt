@@ -10,7 +10,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
-fun authenticateStore(email: String, password: String): Flow<AuthState> = flow {
+fun authenticateStore(email: String, password: String): Flow<StoreAuthState> = flow {
     val auth = Firebase.auth
 
     Timber.i( "Signing in user")
@@ -26,7 +26,7 @@ fun authenticateStore(email: String, password: String): Flow<AuthState> = flow {
 
     if (isStore) {
         Timber.d( "User signed in as a store")
-        emit(AuthState.Unauthorized)
+        emit(StoreAuthState.Authenticated)
     } else {
         Timber.d( "Failed sign in, signing out just in case")
 

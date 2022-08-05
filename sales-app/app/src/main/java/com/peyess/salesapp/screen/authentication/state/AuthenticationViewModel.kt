@@ -14,6 +14,7 @@ import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.auth.authenticateStore
 import com.peyess.salesapp.auth.exception.WrongAccountType
+import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -22,13 +23,16 @@ import timber.log.Timber
 
 class AuthenticationViewModel @AssistedInject constructor(
     @Assisted initialState: AuthenticationState,
+    private val application: SalesApplication,
+    private val authenticationRepository: AuthenticationRepository
 ): MavericksViewModel<AuthenticationState>(initialState) {
+    private val storeFirebaseApp by lazy { authenticationRepository.storeFirebaseApp() }
 
     init {
         setState {
             copy(
-                errorMessage = SalesApplication.string(R.string.empty_string),
-                passwordErrorMessage = SalesApplication.string(R.string.msg_error_empty_password),
+                errorMessage = application.stringResource(R.string.empty_string),
+                passwordErrorMessage = application.stringResource(R.string.msg_error_empty_password),
             )
         }
 
@@ -49,9 +53,9 @@ class AuthenticationViewModel @AssistedInject constructor(
 
     private fun errorMessageEmail(email: String): String {
         return if (email.isEmpty()) {
-            SalesApplication.string(R.string.msg_error_empty_email)
+            application.stringResource(R.string.msg_error_empty_email)
         } else {
-            SalesApplication.string(R.string.msg_error_invalid_email)
+            application.stringResource(R.string.msg_error_invalid_email)
         }
     }
 
@@ -60,18 +64,18 @@ class AuthenticationViewModel @AssistedInject constructor(
 
         return when (error) {
             is WrongAccountType ->
-                SalesApplication.string(R.string.msg_error_wrong_account_type)
+                application.stringResource(R.string.msg_error_wrong_account_type)
             is FirebaseAuthInvalidCredentialsException ->
-                SalesApplication.string(R.string.msg_error_invalid_credentials)
+                application.stringResource(R.string.msg_error_invalid_credentials)
             is FirebaseAuthInvalidUserException ->
                 if (error.errorCode == "ERROR_USER_DISABLED") {
-                    SalesApplication.string(R.string.msg_error_account_disabled)
+                    application.stringResource(R.string.msg_error_account_disabled)
                 } else {
-                    SalesApplication.string(R.string.msg_error_invalid_credentials)
+                    application.stringResource(R.string.msg_error_invalid_credentials)
                 }
 
             else ->
-                SalesApplication.string(R.string.error_msg_default)
+                application.stringResource(R.string.error_msg_default)
 
         }
     }
@@ -112,7 +116,11 @@ class AuthenticationViewModel @AssistedInject constructor(
             return@withState
         }
 
-        authenticateStore(email = it.username, password = it.password).execute { authState ->
+        authenticateStore(
+            email = it.username,
+            password = it.password,
+            firebaseApp = storeFirebaseApp!!
+        ).execute { authState ->
             Timber.i("Current auth state: ${authState}")
             copy(authState = authState)
         }

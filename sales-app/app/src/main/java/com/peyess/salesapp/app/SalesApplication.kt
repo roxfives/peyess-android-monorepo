@@ -1,33 +1,31 @@
 package com.peyess.salesapp.app
 
 import android.app.Application
-import android.content.Context
 import com.airbnb.mvrx.Mavericks
 import com.peyess.salesapp.BuildConfig
+import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
-
+import javax.inject.Inject
 
 @HiltAndroidApp
 class SalesApplication: Application() {
 
-    companion object {
-        lateinit var context: Context
-        lateinit var string: (id: Int) -> String
-    }
+    @Inject
+    lateinit var firebaseManager: FirebaseManager
 
     override fun onCreate() {
         super.onCreate()
-
-        context = this
-        string = {
-            context.resources.getString(it)
-        }
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
 
+        firebaseManager.initializeFirebase()
         Mavericks.initialize(this)
+    }
+
+    fun stringResource(id: Int): String {
+        return this.getString(id)
     }
 }

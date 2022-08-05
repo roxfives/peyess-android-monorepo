@@ -1,5 +1,6 @@
 package com.peyess.salesapp.auth
 
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -10,8 +11,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
-fun authenticateStore(email: String, password: String): Flow<StoreAuthState> = flow {
-    val auth = Firebase.auth
+fun authenticateStore(
+    email: String,
+    password: String,
+    firebaseApp: FirebaseApp,
+): Flow<StoreAuthState> = flow {
+    val auth = Firebase.auth(firebaseApp)
 
     Timber.i( "Signing in user")
     auth.signInWithEmailAndPassword(email, password).await()

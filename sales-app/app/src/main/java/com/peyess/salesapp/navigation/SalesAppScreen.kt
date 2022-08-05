@@ -6,7 +6,7 @@ enum class SalesAppScreens {
     Landing,
     Home,
     AddMeasure,
-    Authentication,
+    StoreAuthentication,
     People,
     AddPerson,
     Frames,
@@ -21,7 +21,7 @@ enum class SalesAppScreens {
         fun fromRoute(route: String?): SalesAppScreens =
             when (route?.substringBefore("/")?.substringBefore("?")) {
                 Landing.name -> Landing
-                Authentication.name -> Authentication
+                StoreAuthentication.name -> StoreAuthentication
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People

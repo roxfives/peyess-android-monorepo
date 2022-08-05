@@ -45,7 +45,12 @@ fun SalesAppRoot(
         modifier = modifier,
         scaffoldState = scaffoldState,
 
-        topBar = { TopBar() },
+        topBar = {
+            TopBar(
+                currentScreen = currentScreen,
+                navHostController = navHostController,
+            )
+        },
         bottomBar = {
             BottomBar(
                 currentScreen = currentScreen,

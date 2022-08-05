@@ -7,7 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.navigation.home.buildSalesAppNavGraph
+import com.peyess.salesapp.navigation.authentication.buildStoreAuthNavGraph
+import com.peyess.salesapp.navigation.home.buildHomeNavGraph
+import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -19,9 +21,19 @@ fun SalesAppNavHost(
     AnimatedNavHost(
         modifier = modifier,
         navController = navHostController,
-        startDestination = SalesAppScreens.Home.name,
+        startDestination = SalesAppScreens.Landing.name,
     ) {
-        buildSalesAppNavGraph(
+        buildHomeNavGraph(
+            navHostController = navHostController,
+            builder = this,
+        )
+
+        buildStoreAuthNavGraph(
+            navHostController = navHostController,
+            builder = this,
+        )
+
+        buildLandingNavGraph(
             navHostController = navHostController,
             builder = this,
         )

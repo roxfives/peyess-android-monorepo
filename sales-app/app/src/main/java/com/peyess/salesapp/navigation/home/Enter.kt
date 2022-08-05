@@ -5,6 +5,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.navigation.NavBackStackEntry
@@ -23,6 +24,8 @@ fun homeEnterTransition(transitionDuration: Int = 500):
                     initialOffsetY = { -it },
                     animationSpec = tween(transitionDuration),
                 )
+            SalesAppScreens.StoreAuthentication ->
+                scaleIn()
             else ->
                 slideInHorizontally(
                     initialOffsetX = { -it },

@@ -1,9 +1,13 @@
 package com.peyess.salesapp.app.state
 
 import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.PersistState
-import com.peyess.salesapp.auth.AuthState
+
+sealed class AppAuthenticationState {
+    object Unauthenticated: AppAuthenticationState()
+    object Authenticated: AppAuthenticationState()
+    object Away: AppAuthenticationState()
+}
 
 data class MainAppState(
-    val authState: AuthState = AuthState.Unauthenticated,
-): MavericksState
+    val authState: AppAuthenticationState = AppAuthenticationState.Unauthenticated,
+): MavericksState {}

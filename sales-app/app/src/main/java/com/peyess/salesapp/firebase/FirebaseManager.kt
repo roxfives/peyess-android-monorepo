@@ -8,6 +8,7 @@ import com.google.firebase.ktx.initialize
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.StoreAuthState
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
@@ -72,6 +73,8 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
                 }
             }
         }
+
+        awaitClose()
     }
 
     fun userAuthState(uid: String) = callbackFlow {

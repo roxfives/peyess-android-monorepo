@@ -3,7 +3,7 @@
 <resources>
     <style name="Theme.SalesApp" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/primary</item>
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@color/primary</item>
     </style>
 
 

@@ -18,7 +18,7 @@ fun authenticateStore(
 ): Flow<StoreAuthState> = flow {
     val auth = Firebase.auth(firebaseApp)
 
-    Timber.i( "Signing in user")
+    Timber.i( "Signing in store")
     auth.signInWithEmailAndPassword(email, password).await()
     Timber.i( "User signed in")
 
@@ -37,6 +37,26 @@ fun authenticateStore(
 
         auth.signOut()
         throw WrongAccountType("Account type should be store")
+    }
+}
+
+fun authenticateUser(
+    email: String,
+    password: String,
+    firebaseApp: FirebaseApp,
+): Flow<StoreAuthState> = flow {
+    val auth = Firebase.auth(firebaseApp)
+
+    Timber.i( "Signing in user")
+    auth.signInWithEmailAndPassword(email, password).await()
+    Timber.i( "User signed in")
+
+    if (auth.currentUser != null) {
+        Timber.d( "User signed in to use store")
+        emit(StoreAuthState.Authenticated)
+    } else {
+        Timber.d( "Failed sign in, signing out just in case")
+        auth.signOut()
     }
 }
 

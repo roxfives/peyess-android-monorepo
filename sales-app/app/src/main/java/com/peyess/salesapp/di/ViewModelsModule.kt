@@ -4,7 +4,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.screen.authentication.state.AuthenticationViewModel
+import com.peyess.salesapp.screen.authentication_store.state.AuthenticationViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

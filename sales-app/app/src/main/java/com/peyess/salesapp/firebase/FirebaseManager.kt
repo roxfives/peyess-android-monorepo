@@ -77,6 +77,14 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         awaitClose()
     }
 
+    fun addUserApplication(uid: String, firebaseApp: FirebaseApp) {
+        if (firebaseUsers[uid] != null) {
+            Firebase.auth(firebaseUsers[uid]!!).signOut()
+        }
+
+        firebaseUsers[uid] = firebaseApp
+    }
+
     fun userAuthState(uid: String) = callbackFlow {
         val userApp = firebaseUsers.get(uid)
 

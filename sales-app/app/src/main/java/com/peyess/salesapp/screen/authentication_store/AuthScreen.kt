@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.authentication
+package com.peyess.salesapp.screen.authentication_store
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -41,8 +41,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.screen.authentication.state.AuthenticationState
-import com.peyess.salesapp.screen.authentication.state.AuthenticationViewModel
+import com.peyess.salesapp.screen.authentication_store.state.AuthenticationState
+import com.peyess.salesapp.screen.authentication_store.state.AuthenticationViewModel
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme

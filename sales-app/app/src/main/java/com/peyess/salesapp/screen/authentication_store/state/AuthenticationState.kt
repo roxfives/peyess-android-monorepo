@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.authentication.state
+package com.peyess.salesapp.screen.authentication_store.state
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail

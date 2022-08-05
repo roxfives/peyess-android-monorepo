@@ -21,7 +21,8 @@ fun homeExitTransition(transitionDuration: Int = 500):
                     targetOffsetX = { -it },
                     animationSpec = tween(transitionDuration)
                 )
-            SalesAppScreens.StoreAuthentication ->
+            SalesAppScreens.StoreAuthentication,
+            SalesAppScreens.Landing ->
                 scaleOut()
 
             else ->

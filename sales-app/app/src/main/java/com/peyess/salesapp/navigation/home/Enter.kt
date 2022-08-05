@@ -24,7 +24,8 @@ fun homeEnterTransition(transitionDuration: Int = 500):
                     initialOffsetY = { -it },
                     animationSpec = tween(transitionDuration),
                 )
-            SalesAppScreens.StoreAuthentication ->
+            SalesAppScreens.StoreAuthentication,
+            SalesAppScreens.Landing ->
                 scaleIn()
             else ->
                 slideInHorizontally(

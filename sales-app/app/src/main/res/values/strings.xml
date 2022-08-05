@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Peyess: vendas</string>
+    <string name="error_msg_default">Algo inesperado aconteceu, por favor tente novamente</string>
+    <string name="empty_string" />
 
     <!-- UI Component: Password  -->
     <string name="password_input">Digite a sua senha</string>
@@ -15,4 +17,10 @@
     <string name="label_password_input">Digite a senha criada para conta da loja</string>
     <string name="placeholder_username_input">loja.calcadao@diniz.com.br</string>
     <string name="btn_sign_in_store">Entrar na loja</string>
+    <string name="msg_error_wrong_account_type">Essa conta não é de uma loja, por favor use a conta criada especificamente para a loja durante a sua criação para entrar no aplicativo</string>
+    <string name="msg_error_invalid_credentials">Usuário ou senha inválidos</string>
+    <string name="msg_error_account_disabled">Essa conta foi desabilitada, por favor verifique se a loja está habilitada no seu sistema</string>
+    <string name="msg_error_empty_password">Por favor, digite a sua senha</string>
+    <string name="msg_error_empty_email">Por favor, digite o e-mail para conta da loja</string>
+    <string name="msg_error_invalid_email">Esse e-mail é inválido</string>
 </resources>

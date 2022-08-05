@@ -1,21 +1,24 @@
 package com.peyess.salesapp.screen.authentication.state
 
-import android.util.Log
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.AuthState
 import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.auth.authenticateStore
+import com.peyess.salesapp.auth.exception.WrongAccountType
 import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import timber.log.Timber
 
 class AuthenticationViewModel @AssistedInject constructor(
     @Assisted initialState: AuthenticationState,
@@ -29,21 +32,17 @@ class AuthenticationViewModel @AssistedInject constructor(
             )
         }
 
-//        onEach(AuthenticationState::authState) {
-//            if (it is Fail) {
-//                it.error.
-//            }
-//        }
+        onEach(AuthenticationState::authState) {
+            if (it is Fail) {
+                Timber.d("Store authentication failed", it.error)
+                Timber.d(it.error)
 
-        onEach(AuthenticationState::authError) {
-            setState {
-                val message = if (it is AuthenticationError.InvalidCredentials) {
-                    SalesApplication.string(R.string.msg_error_invalid_credentials)
-                } else {
-                    SalesApplication.string(R.string.error_msg_default)
+                setState {
+                    copy(
+                        authError = AuthenticationError.SignInFailed,
+                        errorMessage = signInErrorMessage(it.error),
+                    )
                 }
-
-                copy(errorMessage = message)
             }
         }
     }
@@ -53,6 +52,27 @@ class AuthenticationViewModel @AssistedInject constructor(
             SalesApplication.string(R.string.msg_error_empty_email)
         } else {
             SalesApplication.string(R.string.msg_error_invalid_email)
+        }
+    }
+
+    private fun signInErrorMessage(error: Throwable): String {
+        Timber.i("Getting message for $error")
+
+        return when (error) {
+            is WrongAccountType ->
+                SalesApplication.string(R.string.msg_error_wrong_account_type)
+            is FirebaseAuthInvalidCredentialsException ->
+                SalesApplication.string(R.string.msg_error_invalid_credentials)
+            is FirebaseAuthInvalidUserException ->
+                if (error.errorCode == "ERROR_USER_DISABLED") {
+                    SalesApplication.string(R.string.msg_error_account_disabled)
+                } else {
+                    SalesApplication.string(R.string.msg_error_invalid_credentials)
+                }
+
+            else ->
+                SalesApplication.string(R.string.error_msg_default)
+
         }
     }
 
@@ -93,6 +113,7 @@ class AuthenticationViewModel @AssistedInject constructor(
         }
 
         authenticateStore(email = it.username, password = it.password).execute { authState ->
+            Timber.i("Current auth state: ${authState}")
             copy(authState = authState)
         }
     }

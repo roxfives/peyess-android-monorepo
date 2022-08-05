@@ -2,6 +2,7 @@ plugins {
     id("sales-app")
     id("kotlin-kapt") // Hilt dependency (migrate to KSP as soon as it's supported)
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 hilt {
@@ -17,7 +18,6 @@ dependencies {
     val mavericksVersion = rootProject.extra["mavericks_version"]
     val lottieVersion = rootProject.extra["lottie_version"]
     val firebaseBOM = rootProject.extra["firebase_bom"]
-
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -36,6 +36,12 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.4.2")
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
 
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("androidx.compose.runtime:runtime:$composeVersion")
@@ -73,5 +79,4 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:$firebaseBOM"))
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
-
 }

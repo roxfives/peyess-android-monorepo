@@ -89,6 +89,19 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         initializeFirebaseForUsers()
     }
 
+    fun loadedUsers(ids: List<String>) {
+        var userApp: FirebaseApp
+
+        ids.forEach {
+            if (firebaseUsers[it] == null) {
+                userApp = Firebase.initialize(salesApplication, firebaseOptions(), it)
+                checkForEmulator(userApp)
+
+                firebaseUsers[it] = userApp
+            }
+        }
+    }
+
     fun storeAuthState() = callbackFlow {
         Firebase.auth(firebaseAppStore!!).apply {
             addAuthStateListener {
@@ -107,6 +120,10 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         if (firebaseUsers[uid] == null) {
             firebaseUsers[uid] = firebaseApp
         }
+    }
+
+    fun userApplication(uid: String): FirebaseApp? {
+        return firebaseUsers[uid]
     }
 
     fun userAuthState(uid: String) = callbackFlow {

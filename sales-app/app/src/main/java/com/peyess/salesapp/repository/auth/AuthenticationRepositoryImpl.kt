@@ -10,6 +10,7 @@ import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -30,11 +31,19 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 storeId = firebaseManager.currentStore!!.uid
             )
 
+    override fun userFirebaseApp(uid: String): FirebaseApp? {
+        return firebaseManager.userApplication(uid)
+    }
+
     override fun storeFirebaseApp(): FirebaseApp? {
         return firebaseManager.firebaseAppStore
     }
 
     override fun activeCollaborators(): Flow<List<Collaborator>> {
-        return collaboratorsDao.subscribeToActiveAccounts()
+        return collaboratorsDao.subscribeToActiveAccounts().onEach {
+            val ids = it.map { user -> user.id }
+
+            firebaseManager.loadedUsers(ids)
+        }
     }
 }

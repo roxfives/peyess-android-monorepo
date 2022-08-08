@@ -16,5 +16,7 @@ interface AuthenticationRepository {
 
     fun storeFirebaseApp(): FirebaseApp?
 
+    fun userFirebaseApp(uid: String): FirebaseApp?
+
     fun activeCollaborators(): Flow<List<Collaborator>>
 }

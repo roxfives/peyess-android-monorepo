@@ -15,6 +15,12 @@ data class FSCollaborator(
     @PropertyName("name")
     val name:  String = "",
 
+    // TODO: add email field in the data structure
+//    @Keep
+//    @JvmField
+//    @PropertyName("email")
+//    val email:  String = "",
+
     @Keep
     @JvmField
     @PropertyName("document")

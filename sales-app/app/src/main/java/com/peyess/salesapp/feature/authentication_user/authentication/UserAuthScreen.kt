@@ -40,9 +40,6 @@ import com.peyess.salesapp.ui.component.group.CredentialsInput
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
-//const val totalLogoWeight = 0.6f
-//const val totalLogoSpacerWeight = (1f - totalLogoWeight) / 2f
-
 @Composable
 fun UserAuthScreen(modifier: Modifier = Modifier) {
     val viewModel: UserAuthViewModel = mavericksViewModel()
@@ -52,12 +49,12 @@ fun UserAuthScreen(modifier: Modifier = Modifier) {
     val isLoading by viewModel.collectAsState(UserAuthState::isAuthenticating)
 
     val email by viewModel.collectAsState(UserAuthState::email)
-//    val hasUsernameError by viewModel.collectAsState(UserAuthState::hasUsernameError)
-//    val usernameErrorMessage by viewModel.collectAsState(UserAuthState::usernameErrorMessage)
+    val hasEmailError by viewModel.collectAsState(UserAuthState::hasUsernameError)
+    val emailErrorMessage by viewModel.collectAsState(UserAuthState::emailErrorMessage)
 
     val password by viewModel.collectAsState(UserAuthState::password)
-//    val hasPasswordError by viewModel.collectAsState(UserAuthState::hasPasswordError)
-//    val passwordErrorMessage by viewModel.collectAsState(UserAuthState::passwordErrorMessage)
+    val hasPasswordError by viewModel.collectAsState(UserAuthState::hasPasswordError)
+    val passwordErrorMessage by viewModel.collectAsState(UserAuthState::passwordErrorMessage)
 
     val hasError by viewModel.collectAsState(UserAuthState::hasError)
     val errorMessage by viewModel.collectAsState(UserAuthState::authErrorMessage)
@@ -75,13 +72,13 @@ fun UserAuthScreen(modifier: Modifier = Modifier) {
                 currentCollaborator = user,
 
                 username = email,
-                hasUsernameError = false, // hasUsernameError,
-                usernameErrorMessage = "", // usernameErrorMessage,
+                hasUsernameError = hasEmailError,
+                usernameErrorMessage = emailErrorMessage,
                 onUsernameChanged = viewModel::onEmailChanged,
 
                 password = password,
-                hasPasswordError = false, // hasPasswordError,
-                passwordErrorMessage = "", // passwordErrorMessage,
+                hasPasswordError = hasPasswordError,
+                passwordErrorMessage = passwordErrorMessage,
                 onPasswordChanged = viewModel::onPasswordChanged,
 
                 hasError = hasError,

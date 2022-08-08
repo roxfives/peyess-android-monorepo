@@ -6,12 +6,20 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
+import com.google.firebase.auth.FirebaseAuthEmailException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.authenticateUser
+import com.peyess.salesapp.auth.exception.WrongAccountType
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.feature.authentication_store.state.AuthenticationState
+import com.peyess.salesapp.feature.authentication_user.error.InvalidCredentialsException
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -25,6 +33,26 @@ class UserAuthViewModel @AssistedInject constructor(
 
     init {
         loadActiveCollaborator()
+
+        setState {
+            copy(
+                authErrorMessage = application.stringResource(R.string.empty_string),
+                passwordErrorMessage = application.stringResource(R.string.msg_error_empty_password),
+            )
+        }
+
+        onEach(UserAuthState::currentUserAuthState) {
+            if (it is Fail) {
+                Timber.d("User authentication failed", it.error)
+                Timber.d(it.error)
+
+                setState {
+                    copy(
+                        authErrorMessage = signInErrorMessage(it.error),
+                    )
+                }
+            }
+        }
     }
 
     private fun loadActiveCollaborator() = withState {
@@ -32,6 +60,35 @@ class UserAuthViewModel @AssistedInject constructor(
             Timber.i("Current user is: ${it}")
 
             copy(currentUser = it)
+        }
+    }
+
+    private fun errorMessageEmail(email: String): String {
+        return if (email.isEmpty()) {
+            application.stringResource(R.string.msg_error_empty_email)
+        } else {
+            application.stringResource(R.string.msg_error_invalid_email)
+        }
+    }
+
+    private fun signInErrorMessage(error: Throwable): String {
+        Timber.i("Getting message for $error")
+
+        return when (error) {
+            is InvalidCredentialsException ->
+                application.stringResource(R.string.msg_error_invalid_credentials)
+            is FirebaseAuthInvalidCredentialsException ->
+                application.stringResource(R.string.msg_error_invalid_credentials)
+            is FirebaseAuthInvalidUserException ->
+                if (error.errorCode == "ERROR_USER_DISABLED") {
+                    application.stringResource(R.string.msg_error_account_disabled)
+                } else {
+                    application.stringResource(R.string.msg_error_invalid_credentials)
+                }
+
+            else ->
+                application.stringResource(R.string.error_msg_default)
+
         }
     }
 
@@ -44,16 +101,18 @@ class UserAuthViewModel @AssistedInject constructor(
 
         setState {
             copy(
+                signInAttempts = it.signInAttempts + 1,
                 authErrorMessage = application.stringResource(R.string.empty_string),
             )
         }
 
-        if (it.password.isEmpty()) {
+        if (it.email.isEmpty() || !isEmailValid(it.email) || it.password.isEmpty()) {
             setState {
                 copy(currentUserAuthState = Fail(
-                    Exception("Invalid credentials"),
-                    UserAuthenticationState.Unauthenticated,
-                ))
+                        InvalidCredentialsException(),
+                        UserAuthenticationState.Unauthenticated,
+                    )
+                )
             }
 
             return@withState
@@ -100,7 +159,7 @@ class UserAuthViewModel @AssistedInject constructor(
     }
 
     fun onEmailChanged(email: String) = setState {
-        copy(email = email)
+        copy(email = email, emailErrorMessage = errorMessageEmail(email))
     }
 
     fun onPasswordChanged(password: String) = setState {

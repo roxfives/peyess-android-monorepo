@@ -12,6 +12,8 @@ import com.peyess.salesapp.model.users.toDocument
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -33,6 +35,36 @@ class CollaboratorsDaoImpl @Inject constructor(
         } else {
             Timber.d("Snapshot is null")
             listOf()
+        }
+    }
+
+    override fun user(uid: String): Flow<Collaborator> = flow {
+        if (firestore == null || firebaseManager.currentStore == null) {
+            Timber.e("Firestore or firebase application is null")
+            error("Firestore or firebase application is null")
+        }
+
+        val docRef = firestore
+            .collection(
+                application.stringResource(R.string.fs_col_collaborators)
+                    .format(firebaseManager.currentStore!!.uid)
+            )
+            .document(uid)
+
+        val fsCollaborator: FSCollaborator?
+        val snap = docRef.get().await()
+
+        if (snap.exists()) {
+            fsCollaborator = snap.toObject(FSCollaborator::class.java)
+
+            if (fsCollaborator != null) {
+                emit(fsCollaborator.toDocument())
+            } else {
+                Timber.e("Failed while converting to document")
+                error("Failed while converting to document")
+            }
+        } else {
+            Timber.e("Collaborator $uid does not exist")
         }
     }
 

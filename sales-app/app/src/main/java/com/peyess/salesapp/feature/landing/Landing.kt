@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.landing
+package com.peyess.salesapp.feature.landing
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

@@ -44,7 +44,7 @@ fun authenticateUser(
     email: String,
     password: String,
     firebaseApp: FirebaseApp,
-): Flow<UserAuthState> = flow {
+): Flow<UserAuthenticationState> = flow {
     val auth = Firebase.auth(firebaseApp)
 
     Timber.i( "Signing in user")
@@ -53,7 +53,7 @@ fun authenticateUser(
 
     if (auth.currentUser != null) {
         Timber.d( "User signed in to use store")
-        emit(UserAuthState.Authenticated)
+        emit(UserAuthenticationState.Authenticated)
     } else {
         Timber.d( "Failed sign in, signing out just in case")
         auth.signOut()

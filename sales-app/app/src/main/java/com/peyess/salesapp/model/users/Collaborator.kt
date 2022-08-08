@@ -34,8 +34,6 @@ data class Collaborator(
     val name:  String = "",
     val document:  String = "",
 
-    val email:  String = "email-collaborator-02@email.com",
-
     val jobPosition:  String = "",
     val status:  AccountStatus = AccountStatus.Active, // AccountStatus
 

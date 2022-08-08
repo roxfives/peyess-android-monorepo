@@ -1,5 +1,6 @@
 package com.peyess.salesapp.di
 
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.store.OpticalStoreDao
 import com.peyess.salesapp.dao.users.CollaboratorsDao
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -19,10 +20,16 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthenticationRepository(
+        application: SalesApplication,
         firebaseManager: FirebaseManager,
         collaboratorsDao: CollaboratorsDao,
         storeDao: OpticalStoreDao,
     ): AuthenticationRepository {
-        return AuthenticationRepositoryImpl(firebaseManager, collaboratorsDao, storeDao)
+        return AuthenticationRepositoryImpl(
+            application,
+            firebaseManager,
+            collaboratorsDao,
+            storeDao,
+        )
     }
 }

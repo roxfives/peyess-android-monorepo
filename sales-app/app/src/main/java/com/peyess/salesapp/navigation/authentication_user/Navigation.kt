@@ -5,8 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
+import com.peyess.salesapp.feature.authentication_user.authentication.UserAuthScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.screen.authentication_user_list.UserAuthScreen
+import com.peyess.salesapp.feature.authentication_user.user_list.UserListScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildUserAuthNavGraph(
@@ -15,9 +16,17 @@ fun buildUserAuthNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = SalesAppScreens.UserAuthentication.name,
-        enterTransition = userAuthenticationEnterTransition(),
-        exitTransition = userAuthenticationExitTransition()
+        route = SalesAppScreens.UserListAuthentication.name,
+        enterTransition = userListEnterTransition(),
+        exitTransition = userListExitTransition()
+    ) {
+        UserListScreen(modifier = modifier, navHostController = navHostController)
+    }
+
+    builder.composable(
+        route = SalesAppScreens.UserAuth.name,
+        enterTransition = userAuthEnterTransition(),
+        exitTransition = userAuthExitTransition()
     ) {
         UserAuthScreen(modifier = modifier)
     }

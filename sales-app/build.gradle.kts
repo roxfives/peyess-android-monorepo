@@ -8,9 +8,10 @@ buildscript {
         set("firebase_bom", "30.3.1")
         set("coil_version", "2.1.0")
 
-        set ("koin_version", "3.2.0")
-        set ("hilt_version", "2.43.1")
-        set ("mavericks_version", "2.7.0")
+        set("koin_version", "3.2.0")
+        set("hilt_version", "2.43.1")
+        set("mavericks_version", "2.7.0")
+        set("data_store", "1.0.0")
     }
 
     repositories {

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.home
+package com.peyess.salesapp.feature.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button

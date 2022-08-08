@@ -19,6 +19,7 @@ dependencies {
     val lottieVersion = rootProject.extra["lottie_version"]
     val firebaseBOM = rootProject.extra["firebase_bom"]
     val kotlinVersion = rootProject.ext["coil_version"]
+    val dataStoreVersion = rootProject.ext["data_store"]
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -54,9 +55,15 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+
+    implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
+
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
+
     implementation("io.coil-kt:coil:$kotlinVersion")
     implementation("io.coil-kt:coil-compose:$kotlinVersion")
+
+
 
     // Compose UI tooling
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")

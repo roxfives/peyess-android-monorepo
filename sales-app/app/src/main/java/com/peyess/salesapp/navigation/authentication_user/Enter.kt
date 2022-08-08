@@ -7,7 +7,13 @@ import androidx.compose.animation.scaleIn
 import androidx.navigation.NavBackStackEntry
 
 @OptIn(ExperimentalAnimationApi::class)
-fun userAuthenticationEnterTransition(transitionDuration: Int = 500):
+fun userListEnterTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
+        scaleIn()
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun userAuthEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
         scaleIn()
 }

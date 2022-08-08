@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.Flow
 interface AuthenticationRepository {
     val storeAuthState: Flow<StoreAuthState>
 
-    val currentUser: Flow<PeyessUser?>
-
     val currentStore: Flow<OpticalStore>
+
+    fun currentUser(): Flow<Collaborator>
+
+    suspend fun updateCurrentUser(uid: String)
 
     fun storeFirebaseApp(): FirebaseApp?
 

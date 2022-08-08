@@ -1,9 +1,5 @@
-package com.peyess.salesapp.screen.authentication_user_list
+package com.peyess.salesapp.feature.authentication_user.user_list
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -23,34 +19,27 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.mvrx.Async
@@ -61,88 +50,47 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
-import com.peyess.salesapp.screen.authentication_user_list.state.UserListState
-import com.peyess.salesapp.screen.authentication_user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.authentication_user.user_list.state.UserListState
+import com.peyess.salesapp.feature.authentication_user.user_list.state.UserListViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
-import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
-
-
 @Composable
-fun UserAuthScreen(
+fun UserListScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
 ) {
     val viewModel: UserListViewModel = mavericksViewModel()
 
     val users by viewModel.collectAsState(UserListState::users)
-    val currentUser by viewModel.collectAsState(UserListState::currentUser)
     val store by viewModel.collectAsState(UserListState::currentStore)
-
-    val screenState by viewModel.collectAsState(UserListState::screenState)
-    val password by viewModel.collectAsState(UserListState::password)
-
-    val isAuthenticating by viewModel.collectAsState(UserListState::isAuthenticating)
 
     UserAuthScreenComposable(
         modifier = modifier,
-        screenState = screenState,
         store = store,
-
-        isAuthenticating = isAuthenticating,
-
-        currentUser = currentUser,
         users = users,
-
-        onEnter = viewModel::enterStore,
-
-        onSignIn = viewModel::regularSignIn,
-        onLocalSignIn = viewModel::localSignIn,
-
-        password = password,
-        onPasswordChanged = viewModel::onPasswordChanged,
+        onEnter = {
+            viewModel.enterStore(navHostController, it)
+        },
     )
 }
 
 @Composable
 fun UserAuthScreenComposable(
     modifier: Modifier = Modifier,
-    screenState: UserListState.ScreenState,
     store: Async<OpticalStore> = Uninitialized,
 
-    isAuthenticating: Boolean = false,
-
-    currentUser: Collaborator = Collaborator(),
     users: List<Collaborator> = listOf(),
 
     onEnter: (id: String) -> Unit = {},
-
-    onSignIn: () -> Unit = {},
-    onLocalSignIn: () -> Unit = {},
-
-    password: String = "",
-    onPasswordChanged: (value: String) -> Unit = {},
 ) {
-    when(screenState) {
-        UserListState.ScreenState.ChooseUser ->
-            UserGrid(
-                modifier = modifier,
-                store = store,
-                users = users,
+    UserGrid(
+        modifier = modifier,
+        store = store,
+        users = users,
 
-                onEnter = onEnter,
-            )
-
-        UserListState.ScreenState.SignIn ->
-            UserSignIn(
-                isAuthenticating = isAuthenticating,
-                user = currentUser,
-                onSignIn = onSignIn,
-                onLocalSignIn = onLocalSignIn,
-                password = password,
-                onPasswordChanged = onPasswordChanged
-            )
-    }
+        onEnter = onEnter,
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -302,131 +250,6 @@ fun UserBox(
                 .padding(6.dp)
                 .height(SalesAppTheme.dimensions.minimum_touch_target),
             onClick = { onEnter(user.id) }
-        ) {
-            Text(text = stringResource(id = R.string.btn_enter))
-        }
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-fun UserSignIn(
-    modifier: Modifier = Modifier,
-    user: Collaborator = Collaborator(),
-
-    isAuthenticating: Boolean = false,
-
-    hasLocalSignIn: Boolean = false,
-    onSignIn: () -> Unit,
-    onLocalSignIn: () -> Unit,
-
-    password: String = "",
-    onPasswordChanged: (value: String) -> Unit = {},
-) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        AsyncImage(
-            modifier = Modifier
-                .size(256.dp)
-                .width(256.dp)
-                .height(256.dp)
-                // Clip image to be shaped as a circle
-                .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
-                .clip(CircleShape),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(user.picture)
-                .crossfade(true)
-                .size(width = 256, height = 256)
-                .build(),
-            contentScale = ContentScale.FillBounds,
-            contentDescription = "",
-            error = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            fallback = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            placeholder = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        AnimatedVisibility(
-            visible = !isAuthenticating,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            if (hasLocalSignIn) {
-                SignIn(
-                    password = password,
-                    onPasswordChanged = onPasswordChanged,
-                    message = stringResource(id = R.string.message_local_sign_in),
-                    onSignIn = onLocalSignIn,
-                )
-            } else {
-                SignIn(
-                    password = password,
-                    onPasswordChanged = onPasswordChanged,
-                    message = stringResource(id = R.string.message_regular_sign_in),
-                    onSignIn = onSignIn,
-                )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = isAuthenticating,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            CircularProgressIndicator()
-        }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun SignIn(
-    modifier: Modifier = Modifier,
-    message: String = "",
-    password: String = "",
-    hasError: Boolean = false,
-    errorMessage: String = "",
-    onPasswordChanged: (value: String) -> Unit = {},
-    onSignIn: () -> Unit = {},
-) {
-    Column(
-        modifier = Modifier.width(IntrinsicSize.Min),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        val keyboardController = LocalSoftwareKeyboardController.current
-
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                modifier = Modifier.padding(horizontal = 6.dp),
-                imageVector = Icons.Filled.Info,
-                tint = MaterialTheme.colors.primary,
-                contentDescription = ""
-            )
-
-            Text(text = message, style = MaterialTheme.typography.body1)
-        }
-
-        PeyessPasswordInput(password = password,
-            onValueChange = onPasswordChanged,
-            isError = hasError,
-            errorMessage = errorMessage,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-            keyboardActions = KeyboardActions(onGo = {
-                keyboardController?.hide()
-                onSignIn()
-            }))
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(SalesAppTheme.dimensions.minimum_touch_target),
-            onClick = onSignIn
         ) {
             Text(text = stringResource(id = R.string.btn_enter))
         }

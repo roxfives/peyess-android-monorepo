@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.root
+package com.peyess.salesapp.feature.root
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ScaffoldState

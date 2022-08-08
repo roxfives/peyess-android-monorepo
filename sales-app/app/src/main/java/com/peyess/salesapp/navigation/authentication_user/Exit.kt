@@ -7,7 +7,13 @@ import androidx.compose.animation.scaleOut
 import androidx.navigation.NavBackStackEntry
 
 @OptIn(ExperimentalAnimationApi::class)
-fun userAuthenticationExitTransition(transitionDuration: Int = 500):
+fun userListExitTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
+        scaleOut()
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun userAuthExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
         scaleOut()
 }

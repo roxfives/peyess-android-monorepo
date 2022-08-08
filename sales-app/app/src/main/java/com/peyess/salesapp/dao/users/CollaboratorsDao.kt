@@ -5,4 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CollaboratorsDao {
     fun subscribeToActiveAccounts(): Flow<List<Collaborator>>
+
+    fun user(uid: String): Flow<Collaborator>
 }

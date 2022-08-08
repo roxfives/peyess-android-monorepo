@@ -13,20 +13,14 @@ import androidx.compose.runtime.getValue
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.AppAuthenticationState
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.screen.root.SalesAppRoot
+import com.peyess.salesapp.feature.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
@@ -51,7 +45,7 @@ class MainActivity: ComponentActivity() {
 
                     else -> {
                         navHostController.backQueue.clear()
-                        navHostController.navigate(SalesAppScreens.UserAuthentication.name)
+                        navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
                     }
                 }
             }

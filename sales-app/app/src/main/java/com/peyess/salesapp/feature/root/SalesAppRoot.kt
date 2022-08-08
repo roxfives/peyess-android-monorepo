@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.root
+package com.peyess.salesapp.feature.root
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme

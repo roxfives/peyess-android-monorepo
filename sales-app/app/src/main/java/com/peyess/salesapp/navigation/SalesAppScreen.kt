@@ -7,7 +7,8 @@ enum class SalesAppScreens {
     Home,
     AddMeasure,
     StoreAuthentication,
-    UserAuthentication,
+    UserListAuthentication,
+    UserAuth,
     People,
     AddPerson,
     Frames,
@@ -23,7 +24,8 @@ enum class SalesAppScreens {
             when (route?.substringBefore("/")?.substringBefore("?")) {
                 Landing.name -> Landing
                 StoreAuthentication.name -> StoreAuthentication
-                UserAuthentication.name -> UserAuthentication
+                UserListAuthentication.name -> UserListAuthentication
+                UserAuth.name -> UserAuth
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People
@@ -45,6 +47,7 @@ enum class SalesAppScreens {
                 Home.name -> "Medidas"
                 AddMeasure.name -> "Adicionar medida"
                 People.name -> "Pessoas"
+                UserAuth.name -> "Entrar na loja"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"
@@ -54,7 +57,7 @@ enum class SalesAppScreens {
                 AddAngle.name -> "Adicione cliente e armação"
                 PictureAngle.name -> "Tire a foto para o ângulo"
 
-                else -> ""
+                else -> "Peyess: Vendas"
             }
     }
 }

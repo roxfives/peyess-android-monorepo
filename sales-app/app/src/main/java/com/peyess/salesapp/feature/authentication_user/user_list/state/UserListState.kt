@@ -1,11 +1,11 @@
-package com.peyess.salesapp.screen.authentication_user_list.state
+package com.peyess.salesapp.feature.authentication_user.user_list.state
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.auth.UserAuthState
+import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
 
@@ -18,8 +18,9 @@ data class UserListState(
 
     val users: List<Collaborator> = listOf(),
 
+    val updatingCurrentUser: Boolean = false,
     val currentUser: Collaborator = Collaborator(),
-    val currentUserAuthState: Async<UserAuthState> = Uninitialized,
+    val currentUserAuthState: Async<UserAuthenticationState> = Uninitialized,
     val authErrorMessage: String = "",
 
     val password: String = "",

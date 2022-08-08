@@ -30,14 +30,18 @@ fun TopBar(
     ) {
         TopAppBar(
             modifier = modifier,
-            title = { TopBarTitle() },
-            navigationIcon = { NavigationIcon(canNavigateBack = canNavigateBack) }
+            title = { TopBarTitle(currentScreen) },
+            navigationIcon = {
+                NavigationIcon(
+                    canNavigateBack = canNavigateBackMF(currentScreen, navHostController),
+                )
+            }
         )
     }
 }
 
 @Composable
-fun NavigationIcon(canNavigateBack: Boolean = true) {
+fun NavigationIcon(canNavigateBack: Boolean = false) {
     if (canNavigateBack) {
         Icon(
             imageVector = Icons.Filled.ArrowBack,
@@ -47,8 +51,8 @@ fun NavigationIcon(canNavigateBack: Boolean = true) {
 }
 
 @Composable
-fun TopBarTitle() {
-    Text(stringResource(id = R.string.title))
+fun TopBarTitle(screen: SalesAppScreens) {
+    Text(SalesAppScreens.title(screen.name))
 }
 
 fun shouldShowTopBarFor(
@@ -58,5 +62,18 @@ fun shouldShowTopBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return false//screen == SalesAppScreens.Home
+//    return screen == SalesAppScreens.Home
+//            || screen == SalesAppScreens.UserAuth
+    return false
+}
+
+fun canNavigateBackMF(
+    screen: SalesAppScreens,
+    navHostController: NavHostController,
+): Boolean {
+    val prevScreen =
+        SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
+
+//    return screen == SalesAppScreens.UserAuth
+    return false
 }

@@ -1,35 +1,26 @@
-package com.peyess.salesapp.screen.authentication_user.state
+package com.peyess.salesapp.screen.authentication_user_list.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.auth.AuthenticationError
-import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.UserAuthState
-import com.peyess.salesapp.auth.authenticateStore
 import com.peyess.salesapp.auth.authenticateUser
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 
-class UserAuthenticationViewModel @AssistedInject constructor(
-    @Assisted initialState: UserAuthenticationState,
+class UserListViewModel @AssistedInject constructor(
+    @Assisted initialState: UserListState,
     private val application: SalesApplication,
     private val authenticationRepository: AuthenticationRepository
-): MavericksViewModel<UserAuthenticationState>(initialState) {
+): MavericksViewModel<UserListState>(initialState) {
 
     init {
         loadStore()
@@ -54,7 +45,7 @@ class UserAuthenticationViewModel @AssistedInject constructor(
         }
 
         copy(
-            screenState = UserAuthenticationState.ScreenState.SignIn,
+            screenState = UserListState.ScreenState.SignIn,
             currentUser = user ?: this.currentUser,
         )
     }
@@ -114,11 +105,11 @@ class UserAuthenticationViewModel @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory: AssistedViewModelFactory<UserAuthenticationViewModel, UserAuthenticationState> {
-        override fun create(state: UserAuthenticationState): UserAuthenticationViewModel
+    interface Factory: AssistedViewModelFactory<UserListViewModel, UserListState> {
+        override fun create(state: UserListState): UserListViewModel
     }
 
     companion object:
-        MavericksViewModelFactory<UserAuthenticationViewModel, UserAuthenticationState> by
+        MavericksViewModelFactory<UserListViewModel, UserListState> by
         hiltMavericksViewModelFactory()
 }

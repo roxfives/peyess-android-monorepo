@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.authentication_user.model
+package com.peyess.salesapp.screen.authentication_user_list.model
 
 import com.peyess.salesapp.auth.PeyessUser
 import com.peyess.salesapp.auth.UserAuthState

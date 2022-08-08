@@ -5,7 +5,7 @@ import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.screen.authentication_store.state.AuthenticationViewModel
-import com.peyess.salesapp.screen.authentication_user.state.UserAuthenticationViewModel
+import com.peyess.salesapp.screen.authentication_user_list.state.UserListViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -30,8 +30,8 @@ interface ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(UserAuthenticationViewModel::class)
+    @ViewModelKey(UserListViewModel::class)
     fun bindUserAuthenticationViewModelFactory(
-        factory: UserAuthenticationViewModel.Factory
+        factory: UserListViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.authentication_user
+package com.peyess.salesapp.screen.authentication_user_list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -61,8 +61,8 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
-import com.peyess.salesapp.screen.authentication_user.state.UserAuthenticationState
-import com.peyess.salesapp.screen.authentication_user.state.UserAuthenticationViewModel
+import com.peyess.salesapp.screen.authentication_user_list.state.UserListState
+import com.peyess.salesapp.screen.authentication_user_list.state.UserListViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -73,16 +73,16 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 fun UserAuthScreen(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: UserAuthenticationViewModel = mavericksViewModel()
+    val viewModel: UserListViewModel = mavericksViewModel()
 
-    val users by viewModel.collectAsState(UserAuthenticationState::users)
-    val currentUser by viewModel.collectAsState(UserAuthenticationState::currentUser)
-    val store by viewModel.collectAsState(UserAuthenticationState::currentStore)
+    val users by viewModel.collectAsState(UserListState::users)
+    val currentUser by viewModel.collectAsState(UserListState::currentUser)
+    val store by viewModel.collectAsState(UserListState::currentStore)
 
-    val screenState by viewModel.collectAsState(UserAuthenticationState::screenState)
-    val password by viewModel.collectAsState(UserAuthenticationState::password)
+    val screenState by viewModel.collectAsState(UserListState::screenState)
+    val password by viewModel.collectAsState(UserListState::password)
 
-    val isAuthenticating by viewModel.collectAsState(UserAuthenticationState::isAuthenticating)
+    val isAuthenticating by viewModel.collectAsState(UserListState::isAuthenticating)
 
     UserAuthScreenComposable(
         modifier = modifier,
@@ -107,7 +107,7 @@ fun UserAuthScreen(
 @Composable
 fun UserAuthScreenComposable(
     modifier: Modifier = Modifier,
-    screenState: UserAuthenticationState.ScreenState,
+    screenState: UserListState.ScreenState,
     store: Async<OpticalStore> = Uninitialized,
 
     isAuthenticating: Boolean = false,
@@ -124,7 +124,7 @@ fun UserAuthScreenComposable(
     onPasswordChanged: (value: String) -> Unit = {},
 ) {
     when(screenState) {
-        UserAuthenticationState.ScreenState.ChooseUser ->
+        UserListState.ScreenState.ChooseUser ->
             UserGrid(
                 modifier = modifier,
                 store = store,
@@ -133,7 +133,7 @@ fun UserAuthScreenComposable(
                 onEnter = onEnter,
             )
 
-        UserAuthenticationState.ScreenState.SignIn ->
+        UserListState.ScreenState.SignIn ->
             UserSignIn(
                 isAuthenticating = isAuthenticating,
                 user = currentUser,

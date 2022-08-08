@@ -6,8 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.screen.authentication_store.AuthScreen
-import com.peyess.salesapp.screen.authentication_user.UserAuthScreen
+import com.peyess.salesapp.screen.authentication_user_list.UserAuthScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildUserAuthNavGraph(

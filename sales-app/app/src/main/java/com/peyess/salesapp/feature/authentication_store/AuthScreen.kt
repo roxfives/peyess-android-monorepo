@@ -43,6 +43,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.authentication_store.state.AuthenticationState
 import com.peyess.salesapp.feature.authentication_store.state.AuthenticationViewModel
+import com.peyess.salesapp.ui.component.group.CredentialsInput
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -145,6 +146,9 @@ fun AuthScreenComposable(
             exit = scaleOut(targetScale = 0f),
         ) {
             CredentialsInput(
+                usernameLabel = { EmailInputLabel() },
+                usernamePlaceHolder = { EmailInputPlaceHolder() },
+
                 username = username,
                 hasUsernameError = hasUsernameError,
                 usernameErrorMessage = usernameErrorMessage,
@@ -173,130 +177,6 @@ fun AuthScreenComposable(
                 color = MaterialTheme.colors.primary
             )
         }
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun CredentialsInput(
-    modifier: Modifier = Modifier,
-
-    username: String = stringResource(id = R.string.empty_string),
-    hasUsernameError: Boolean = false,
-    usernameErrorMessage: String = stringResource(id = R.string.empty_string),
-    onUsernameChanged: (password: String) -> Unit = {},
-
-    password: String = stringResource(id = R.string.empty_string),
-    hasPasswordError: Boolean = false,
-    passwordErrorMessage: String = stringResource(id = R.string.empty_string),
-    onPasswordChanged: (password: String) -> Unit = {},
-
-    hasError: Boolean = false,
-    errorMessage: String = stringResource(id = R.string.empty_string),
-
-    canSignIn: Boolean = true,
-    attemptSignIn: () -> Unit = {},
-) {
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    Column(
-        modifier = modifier.width(IntrinsicSize.Min),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
-        PeyessOutlinedTextField(
-            value = username,
-            onValueChange = { onUsernameChanged(it) },
-            isError = hasUsernameError,
-            errorMessage = stringResource(id = R.string.empty_string),
-            placeholder = { EmailInputPlaceHolder() },
-            label = { EmailInputLabel() },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next,
-            ),
-            keyboardActions = KeyboardActions(onNext = {
-                focusManager.moveFocus(focusDirection = FocusDirection.Down)
-            })
-        )
-
-        PeyessPasswordInput(
-            password = password,
-            onValueChange = { onPasswordChanged(it) },
-            isError = hasPasswordError,
-            errorMessage = stringResource(id = R.string.empty_string),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-                attemptSignIn()
-            })
-        )
-
-        Spacer(
-            modifier = Modifier
-                .height(SalesAppTheme.dimensions.plane_5)
-        )
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(SalesAppTheme.dimensions.minimum_touch_target),
-            enabled = canSignIn,
-            onClick = attemptSignIn,
-        ) {
-            Text(
-                text = stringResource(id = R.string.btn_sign_in_store)
-                    .capitalize(Locale.current)
-            )
-        }
-
-        Column (
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top,
-        ) {
-            if (hasError) {
-                SignInErrorMessage(errorMessage = errorMessage)
-            }
-
-            if (hasUsernameError) {
-                SignInErrorMessage(errorMessage = usernameErrorMessage)
-            }
-
-            if (hasPasswordError) {
-                SignInErrorMessage(errorMessage = passwordErrorMessage)
-            }
-        }
-    }
-}
-
-@Composable
-fun SignInErrorMessage(
-    modifier: Modifier = Modifier,
-    errorMessage: String = ""
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            tint = MaterialTheme.colors.error,
-            imageVector = Icons.Filled.Error,
-            contentDescription = "",
-        )
-
-        Spacer(
-            modifier = Modifier
-                .width(SalesAppTheme.dimensions.grid_1)
-        )
-
-        Text(
-            modifier = Modifier
-                .padding(vertical = SalesAppTheme.dimensions.grid_3),
-            text = errorMessage
-                .capitalize(Locale.current),
-            color = MaterialTheme.colors.error,
-        )
     }
 }
 

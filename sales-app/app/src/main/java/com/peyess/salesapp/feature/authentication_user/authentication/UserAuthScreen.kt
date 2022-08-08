@@ -8,36 +8,24 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -45,17 +33,15 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.authentication_store.CompanyLogo
-import com.peyess.salesapp.feature.authentication_store.CredentialsInput
 import com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthState
 import com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthViewModel
 import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.ui.component.group.CredentialsInput
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
-import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
-const val totalLogoWeight = 0.6f
-const val totalLogoSpacerWeight = (1f - totalLogoWeight) / 2f
+//const val totalLogoWeight = 0.6f
+//const val totalLogoSpacerWeight = (1f - totalLogoWeight) / 2f
 
 @Composable
 fun UserAuthScreen(modifier: Modifier = Modifier) {
@@ -170,6 +156,9 @@ fun UserSignIn(
             exit = scaleOut(targetScale = 0f),
         ) {
             CredentialsInput(
+                usernameLabel = { EmailInputLabel() },
+                usernamePlaceHolder = { EmailInputPlaceHolder() },
+
                 username = username,
                 hasUsernameError = hasUsernameError,
                 usernameErrorMessage = usernameErrorMessage,
@@ -201,128 +190,12 @@ fun UserSignIn(
     }
 }
 
+@Composable
+fun EmailInputLabel() {
+    Text(text = stringResource(id = R.string.label_username_input))
+}
 
-//@OptIn(ExperimentalAnimationApi::class)
-//@Composable
-//fun UserSignIn(
-//    modifier: Modifier = Modifier,
-//    user: Collaborator = Collaborator(),
-//
-//    isAuthenticating: Boolean = false,
-//
-//    hasLocalSignIn: Boolean = false,
-//    onSignIn: () -> Unit,
-//    onLocalSignIn: () -> Unit,
-//
-//    password: String = "",
-//    onPasswordChanged: (value: String) -> Unit = {},
-//) {
-//    Column(
-//        modifier = modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center,
-//    ) {
-//        AsyncImage(
-//            modifier = Modifier
-//                .size(256.dp)
-//                .width(256.dp)
-//                .height(256.dp)
-//                // Clip image to be shaped as a circle
-//                .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
-//                .clip(CircleShape),
-//            model = ImageRequest.Builder(LocalContext.current)
-//                .data(user.picture)
-//                .crossfade(true)
-//                .size(width = 256, height = 256)
-//                .build(),
-//            contentScale = ContentScale.FillBounds,
-//            contentDescription = "",
-//            error = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-//            fallback = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-//            placeholder = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-//        )
-//
-//        Spacer(modifier = Modifier.height(24.dp))
-//
-//        AnimatedVisibility(
-//            visible = !isAuthenticating,
-//            enter = scaleIn(),
-//            exit = scaleOut(),
-//        ) {
-//            if (hasLocalSignIn) {
-//                SignIn(
-//                    password = password,
-//                    onPasswordChanged = onPasswordChanged,
-//                    message = stringResource(id = R.string.message_local_sign_in),
-//                    onSignIn = onLocalSignIn,
-//                )
-//            } else {
-//                SignIn(
-//                    password = password,
-//                    onPasswordChanged = onPasswordChanged,
-//                    message = stringResource(id = R.string.message_regular_sign_in),
-//                    onSignIn = onSignIn,
-//                )
-//            }
-//        }
-//
-//        AnimatedVisibility(
-//            visible = isAuthenticating,
-//            enter = scaleIn(),
-//            exit = scaleOut(),
-//        ) {
-//            CircularProgressIndicator()
-//        }
-//    }
-//}
-
-//@OptIn(ExperimentalComposeUiApi::class)
-//@Composable
-//fun SignIn(
-//    modifier: Modifier = Modifier,
-//    message: String = "",
-//    password: String = "",
-//    hasError: Boolean = false,
-//    errorMessage: String = "",
-//    onPasswordChanged: (value: String) -> Unit = {},
-//    onSignIn: () -> Unit = {},
-//) {
-//    Column(
-//        modifier = Modifier.width(IntrinsicSize.Min),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//    ) {
-//        val keyboardController = LocalSoftwareKeyboardController.current
-//
-//        Row(verticalAlignment = Alignment.CenterVertically) {
-//            Icon(
-//                modifier = Modifier.padding(horizontal = 6.dp),
-//                imageVector = Icons.Filled.Info,
-//                tint = MaterialTheme.colors.primary,
-//                contentDescription = ""
-//            )
-//
-//            Text(text = message, style = MaterialTheme.typography.body1)
-//        }
-//
-//        PeyessPasswordInput(password = password,
-//            onValueChange = onPasswordChanged,
-//            isError = hasError,
-//            errorMessage = errorMessage,
-//            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-//            keyboardActions = KeyboardActions(onGo = {
-//                keyboardController?.hide()
-//                onSignIn()
-//            }))
-//
-//        Spacer(modifier = Modifier.height(24.dp))
-//
-//        Button(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(SalesAppTheme.dimensions.minimum_touch_target),
-//            onClick = onSignIn
-//        ) {
-//            Text(text = stringResource(id = R.string.btn_enter))
-//        }
-//    }
-//}
+@Composable
+fun EmailInputPlaceHolder() {
+    Text(text = stringResource(id = R.string.placeholder_username_input))
+}

@@ -7,6 +7,7 @@ enum class SalesAppScreens {
     Home,
     AddMeasure,
     StoreAuthentication,
+    UserAuthentication,
     People,
     AddPerson,
     Frames,
@@ -22,6 +23,7 @@ enum class SalesAppScreens {
             when (route?.substringBefore("/")?.substringBefore("?")) {
                 Landing.name -> Landing
                 StoreAuthentication.name -> StoreAuthentication
+                UserAuthentication.name -> UserAuthentication
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People

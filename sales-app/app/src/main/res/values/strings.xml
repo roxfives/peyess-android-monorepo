@@ -23,4 +23,17 @@
     <string name="msg_error_empty_password">Por favor, digite a sua senha</string>
     <string name="msg_error_empty_email">Por favor, digite o e-mail para conta da loja</string>
     <string name="msg_error_invalid_email">Esse e-mail é inválido</string>
+
+    <!--  UI Component: userAuthScreen  -->
+    <string name="short_address">$1s, $2s</string>
+    <string name="message_local_sign_in">Entre com a senha mais simples que criou para acessar esse dispositivo</string>
+    <string name="message_regular_sign_in">Entre com a mesma senha que criou ao acessar o nosso site</string>
+    <string name="btn_enter">Entrar na loja</string>
+
+    <!-- Firestore collections   -->
+    <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
+    <string name="fs_col_store">optical_stores</string>
+
+    <!-- Firestore field   -->
+    <string name="fs_field_collaborators_account_status">status</string>
 </resources>

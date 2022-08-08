@@ -6,6 +6,7 @@ buildscript {
         set("compose_accompanist_version", "0.23.1")
         set("lottie_version", "5.2.0")
         set("firebase_bom", "30.3.1")
+        set("coil_version", "2.1.0")
 
         set ("koin_version", "3.2.0")
         set ("hilt_version", "2.43.1")

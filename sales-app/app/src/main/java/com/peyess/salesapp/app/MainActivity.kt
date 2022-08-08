@@ -51,7 +51,7 @@ class MainActivity: ComponentActivity() {
 
                     else -> {
                         navHostController.backQueue.clear()
-                        navHostController.navigate(SalesAppScreens.Home.name)
+                        navHostController.navigate(SalesAppScreens.UserAuthentication.name)
                     }
                 }
             }

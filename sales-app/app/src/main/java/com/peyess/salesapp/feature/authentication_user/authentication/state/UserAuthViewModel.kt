@@ -6,17 +6,13 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.google.firebase.auth.FirebaseAuthEmailException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.auth.AuthenticationError
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.authenticateUser
-import com.peyess.salesapp.auth.exception.WrongAccountType
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.feature.authentication_store.state.AuthenticationState
 import com.peyess.salesapp.feature.authentication_user.error.InvalidCredentialsException
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.string.isEmailValid

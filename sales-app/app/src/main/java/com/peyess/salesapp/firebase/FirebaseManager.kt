@@ -12,7 +12,9 @@ import com.google.firebase.storage.ktx.storage
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.StoreAuthState
+import com.peyess.salesapp.auth.UserAuthenticationState
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
@@ -89,6 +91,22 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         initializeFirebaseForUsers()
     }
 
+    fun storeSignOut() {
+        firebaseUsers.forEach { _, app ->
+            Firebase.auth(app).signOut()
+        }
+
+        Firebase.auth(firebaseAppStore!!).signOut()
+    }
+
+    fun userSignOut(uid: String) {
+        val firebaseApp = firebaseUsers[uid]
+
+        if (firebaseApp != null) {
+            Firebase.auth(firebaseApp).signOut()
+        }
+    }
+
     fun loadedUsers(ids: List<String>) {
         var userApp: FirebaseApp
 
@@ -126,22 +144,24 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         return firebaseUsers[uid]
     }
 
-    fun userAuthState(uid: String) = callbackFlow {
+    fun userAuthState(uid: String): Flow<UserAuthenticationState> = callbackFlow {
         val userApp = firebaseUsers.get(uid)
 
         if (userApp == null) {
-            trySend(StoreAuthState.Unauthenticated)
+            trySend(UserAuthenticationState.Unauthenticated)
             return@callbackFlow
         }
 
         Firebase.auth(userApp).apply {
             addAuthStateListener {
                 if (it.currentUser == null) {
-                    trySend(StoreAuthState.Unauthenticated)
+                    trySend(UserAuthenticationState.Unauthenticated)
                 } else {
-                    trySend(StoreAuthState.Authenticated)
+                    trySend(UserAuthenticationState.Authenticated)
                 }
             }
         }
+
+        awaitClose()
     }
 }

@@ -1,7 +1,9 @@
-package com.peyess.salesapp.feature.authentication_user.user_list.state
+package com.peyess.salesapp.feature.authentication_user.screen.user_list.state
 
 import androidx.navigation.NavHostController
+import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
@@ -17,12 +19,12 @@ import timber.log.Timber
 
 class UserListViewModel @AssistedInject constructor(
     @Assisted initialState: UserListState,
-    private val application: SalesApplication,
     private val authenticationRepository: AuthenticationRepository
 ): MavericksViewModel<UserListState>(initialState) {
 
     init {
         loadStore()
+        resetCurrentUser()
 
         authenticationRepository.activeCollaborators().setOnEach {
             Timber.i("Got users: ${it.size}")
@@ -31,22 +33,30 @@ class UserListViewModel @AssistedInject constructor(
         }
     }
 
+    private fun resetCurrentUser() = withState {
+        authenticationRepository.resetCurrentUser().execute {
+            copy()
+        }
+    }
+
     fun loadStore() = withState {
         authenticationRepository.currentStore.execute {
-            Timber.i("Current store is $it", it)
+//            Timber.i("Current store", it)
             copy(currentStore = it)
         }
     }
 
-    fun enterStore(navHostController: NavHostController, uid: String) = withState {
-        setState { copy(updatingCurrentUser = true) }
-
-        runBlocking {
-            authenticationRepository.updateCurrentUser(uid)
+    fun pickUser(uid: String) = withState {
+        if (it.updatingCurrentUser is Loading) {
+            return@withState
         }
 
-        viewModelScope.launch {
-            navHostController.navigate(SalesAppScreens.UserAuth.name)
+//        setState { copy(updatingCurrentUser = Loading()) }
+
+        suspend {
+            authenticationRepository.updateCurrentUser(uid)
+        }.execute {
+            copy(updatingCurrentUser = Success(false))
         }
     }
 

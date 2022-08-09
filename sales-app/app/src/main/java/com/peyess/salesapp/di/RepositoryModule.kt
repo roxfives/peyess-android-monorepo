@@ -3,6 +3,7 @@ package com.peyess.salesapp.di
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.store.OpticalStoreDao
 import com.peyess.salesapp.dao.users.CollaboratorsDao
+import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
@@ -22,12 +23,14 @@ object RepositoryModule {
     fun provideAuthenticationRepository(
         application: SalesApplication,
         firebaseManager: FirebaseManager,
+        localPasscodeManager: LocalPasscodeManager,
         collaboratorsDao: CollaboratorsDao,
         storeDao: OpticalStoreDao,
     ): AuthenticationRepository {
         return AuthenticationRepositoryImpl(
             application,
             firebaseManager,
+            localPasscodeManager,
             collaboratorsDao,
             storeDao,
         )

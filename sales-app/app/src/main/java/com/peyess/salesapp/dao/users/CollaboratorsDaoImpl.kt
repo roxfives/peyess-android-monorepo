@@ -33,7 +33,7 @@ class CollaboratorsDaoImpl @Inject constructor(
                 fsCollaborator?.toDocument()
             }
         } else {
-            Timber.d("Snapshot is null")
+            Timber.e("Snapshot is null")
             listOf()
         }
     }

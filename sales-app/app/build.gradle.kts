@@ -20,6 +20,7 @@ dependencies {
     val firebaseBOM = rootProject.extra["firebase_bom"]
     val kotlinVersion = rootProject.ext["coil_version"]
     val dataStoreVersion = rootProject.ext["data_store"]
+    val androidCrypto = rootProject.ext["android_crypto"]
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -55,6 +56,8 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    implementation("androidx.security:security-crypto:$androidCrypto")
+
 
     implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
 

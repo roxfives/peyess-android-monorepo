@@ -29,6 +29,18 @@
     <string name="message_local_sign_in">Entre com a senha mais simples que criou para acessar esse dispositivo</string>
     <string name="message_regular_sign_in">Entre com a mesma senha que criou ao acessar o nosso site</string>
     <string name="btn_enter">Entrar na loja</string>
+    <string name="label_user_email">Entre com o email que usou em nosso sistema</string>
+    <string name="placeholder_user_email">aline.souza@gmail.com</string>
+    <string name="label_user_passcode">Digite a senha que criou para esse dispositivio</string>
+
+    <!--  UI Component: localPasscodeScreen  -->
+    <string name="btn_create_passcode">Criar senha local</string>
+    <string name="create_passcode">Crie uma senha para que possa acessar esse dispositivo rapidamente. Essa senha será somente válida para esse dipositivo</string>
+    <string name="input_enter_passcode">Digite uma senha para acesso local</string>
+    <string name="input_confirm_passcode">Confirme a sua senha</string>
+    <string name="error_diff_passcode">As senhas devem ser a mesma</string>
+    <string name="error_empty_passcode">Por favor, preencha os campos acima</string>
+    <string name="error_wrong_passcode">A senha é inválida</string>
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

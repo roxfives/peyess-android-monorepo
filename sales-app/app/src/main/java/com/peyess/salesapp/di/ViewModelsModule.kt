@@ -5,8 +5,9 @@ import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.feature.authentication_store.state.AuthenticationViewModel
-import com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthViewModel
-import com.peyess.salesapp.feature.authentication_user.user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthViewModel
+import com.peyess.salesapp.feature.authentication_user.screen.local_password.state.LocalPasswordViewModel
+import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -41,5 +42,12 @@ interface ViewModelsModule {
     @ViewModelKey(UserAuthViewModel::class)
     fun bindUserAuthViewModelFactory(
         factory: UserAuthViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LocalPasswordViewModel::class)
+    fun bindLocalPasswordViewModelFactory(
+        factory: LocalPasswordViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

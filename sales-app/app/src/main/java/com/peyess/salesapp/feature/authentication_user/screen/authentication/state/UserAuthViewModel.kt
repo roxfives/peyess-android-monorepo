@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.authentication_user.authentication.state
+package com.peyess.salesapp.feature.authentication_user.screen.authentication.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -13,7 +13,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.authenticateUser
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.feature.authentication_user.error.InvalidCredentialsException
+import com.peyess.salesapp.feature.authentication_user.error.InvalidCredentialsError
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
@@ -34,28 +34,59 @@ class UserAuthViewModel @AssistedInject constructor(
             copy(
                 authErrorMessage = application.stringResource(R.string.empty_string),
                 passwordErrorMessage = application.stringResource(R.string.msg_error_empty_password),
+                passcodeErrorMessage = application
+                    .stringResource(R.string.error_wrong_passcode),
             )
+        }
+
+        onEach(UserAuthState::currentUser) {
+            Timber.i("Current user is $it")
+
+            checkCurrentAuthState()
         }
 
         onEach(UserAuthState::currentUserAuthState) {
             if (it is Fail) {
-                Timber.d("User authentication failed", it.error)
-                Timber.d(it.error)
+                Timber.e("User authentication failed", it.error)
+                Timber.e(it.error)
 
                 setState {
                     copy(
                         authErrorMessage = signInErrorMessage(it.error),
+                        hasLocalPassword = Fail(it.error, false),
                     )
                 }
+            } else {
+                checkLocalPasscode()
             }
         }
     }
 
     private fun loadActiveCollaborator() = withState {
         authenticationRepository.currentUser().execute {
-            Timber.i("Current user is: ${it}")
+            Timber.i("Current user", it)
 
             copy(currentUser = it)
+        }
+    }
+
+    private fun checkCurrentAuthState() = withState {
+        authenticationRepository.userAuthenticationState().execute {
+            Timber.i("Checking if user is authenticated", it)
+
+            copy(
+                currentUserAuthState = it,
+                emailErrorMessage = "",
+                passwordErrorMessage = "",
+            )
+        }
+    }
+
+    private fun checkLocalPasscode() = withState {
+        authenticationRepository.userHasPasscode().execute {
+            Timber.i("Checking if user has a passcode")
+
+            copy(hasLocalPassword = it)
         }
     }
 
@@ -71,7 +102,7 @@ class UserAuthViewModel @AssistedInject constructor(
         Timber.i("Getting message for $error")
 
         return when (error) {
-            is InvalidCredentialsException ->
+            is InvalidCredentialsError ->
                 application.stringResource(R.string.msg_error_invalid_credentials)
             is FirebaseAuthInvalidCredentialsException ->
                 application.stringResource(R.string.msg_error_invalid_credentials)
@@ -88,9 +119,26 @@ class UserAuthViewModel @AssistedInject constructor(
         }
     }
 
-    fun localSignIn() {}
+    fun onPasscodeChanged(passcode: String) = setState {
+        copy(passcode = passcode)
+    }
 
-    fun regularSignIn() = withState {
+    fun onPasscodeConfirmed() = withState {
+        if (it.currentUserLocalAuthState is Loading) {
+            return@withState
+        }
+
+        setState {
+            copy(localSignInAttempts = it.localSignInAttempts + 1)
+        }
+
+        authenticationRepository.authenticateLocalUser(it.passcode).execute { state ->
+            Timber.i("Local authentication is $state")
+            copy(currentUserLocalAuthState = state)
+        }
+    }
+
+    fun signIn() = withState {
         if (it.currentUserAuthState is Loading || it.currentUser is Loading) {
             return@withState
         }
@@ -105,7 +153,7 @@ class UserAuthViewModel @AssistedInject constructor(
         if (it.email.isEmpty() || !isEmailValid(it.email) || it.password.isEmpty()) {
             setState {
                 copy(currentUserAuthState = Fail(
-                        InvalidCredentialsException(),
+                        InvalidCredentialsError(),
                         UserAuthenticationState.Unauthenticated,
                     )
                 )
@@ -145,6 +193,7 @@ class UserAuthViewModel @AssistedInject constructor(
         }
 
         authenticateUser(
+            uid = it.currentUser.invoke()?.id ?: "",
             email = it.email,
             password = it.password,
             firebaseApp = firebaseApplication,
@@ -163,11 +212,11 @@ class UserAuthViewModel @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory: AssistedViewModelFactory<UserAuthViewModel, com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthState> {
-        override fun create(state: com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthState): UserAuthViewModel
+    interface Factory: AssistedViewModelFactory<UserAuthViewModel, UserAuthState> {
+        override fun create(state: UserAuthState): UserAuthViewModel
     }
 
     companion object:
-        MavericksViewModelFactory<UserAuthViewModel, com.peyess.salesapp.feature.authentication_user.authentication.state.UserAuthState> by
+        MavericksViewModelFactory<UserAuthViewModel, UserAuthState> by
         hiltMavericksViewModelFactory()
 }

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.authentication_user.user_list
+package com.peyess.salesapp.feature.authentication_user.screen.user_list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -27,7 +27,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,8 +53,9 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
-import com.peyess.salesapp.feature.authentication_user.user_list.state.UserListState
-import com.peyess.salesapp.feature.authentication_user.user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListState
+import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
+import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -65,12 +69,28 @@ fun UserListScreen(
     val users by viewModel.collectAsState(UserListState::users)
     val store by viewModel.collectAsState(UserListState::currentStore)
 
+    val isUpdatingCurrentUser by viewModel.collectAsState(UserListState::updatingCurrentUser)
+
+    val hasNavigated = remember { mutableStateOf(false) }
+    val canNavigate = remember { mutableStateOf(false) }
+    if (canNavigate.value && isUpdatingCurrentUser is Success && !isUpdatingCurrentUser.invoke()!!) {
+        LaunchedEffect(Unit) {
+            if (!hasNavigated.value) {
+                hasNavigated.value = true
+                canNavigate.value = false
+
+                navHostController.navigate(SalesAppScreens.UserAuth.name)
+            }
+        }
+    }
+
     UserAuthScreenComposable(
         modifier = modifier,
         store = store,
         users = users,
         onEnter = {
-            viewModel.enterStore(navHostController, it)
+            viewModel.pickUser(it)
+            canNavigate.value = true
         },
     )
 }
@@ -157,9 +177,9 @@ private fun Header(
                 .build(),
             contentScale = ContentScale.FillBounds,
             contentDescription = "",
-            error = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            fallback = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            placeholder = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
+            error = painterResource(id = R.drawable.ic_default_placeholder),
+            fallback = painterResource(id = R.drawable.ic_default_placeholder),
+            placeholder = painterResource(id = R.drawable.ic_default_placeholder),
         )
 
         Spacer(modifier = Modifier.size(12.dp))
@@ -232,9 +252,9 @@ fun UserBox(
                 .build(),
             contentScale = ContentScale.FillBounds,
             contentDescription = "",
-            error = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            fallback = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
-            placeholder = painterResource(id = R.drawable.ic_logo_peyess_dark_bg),
+            error = painterResource(id = R.drawable.ic_profile_placeholder),
+            fallback = painterResource(id = R.drawable.ic_profile_placeholder),
+            placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
         )
 
         Spacer(modifier = Modifier.height(32.dp))

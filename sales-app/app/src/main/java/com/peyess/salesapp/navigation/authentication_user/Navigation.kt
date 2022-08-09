@@ -5,9 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.authentication_user.authentication.UserAuthScreen
+import com.peyess.salesapp.feature.authentication_user.screen.authentication.UserAuthScreen
+import com.peyess.salesapp.feature.authentication_user.screen.local_password.LocalPasswordScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.authentication_user.user_list.UserListScreen
+import com.peyess.salesapp.feature.authentication_user.screen.user_list.UserListScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildUserAuthNavGraph(
@@ -28,6 +29,14 @@ fun buildUserAuthNavGraph(
         enterTransition = userAuthEnterTransition(),
         exitTransition = userAuthExitTransition()
     ) {
-        UserAuthScreen(modifier = modifier)
+        UserAuthScreen(modifier = modifier, navHostController = navHostController)
+    }
+
+    builder.composable(
+        route = SalesAppScreens.LocalPasscode.name,
+        enterTransition = localPasscodeEnterTransition(),
+        exitTransition = localPasscodeExitTransition()
+    ) {
+        LocalPasswordScreen(modifier = modifier, navHostController = navHostController)
     }
 }

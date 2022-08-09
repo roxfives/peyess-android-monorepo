@@ -38,8 +38,8 @@ class AuthenticationViewModel @AssistedInject constructor(
 
         onEach(AuthenticationState::authState) {
             if (it is Fail) {
-                Timber.d("Store authentication failed", it.error)
-                Timber.d(it.error)
+                Timber.e("Store authentication failed", it.error)
+                Timber.e(it.error)
 
                 setState {
                     copy(

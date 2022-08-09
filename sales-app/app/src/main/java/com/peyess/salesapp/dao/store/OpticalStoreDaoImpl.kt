@@ -24,7 +24,7 @@ class OpticalStoreDaoImpl @Inject constructor(
         return if (fsStore != null) {
             fsStore.toDocument()
         } else {
-            Timber.d("Snap object is null")
+            Timber.e("Snap object is null")
             error("Snap object is null")
         }
     }

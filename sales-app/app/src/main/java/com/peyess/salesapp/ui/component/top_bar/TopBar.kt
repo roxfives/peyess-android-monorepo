@@ -14,7 +14,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.peyess.salesapp.R
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.ui.component.bottom_bar.shouldShowBottomBarFor
 
 @Composable
 fun TopBar(
@@ -33,7 +32,7 @@ fun TopBar(
             title = { TopBarTitle(currentScreen) },
             navigationIcon = {
                 NavigationIcon(
-                    canNavigateBack = canNavigateBackMF(currentScreen, navHostController),
+                    canNavigateBack = showNavigateBack(currentScreen, navHostController),
                 )
             }
         )
@@ -67,7 +66,7 @@ fun shouldShowTopBarFor(
     return false
 }
 
-fun canNavigateBackMF(
+fun showNavigateBack(
     screen: SalesAppScreens,
     navHostController: NavHostController,
 ): Boolean {

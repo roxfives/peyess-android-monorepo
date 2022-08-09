@@ -8,23 +8,37 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.FirebaseApp
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.StoreAuthState
+import com.peyess.salesapp.auth.UserAuthenticationState
+import com.peyess.salesapp.auth.exception.InvalidCredentialsError
 import com.peyess.salesapp.dao.store.OpticalStoreDao
 import com.peyess.salesapp.dao.users.CollaboratorsDao
+import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
+    val localPasscodeManager: LocalPasscodeManager,
     val collaboratorsDao: CollaboratorsDao,
     val storeDao: OpticalStoreDao,
 ): AuthenticationRepository {
@@ -43,6 +57,108 @@ class AuthenticationRepositoryImpl @Inject constructor(
         salesApplication.dataStoreCurrentUser.edit {
             it[currentCollaboratorKey] = uid
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun userAuthenticationState(): Flow<UserAuthenticationState> {
+        return salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .flatMapLatest {
+                if (it == null) {
+                    Timber.e("Current user is not defined")
+                    error("Current user is not defined")
+                }
+
+                firebaseManager.userAuthState(it)
+            }
+    }
+
+    override fun userLocalAuthenticationState(): Flow<LocalAuthorizationState> {
+        return salesApplication.dataStoreCurrentUser.data.map { prefs ->
+            val authStr = prefs[currentCollaboratorAuthStateKey] ?: ""
+
+            LocalAuthorizationState.fromString(authStr)
+        }
+    }
+
+    override fun authenticateLocalUser(passcode: String): Flow<LocalAuthorizationState> = flow {
+        val uid = salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .first()
+
+        val isSuccess = localPasscodeManager
+            .signIn(uid ?: "", passcode)
+            .first()
+
+        if (isSuccess) {
+            Timber.d("Is success")
+            salesApplication.dataStoreCurrentUser.edit{ prefs ->
+                prefs[currentCollaboratorAuthStateKey] =
+                    LocalAuthorizationState.Authorized.toString()
+            }
+
+            emit(LocalAuthorizationState.Authorized)
+        } else {
+            Timber.d("Is not success")
+
+            error(InvalidCredentialsError())
+        }
+    }
+
+    override fun resetUserPasscode(): Flow<Boolean>  = flow {
+        salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .take(1)
+            .collect {
+                if (it == null) {
+                    Timber.e("Current user is not defined")
+                    error("Current user is not defined")
+                }
+
+                localPasscodeManager.resetUserPasscode(it)
+                emit(true)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun setUserPasscode(passcode: String): Flow<Boolean> {
+        return salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .flatMapLatest {
+                if (it == null) {
+                    Timber.e("Current user is not defined")
+                    error("Current user is not defined")
+                }
+
+                localPasscodeManager.setUserPasscode(it, passcode)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun userHasPasscode(): Flow<Boolean> {
+        return salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .flatMapLatest {
+                if (it == null) {
+                    Timber.e("Current user is not defined")
+                    error("Current user is not defined")
+                }
+
+                localPasscodeManager.userHasPassword(it)
+            }
+    }
+
+    override fun resetCurrentUser(): Flow<Boolean> = callbackFlow {
+        try {
+            salesApplication.dataStoreCurrentUser.edit { prefs ->
+                prefs.remove(currentCollaboratorKey)
+                trySend(true)
+            }
+        } catch (e: Exception) {
+            Timber.e("Failed to reset current user: ${e.message}", e)
+        }
+
+        awaitClose()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -79,6 +195,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         val dataStoreFilename = "com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl" +
                 "__currentUser"
 
-        val currentCollaboratorKey = stringPreferencesKey(dataStoreFilename)
+        private const val collaboratorKey = "collaborator_key"
+        private const val collaboratorAuthKey = "collaborator_auth_state_key"
+
+        val currentCollaboratorKey = stringPreferencesKey(collaboratorKey)
+        val currentCollaboratorAuthStateKey = stringPreferencesKey(collaboratorAuthKey)
     }
 }

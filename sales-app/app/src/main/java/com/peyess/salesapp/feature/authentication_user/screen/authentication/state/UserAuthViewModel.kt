@@ -119,6 +119,28 @@ class UserAuthViewModel @AssistedInject constructor(
         }
     }
 
+    fun resetPasscode() = withState {
+        authenticationRepository.userSignOut().execute {
+            authenticationRepository.resetUserPasscode()
+            authenticationRepository.resetCurrentUser()
+
+            copy(
+                confirmPasscodeReset = false,
+                currentUserAuthState = it,
+                currentUserLocalAuthState = Uninitialized,
+            )
+        }
+    }
+
+
+    fun confirmPasscodeReset() = setState {
+        copy(confirmPasscodeReset = true)
+    }
+
+    fun cancelPasscodeReset() = setState {
+        copy(confirmPasscodeReset = false)
+    }
+
     fun onPasscodeChanged(passcode: String) = setState {
         copy(passcode = passcode)
     }

@@ -59,6 +59,28 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun userSignOut(): Flow<UserAuthenticationState> {
+        return salesApplication.dataStoreCurrentUser.data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .map {
+                if (it == null) {
+                    Timber.e("Current user is not defined")
+                    error("Current user is not defined")
+                }
+
+                firebaseManager.userSignOut(it)
+                localPasscodeManager.resetUserPasscode(it)
+
+                salesApplication.dataStoreCurrentUser.edit { prefs ->
+                    prefs[currentCollaboratorKey] = ""
+                    prefs[currentCollaboratorAuthStateKey] =
+                        LocalAuthorizationState.Unauthorized.toString()
+                }
+
+                UserAuthenticationState.Unauthenticated
+            }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun userAuthenticationState(): Flow<UserAuthenticationState> {
         return salesApplication.dataStoreCurrentUser.data

@@ -18,6 +18,8 @@ interface AuthenticationRepository {
 
     fun currentUser(): Flow<Collaborator>
 
+    fun userSignOut(): Flow<UserAuthenticationState>
+
     fun userAuthenticationState(): Flow<UserAuthenticationState>
 
     fun userLocalAuthenticationState(): Flow<LocalAuthorizationState>

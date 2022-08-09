@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,10 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -83,6 +87,8 @@ fun UserAuthScreen(
     val hasLocalPasscode by viewModel.collectAsState(UserAuthState::hasLocalPassword)
     val isAuthenticated by viewModel.collectAsState(UserAuthState::isAuthenticated)
     val localAuthState by viewModel.collectAsState(UserAuthState::currentUserLocalAuthState)
+
+    val showResetPasscodeDialog by viewModel.collectAsState(UserAuthState::confirmPasscodeReset)
 
     val hasNavigatedToPasscode = remember { mutableStateOf(false) }
     if (
@@ -153,6 +159,7 @@ fun UserAuthScreen(
 
                 canSignIn = canSignIn,
                 onSignIn = viewModel::signIn,
+                onRequestPasscodeReset = viewModel::confirmPasscodeReset,
             )
         }
 
@@ -160,7 +167,15 @@ fun UserAuthScreen(
             PeyessProgressIndicatorInfinite()
     }
 
-
+    if (showResetPasscodeDialog) {
+        DialogResetPasscode(
+            onConfirm = {
+                viewModel.resetPasscode()
+                navHostController.popBackStack()
+            },
+            onCancel = viewModel::cancelPasscodeReset
+        )
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -193,6 +208,7 @@ fun UserSignIn(
 
     canSignIn: Boolean = true,
     onSignIn: () -> Unit = {},
+    onRequestPasscodeReset: () -> Unit = {},
 ) {
     Column(
         modifier = modifier.height(IntrinsicSize.Min),
@@ -281,6 +297,17 @@ fun UserSignIn(
                 ) {
                     Text(text = stringResource(id = R.string.btn_enter))
                 }
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(SalesAppTheme.dimensions.minimum_touch_target),
+                    onClick = onRequestPasscodeReset
+                ) {
+                    Text(text = stringResource(id = R.string.btn_reset_passcode))
+                }
             }
         }
 
@@ -295,6 +322,36 @@ fun UserSignIn(
             )
         }
     }
+}
+
+@Composable
+fun DialogResetPasscode(
+    modifier: Modifier = Modifier,
+    onCancel: () -> Unit = {},
+    onConfirm: () -> Unit = {},
+) {
+    AlertDialog(
+        modifier = modifier,
+        title = { Text(text = stringResource(id = R.string.btn_reset_passcode)) },
+        text = { Text(text = stringResource(id = R.string.dialog_content_reset_passcode)) },
+        confirmButton = {
+            TextButton(onClick = onCancel) {
+                Text(
+                    text = stringResource(id = R.string.dialog_btn_cancel_reset_passcode)
+                        .uppercase()
+                )
+            }
+        },
+        dismissButton = {
+            Button(onClick = onConfirm) {
+                Text(
+                    text = stringResource(id = R.string.dialog_btn_ok_reset_passcode)
+                        .uppercase()
+                )
+            }
+        },
+        onDismissRequest = onCancel,
+    )
 }
 
 @Composable

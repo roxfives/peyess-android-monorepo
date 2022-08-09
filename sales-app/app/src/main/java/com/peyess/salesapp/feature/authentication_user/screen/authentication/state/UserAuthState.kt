@@ -30,6 +30,7 @@ data class UserAuthState(
     val localSignInAttempts: Int = 0,
     val passcode: String = "",
     val passcodeErrorMessage: String = "",
+    val confirmPasscodeReset: Boolean = false,
 ): MavericksState {
     val isAuthenticating = currentUserAuthState is Loading || hasLocalPassword is Loading
     val hasError = currentUserAuthState is Fail

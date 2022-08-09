@@ -61,13 +61,11 @@ class LocalPasscodeManager @Inject constructor(
 
     fun resetUserPasscode(uid: String) {
         passCodeSP.edit {
-            this.remove(uid)
-            apply()
+            this.remove(uid).commit()
         }
 
         saltSP.edit {
-            this.remove(uid)
-            apply()
+            this.remove(uid).commit()
         }
     }
 

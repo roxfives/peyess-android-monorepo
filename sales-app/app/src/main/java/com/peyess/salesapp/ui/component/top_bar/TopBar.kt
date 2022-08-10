@@ -63,7 +63,7 @@ fun shouldShowTopBarFor(
 
 //    return screen == SalesAppScreens.Home
 //            || screen == SalesAppScreens.UserAuth
-    return false
+    return true
 }
 
 fun showNavigateBack(

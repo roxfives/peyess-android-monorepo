@@ -22,7 +22,7 @@ fun SalesAppNavHost(
     AnimatedNavHost(
         modifier = modifier,
         navController = navHostController,
-        startDestination = SalesAppScreens.Landing.name,
+        startDestination = SalesAppScreens.Home.name,
     ) {
         buildHomeNavGraph(
             navHostController = navHostController,

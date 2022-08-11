@@ -1,9 +1,11 @@
 package com.peyess.salesapp.model.users
 
 import androidx.annotation.Keep
+import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import java.util.Date
 
+@IgnoreExtraProperties
 data class FSCollaborator(
     @Keep
     @JvmField
@@ -91,6 +93,26 @@ data class FSCollaborator(
     @JvmField
     @PropertyName("updated_allowed_by")
     val updatedAllowedBy:  String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("created")
+    val created: Date = Date(),
+
+    @Keep
+    @JvmField
+    @PropertyName("create_allowed_by")
+    val createAllowedBy:  String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("updated")
+    val updated: Date = Date(),
+
+    @Keep
+    @JvmField
+    @PropertyName("is_editable")
+    val isEditable:  Boolean = true,
 )
 
 fun FSCollaborator.toDocument(): Collaborator {

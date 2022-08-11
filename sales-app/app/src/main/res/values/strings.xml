@@ -50,9 +50,18 @@
     <!-- UI Component: Home   -->
     <string name="btn_make_new_sale">Fazer nova venda</string>
 
+    <!--    UI Component: Sales -->
+    <string name="go_next_default">Próximo</string>
+
+    <!-- UI Component: Welcome   -->
+    <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
+    <string name="label_client_name">Primeiro nome do(a) cliente</string>
+    <string name="error_client_name_empty">O nome não pode ser vazio</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>
+    <string name="fs_col_lenses">optical_stores/%1$s/local_optical_lenses</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

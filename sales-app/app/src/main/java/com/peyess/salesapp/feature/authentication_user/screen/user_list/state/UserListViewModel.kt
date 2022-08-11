@@ -41,7 +41,7 @@ class UserListViewModel @AssistedInject constructor(
 
     fun loadStore() = withState {
         authenticationRepository.currentStore.execute {
-//            Timber.i("Current store", it)
+            Timber.i("Current store $it")
             copy(currentStore = it)
         }
     }

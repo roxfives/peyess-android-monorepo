@@ -239,6 +239,5 @@ class UserAuthViewModel @AssistedInject constructor(
     }
 
     companion object:
-        MavericksViewModelFactory<UserAuthViewModel, UserAuthState> by
-        hiltMavericksViewModelFactory()
+        MavericksViewModelFactory<UserAuthViewModel, UserAuthState> by hiltMavericksViewModelFactory()
 }

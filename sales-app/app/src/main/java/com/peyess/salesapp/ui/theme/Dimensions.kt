@@ -30,6 +30,7 @@ class Dimensions(
     val plane_6: Dp,
     val plane_7: Dp,
     val minimum_touch_target: Dp = 48.dp,
+    val screen_offset: Dp = 16.dp,
 )
 
 val smallDimensions = Dimensions(

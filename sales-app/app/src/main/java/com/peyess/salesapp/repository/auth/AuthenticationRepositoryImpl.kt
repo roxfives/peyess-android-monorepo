@@ -12,8 +12,8 @@ import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.exception.InvalidCredentialsError
-import com.peyess.salesapp.dao.store.OpticalStoreDao
-import com.peyess.salesapp.dao.users.CollaboratorsDao
+import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
+import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.OpticalStore
@@ -22,14 +22,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
@@ -42,7 +38,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     val collaboratorsDao: CollaboratorsDao,
     val storeDao: OpticalStoreDao,
 ): AuthenticationRepository {
-    val Context.dataStoreCurrentUser: DataStore<Preferences>
+    private val Context.dataStoreCurrentUser: DataStore<Preferences>
         by preferencesDataStore(dataStoreFilename)
 
     override val storeAuthState: Flow<StoreAuthState>

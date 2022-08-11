@@ -6,6 +6,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -13,7 +14,8 @@ import dagger.assisted.AssistedInject
 
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
-    val authenticationRepository: AuthenticationRepository
+    val authenticationRepository: AuthenticationRepository,
+    val saleRepository: SaleRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {

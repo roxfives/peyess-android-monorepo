@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.authentication.buildStoreAuthNavGraph
 import com.peyess.salesapp.navigation.authentication_user.buildUserAuthNavGraph
 import com.peyess.salesapp.navigation.home.buildHomeNavGraph
 import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
+import com.peyess.salesapp.navigation.sale.buildSaleNavGraph
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -22,7 +23,7 @@ fun SalesAppNavHost(
     AnimatedNavHost(
         modifier = modifier,
         navController = navHostController,
-        startDestination = SalesAppScreens.Home.name,
+        startDestination = SalesAppScreens.Landing.name,
     ) {
         buildHomeNavGraph(
             navHostController = navHostController,
@@ -43,5 +44,7 @@ fun SalesAppNavHost(
             navHostController = navHostController,
             builder = this,
         )
+
+        buildSaleNavGraph(modifier, navHostController, this)
     }
 }

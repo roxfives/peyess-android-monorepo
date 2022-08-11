@@ -8,6 +8,7 @@ import com.peyess.salesapp.feature.authentication_store.state.AuthenticationView
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.local_password.state.LocalPasswordViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.sale.welcome.state.WelcomeViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,6 +17,13 @@ import dagger.multibindings.IntoMap
 @Module
 @InstallIn(MavericksViewModelComponent::class)
 interface ViewModelsModule {
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(WelcomeViewModel::class)
+    fun bindWelcomeViewModelFactory(
+        factory: WelcomeViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)

@@ -10,6 +10,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -20,6 +23,7 @@ import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.workmanager.UpdateProductsWorker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -56,6 +60,14 @@ class MainActivity: ComponentActivity() {
         }
 
         hideSystemNavigationBar()
+
+        val uploadWorkRequest: WorkRequest =
+            OneTimeWorkRequestBuilder<UpdateProductsWorker>()
+                .build()
+
+        WorkManager
+            .getInstance(this)
+            .enqueue(uploadWorkRequest)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

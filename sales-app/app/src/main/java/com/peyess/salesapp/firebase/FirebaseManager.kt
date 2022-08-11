@@ -164,4 +164,8 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
 
         awaitClose()
     }
+
+    fun uniqueId(): String {
+        return storeFirestore?.document("random/path")?.id ?: ""
+    }
 }

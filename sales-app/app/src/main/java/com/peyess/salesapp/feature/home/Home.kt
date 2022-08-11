@@ -27,7 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.peyess.salesapp.R
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
-private val buttonHeight = 64.dp
+private val buttonHeight = 72.dp
 
 @Composable
 fun Home(
@@ -41,7 +41,7 @@ fun Home(
                 modifier = Modifier
                     .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
                     .fillMaxWidth()
-                    .height(SalesAppTheme.dimensions.minimum_touch_target),
+                    .height(buttonHeight),
                 shape = MaterialTheme.shapes.large,
                 onClick = onStartNewSale,
             ) {

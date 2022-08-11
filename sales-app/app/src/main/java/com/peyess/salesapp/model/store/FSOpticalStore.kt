@@ -1,9 +1,11 @@
 package com.peyess.salesapp.model.store
 
 import androidx.annotation.Keep
+import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
-import java.util.*
+import java.util.Date
 
+@IgnoreExtraProperties
 data class FSOpticalStore(
 
     @Keep
@@ -148,8 +150,8 @@ data class FSOpticalStore(
 
     @Keep
     @JvmField
-    @PropertyName("created_at")
-    val createdAt: Date = Date(),
+    @PropertyName("created")
+    val created: Date = Date(),
 
     @Keep
     @JvmField
@@ -158,13 +160,13 @@ data class FSOpticalStore(
 
     @Keep
     @JvmField
-    @PropertyName("created_allowed_by")
-    val createdAllowedBy:  String = "",
+    @PropertyName("create_allowed_by")
+    val createAllowedBy:  String = "",
 
     @Keep
     @JvmField
-    @PropertyName("created_at")
-    val updatedAt: Date = Date(),
+    @PropertyName("updated")
+    val updated: Date = Date(),
 
     @Keep
     @JvmField
@@ -173,8 +175,13 @@ data class FSOpticalStore(
 
     @Keep
     @JvmField
-    @PropertyName("updated_allowed_by")
+    @PropertyName("update_allowed_by")
     val updatedAllowedBy:  String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("is_editable")
+    val isEditable:  Boolean = true,
 )
 
 fun FSOpticalStore.toDocument(): OpticalStore {
@@ -209,10 +216,10 @@ fun FSOpticalStore.toDocument(): OpticalStore {
         siafi = this.siafi,
         gia = this.gia,
 
-        createdAt = this.createdAt,
+        createdAt = this.created,
         createdBy = this.createdBy,
-        createdAllowedBy = this.createdAllowedBy,
-        updatedAt = this.updatedAt,
+        createdAllowedBy = this.createAllowedBy,
+        updatedAt = this.updated,
         updatedBy = this.updatedBy,
         updatedAllowedBy = this.updatedAllowedBy,
     )

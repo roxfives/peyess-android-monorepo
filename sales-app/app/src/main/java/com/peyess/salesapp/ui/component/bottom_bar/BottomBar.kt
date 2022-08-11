@@ -91,5 +91,5 @@ fun shouldShowBottomBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return true//screen == SalesAppScreens.Home
+    return false//screen == SalesAppScreens.Home
 }

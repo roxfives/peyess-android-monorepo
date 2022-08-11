@@ -1,6 +1,6 @@
 package com.peyess.salesapp.model.store
 
-import java.util.*
+import java.util.Date
 
 data class OpticalStore(
     val picture: String = "",

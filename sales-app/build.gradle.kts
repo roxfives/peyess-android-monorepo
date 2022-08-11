@@ -11,8 +11,11 @@ buildscript {
         set("koin_version", "3.2.0")
         set("hilt_version", "2.43.1")
         set("mavericks_version", "2.7.0")
+
         set("data_store", "1.0.0")
         set("android_crypto", "1.0.0")
+        set("room_version", "2.4.3")
+        set("work_version", "2.7.1")
     }
 
     repositories {

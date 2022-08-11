@@ -21,6 +21,11 @@ dependencies {
     val kotlinVersion = rootProject.ext["coil_version"]
     val dataStoreVersion = rootProject.ext["data_store"]
     val androidCrypto = rootProject.ext["android_crypto"]
+    val roomVersion = rootProject.ext["room_version"]
+    val workVersion = rootProject.ext["work_version"]
+
+
+
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -29,7 +34,7 @@ dependencies {
     val kapt by configurations.kapt
     val kaptTest by configurations.kaptTest
     val kaptAndroidTest by configurations.kaptAndroidTest
-//    val annotationProcessor by configurations.annotationProcessor
+    val annotationProcessor by configurations.annotationProcessor
 //    val testAnnotationProcessor by configurations.testAnnotationProcessor
 //    val androidTestAnnotationProcessor by configurations.androidTestAnnotationProcessor
 
@@ -56,17 +61,23 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+
     implementation("androidx.security:security-crypto:$androidCrypto")
 
-
     implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    // To use Kotlin Symbol Processing (KSP)
+//    ksp("androidx.room:room-compiler:$room_version")
+
 
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
     implementation("io.coil-kt:coil:$kotlinVersion")
     implementation("io.coil-kt:coil-compose:$kotlinVersion")
-
-
 
     // Compose UI tooling
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")
@@ -76,9 +87,19 @@ dependencies {
     implementation("com.airbnb.android:mavericks-hilt:$mavericksVersion")
     implementation("com.airbnb.android:mavericks-compose:$mavericksVersion")
 
+    // Work Manager
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
+    androidTestImplementation("androidx.work:work-testing:$workVersion")
+
+
+
     // Hilt
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
+
 
     // Hilt instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")

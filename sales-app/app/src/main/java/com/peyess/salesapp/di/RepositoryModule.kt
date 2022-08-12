@@ -5,6 +5,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
+import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -46,6 +47,7 @@ object RepositoryModule {
         authenticationRepository: AuthenticationRepository,
         activeSalesDao: ActiveSalesDao,
         activeSODao: ActiveSODao,
+        prescriptionPictureDao: PrescriptionPictureDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -53,6 +55,7 @@ object RepositoryModule {
             authenticationRepository,
             activeSalesDao,
             activeSODao,
+            prescriptionPictureDao,
         )
     }
 }

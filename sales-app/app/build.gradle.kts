@@ -24,6 +24,8 @@ dependencies {
     val roomVersion = rootProject.ext["room_version"]
     val workVersion = rootProject.ext["work_version"]
 
+    val materialDialogs = rootProject.ext["material_dialogs"]
+
 
 
 
@@ -61,6 +63,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-permissions:$accompanistVersion")
 
     implementation("androidx.security:security-crypto:$androidCrypto")
 
@@ -114,4 +117,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+
+    // Misc libs ----------------------------------------------------------------------------------
+
+    // Decent dialogs
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:$materialDialogs")
 }

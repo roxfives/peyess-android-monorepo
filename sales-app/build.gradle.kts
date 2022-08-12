@@ -16,6 +16,8 @@ buildscript {
         set("android_crypto", "1.0.0")
         set("room_version", "2.4.3")
         set("work_version", "2.7.1")
+
+        set("material_dialogs", "0.7.1")
     }
 
     repositories {

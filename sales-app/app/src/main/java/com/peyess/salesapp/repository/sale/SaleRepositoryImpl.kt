@@ -11,6 +11,8 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +27,7 @@ class SaleRepositoryImpl @Inject constructor(
     val authenticationRepository: AuthenticationRepository,
     val activeSalesDao: ActiveSalesDao,
     val activeSODao: ActiveSODao,
+    val prescriptionPictureDao: PrescriptionPictureDao,
 ): SaleRepository {
     val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -69,7 +72,8 @@ class SaleRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun activeSO(soId: String): Flow<ActiveSOEntity> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun activeSO(): Flow<ActiveSOEntity> {
         return salesApplication
             .dataStoreCurrentSale
             .data
@@ -82,6 +86,20 @@ class SaleRepositoryImpl @Inject constructor(
                     error("Could not find sale id")
                 }
             }
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {
+        return activeSO().flatMapLatest { so ->
+            prescriptionPictureDao.getById(so.id).map {
+                it ?: PrescriptionPictureEntity(soId = so.id)
+            }
+        }
+    }
+
+    override fun updatePrescriptionPicture(prescriptionPictureEntity: PrescriptionPictureEntity) {
+        prescriptionPictureDao.add(prescriptionPictureEntity)
     }
 
     companion object {

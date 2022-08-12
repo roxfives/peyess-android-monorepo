@@ -11,6 +11,7 @@ enum class SalesAppScreens {
     UserAuth,
     LocalPasscode,
     SaleWelcome,
+    SalePrescriptionPicture,
     People,
     AddPerson,
     Frames,
@@ -30,6 +31,7 @@ enum class SalesAppScreens {
                 UserAuth.name -> UserAuth
                 LocalPasscode.name -> LocalPasscode
                 SaleWelcome.name -> SaleWelcome
+                SalePrescriptionPicture.name -> SalePrescriptionPicture
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People
@@ -54,6 +56,7 @@ enum class SalesAppScreens {
                 UserAuth.name -> "Entrar na loja"
                 LocalPasscode.name -> "Criar senha para acesso local"
                 SaleWelcome.name -> "Vamos começar!"
+                SalePrescriptionPicture.name -> "Vamos aos dados da sua recita"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

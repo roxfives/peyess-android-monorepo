@@ -58,6 +58,17 @@
     <string name="label_client_name">Primeiro nome do(a) cliente</string>
     <string name="error_client_name_empty">O nome não pode ser vazio</string>
 
+    <!-- UI Component: PickLensType   -->
+<!--    <string name="mike_lens_type_default">Escolhe a lente porra</string>-->
+
+    <!-- UI Component: PrescriptionPicture   -->
+    <string name="dialog_select_date_title">Data de emissão da receita</string>
+    <string name="dialog_select_date_ok">Selecionar</string>
+    <string name="dialog_select_date_cancel">Cancear</string>
+    <string name="label_professional_id">CRM/CRO do profissional</string>
+    <string name="label_professional_name">Nome do profissional</string>
+    <string name="txt_prescription_date">Data de emissão da receita</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

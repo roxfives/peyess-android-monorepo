@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.sale.welcome
+package com.peyess.salesapp.navigation.sale.prescription
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
@@ -7,26 +7,25 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.landing.Landing
-import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
+import com.peyess.salesapp.feature.sale.prescription_picture.PrescriptionPictureScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
-fun buildWelcomeNavGraph(
+fun buildPrescriptionScreenNavGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
     builder: NavGraphBuilder
 ) {
     builder.composable(
         route = SalesAppScreens.SaleWelcome.name,
-        enterTransition = welcomeEnterTransition(),
-        exitTransition = welcomeExitTransition()
+        enterTransition = prescriptionScreenEnterTransition(),
+        exitTransition = prescriptionScreenExitTransition(),
     ) {
-        WelcomeScreen(
+        PrescriptionPictureScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.SalePrescriptionPicture.name)
+            navHostController.navigate(SalesAppScreens.Home.name)
         }
     }
 }

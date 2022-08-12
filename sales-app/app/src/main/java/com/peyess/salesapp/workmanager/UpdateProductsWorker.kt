@@ -160,7 +160,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
-        val firestore = firebaseManager.storeFirestore
+        val firestore = firebaseManager.noCacheFirestore
         if (firestore == null) {
             return Result.retry()
         }

@@ -201,6 +201,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         return firebaseManager.firebaseAppStore
     }
 
+    override fun noCacheFirebaseApp(): FirebaseApp? {
+        return firebaseManager.noCacheFirebaseApp
+    }
+
     override fun activeCollaborators(): Flow<List<Collaborator>> {
         return collaboratorsDao.subscribeToActiveAccounts().onEach {
             val ids = it.map { user -> user.id }

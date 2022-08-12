@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import com.google.firebase.storage.ktx.storage
@@ -26,11 +27,13 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
 
     var firebaseAppStore: FirebaseApp? = null
         private set
+    var noCacheFirebaseApp: FirebaseApp? = null
+        private set
 
-    val storeFirestore: FirebaseFirestore?
-        get() {
-            return firebaseAppStore?.let { Firebase.firestore(it) }
-        }
+    var storeFirestore: FirebaseFirestore? = null
+        private set
+    var noCacheFirestore: FirebaseFirestore? = null
+        private set
 
     val currentStore: FirebaseUser?
         get() {
@@ -72,6 +75,17 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         }
 
         firebaseAppStore = Firebase.initialize(salesApplication)
+        noCacheFirebaseApp = Firebase
+            .initialize(salesApplication, firebaseOptions(), "no-cache")
+
+        val settings = firestoreSettings {
+            isPersistenceEnabled = false
+        }
+
+        storeFirestore = Firebase.firestore(firebaseAppStore!!)
+        noCacheFirestore = Firebase.firestore(noCacheFirebaseApp!!)
+            .apply { firestoreSettings = settings }
+
         checkForEmulator(firebaseAppStore)
     }
 

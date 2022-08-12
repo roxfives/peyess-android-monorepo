@@ -19,6 +19,7 @@ import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.zip
 import timber.log.Timber
 
 class AuthenticationViewModel @AssistedInject constructor(
@@ -27,6 +28,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     private val authenticationRepository: AuthenticationRepository
 ): MavericksViewModel<AuthenticationState>(initialState) {
     private val storeFirebaseApp by lazy { authenticationRepository.storeFirebaseApp() }
+    private val noCacheFirebaseApp by lazy { authenticationRepository.storeFirebaseApp() }
 
     init {
         setState {
@@ -116,14 +118,39 @@ class AuthenticationViewModel @AssistedInject constructor(
             return@withState
         }
 
-        authenticateStore(
+        val authenticateStoreFlow = authenticateStore(
             email = it.username,
             password = it.password,
             firebaseApp = storeFirebaseApp!!
-        ).execute { authState ->
+        )
+
+        val authenticateStoreNoCache = authenticateStore(
+            email = it.username,
+            password = it.password,
+            firebaseApp = noCacheFirebaseApp!!
+        )
+
+        authenticateStoreFlow.zip(authenticateStoreNoCache) { authCache, authNoCache ->
+            if (authCache == StoreAuthState.Authenticated
+                && authNoCache == StoreAuthState.Authenticated) {
+
+                StoreAuthState.Authenticated
+            } else {
+                StoreAuthState.Unauthenticated
+            }
+        }.execute {
             Timber.i("Current auth state: ${authState}")
             copy(authState = authState)
         }
+
+
+//        authenticateStore(
+//            email = it.username,
+//            password = it.password,
+//            firebaseApp = storeFirebaseApp!!
+//        ).execute { authState ->
+//
+//        }
     }
 
     // DI - Hilt

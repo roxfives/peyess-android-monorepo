@@ -17,22 +17,76 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.app.state.MainAppState
+import com.peyess.salesapp.app.state.MainViewModel
+import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
 
 private val buttonHeight = 72.dp
 
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController = rememberNavController(),
+    onStartNewSale: () -> Unit = {},
+) {
+    val viewModel: MainViewModel = mavericksViewModel()
+
+    val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
+    val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
+
+
+    val hasStartedNewSale = remember {
+        mutableStateOf(false)
+    }
+
+    Timber.i("Filho de uma puta descgraçada ${hasStartedNewSale.value}")
+
+    if (createNewSale is Success && createNewSale.invoke()!!) {
+        Timber.i("Creating the fucking sale")
+        LaunchedEffect(Unit) {
+            Timber.i("I hate compose")
+            if (!hasStartedNewSale.value) {
+                Timber.i("Compose is a fucking piece of shit")
+
+                onStartNewSale()
+            }
+
+            hasStartedNewSale.value = true
+        }
+    }
+
+    if (isCreatingNewSale) {
+        PeyessProgressIndicatorInfinite(modifier = modifier)
+    } else {
+        SaleList(
+            modifier = modifier,
+            onStartNewSale = {
+                viewModel.startNewSale()
+            },
+        )
+    }
+}
+
+@Composable
+fun SaleList(
+    modifier: Modifier = Modifier,
     onStartNewSale: () -> Unit = {},
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {

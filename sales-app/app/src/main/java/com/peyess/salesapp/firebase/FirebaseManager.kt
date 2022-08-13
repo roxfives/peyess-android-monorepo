@@ -180,6 +180,9 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
     }
 
     fun uniqueId(): String {
-        return storeFirestore?.document("random/path")?.id ?: ""
+    // TODO: generate using uuid in case it fails
+        return storeFirestore
+            ?.collection("dummycollection")
+            ?.document()?.id ?: ""
     }
 }

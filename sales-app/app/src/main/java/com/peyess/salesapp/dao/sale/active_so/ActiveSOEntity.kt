@@ -20,7 +20,11 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 )
 data class ActiveSOEntity(
     @PrimaryKey val id: String = "",
+    @ColumnInfo(name = "has_prescription") val hasPrescription: Boolean = true,
     @ColumnInfo(name = "sale_id") val saleId: String = "",
+
+    @ColumnInfo(name = "client_name") val clientName: String = "",
+    @ColumnInfo(name = "lens_type") val isLensTypeMono: Boolean = false,
 ) {
     companion object {
         const val tableName = "active_so"

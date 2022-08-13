@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
@@ -14,11 +15,14 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import timber.log.Timber
 import javax.inject.Inject
 
 class SaleRepositoryImpl @Inject constructor(
@@ -27,12 +31,13 @@ class SaleRepositoryImpl @Inject constructor(
     val authenticationRepository: AuthenticationRepository,
     val activeSalesDao: ActiveSalesDao,
     val activeSODao: ActiveSODao,
+    val lensTypeCategoryDao: LensTypeCategoryDao,
     val prescriptionPictureDao: PrescriptionPictureDao,
 ): SaleRepository {
     val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
 
-    override fun startSale(): Flow<ActiveSalesEntity> {
+    override fun createSale(): Flow<Boolean> {
         return authenticationRepository.currentUser().map {
             val activeSale = ActiveSalesEntity(
                 id = firebaseManager.uniqueId(),
@@ -45,6 +50,9 @@ class SaleRepositoryImpl @Inject constructor(
                 saleId = activeSale.id,
             )
 
+            Timber.i("Creating sale $activeSale")
+            Timber.i("Creating so $activeSO")
+
             salesApplication.dataStoreCurrentSale.edit { prefs ->
                 prefs[currentSaleKey] = activeSale.id
                 prefs[currentSOKey] = activeSO.id
@@ -52,8 +60,13 @@ class SaleRepositoryImpl @Inject constructor(
 
             activeSalesDao.add(activeSale)
             activeSODao.add(activeSO)
-            activeSale
+            true
         }
+    }
+
+    override fun updateSO(so: ActiveSOEntity) {
+        Timber.i("Updating sale to $so")
+        activeSODao.update(so)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -70,6 +83,10 @@ class SaleRepositoryImpl @Inject constructor(
                     error("Could not find sale id")
                 }
             }
+    }
+
+    override fun updateActiveSO(activeSOEntity: ActiveSOEntity) {
+        activeSODao.update(activeSOEntity)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,6 +117,10 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun updatePrescriptionPicture(prescriptionPictureEntity: PrescriptionPictureEntity) {
         prescriptionPictureDao.add(prescriptionPictureEntity)
+    }
+
+    override fun lensTypeCategories(): Flow<List<LensTypeCategory>> {
+        return lensTypeCategoryDao.categories()
     }
 
     companion object {

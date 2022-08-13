@@ -30,7 +30,7 @@ fun MikeBubbleRight(
     text: String = "",
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.height(IntrinsicSize.Min).fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -70,7 +70,7 @@ private fun ChatBubble(
                 modifier = Modifier.padding(16.dp),
                 text = text,
                 color = MaterialTheme.colors.onPrimary,
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.h6,
             )
         }
 

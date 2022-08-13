@@ -18,7 +18,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         ActiveSOEntity::class,
         PrescriptionPictureEntity::class,
     ],
-    version = 3,
+    version = 6,
 )
 @TypeConverters(ConverterLocalDate::class, ConverterUri::class)
 abstract class ActiveSalesDatabase: RoomDatabase() {

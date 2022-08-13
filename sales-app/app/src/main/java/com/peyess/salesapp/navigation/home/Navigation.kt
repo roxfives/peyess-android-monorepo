@@ -23,7 +23,6 @@ fun buildHomeNavGraph(
     ) {
         Home(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
-            navHostController = navHostController,
         ) {
             navHostController.navigate(SalesAppScreens.SaleWelcome.name)
         }

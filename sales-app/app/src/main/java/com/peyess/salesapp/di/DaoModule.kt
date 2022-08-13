@@ -7,6 +7,8 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDaoImpl
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
+import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
+import com.peyess.salesapp.dao.products.firestore.lens_categories.LensCategoryDaoImpl
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringDao
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentDao
 import com.peyess.salesapp.dao.products.room.local_alt_height.LocalAltHeightDao
@@ -48,6 +50,15 @@ object DaoModule {
         application: SalesApplication,
     ): OpticalStoreDao {
         return OpticalStoreDaoImpl(firebaseManager, application)
+    }
+
+    @Singleton
+    @Provides
+    fun provideLensTypeDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): LensTypeCategoryDao {
+        return LensCategoryDaoImpl(application, firebaseManager)
     }
 
     @Singleton

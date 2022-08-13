@@ -8,6 +8,7 @@ import com.peyess.salesapp.feature.authentication_store.state.AuthenticationView
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.local_password.state.LocalPasswordViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
 import com.peyess.salesapp.feature.sale.welcome.state.WelcomeViewModel
 import dagger.Binds
@@ -58,6 +59,13 @@ interface ViewModelsModule {
     @ViewModelKey(LocalPasswordViewModel::class)
     fun bindLocalPasswordViewModelFactory(
         factory: LocalPasswordViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PrescriptionLensTypeViewModel::class)
+    fun bindPrescriptionLensTypeViewModelFactory(
+        factory: PrescriptionLensTypeViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 
     @Binds

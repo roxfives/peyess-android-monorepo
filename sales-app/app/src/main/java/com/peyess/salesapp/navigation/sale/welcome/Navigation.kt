@@ -26,7 +26,7 @@ fun buildWelcomeNavGraph(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.SalePrescriptionPicture.name)
+            navHostController.navigate(SalesAppScreens.SalePrescriptionLensType.name)
         }
     }
 }

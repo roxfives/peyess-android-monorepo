@@ -12,6 +12,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -19,9 +20,10 @@ import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -48,6 +50,7 @@ class SaleRepositoryImpl @Inject constructor(
             val activeSO = ActiveSOEntity(
                 id = firebaseManager.uniqueId(),
                 saleId = activeSale.id,
+                lensTypeCategoryName = LensTypeCategoryName.Near,
             )
 
             Timber.i("Creating sale $activeSale")
@@ -70,7 +73,7 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun activeSale(): Flow<ActiveSalesEntity> {
+    override fun activeSale(): Flow<ActiveSalesEntity?> {
         return salesApplication
             .dataStoreCurrentSale
             .data
@@ -90,7 +93,7 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun activeSO(): Flow<ActiveSOEntity> {
+    override fun activeSO(): Flow<ActiveSOEntity?> {
         return salesApplication
             .dataStoreCurrentSale
             .data
@@ -108,7 +111,7 @@ class SaleRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {
-        return activeSO().flatMapLatest { so ->
+        return activeSO().filterNotNull().flatMapLatest { so ->
             prescriptionPictureDao.getById(so.id).map {
                 it ?: PrescriptionPictureEntity(soId = so.id)
             }

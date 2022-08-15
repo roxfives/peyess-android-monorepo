@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 interface SaleRepository {
     fun createSale(): Flow<Boolean>
 
-    fun activeSale(): Flow<ActiveSalesEntity>
+    fun activeSale(): Flow<ActiveSalesEntity?>
     fun updateActiveSO(activeSOEntity: ActiveSOEntity)
-    fun activeSO(): Flow<ActiveSOEntity>
+    fun activeSO(): Flow<ActiveSOEntity?>
 
     fun updateSO(so: ActiveSOEntity)
 

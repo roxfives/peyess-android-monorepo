@@ -9,6 +9,7 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.database.room.converters.ConverterLensTypeCategoryName
 import com.peyess.salesapp.database.room.converters.ConverterLocalDate
 import com.peyess.salesapp.database.room.converters.ConverterUri
 
@@ -18,9 +19,13 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         ActiveSOEntity::class,
         PrescriptionPictureEntity::class,
     ],
-    version = 6,
+    version = 8,
 )
-@TypeConverters(ConverterLocalDate::class, ConverterUri::class)
+@TypeConverters(
+    ConverterLocalDate::class,
+    ConverterUri::class,
+    ConverterLensTypeCategoryName::class,
+)
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao
 

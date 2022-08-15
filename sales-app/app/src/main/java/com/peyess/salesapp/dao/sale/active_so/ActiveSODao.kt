@@ -12,7 +12,7 @@ interface ActiveSODao {
     @Query(
         "SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.id = :id"
     )
-    fun getById(id: String): Flow<ActiveSOEntity>
+    fun getById(id: String): Flow<ActiveSOEntity?>
 
     @Insert
     fun add(activeSale: ActiveSOEntity)

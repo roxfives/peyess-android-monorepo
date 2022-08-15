@@ -45,36 +45,51 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
 
 
     fun onPictureTaken(uri: Uri?) = setState {
+        val prescriptionPicture = this.currentPrescription.invoke()
+
+        if (prescriptionPicture != null) {
+            saleRepository.updatePrescriptionPicture(
+                prescriptionPicture.copy(pictureUri = uri?: this.pictureUri)
+            )
+        }
+
         copy(pictureUri = uri ?: this.pictureUri)
     }
 
     fun onDatePicked(date: LocalDate) = setState {
+        val prescriptionPicture = this.currentPrescription.invoke()
+
+        if (prescriptionPicture != null) {
+            saleRepository.updatePrescriptionPicture(
+                prescriptionPicture.copy(prescriptionDate = date)
+            )
+        }
+
         copy(prescriptionDate = date)
     }
 
     fun onProfessionalNameChanged(professionalName: String) = setState {
+        val prescriptionPicture = this.currentPrescription.invoke()
+
+        if (prescriptionPicture != null) {
+            saleRepository.updatePrescriptionPicture(
+                prescriptionPicture.copy(professionalName = professionalName)
+            )
+        }
+
         copy(professionalName = professionalName)
     }
 
     fun onProfessionalIdChanged(professionalId: String) = setState {
-        copy(professionalId = professionalId)
-    }
+        val prescriptionPicture = this.currentPrescription.invoke()
 
-    fun onDone() = withState {
-        val prescription: PrescriptionPictureEntity
-
-        if(it.canGoNext && it.currentPrescription is Success) {
-            prescription = it.currentPrescription
-                .invoke()
-                .copy(
-                    pictureUri = it.pictureUri,
-                    professionalName = it.professionalName,
-                    professionalId = it.professionalId,
-                    prescriptionDate = it.prescriptionDate,
-                )
-
-            saleRepository.updatePrescriptionPicture(prescription)
+        if (prescriptionPicture != null) {
+            saleRepository.updatePrescriptionPicture(
+                prescriptionPicture.copy(professionalId = professionalId)
+            )
         }
+
+        copy(professionalId = professionalId)
     }
 
     @AssistedFactory

@@ -144,7 +144,6 @@ fun PrescriptionPictureScreen(
             onSetDate = viewModel::onDatePicked,
             onNext = {
                 if (canGoNext) {
-                    viewModel.onDone()
                     onNext()
                 }
             },

@@ -6,6 +6,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -26,12 +27,8 @@ class WelcomeViewModel @AssistedInject constructor(
 ): MavericksViewModel<WelcomeState>(initialState) {
 
     init {
+        loadCurrentSO()
         loadCurrentCollaborator()
-
-
-        withState {
-            Timber.i("Filho de uma puta morfética: ${it.hasUpdatedSale}")
-        }
     }
 
     private fun loadCurrentCollaborator() = withState {
@@ -40,33 +37,20 @@ class WelcomeViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateSale() = withState { state ->
-        salesRepository.activeSO()
-            .take(1)
-            .map { salesRepository.updateSO(it.copy(clientName = state.clientName)) }
-            .execute(Dispatchers.IO) {
-                val attemptedNext = if (it is Success) {
-                    this.goNextAttempts + 1
-                } else {
-                    this.goNextAttempts
-                }
-
-                Timber.i("Current attempts ${attemptedNext}]")
-
-                copy(
-                    hasUpdatedSale = true,
-                    goNextAttempts = attemptedNext
-                )
-            }
+    private fun loadCurrentSO() = withState {
+        salesRepository.activeSO().execute(Dispatchers.IO) {
+            copy(activeSO = it)
+        }
     }
 
-    fun onNext() = setState {
-        copy(hasUpdatedSale = false)
-    }
+    fun onClientNameChanged(name: String) = withState {
+        val activeSo: ActiveSOEntity
 
+        if (it.activeSO is Success && it.activeSO.invoke() != null) {
+            activeSo = it.activeSO.invoke()!!.copy(clientName = name)
 
-    fun onClientNameChanged(name: String) = setState {
-        copy(clientName = name)
+            salesRepository.updateSO(activeSo)
+        }
     }
 
     @AssistedFactory

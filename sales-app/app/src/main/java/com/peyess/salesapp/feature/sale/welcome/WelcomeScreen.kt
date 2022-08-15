@@ -13,10 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -50,22 +47,6 @@ fun WelcomeScreen(
     val canGoNext by viewModel.collectAsState(WelcomeState::canGoNext)
     val hasError by viewModel.collectAsState(WelcomeState::hasError)
 
-    val hasStartedSale by viewModel.collectAsState(WelcomeState::hasUpdatedSale)
-
-    val hasGoneNext = remember {
-        mutableStateOf(false)
-    }
-    if (hasStartedSale) {
-        LaunchedEffect(Unit) {
-           if (!hasGoneNext.value) {
-               viewModel.onNext()
-               onNext()
-
-               hasGoneNext.value = true
-           }
-        }
-    }
-
     if (!isLoading) {
         val collaboratorName = collaborator.invoke()!!.name
 
@@ -79,7 +60,7 @@ fun WelcomeScreen(
             canGoNext = canGoNext,
             onDone = {
                 if (canGoNext) {
-                    viewModel.updateSale()
+                    onNext()
                 }
             },
         )
@@ -138,24 +119,6 @@ private fun WelcomeScreenImpl(
             canGoNext = canGoNext,
             onNext = onDone,
         )
-
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.End,
-//        ) {
-//            Button(
-//                modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
-//                enabled = canGoNext,
-////                isLoadingNext = isCreatingSale,
-//                onClick = onDone,
-//            ) {
-//                if (isCreatingSale) {
-//                    Text(text = stringResource(id = R.string.go_next_default))
-//                } else {
-//
-//                }
-//            }
-//        }
     }
 }
 

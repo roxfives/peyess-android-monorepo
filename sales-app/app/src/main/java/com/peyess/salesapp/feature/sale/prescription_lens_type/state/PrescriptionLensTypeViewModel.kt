@@ -7,13 +7,18 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 
@@ -24,6 +29,7 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
 ) : MavericksViewModel<PrescriptionLensTypeState>(initialState) {
 
     init {
+        loadActiveSo()
         loadDefaultMessage()
 
         loadTypes()
@@ -33,24 +39,27 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
             updateMikeText()
             updatePicked()
         }
-
-        onEach(PrescriptionLensTypeState::typeIdPicked) {  }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun loadDefaultMessage() = withState {
         Timber.i("Calling mother fucker")
 
-        salesRepository.activeSO().map {
-            Timber.i("Found SO ${it}")
+        salesRepository
+            .activeSO()
+            .filterNotNull()
+            .mapLatest {
+                Timber.i("Found SO ${it}")
 
-            salesApplication
-                .stringResource(R.string.mike_lens_type_default)
-                .format(it.clientName)
+                salesApplication
+                    .stringResource(R.string.mike_lens_type_default)
+                    .format(it.clientName)
 
-        }.execute {
-            Timber.i("Updating mf with $it")
-            copy(mikeText = it)
-        }
+            }
+            .take(1)
+            .execute {
+                copy(mikeText = it)
+            }
     }
 
     private fun loadTypes() = withState {
@@ -91,11 +100,25 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadActiveSo() = withState {
+        salesRepository.activeSO().filterNotNull().execute {
+            copy(activeSO = it)
+        }
+    }
+
     fun onPick(name: String) = setState {
         val picked: LensTypeCategory?
+        val activeSOEntity = this.activeSO.invoke()
 
         if (this.lensCategories is Success) {
             picked = this.lensCategories.invoke().find { it.name == name }
+
+            if (activeSOEntity != null && picked != null) {
+                salesRepository.updateSO(activeSOEntity.copy(
+                    isLensTypeMono = picked.isMono,
+                    lensTypeCategoryName = LensTypeCategoryName.fromName(picked.name)!!
+                ))
+            }
 
             copy(typeIdPicked = picked?.id ?: "")
         } else {
@@ -103,28 +126,28 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
         }
     }
 
-    fun updateSale() = withState { state ->
-        salesRepository.activeSO()
-            .take(1)
-            .map {
-//                salesRepository
-//                    .updateSO(it.copy(isLensTypeMono = state.typeCategoryPicked?.isMono ?: true))
-            }
-            .execute(Dispatchers.IO) {
-                val attemptedNext = if (it is Success) {
-                    this.goNextAttempts + 1
-                } else {
-                    this.goNextAttempts
-                }
-
-                Timber.i("Current attempts ${attemptedNext}]")
-
-                copy(
-                    hasUpdatedSale = true,
-                    goNextAttempts = attemptedNext
-                )
-            }
-    }
+//    fun updateSale() = withState { state ->
+//        salesRepository.activeSO()
+//            .take(1)
+//            .map {
+////                salesRepository
+////                    .updateSO(it.copy(isLensTypeMono = state.typeCategoryPicked?.isMono ?: true))
+//            }
+//            .execute(Dispatchers.IO) {
+//                val attemptedNext = if (it is Success) {
+//                    this.goNextAttempts + 1
+//                } else {
+//                    this.goNextAttempts
+//                }
+//
+//                Timber.i("Current attempts ${attemptedNext}]")
+//
+//                copy(
+//                    hasUpdatedSale = true,
+//                    goNextAttempts = attemptedNext
+//                )
+//            }
+//    }
 
     fun onNext() = setState {
         copy(hasUpdatedSale = false)

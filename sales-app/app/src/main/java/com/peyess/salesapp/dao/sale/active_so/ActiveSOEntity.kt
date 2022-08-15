@@ -18,7 +18,7 @@ sealed class LensTypeCategoryName {
             return when(name?.lowercase() ?: "") {
                 "perto" -> Near
                 "longe" -> Far
-                "multi" -> Multi
+                "multifocal" -> Multi
                 else -> null
             }
         }
@@ -28,7 +28,7 @@ sealed class LensTypeCategoryName {
             return when(type) {
                 Near -> "perto"
                 Far -> "longe"
-                Multi -> "multi"
+                Multi -> "multifocal"
                 else -> null
             }
         }

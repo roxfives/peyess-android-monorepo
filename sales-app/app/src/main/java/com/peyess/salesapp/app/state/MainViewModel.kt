@@ -48,6 +48,9 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    fun newSaleStarted() = setState {
+        copy(createNewSale = Success(false))
+    }
 
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<MainViewModel, MainAppState> {
@@ -56,8 +59,4 @@ class MainViewModel @AssistedInject constructor(
 
     companion object:
         MavericksViewModelFactory<MainViewModel, MainAppState> by hiltMavericksViewModelFactory()
-
-    fun incrementCount() {
-//        setState { copy(myTest = myTest + 1) }
-    }
 }

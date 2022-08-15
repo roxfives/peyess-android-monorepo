@@ -56,19 +56,14 @@ fun Home(
         mutableStateOf(false)
     }
 
-    Timber.i("Filho de uma puta descgraçada ${hasStartedNewSale.value}")
-
     if (createNewSale is Success && createNewSale.invoke()!!) {
-        Timber.i("Creating the fucking sale")
         LaunchedEffect(Unit) {
-            Timber.i("I hate compose")
             if (!hasStartedNewSale.value) {
-                Timber.i("Compose is a fucking piece of shit")
-
                 onStartNewSale()
             }
 
             hasStartedNewSale.value = true
+            viewModel.newSaleStarted()
         }
     }
 

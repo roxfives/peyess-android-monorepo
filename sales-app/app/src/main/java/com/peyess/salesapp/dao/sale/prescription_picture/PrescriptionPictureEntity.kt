@@ -7,6 +7,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import java.time.LocalDate
 
 @Entity(

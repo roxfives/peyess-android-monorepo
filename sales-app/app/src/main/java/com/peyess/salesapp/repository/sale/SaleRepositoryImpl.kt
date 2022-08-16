@@ -13,6 +13,8 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -23,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -31,12 +32,13 @@ class SaleRepositoryImpl @Inject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
     val authenticationRepository: AuthenticationRepository,
-    val activeSalesDao: ActiveSalesDao,
-    val activeSODao: ActiveSODao,
-    val lensTypeCategoryDao: LensTypeCategoryDao,
-    val prescriptionPictureDao: PrescriptionPictureDao,
+    private val activeSalesDao: ActiveSalesDao,
+    private val activeSODao: ActiveSODao,
+    private val lensTypeCategoryDao: LensTypeCategoryDao,
+    private val prescriptionPictureDao: PrescriptionPictureDao,
+    private val prescriptionDataDao: PrescriptionDataDao,
 ): SaleRepository {
-    val Context.dataStoreCurrentSale: DataStore<Preferences>
+    private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
 
     override fun createSale(): Flow<Boolean> {
@@ -108,7 +110,6 @@ class SaleRepositoryImpl @Inject constructor(
             }
     }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {
         return activeSO().filterNotNull().flatMapLatest { so ->
@@ -116,6 +117,19 @@ class SaleRepositoryImpl @Inject constructor(
                 it ?: PrescriptionPictureEntity(soId = so.id)
             }
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun currentPrescriptionData(): Flow<PrescriptionDataEntity> {
+        return activeSO().filterNotNull().flatMapLatest { so ->
+            prescriptionDataDao.getById(so.id).map {
+                it ?: PrescriptionDataEntity(soId = so.id)
+            }
+        }
+    }
+
+    override fun updatePrescriptionData(prescriptionDataEntity: PrescriptionDataEntity) {
+        prescriptionDataDao.add(prescriptionDataEntity)
     }
 
     override fun updatePrescriptionPicture(prescriptionPictureEntity: PrescriptionPictureEntity) {

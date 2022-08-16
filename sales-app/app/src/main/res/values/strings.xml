@@ -69,6 +69,34 @@
     <string name="label_professional_name">Nome do profissional</string>
     <string name="txt_prescription_date">Data de emissão da receita</string>
 
+    <!-- UI Component: PrescriptionData   -->
+    <string name="left_eye">OE</string>
+    <string name="right_eye">OD</string>
+
+    <string name="title_degree">Graus da receita</string>
+    <string name="title_addition">Adição</string>
+    <string name="title_prism">Prisma</string>
+
+    <string name="degree_spherical">Esférico</string>
+    <string name="degree_cylindrical">Cilíndrico</string>
+    <string name="degree_axis">Eixo</string>
+
+    <string name="prism_necessary">Prisma é necessário?</string>
+    <string name="prism_degree">Grau</string>
+    <string name="prism_position">Posição</string>
+    <string name="prism_axis">Eixo</string>
+
+    <string name="curiosities">Curiosidades</string>
+
+    <string name="dialog_select_prism_axis_title">Selecione a posição</string>
+    <string name="dialog_select_prism_axis_ok">Selecionar</string>
+    <string name="dialog_select_prism_axis_cancel">Cancear</string>
+
+    <string name="mike_message_far">Entre com o seu grau para Longe</string>
+    <string name="mike_message_near">Entre com o seu grau para Perto</string>
+    <string name="mike_message_multi">Entre com o seu grau Multifocal</string>
+    <string name="mike_message_default">Entre com o grau da sua receita</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

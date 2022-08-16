@@ -9,11 +9,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataScreen
+import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataSymptomsScreen
 import com.peyess.salesapp.feature.sale.prescription_lens_type.PrescriptionLensTypeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.prescription_picture.PrescriptionPictureScreen
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenExitTransition
+import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSymptomsScreenEnterTransition
+import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSymptomsScreenExitTransition
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -60,9 +63,28 @@ fun buildPrescriptionScreenNavGraph(
         PrescriptionDataScreen(
             modifier = modifier
                 .verticalScroll(scrollState)
-                .padding(SalesAppTheme.dimensions.screen_offset)
+                .padding(SalesAppTheme.dimensions.screen_offset),
+            onShowSymptoms = {
+                navHostController.navigate(SalesAppScreens.SalePrescriptionDataSymptoms.name)
+            }
         ) {
             navHostController.navigate(SalesAppScreens.Home.name)
+        }
+    }
+
+    builder.composable(
+        route = SalesAppScreens.SalePrescriptionDataSymptoms.name,
+        enterTransition = prescriptionDataSymptomsScreenEnterTransition(),
+        exitTransition = prescriptionDataSymptomsScreenExitTransition(),
+    ) {
+        val scrollState = rememberScrollState()
+
+        PrescriptionDataSymptomsScreen(
+            modifier = modifier
+                .verticalScroll(scrollState)
+                .padding(SalesAppTheme.dimensions.screen_offset)
+        ) {
+            navHostController.popBackStack()
         }
     }
 }

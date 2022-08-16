@@ -1,10 +1,17 @@
 package com.peyess.salesapp.feature.sale.prescription_data
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -13,17 +20,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Switch
-import androidx.compose.material.SwitchColors
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
@@ -34,13 +46,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role.Companion.Switch
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -57,6 +73,8 @@ import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.customView
 import com.vanpra.composematerialdialogs.listItemsSingleChoice
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
@@ -67,13 +85,14 @@ internal val betweenSectionSpacer = 32.dp
 @Composable
 fun PrescriptionDataScreen(
     modifier: Modifier = Modifier,
+    onShowSymptoms: () -> Unit = {},
     onNext: () -> Unit = {},
 ) {
     val viewModel: PrescriptionDataViewModel = mavericksViewModel()
 
     val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
     val isMikeLoading by viewModel.collectAsState(PrescriptionDataState::isMikeLoading)
-    val mikeMessage by viewModel.collectAsState(PrescriptionDataState::mikeMessage)
+    val mikeMessageTop by viewModel.collectAsState(PrescriptionDataState::mikeMessageTop)
 
     val sphericalLeft by viewModel.collectAsState(PrescriptionDataState::sphericalLeft)
     val sphericalRight by viewModel.collectAsState(PrescriptionDataState::sphericalRight)
@@ -87,6 +106,9 @@ fun PrescriptionDataScreen(
     val prismDegreeRight by viewModel.collectAsState(PrescriptionDataState::prismDegreeRight)
     val prismAxisLeft by viewModel.collectAsState(PrescriptionDataState::prismAxisLeft)
     val prismAxisRight by viewModel.collectAsState(PrescriptionDataState::prismAxisRight)
+
+    val hasAxisLeft by viewModel.collectAsState(PrescriptionDataState::hasAxisLeft)
+    val hasAxisRight by viewModel.collectAsState(PrescriptionDataState::hasAxisRight)
 
     val prismAxisPositionLeft by viewModel.collectAsState(PrescriptionDataState::prismPositionLeft)
     val prismAxisPositionRight by viewModel.collectAsState(PrescriptionDataState::prismPositionRight)
@@ -102,13 +124,18 @@ fun PrescriptionDataScreen(
     } else {
         PrescriptionScreenDataImpl(
             modifier = modifier,
+            onNext = onNext,
+            onShowSymptoms = onShowSymptoms,
 
             isMikeLoading = isMikeLoading,
-            mikeMessage = mikeMessage.invoke() ?: "",
+            mikeMessageTop = mikeMessageTop.invoke() ?: "",
 
             hasAddition = hasAddition,
             hasPrism = hasPrism,
             toggleHasPrism = viewModel::toggleHasPrism,
+
+            hasAxisLeft = hasAxisLeft,
+            hasAxisRight = hasAxisRight,
 
             sphericalRight = sphericalRight,
             onSphericalRightIncrease = viewModel::increaseSphericalRight,
@@ -173,9 +200,14 @@ fun PrescriptionDataScreen(
 @Composable
 private fun PrescriptionScreenDataImpl(
     modifier: Modifier = Modifier,
+    onNext: () -> Unit = {},
+    onShowSymptoms: () -> Unit = {},
 
     isMikeLoading: Boolean = false,
-    mikeMessage: String = stringResource(id = R.string.mike_message_default),
+    mikeMessageTop: String = stringResource(id = R.string.mike_message_default),
+
+    hasAxisRight: Boolean = false,
+    hasAxisLeft: Boolean = false,
 
     hasAddition: Boolean = false,
     hasPrism: Boolean = false,
@@ -251,7 +283,7 @@ private fun PrescriptionScreenDataImpl(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .height(150.dp),
-                text = mikeMessage,
+                text = mikeMessageTop,
             )
         }
         Spacer(modifier = Modifier.height(betweenSectionSpacer))
@@ -263,6 +295,9 @@ private fun PrescriptionScreenDataImpl(
 
             isPrismAxisLeftEnabled = isPrismAxisLeftEnabled,
             isPrismAxisRightEnabled = isPrismAxisRightEnabled,
+
+            hasAxisRight = hasAxisRight,
+            hasAxisLeft = hasAxisLeft,
 
             sphericalRight = sphericalRight,
             onSphericalRightIncrease = onSphericalRightIncrease,
@@ -322,7 +357,17 @@ private fun PrescriptionScreenDataImpl(
         Spacer(modifier = Modifier.height(betweenSectionSpacer))
         Spacer(modifier = Modifier.weight(1f))
 
-        PeyessNextStep()
+        PeyessNextStep(
+            startButton = {
+                OutlinedButton(
+                    modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+                    onClick = onShowSymptoms,
+                ) {
+                    Text(text = stringResource(id = R.string.curiosities))
+                }
+            },
+            onNext = onNext,
+        )
     }
 }
 
@@ -336,6 +381,9 @@ private fun PrescriptionDegrees(
 
     isPrismAxisLeftEnabled: Boolean = false,
     isPrismAxisRightEnabled: Boolean = false,
+
+    hasAxisRight: Boolean = false,
+    hasAxisLeft: Boolean = false,
 
     sphericalRight: Double = 0.0,
     onSphericalRightIncrease: (curValue: Double) -> Unit = {},
@@ -405,7 +453,10 @@ private fun PrescriptionDegrees(
     ) {
         SectionTitle(title = stringResource(id = R.string.title_degree))
         Spacer(modifier = Modifier.height(sectionTitleSpacer))
-        PrescriptionDegreesTitle(minimumWidthModifier = minimumWidthModifier)
+        PrescriptionDegreesTitle(
+            minimumWidthModifier = minimumWidthModifier,
+            isAxisEnabled = hasAxisRight || hasAxisLeft,
+        )
         PrescriptionDegreesInput(
             minimumWidthModifier = minimumWidthModifier,
 
@@ -419,6 +470,7 @@ private fun PrescriptionDegrees(
             onCylindricalIncrease = onCylindricalRightIncrease,
             onCylindricalDecrease = onCylindricalRightDecrease,
 
+            isAxisEnabled = hasAxisRight,
             axis = axisRight,
             onAxisIncrease = onAxisRightIncrease,
             onAxisDecrease = onAxisRightDecrease,
@@ -436,6 +488,7 @@ private fun PrescriptionDegrees(
             onCylindricalIncrease = onCylindricalLeftIncrease,
             onCylindricalDecrease = onCylindricalLeftDecrease,
 
+            isAxisEnabled = hasAxisLeft,
             axis = axisLeft,
             onAxisIncrease = onAxisLeftIncrease,
             onAxisDecrease = onAxisLeftDecrease,
@@ -570,6 +623,7 @@ private fun SectionTitle(
 private fun PrescriptionDegreesTitle(
     modifier: Modifier = Modifier,
     minimumWidthModifier: Modifier = Modifier,
+    isAxisEnabled: Boolean = true,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -606,6 +660,11 @@ private fun PrescriptionDegreesTitle(
             text = stringResource(id = R.string.degree_axis),
             style = MaterialTheme.typography.subtitle1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+            color = if (isAxisEnabled) {
+                MaterialTheme.colors.primary
+            } else {
+                Color.Gray.copy(alpha = 0.5f)
+            }
         )
     }
 }
@@ -626,6 +685,7 @@ private fun PrescriptionDegreesInput(
     onCylindricalIncrease: (value: Double) -> Unit = {},
     onCylindricalDecrease: (value: Double) -> Unit = {},
 
+    isAxisEnabled: Boolean = true,
     axis: Double = 0.0,
     onAxisIncrease: (value: Double) -> Unit = {},
     onAxisDecrease: (value: Double) -> Unit = {},
@@ -664,6 +724,7 @@ private fun PrescriptionDegreesInput(
         NumericMeasuring(
             modifier = minimumWidthModifier,
 
+            enabled = isAxisEnabled,
             value = axis,
             onIncrease = onAxisIncrease,
             onDecrease = onAxisDecrease,
@@ -850,14 +911,11 @@ fun NumericMeasuring(
         modifier = modifier
             .padding(8.dp)
             .border(
-                BorderStroke(
-                    2.dp,
-                    if (enabled) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray.copy(alpha = 0.5f)
-                    }
-                ),
+                BorderStroke(2.dp, if (enabled) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }),
                 RoundedCornerShape(36.dp),
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1003,6 +1061,205 @@ fun TextSelectInput(
             modifier = Modifier
                 .height(SalesAppTheme.dimensions.minimum_touch_target)
                 .width(SalesAppTheme.dimensions.minimum_touch_target),
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun CuriositiesDialog(
+    showDialog: Boolean = false,
+    mikeMessageAmetropies: String = "",
+) {
+    val scrollState = rememberScrollState()
+    val showingCuriosities = remember {
+        mutableStateOf(false)
+    }
+
+    if (showDialog) {
+        Dialog(onDismissRequest = { showingCuriosities.value = false }) {
+            SalesAppTheme {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                        .requiredWidth(LocalConfiguration.current.screenWidthDp.dp * 0.96f)
+                        .scrollable(
+                            state = scrollState,
+                            orientation = Orientation.Vertical,
+                            enabled = true,
+                        ),
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color.LightGray
+                ) {
+                    Column {
+                        Text(
+                            text = stringResource(
+                                id = if (showingCuriosities.value) {
+                                    R.string.dialog_curiosities_title
+                                } else {
+                                    R.string.empty_string
+                                }
+                            )
+                        )
+
+                        AnimatedVisibility(
+                            visible = !showingCuriosities.value,
+                            enter = scaleIn(),
+                            exit = scaleOut()
+                        ) {
+                            Column(
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                MikeBubbleRight(
+                                    text = mikeMessageAmetropies
+                                )
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visible = showingCuriosities.value,
+                            enter = scaleIn(),
+                            exit = scaleOut()
+                        ) {
+                            SymptomsAndCuriosities(modifier = Modifier.fillMaxSize())
+                        }
+
+
+                        if (showingCuriosities.value) {
+                            TextButton(onClick = { showingCuriosities.value = false }) {
+                                Text(text = stringResource(id = R.string.dialog_curiosities_return_button))
+
+                            }
+                        } else {
+                            TextButton(onClick = { showingCuriosities.value = true }) {
+                                Text(text = stringResource(id = R.string.dialog_curiosities_show_me_button))
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SymptomsAndCuriosities(
+    modifier: Modifier = Modifier,
+
+    hasHypermetropia: Boolean = true,
+    hasMyopia: Boolean = true,
+    hasAstigmatism: Boolean = true,
+    hasPresbyopia: Boolean = true,
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier.scrollable(scrollState, orientation = Orientation.Vertical),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+        SymptomsAndCuriositiesContent(
+            title = stringResource(id = R.string.myopia),
+            symptoms = stringResource(id = R.string.dialog_symptoms_myopia),
+            curiosities = stringResource(id = R.string.dialog_curiosities_myopia),
+        )
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        SymptomsAndCuriositiesContent(
+            title = stringResource(id = R.string.astigmatism),
+            symptoms = stringResource(id = R.string.dialog_symptoms_astigmatism),
+            curiosities = stringResource(id = R.string.dialog_curiosities_astigmatism),
+        )
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        SymptomsAndCuriositiesContent(
+            title = stringResource(id = R.string.presbyopia),
+            symptoms = stringResource(id = R.string.dialog_symptoms_presbyopia),
+            curiosities = stringResource(id = R.string.dialog_curiosities_presbyopia),
+        )
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        SymptomsAndCuriositiesContent(
+            title = stringResource(id = R.string.hypermetropia),
+            symptoms = stringResource(id = R.string.dialog_symptoms_hypermetropia),
+            curiosities = stringResource(id = R.string.dialog_curiosities_hypermetropia),
+        )
+    }
+}
+
+@Composable
+private fun SymptomsAndCuriositiesContent(
+    modifier: Modifier = Modifier,
+
+    title: String = "",
+    symptoms: String = "",
+    curiosities: String = "",
+) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
+        )
+
+        Text(
+            text = stringResource(id = R.string.dialog_symptoms),
+            style = MaterialTheme.typography.h6.copy(textIndent = TextIndent(8.sp, 8.sp)),
+        )
+        Text(
+            text = symptoms,
+            style = MaterialTheme.typography.body1.copy(textIndent = TextIndent(18.sp, 18.sp)),
+        )
+
+        Text(
+            text = stringResource(id = R.string.curiosities),
+            style = MaterialTheme.typography.h6.copy(textIndent = TextIndent(8.sp, 8.sp)),
+        )
+        Text(
+            text = curiosities,
+            style = MaterialTheme.typography.body1.copy(textIndent = TextIndent(18.sp, 18.sp)),
+        )
+    }
+}
+
+
+
+@Preview
+@Composable
+private fun SymptomsAndCuriositiesPreview() {
+    SalesAppTheme {
+        SymptomsAndCuriosities(
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SymptomsAndCuriositiesContentPreview() {
+    SalesAppTheme {
+        SymptomsAndCuriositiesContent(
+            modifier = Modifier.fillMaxWidth(),
+
+            title = stringResource(id = R.string.myopia),
+            symptoms = stringResource(id = R.string.dialog_symptoms_myopia),
+            curiosities = stringResource(id = R.string.dialog_curiosities_myopia),
         )
     }
 }

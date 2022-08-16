@@ -97,6 +97,37 @@
     <string name="mike_message_multi">Entre com o seu grau Multifocal</string>
     <string name="mike_message_default">Entre com o grau da sua receita</string>
 
+    <string name="dialog_curiosities_title_no_ametropy">Sem ametropias</string>
+    <string name="dialog_curiosities_title_hypermetropia">Hipermetropia</string>
+    <string name="dialog_curiosities_title_myopia">Miopia</string>
+    <string name="dialog_curiosities_title_astigmatism">Astigmatismo</string>
+    <string name="dialog_curiosities_title_presbyopia">Presbiopia</string>
+
+    <string name="dialog_curiosities_return_button">Legal!</string>
+    <string name="dialog_curiosities_show_me_button">Vamos vê-las!</string>
+    <string name="dialog_curiosities_title">Sintomas e curiosidades</string>
+    <string name="dialog_symptoms">Sintomas</string>
+
+    <string name="mike_refractive_errors_base">%s, você tem %s.\n\nContinue para ver sintomas comuns e curiosidades sobre o assunto</string>
+    <string name="mike_refractive_errors_none">Legal %s, você faz parte de uma privilegiada porcentagem no Brasil. Atualmente no país mais de 35 milhões de pessoas sofrem de algum problema de visão.\n\nContinue para ver mais curiosidades sobre o assunto.</string>
+    <string name="mike_refractive_errors_right_eye">%s no olho direito</string>
+    <string name="mike_refractive_errors_left_eye">%s no olho esquerdo</string>
+
+    <string name="dialog_curiosities_no_ametropy">Uma pesquisa do IBGE (Instituto Brasileiro de Geografia e Estatística) mostrou que no Brasil mais de 35 milhões de pessoas sofrem algum problema de visão (aproximadamente 19% da população). Em torno de 500 mil pessoas tiveram o diagnóstico de cegueira.</string>
+    <string name="dialog_symptoms_hypermetropia">Lacrimejamento, coceira, pestanejamento excessivo, dor de cabeça e dor nos olhos ao executar trabalhos que exigem maior tempo de dedicação e sonolência.</string>
+    <string name="dialog_curiosities_hypermetropia">Mais de 50% dos casos de ametropias (Miopia, Hipermetropia e Astigmatismo etc.) no mundo são casos de hipermetropia, mas como a maioria dos casos possui baixa “graduação” eles são compensados, sendo somente “visíveis” mediante a exames de vista ou quando a pessoa se aproxima dos 40 anos.</string>
+    <string name="dialog_symptoms_myopia">Míopes normalmente têm uma visão excelente de perto, mas possuem dificuldades para focar objetos distantes. Também há piora da acuidade visual a noite.</string>
+    <string name="dialog_curiosities_myopia">O uso excessivo da visão de perto, seja ele por leitura de livros, celulares ou a trabalho, gera nas pessoas a chamada “Pseudo Miopia”. Esse problema gera uma certa perda temporária ou permanente da acomodação do indivíduo.</string>
+    <string name="dialog_symptoms_astigmatism">Visão borrada, dificuldade de leitura, visão dupla, fotofobia (sensibilidade à luz), piora da acuidade visual à noite, dificuldade com foco em palavras e linhas impressas, tensão do olho, olhos cansados, dores de cabeça.</string>
+    <string name="dialog_curiosities_astigmatism">Um simples coçar dos olhos pode danificar a córnea e gerar problemas permanentes no indivíduo. Muitas vezes pessoas passam a adquirir o astigmatismo dessa forma. Sempre que sentir vontade de coçar, passe os dedos envolta do olhos e evite o contato direto.</string>
+    <string name="dialog_symptoms_presbyopia">Dificuldade na visão de perto, afastamento do objeto para melhora da visão, esforço ocular, sensação de cansaço ao tentar ler, dor de cabeça, olhos vermelhos e ardência.</string>
+    <string name="dialog_curiosities_presbyopia">Em indivíduos emétropes e hipermétropes a presbiopia se manifesta em torno dos 40 anos e é necessário óculos para leitura.</string>
+
+    <string name="hypermetropia">Hipermetropia</string>
+    <string name="myopia">Miopia</string>
+    <string name="astigmatism">Astigmatismo</string>
+    <string name="presbyopia">Presbiopia</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

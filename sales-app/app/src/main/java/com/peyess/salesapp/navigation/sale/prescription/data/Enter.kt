@@ -16,3 +16,9 @@ fun prescriptionDataScreenEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
         scaleIn()
 }
+
+@OptIn(ExperimentalAnimationApi::class)
+fun prescriptionDataSymptomsScreenEnterTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
+        scaleIn()
+}

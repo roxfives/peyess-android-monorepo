@@ -2,6 +2,7 @@ package com.peyess.salesapp.ui.component.footer
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Button
@@ -16,8 +17,10 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 @Composable
 fun PeyessNextStep(
     modifier: Modifier = Modifier,
-    canGoNext: Boolean = true,
+    startButton: @Composable () -> Unit = {},
+
     isLoadingConstraints: Boolean = false,
+    canGoNext: Boolean = true,
     onNext: () -> Unit = {},
 ) {
     Row(
@@ -25,6 +28,10 @@ fun PeyessNextStep(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
     ) {
+        startButton()
+
+        Spacer(modifier = Modifier.weight(1f))
+
         if (isLoadingConstraints) {
             CircularProgressIndicator(
                 modifier = Modifier

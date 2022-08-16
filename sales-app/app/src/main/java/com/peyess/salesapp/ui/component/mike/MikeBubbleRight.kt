@@ -34,7 +34,7 @@ fun MikeBubbleRight(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(3f)) {
+        Column(modifier = Modifier.height(IntrinsicSize.Max).weight(3f)) {
             ChatBubble(text = text)
         }
 

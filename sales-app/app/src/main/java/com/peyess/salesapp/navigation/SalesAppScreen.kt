@@ -14,6 +14,7 @@ enum class SalesAppScreens {
     SalePrescriptionLensType,
     SalePrescriptionPicture,
     SalePrescriptionData,
+    SalePrescriptionDataSymptoms,
     People,
     AddPerson,
     Frames,
@@ -36,6 +37,7 @@ enum class SalesAppScreens {
                 SalePrescriptionLensType.name -> SalePrescriptionLensType
                 SalePrescriptionPicture.name -> SalePrescriptionPicture
                 SalePrescriptionData.name -> SalePrescriptionData
+                SalePrescriptionDataSymptoms.name -> SalePrescriptionDataSymptoms
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People
@@ -63,6 +65,7 @@ enum class SalesAppScreens {
                 SalePrescriptionLensType.name -> "Vamos aos dados da sua receita"
                 SalePrescriptionPicture.name -> "Vamos aos dados da sua receita"
                 SalePrescriptionData.name -> "Vamos aos dados da sua receita"
+                SalePrescriptionDataSymptoms.name -> "Simtomas e Curiosidades"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

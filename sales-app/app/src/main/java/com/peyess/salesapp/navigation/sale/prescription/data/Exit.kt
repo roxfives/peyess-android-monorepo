@@ -15,3 +15,9 @@ fun prescriptionDataScreenExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
         scaleOut()
 }
+
+@OptIn(ExperimentalAnimationApi::class)
+fun prescriptionDataSymptomsScreenExitTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
+        scaleOut()
+}

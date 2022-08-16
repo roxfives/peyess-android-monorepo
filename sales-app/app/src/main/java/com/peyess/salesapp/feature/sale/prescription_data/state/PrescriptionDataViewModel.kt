@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.prescription_data.state
 
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
@@ -25,7 +26,7 @@ const val maxSpherical = 25.0
 
 const val stepCylindrical = defaultStep
 const val minCylindrical = -9.0
-const val maxCylindrical = -0.25
+const val maxCylindrical = 0.0
 
 const val stepAxis = 10.0
 const val minAxis = 0.0
@@ -53,9 +54,15 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         loadHasAddition()
         loadMikeMessage()
         loadInitPrescriptionData()
+        loadClientName()
+        loadLensTypeCategory()
 
         onEach(PrescriptionDataState::hasAddition) {
             updateHasAddition(it)
+        }
+
+        onEach {
+            mikeMessageAmetropie()
         }
     }
 
@@ -68,6 +75,15 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             }
     }
 
+    private fun loadLensTypeCategory() = withState {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .map { it.lensTypeCategoryName }
+            .execute(Dispatchers.IO) {
+                copy(lensTypeCategoryName = it)
+            }
+    }
+
     private fun loadMikeMessage() = withState {
         saleRepository.activeSO()
             .filterNotNull()
@@ -75,8 +91,15 @@ class PrescriptionDataViewModel @AssistedInject constructor(
                 mikeMessageFor(it.lensTypeCategoryName)
             }
             .execute(Dispatchers.IO) {
-                copy(mikeMessage = it)
+                copy(mikeMessageTop = it)
             }
+    }
+
+    private fun loadClientName() = withState {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .map { it.clientName }
+            .execute { copy(clientName = it) }
     }
 
     private fun mikeMessageFor(categoryName: LensTypeCategoryName?): String {
@@ -86,6 +109,80 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             LensTypeCategoryName.Near -> salesApplication.stringResource(R.string.mike_message_near)
             null -> salesApplication.stringResource(R.string.mike_message_default)
         }
+    }
+
+    private fun mikeMessageAmetropie() = withState {
+        Timber.i("Using type ${it.lensTypeCategoryName}")
+
+        val SEPARATOR = " com "
+        val AND = " e "
+
+        var stringBuilder = StringBuilder()
+        val baseMessage: String = salesApplication.getString(R.string.mike_refractive_errors_base)
+        var leftEyeErrors = ""
+        var rightEyeErrors = ""
+        var eyeErrors = ""
+
+        val leftErrors: MutableList<String> = ArrayList()
+        val rightErrors: MutableList<String> = ArrayList()
+
+        if (it.hasHypermetropiaLeft) {
+            leftErrors.add(salesApplication.getString(R.string.hypermetropia))
+        }
+        if (it.hasMyopiaLeft) {
+            leftErrors.add(salesApplication.getString(R.string.myopia))
+        }
+        if (it.hasAstigmatismLeft) {
+            leftErrors.add(salesApplication.getString(R.string.astigmatism))
+        }
+        if (it.hasPresbyopiaLeft) {
+            leftErrors.add(salesApplication.getString(R.string.presbyopia))
+        }
+
+        if (it.hasHypermetropiaRight) {
+            rightErrors.add(salesApplication.getString(R.string.hypermetropia))
+        }
+        if (it.hasMyopiaRight) {
+            rightErrors.add(salesApplication.getString(R.string.myopia))
+        }
+        if (it.hasAstigmatismRight) {
+            rightErrors.add(salesApplication.getString(R.string.astigmatism))
+        }
+        if (it.hasPresbyopiaRight) {
+            rightErrors.add(salesApplication.getString(R.string.presbyopia))
+        }
+
+        if (leftErrors.size > 0) {
+            for (i in 0 until leftErrors.size - 1) {
+                stringBuilder.append(leftErrors[i])
+                stringBuilder.append(SEPARATOR)
+            }
+            stringBuilder.append(leftErrors[leftErrors.size - 1])
+            leftEyeErrors = stringBuilder.toString()
+            leftEyeErrors = salesApplication.getString(R.string.mike_refractive_errors_left_eye).format(leftEyeErrors)
+            rightEyeErrors = AND
+        }
+
+        if (rightErrors.size > 0) {
+            stringBuilder = StringBuilder()
+            for (i in 0 until rightErrors.size - 1) {
+                stringBuilder.append(rightErrors[i])
+                stringBuilder.append(SEPARATOR)
+            }
+            stringBuilder.append(rightErrors[rightErrors.size - 1])
+            rightEyeErrors += stringBuilder.toString()
+            rightEyeErrors = salesApplication.getString(R.string.mike_refractive_errors_right_eye).format(rightEyeErrors)
+        }
+
+        eyeErrors = leftEyeErrors + rightEyeErrors
+        val clientName = if (it.clientName is Success) it.clientName.invoke() else "cliente"
+        val message = if (eyeErrors == "") {
+            salesApplication.getString(R.string.mike_refractive_errors_none).format(clientName)
+        } else {
+            baseMessage.format(clientName, eyeErrors)
+        }
+
+        setState { copy(mikeMessageAmetropies = message) }
     }
 
     private fun loadInitPrescriptionData() = withState {

@@ -110,7 +110,7 @@ private fun PrescriptionDataSymptomsScreenImpl(
                 modifier = Modifier.height(mikeHeight),
                 text = mikeMessageAmetropies,
             )
-            
+
             Spacer(modifier = Modifier.weight(1f))
         }
 

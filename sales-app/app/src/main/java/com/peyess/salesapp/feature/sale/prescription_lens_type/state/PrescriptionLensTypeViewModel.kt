@@ -43,8 +43,6 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun loadDefaultMessage() = withState {
-        Timber.i("Calling mother fucker")
-
         salesRepository
             .activeSO()
             .filterNotNull()
@@ -69,17 +67,19 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
     }
 
     private fun updateMikeText() = withState {
-        val text: String?
+        var text: String?
 
         if (it.lensCategories is Success && it.typeIdPicked.isNotEmpty()) {
             text = it.lensCategories.invoke()
                 .find {  l -> l.id == it.typeIdPicked }
                 ?.explanation
 
+            text = text ?: salesApplication
+                .stringResource(R.string.mike_lens_type_default)
+
             setState {
                 copy(
-                    mikeText = Success(text ?: salesApplication
-                        .stringResource(R.string.mike_lens_type_default)),
+                    mikeText = Success(text.format(it.activeSO.invoke()?.clientName ?: "cliente")),
                 )
             }
         }
@@ -125,29 +125,6 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
             copy(typeIdPicked = "")
         }
     }
-
-//    fun updateSale() = withState { state ->
-//        salesRepository.activeSO()
-//            .take(1)
-//            .map {
-////                salesRepository
-////                    .updateSO(it.copy(isLensTypeMono = state.typeCategoryPicked?.isMono ?: true))
-//            }
-//            .execute(Dispatchers.IO) {
-//                val attemptedNext = if (it is Success) {
-//                    this.goNextAttempts + 1
-//                } else {
-//                    this.goNextAttempts
-//                }
-//
-//                Timber.i("Current attempts ${attemptedNext}]")
-//
-//                copy(
-//                    hasUpdatedSale = true,
-//                    goNextAttempts = attemptedNext
-//                )
-//            }
-//    }
 
     fun onNext() = setState {
         copy(hasUpdatedSale = false)

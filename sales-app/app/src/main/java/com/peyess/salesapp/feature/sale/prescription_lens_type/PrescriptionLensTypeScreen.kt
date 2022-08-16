@@ -46,21 +46,6 @@ fun PrescriptionLensTypeScreen(
 
     val canGoNext by viewModel.collectAsState(PrescriptionLensTypeState::canGoNext)
 
-//    val hasUpdatedSale by viewModel.collectAsState(PrescriptionLensTypeState::hasUpdatedSale)
-//    val hasGoneNext = remember {
-//        mutableStateOf(false)
-//    }
-//    if (hasUpdatedSale) {
-//        LaunchedEffect(Unit) {
-//            if (!hasGoneNext.value) {
-//                viewModel.onNext()
-//                onNext()
-//
-//                hasGoneNext.value = true
-//            }
-//        }
-//    }
-
     PrescriptionTypeScreenImpl(
         modifier = modifier,
         mikeText = mikeText,

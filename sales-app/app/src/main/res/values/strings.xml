@@ -150,6 +150,15 @@
     <string name="frames_data">Entre com os demais dados das armação escolhida</string>
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
 
+    <!--  UI Component: Frames measure  -->
+    <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>
+    <string name="camera_access_required">Não é possível utilizar o aplicativo sem dar acesso à câmera</string>
+
+    <string name="measure_invalid_middle_check">Centralize a haste do parâmetro com o meio da ponte conforme o exemplo animado</string>
+
+    <string name="measure_invalid_middle_check_retry">Voltar</string>
+    <string name="measure_invalid_middle_check_cancel">Tirar outra foto</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

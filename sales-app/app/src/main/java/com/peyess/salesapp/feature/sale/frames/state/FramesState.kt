@@ -10,6 +10,7 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 sealed class Eye {
     object Left: Eye()
     object Right: Eye()
+    object None: Eye()
 }
 
 data class FramesState(

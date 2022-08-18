@@ -104,7 +104,10 @@ private fun FramesLandingScreenImpl(
         )
         Spacer(modifier = Modifier.height(32.dp))
 
-        FramesMeasure()
+        FramesMeasure(
+            onMeasureLeft = {onAddMeasure(Eye.Left)},
+            onMeasureRight = {onAddMeasure(Eye.Right)},
+        )
 
         Spacer(modifier = Modifier.weight(1f))
         PeyessNextStep(
@@ -213,7 +216,7 @@ private fun FramesMeasure(
                 .weight(1f)
                 .clickable { onMeasureLeft() },
             title = stringResource(id = R.string.measure_left_eye),
-            iconId = R.drawable.ic_measure_right_eye,
+            iconId = R.drawable.ic_measure_left_eye,
         )
     }
 }

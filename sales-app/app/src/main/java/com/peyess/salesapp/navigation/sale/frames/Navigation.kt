@@ -10,6 +10,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.landing.Landing
 import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
 import com.peyess.salesapp.feature.sale.frames.SetFramesScreen
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -27,7 +28,16 @@ fun buildFramesNavGraph(
         FramesLandingScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),
-            onAddFrames = { navHostController.navigate(SalesAppScreens.SetFramesData.name) }
+            onAddFrames = { navHostController.navigate(SalesAppScreens.SetFramesData.name) },
+            onAddMeasure = {
+                val eyeParam = if (it is Eye.Left) {
+                    "left"
+                } else {
+                    "right"
+                }
+
+                navHostController.navigate("${SalesAppScreens.FramesLanding.name}/${eyeParam}")
+            }
         ) {
             navHostController.navigate(SalesAppScreens.Home.name)
         }

@@ -9,6 +9,7 @@ import com.peyess.salesapp.feature.authentication_user.screen.authentication.sta
 import com.peyess.salesapp.feature.authentication_user.screen.local_password.state.LocalPasswordViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
+import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
@@ -89,5 +90,12 @@ interface ViewModelsModule {
     @ViewModelKey(FramesViewModel::class)
     fun bindFramesViewModelFactory(
         factory: FramesViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FramesMeasureViewModel::class)
+    fun bindFramesMeasureViewModelFactory(
+        factory: FramesMeasureViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

@@ -39,9 +39,9 @@ import timber.log.Timber
 fun LandingAnimationHelperScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
-    onNext: () -> Unit = {},
+    onNext: (eye: Eye) -> Unit = {},
 ) {
-    val eye = remember { mutableStateOf<Eye>(Eye.None)}
+    val eye = remember { mutableStateOf<Eye?>(Eye.None)}
     val eyeParameter = navHostController.currentBackStackEntry
         ?.arguments
         ?.getString("eye")
@@ -52,13 +52,13 @@ fun LandingAnimationHelperScreen(
     }
 
     when (eye.value) {
-        is Eye.None ->
+        is Eye.None, null ->
             PeyessProgressIndicatorInfinite()
         else ->
             LandingAnimationHelperImpl(
                 modifier = modifier,
-                eye = eye.value,
-                onClick = onNext,
+                eye = eye.value!!,
+                onClick = { onNext(eye.value!!) },
             )
     }
 }

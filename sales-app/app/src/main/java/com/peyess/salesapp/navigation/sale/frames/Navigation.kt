@@ -36,7 +36,7 @@ fun buildFramesNavGraph(
                     "right"
                 }
 
-                navHostController.navigate("${SalesAppScreens.FramesLanding.name}/${eyeParam}")
+                navHostController.navigate("${SalesAppScreens.FramesMeasureAnimation.name}/${eyeParam}")
             }
         ) {
             navHostController.navigate(SalesAppScreens.Home.name)

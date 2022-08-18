@@ -11,6 +11,7 @@ hilt {
 
 
 dependencies {
+    implementation("com.google.android.material:material:1.6.1")
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
@@ -23,11 +24,10 @@ dependencies {
     val androidCrypto = rootProject.ext["android_crypto"]
     val roomVersion = rootProject.ext["room_version"]
     val workVersion = rootProject.ext["work_version"]
+    val cameraxVersion = rootProject.ext["camerax_version"]
+    val zoomLayoutVersion = rootProject.ext["zoom_layout_version"]
 
     val materialDialogs = rootProject.ext["material_dialogs"]
-
-
-
 
     val implementation by configurations.implementation
     val testImplementation by configurations.testImplementation
@@ -94,23 +94,30 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:$workVersion")
     androidTestImplementation("androidx.work:work-testing:$workVersion")
 
-
-
     // Hilt
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-work:1.0.0")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
-
-
-
     // Hilt instrumentation tests
     androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kaptAndroidTest("com.google.dagger:hilt-compiler:$hiltVersion")
-
     // Hilt local unit tests
     testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
     kaptTest("com.google.dagger:hilt-compiler:$hiltVersion")
+
+    // CameraX
+    implementation("androidx.camera:camera-core:${cameraxVersion}")
+    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+    // If you want to additionally use the CameraX Lifecycle library
+    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+    // If you want to additionally use the CameraX View class
+    implementation("androidx.camera:camera-view:${cameraxVersion}")
+    // If you want to additionally use the CameraX Extensions library
+    implementation("androidx.camera:camera-extensions:${cameraxVersion}")
+
+    // ML Kit
+    implementation("com.google.android.gms:play-services-mlkit-face-detection:16.2.0")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:$firebaseBOM"))
@@ -119,6 +126,9 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
 
     // Misc libs ----------------------------------------------------------------------------------
+
+    // Zoom layout
+    implementation("com.otaliastudios:zoomlayout:$zoomLayoutVersion")
 
     // Decent dialogs
     implementation("io.github.vanpra.compose-material-dialogs:datetime:$materialDialogs")

@@ -128,6 +128,28 @@
     <string name="astigmatism">Astigmatismo</string>
     <string name="presbyopia">Presbiopia</string>
 
+    <!-- UI Component: Frames data   -->
+    <string name="ib_message_less_than_3_5">Armações mais planas possiveis (Evite Nylon)</string>
+    <string name="ib_message_between_3_5_and_5">Armações mais planas</string>
+    <string name="ib_message_between_5_and_8">Armações pouco curvadas</string>
+    <string name="ib_message_greater_then_8">Armações um pouco mais curvadas (Evite Nylon)</string>
+
+    <string name="own_frames">Aro próprio</string>
+    <string name="new_frames">Aro novo</string>
+    <string name="frames_title_optical_curvature">O ideal para você</string>
+    <string name="measure_screen_ib">Base Ideal</string>
+    <string name="frames_curvature">Curva do aro</string>
+    <string name="measure_left_eye">Medir O.E.</string>
+    <string name="measure_right_eye">Medir O.D.</string>
+
+    <string name="frames_description">Descrição</string>
+    <string name="frames_reference">Referência</string>
+    <string name="frames_value">Valor</string>
+    <string name="frames_tag_code">Código da etiqueta</string>
+    <string name="frames_type">Selecione o tipo da armação abaixo</string>
+    <string name="frames_data">Entre com os demais dados das armação escolhida</string>
+    <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

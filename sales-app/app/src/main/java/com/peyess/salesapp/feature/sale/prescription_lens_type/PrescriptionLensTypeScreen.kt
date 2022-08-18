@@ -126,7 +126,7 @@ private fun LensTypeCategories(
             .padding(26.dp),
         keepSameWidth = true,
         items = categories,
-        itemName = { it.name },
+        itemName = { it?.name ?: "" },
         selected = selected,
         onSelectedChanged = onSelectChanged,
     )

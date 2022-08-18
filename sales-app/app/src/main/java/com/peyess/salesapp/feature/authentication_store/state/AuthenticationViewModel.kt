@@ -28,7 +28,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     private val authenticationRepository: AuthenticationRepository
 ): MavericksViewModel<AuthenticationState>(initialState) {
     private val storeFirebaseApp by lazy { authenticationRepository.storeFirebaseApp() }
-    private val noCacheFirebaseApp by lazy { authenticationRepository.storeFirebaseApp() }
+    private val noCacheFirebaseApp by lazy { authenticationRepository.noCacheFirebaseApp() }
 
     init {
         setState {
@@ -96,6 +96,7 @@ class AuthenticationViewModel @AssistedInject constructor(
     }
 
     fun signIn() = withState {
+        Timber.i("Current authState is $it")
         if (it.authState is Loading) {
             return@withState
         }
@@ -108,6 +109,7 @@ class AuthenticationViewModel @AssistedInject constructor(
         }
 
         if (it.username.isEmpty() || !isEmailValid(it.username) || it.password.isEmpty()) {
+            Timber.i("Invalid credentials")
             setState {
                 copy(
                     authError = AuthenticationError.InvalidCredentials,
@@ -131,6 +133,7 @@ class AuthenticationViewModel @AssistedInject constructor(
         )
 
         authenticateStoreFlow.zip(authenticateStoreNoCache) { authCache, authNoCache ->
+            Timber.i("Authenticating store. Cache: $authCache, noCache: $authNoCache")
             if (authCache == StoreAuthState.Authenticated
                 && authNoCache == StoreAuthState.Authenticated) {
 
@@ -138,19 +141,11 @@ class AuthenticationViewModel @AssistedInject constructor(
             } else {
                 StoreAuthState.Unauthenticated
             }
-        }.execute {
+        }
+        .execute { authState ->
             Timber.i("Current auth state: ${authState}")
             copy(authState = authState)
         }
-
-
-//        authenticateStore(
-//            email = it.username,
-//            password = it.password,
-//            firebaseApp = storeFirebaseApp!!
-//        ).execute { authState ->
-//
-//        }
     }
 
     // DI - Hilt

@@ -7,18 +7,14 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.feature.sale.prescription_data.state.maxAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.maxCylindrical
 import com.peyess.salesapp.feature.sale.prescription_data.state.maxPrismAxis
 import com.peyess.salesapp.feature.sale.prescription_data.state.minAddition
 import com.peyess.salesapp.feature.sale.prescription_data.state.minAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.minCylindrical
 import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismAxis
 import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismDegree
-import com.peyess.salesapp.feature.sale.prescription_data.state.minSpherical
 import kotlin.math.absoluteValue
 import kotlin.math.floor
 import kotlin.math.max
-import kotlin.math.min
 
 sealed class PrismPosition {
     object None: PrismPosition()
@@ -97,6 +93,34 @@ data class PrescriptionDataEntity(
 ) {
     companion object {
         const val tableName = "prescription_data"
+        const val idealBaseThreshold = 6.0
+    }
+}
+
+fun PrescriptionDataEntity.idealBaseLeft(): Double {
+    return if (cylindricalLeft != 0.0) {
+        (18.0 + (2.0 * sphericalLeft) + cylindricalLeft) / 3.0
+    } else {
+        (sphericalLeft + 12.0) / 2.0
+    }
+}
+
+fun PrescriptionDataEntity.idealBaseRight(): Double {
+    return if (cylindricalRight != 0.0) {
+        (18.0 + (2.0 * sphericalRight) + cylindricalRight) / 3.0
+    } else {
+        (sphericalRight + 12.0) / 2.0;
+    }
+}
+
+fun PrescriptionDataEntity.prevalentIdealBase(): Double {
+    val maxIdealBase = idealBaseLeft().coerceAtLeast(idealBaseRight())
+    val minIdealBase = idealBaseLeft().coerceAtMost(idealBaseRight())
+
+    return if (maxIdealBase > PrescriptionDataEntity.idealBaseThreshold) {
+        maxIdealBase
+    } else {
+        minIdealBase
     }
 }
 

@@ -31,7 +31,7 @@ class MainActivity: ComponentActivity() {
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_SalesApp)
+//        setTheme(R.style.Theme_SalesApp)
         super.onCreate(savedInstanceState)
 
         setContent {

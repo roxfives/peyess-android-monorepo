@@ -19,6 +19,7 @@ import com.peyess.salesapp.utils.string.isEmailValid
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.flow.filterNotNull
 import timber.log.Timber
 
 class UserAuthViewModel @AssistedInject constructor(
@@ -63,7 +64,7 @@ class UserAuthViewModel @AssistedInject constructor(
     }
 
     private fun loadActiveCollaborator() = withState {
-        authenticationRepository.currentUser().execute {
+        authenticationRepository.currentUser().filterNotNull().execute {
             Timber.i("Current user", it)
 
             copy(currentUser = it)

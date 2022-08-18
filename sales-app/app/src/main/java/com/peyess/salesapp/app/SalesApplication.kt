@@ -8,6 +8,7 @@ import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import java.io.InputStream
 import javax.inject.Inject
 
 @HiltAndroidApp

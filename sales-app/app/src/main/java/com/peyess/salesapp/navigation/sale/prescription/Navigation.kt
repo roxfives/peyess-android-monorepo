@@ -68,7 +68,7 @@ fun buildPrescriptionScreenNavGraph(
                 navHostController.navigate(SalesAppScreens.SalePrescriptionDataSymptoms.name)
             }
         ) {
-            navHostController.navigate(SalesAppScreens.Home.name)
+            navHostController.navigate(SalesAppScreens.FramesLanding.name)
         }
     }
 

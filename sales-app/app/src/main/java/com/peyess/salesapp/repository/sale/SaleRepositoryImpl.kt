@@ -13,6 +13,8 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.dao.sale.frames.FramesDataDao
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
@@ -37,6 +39,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val lensTypeCategoryDao: LensTypeCategoryDao,
     private val prescriptionPictureDao: PrescriptionPictureDao,
     private val prescriptionDataDao: PrescriptionDataDao,
+    private val framesDataDao: FramesDataDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -124,6 +127,19 @@ class SaleRepositoryImpl @Inject constructor(
         return activeSO().filterNotNull().flatMapLatest { so ->
             prescriptionDataDao.getById(so.id).map {
                 it ?: PrescriptionDataEntity(soId = so.id)
+            }
+        }
+    }
+
+    override fun updateFramesData(frames: FramesEntity) {
+        framesDataDao.update(frames)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun currentFramesData(): Flow<FramesEntity> {
+        return activeSO().filterNotNull().flatMapLatest { so ->
+            framesDataDao.getById(so.id).map {
+                it ?: FramesEntity(soId = so.id)
             }
         }
     }

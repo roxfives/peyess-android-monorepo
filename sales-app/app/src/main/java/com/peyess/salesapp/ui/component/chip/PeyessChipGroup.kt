@@ -23,7 +23,7 @@ fun <T> PeyessChipGroup(
     modifier: Modifier = Modifier,
     keepSameWidth: Boolean = true,
     items: List<T> = emptyList(),
-    itemName: (T) -> String = { "" },
+    itemName: (T?) -> String = { "" },
     selected: T? = null,
     onSelectedChanged: (String) -> Unit = {},
 ) {

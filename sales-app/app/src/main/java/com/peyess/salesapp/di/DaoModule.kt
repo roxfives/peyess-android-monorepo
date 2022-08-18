@@ -21,6 +21,7 @@ import com.peyess.salesapp.dao.products.room.local_lens_disp_manufacturer.LocalL
 import com.peyess.salesapp.dao.products.room.local_lens_material_type.LocalLensMaterialTypeDao
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
+import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
@@ -156,5 +157,11 @@ object DaoModule {
     @Provides
     fun providePrescriptionDataDao(saleDatabase: ActiveSalesDatabase): PrescriptionDataDao {
         return saleDatabase.prescriptionDataDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFramesDataDao(saleDatabase: ActiveSalesDatabase): FramesDataDao {
+        return saleDatabase.framesDataDao()
     }
 }

@@ -96,14 +96,23 @@ data class FramesEntity(
 }
 
 fun FramesEntity.hasPotentialProblemsWith(prescriptionData: PrescriptionDataEntity): Boolean {
-    val hasProblemsOnLeft =
-        (prescriptionData.sphericalLeft >= -4.0) &&
-                ((prescriptionData.axisLeft <= 30.0 || prescriptionData.axisLeft == 180.0) ||
-                        prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft >= -4.0)
+//    val hasProblemsOnLeft =
+//        (prescriptionData.sphericalLeft <= -4.0) ||
+//                ((prescriptionData.axisLeft <= 30.0 || prescriptionData.axisLeft == 180.0) &&
+//                        prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft <= -4.0)
+//
+//    val hasProblemsOnRight = (prescriptionData.sphericalRight <= -4.0) ||
+//            ((prescriptionData.axisRight >= 150.0 || prescriptionData.axisRight == 0.0) &&
+//                    prescriptionData.sphericalRight + prescriptionData.cylindricalRight <= -4.0)
 
-    val hasProblemsOnRight = (prescriptionData.sphericalRight >= -4.0) &&
-            ((prescriptionData.axisRight >= 150.0 || prescriptionData.axisRight == 0.0) ||
-                    prescriptionData.sphericalRight + prescriptionData.cylindricalRight >= -4.0)
+
+    val hasProblemsOnLeft = prescriptionData.sphericalLeft <= -4.0
+            || prescriptionData.sphericalLeft >= 4.0
+            || prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft <= -4.0
+
+    val hasProblemsOnRight = prescriptionData.sphericalRight <= -4.0
+            || prescriptionData.sphericalRight >= 4.0
+            || prescriptionData.sphericalRight + prescriptionData.cylindricalRight <= -4.0
 
     return hasProblemsOnLeft || hasProblemsOnRight
 }

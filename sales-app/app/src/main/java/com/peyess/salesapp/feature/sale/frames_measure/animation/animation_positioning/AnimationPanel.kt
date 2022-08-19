@@ -20,6 +20,7 @@ import com.otaliastudios.zoom.ZoomEngine
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.ui.theme.PeyessBlue
+import timber.log.Timber
 import java.lang.Exception
 
 @SuppressLint("ViewConstructor")
@@ -45,6 +46,7 @@ class AnimationPanel(
         super.draw(canvas)
 
         if (mImageBackground == null) {
+            Timber.e("Image uri is null")
             return
         }
 

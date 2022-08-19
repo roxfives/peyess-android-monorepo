@@ -10,6 +10,7 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.Positi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class HorizontalRect(
     positioningMediator: PositioningMediator,
@@ -52,6 +53,8 @@ class HorizontalRect(
 
     override fun drawActive(canvas: Canvas) {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+        Timber.i("Drawing active at pointTop: $pointTop\n" + "pointBottom: $pointBottom\n" + "length: $length\n" + "rotation: $rotation")
 
         paint.color = positioningMediator.activeColorId
         paint.style = Paint.Style.STROKE

@@ -28,7 +28,7 @@ const val stepCylindrical = defaultStep
 const val minCylindrical = -9.0
 const val maxCylindrical = 0.0
 
-const val stepAxis = 10.0
+const val stepAxis = 5.0 // 10.0
 const val minAxis = 0.0
 const val maxAxis = 180.0
 
@@ -40,8 +40,8 @@ const val stepPrismDegree = 1.0
 const val minPrismDegree = 1.0
 const val maxPrismDegree = 45.0
 
-const val stepPrismAxis = 10.0
-const val minPrismAxis = 1.0
+const val stepPrismAxis = 5.0 // 10.0
+const val minPrismAxis = 0.0 // 1.0
 const val maxPrismAxis = 360.0
 
 class PrescriptionDataViewModel @AssistedInject constructor(

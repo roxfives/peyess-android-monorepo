@@ -5,6 +5,12 @@ import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
+import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactory
+import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactoryImpl
+import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.MediatorFactory
+import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.MediatorFactoryImpl
+import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactory
+import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,5 +50,26 @@ object AppModule {
         )
             .fallbackToDestructiveMigration()
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediatorFactory(): MediatorFactory {
+        return MediatorFactoryImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMeasuringParameterFactory(): MeasuringParameterFactory {
+        return MeasuringParameterFactoryImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnimationParametersFactory(
+        measuringParameterFactory: MeasuringParameterFactory,
+        mediatorParameterFactory: MediatorFactory,
+    ): AnimationParametersFactory {
+        return AnimationParametersFactoryImpl(measuringParameterFactory, mediatorParameterFactory)
     }
 }

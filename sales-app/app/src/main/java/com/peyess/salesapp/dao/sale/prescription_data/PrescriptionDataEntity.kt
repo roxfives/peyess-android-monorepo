@@ -25,7 +25,7 @@ sealed class PrismPosition {
     object Axis: PrismPosition()
 
     companion object {
-        val listOfPositions = listOf(
+        val listOfPositions: List<PrismPosition?> = listOf(
             None,
             Nasal,
             Temporal,

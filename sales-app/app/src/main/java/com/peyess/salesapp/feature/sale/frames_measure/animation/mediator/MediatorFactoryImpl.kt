@@ -1,15 +1,11 @@
 package com.peyess.salesapp.feature.sale.frames_measure.animation.mediator
 
-import com.airbnb.mvrx.compose.collectAsState
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
-import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.VerticalMediatorImpl
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 
-@ExperimentalCoroutinesApi
 class MediatorFactoryImpl : MediatorFactory {
     override fun mediatorFor(
         parameter: Parameter,

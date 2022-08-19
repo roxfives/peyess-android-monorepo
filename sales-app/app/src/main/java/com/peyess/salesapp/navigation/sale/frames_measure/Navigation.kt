@@ -12,6 +12,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.frames_measure.LandingAnimationHelperScreen
+import com.peyess.salesapp.feature.sale.frames_measure.MeasureFramesScreen
 import com.peyess.salesapp.feature.sale.frames_measure.TakePictureScreen
 import com.peyess.salesapp.navigation.sale.frames_measure.landing.landingAnimationEnterTransition
 import com.peyess.salesapp.navigation.sale.frames_measure.landing.landingAnimationExitTransition
@@ -69,21 +70,28 @@ fun buildFramesMeasureNavGraph(
                 "right"
             }
 
-            navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam")
+            navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam") {
+                popUpTo("${SalesAppScreens.FramesMeasureAnimation.name}/{eye}") {
+                    inclusive = false
+                }
+            }
         }
     }
 
 
     builder.composable(
-        route = SalesAppScreens.FramesMeasure.name,
+        route = "${SalesAppScreens.FramesMeasure.name}/{eye}",
+        arguments = listOf(
+            navArgument("eye") { type = NavType.StringType }
+        ),
         enterTransition = measureFramesEnterTransition(),
         exitTransition = measureFramesExitTransition()
     ) {
-//        LandingAnimationHelperScreen(
-//            modifier = modifier
-//                .padding(SalesAppTheme.dimensions.screen_offset),
-//        ) {
-//            navHostController.navigate(SalesAppScreens.FramesMeasureTakePicture.name)
-//        }
+        MeasureFramesScreen(
+            modifier = modifier.fillMaxSize(),
+            navHostController = navHostController,
+        ) {
+            navHostController.popBackStack()
+        }
     }
 }

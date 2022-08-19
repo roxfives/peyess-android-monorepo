@@ -13,7 +13,7 @@
     <string name="title">Peyess</string>
 
     <!--  UI Component: AuthScreen  -->
-    <string name="label_username_input">Entre com o e-mail da loja</string>
+    <string name="label_username_input">Entre usando o e-mail da loja</string>
     <string name="label_password_input">Digite a senha criada para conta da loja</string>
     <string name="placeholder_username_input">loja.calcadao@diniz.com.br</string>
     <string name="btn_sign_in_store">Entrar na loja</string>
@@ -26,11 +26,11 @@
 
     <!--  UI Component: userAuthScreen  -->
     <string name="short_address">$1s, $2s</string>
-    <string name="message_local_sign_in">Entre com a senha mais simples que criou para acessar esse dispositivo</string>
-    <string name="message_regular_sign_in">Entre com a mesma senha que criou ao acessar o nosso site</string>
+    <string name="message_local_sign_in">Use a senha mais simples que criou para acessar esse dispositivo</string>
+    <string name="message_regular_sign_in">Use a mesma senha que criou ao acessar o nosso site</string>
     <string name="btn_enter">Entrar na loja</string>
     <string name="btn_reset_passcode">Alterar senha local</string>
-    <string name="label_user_email">Entre com o email que usou em nosso sistema</string>
+    <string name="label_user_email">Entre usando o email que usou em nosso sistema</string>
     <string name="placeholder_user_email">aline.souza@gmail.com</string>
     <string name="label_user_passcode">Digite a senha que criou para esse dispositivio</string>
     <string name="dialog_title_reset_passcode">Realmente deseja alterar a sua senha local?</string>
@@ -92,10 +92,10 @@
     <string name="dialog_select_prism_axis_ok">Selecionar</string>
     <string name="dialog_select_prism_axis_cancel">Cancear</string>
 
-    <string name="mike_message_far">Entre com o seu grau para Longe</string>
-    <string name="mike_message_near">Entre com o seu grau para Perto</string>
-    <string name="mike_message_multi">Entre com o seu grau Multifocal</string>
-    <string name="mike_message_default">Entre com o grau da sua receita</string>
+    <string name="mike_message_far">Coloque o seu grau para Longe</string>
+    <string name="mike_message_near">Coloque o seu grau para Perto</string>
+    <string name="mike_message_multi">Coloque o seu grau Multifocal</string>
+    <string name="mike_message_default">Coloque o grau da sua receita</string>
 
     <string name="dialog_curiosities_title_no_ametropy">Sem ametropias</string>
     <string name="dialog_curiosities_title_hypermetropia">Hipermetropia</string>
@@ -142,12 +142,12 @@
     <string name="measure_left_eye">Medir O.E.</string>
     <string name="measure_right_eye">Medir O.D.</string>
 
-    <string name="frames_description">Descrição</string>
+    <string name="frames_description">Grife</string>
     <string name="frames_reference">Referência</string>
     <string name="frames_value">Valor</string>
     <string name="frames_tag_code">Código da etiqueta</string>
     <string name="frames_type">Selecione o tipo da armação abaixo</string>
-    <string name="frames_data">Entre com os demais dados das armação escolhida</string>
+    <string name="frames_data">Digite os demais dados das armação escolhida</string>
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
 
     <!--  UI Component: Frames measure  -->

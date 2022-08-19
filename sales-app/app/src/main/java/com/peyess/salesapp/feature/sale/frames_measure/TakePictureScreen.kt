@@ -72,6 +72,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
@@ -85,6 +86,8 @@ import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewMo
 import com.peyess.salesapp.feature.sale.frames_measure.state.HeadState
 import com.peyess.salesapp.feature.sale.frames_measure.state.HelperZoomState
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
+import com.peyess.salesapp.utils.device.infoAboutDevice
+import com.peyess.salesapp.utils.extentions.activity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -100,6 +103,8 @@ fun TakePictureScreen(
     navHostController: NavHostController = rememberNavController(),
     onNext: (eye: Eye) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     val eye = remember { mutableStateOf<Eye>(Eye.None) }
     val eyeParameter = navHostController.currentBackStackEntry
         ?.arguments
@@ -110,9 +115,10 @@ fun TakePictureScreen(
         eye.value = if (eyeParameter == "left") Eye.Left else Eye.Right
     }
 
-    val viewModel: FramesMeasureViewModel = mavericksViewModel()
+    val viewModel: FramesMeasureViewModel = mavericksActivityViewModel()
 
     val headState by viewModel.collectAsState(FramesMeasureState::takingHeadState)
+    val helperZoomState by viewModel.collectAsState(FramesMeasureState::takingHeadZoomState)
 
     when (eye.value) {
         is Eye.None ->
@@ -123,7 +129,27 @@ fun TakePictureScreen(
                 eye = eye.value,
 
                 headState = headState,
+                helperZoomState = helperZoomState,
+                onHelperClick = viewModel::onTakingPictureHelperClicked,
                 onHeadTaken = viewModel::onHeadTaken,
+
+//                cameraSetUpState = viewState.value.cameraSetUpState,
+                onCancelImageCapture = {
+                    // TODO: Move to navigation
+                    navHostController.popBackStack()
+                },
+                onImageSaved = { uri, rotation ->
+                    Timber.i("Using uri $uri with rotation $rotation")
+
+                    if (uri != null) {
+                        val info = infoAboutDevice(context.activity())
+
+                        viewModel.onImageCaptured(uri, rotation.toDouble(), info)
+                        onNext(eye.value)
+                    } else {
+                        Timber.e("Failed while taking picture, Uri is null")
+                    }
+                },
             )
     }
 }
@@ -443,6 +469,7 @@ fun TakePictureScreenImpl(
                         .zIndex(2f),
                     enabled = true, // takingHeadState == HeadState.LookingForward,
                     onClick = {
+                        Timber.i("Starting to take picture")
                         val timeStamp = SimpleDateFormat(
                             "yyyyMMdd_HHmmss",
                             Locale.getDefault()
@@ -454,6 +481,7 @@ fun TakePictureScreenImpl(
                             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                         )
 
+                        Timber.i("Taking picture")
                         imageCapture.takePicture(
                             ImageCapture.OutputFileOptions
                                 .Builder(fileImage)
@@ -464,6 +492,9 @@ fun TakePictureScreenImpl(
                                     outputFileResults: ImageCapture.OutputFileResults
                                 ) {
                                     cameraProviderFuture.get().unbindAll()
+                                    cameraProviderFuture.get().shutdown()
+
+                                    Timber.i("On image save at ${outputFileResults.savedUri}")
                                     onImageSaved(outputFileResults.savedUri, 0)
                                 }
 

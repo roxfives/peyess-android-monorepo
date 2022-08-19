@@ -78,6 +78,7 @@ import com.vanpra.composematerialdialogs.customView
 import com.vanpra.composematerialdialogs.listItemsSingleChoice
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import timber.log.Timber
 
 internal val sectionTitleSpacer = 16.dp
 internal val betweenSectionSpacer = 32.dp
@@ -1007,7 +1008,12 @@ fun TextSelectInput(
             val index = it.coerceAtLeast(0)
                 .coerceAtMost(PrismPosition.listOfPositions.size)
 
-            onPick(PrismPosition.listOfPositions[index])
+            Timber.i("Picking from (${PrismPosition.listOfPositions.size}) ${PrismPosition.listOfPositions}")
+            Timber.i("Picking at index $index: ${PrismPosition.listOfPositions[index]}")
+
+            val pick = PrismPosition.listOfPositions[index] ?: PrismPosition.None
+
+            onPick(pick)
             dialogState.hide()
         }
     }

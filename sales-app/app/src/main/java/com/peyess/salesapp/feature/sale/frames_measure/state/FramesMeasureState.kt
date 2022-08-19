@@ -9,6 +9,7 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_param
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.PositioningAnimationState
 import java.util.Date
+import kotlin.math.abs
 
 // TODO: Remove hardcoded sizes
 private const val screenWidth = 2448.0
@@ -38,6 +39,10 @@ sealed class CameraSetUpState {
     object SetUp : CameraSetUpState()
 }
 
+const val slow = 1.0
+const val speedUnit = 1.0
+const val fastest = 100.0
+
 data class FramesMeasureState(
     val picture: Uri = Uri.EMPTY,
 
@@ -45,11 +50,11 @@ data class FramesMeasureState(
 
     val positioning: Positioning = Positioning(),
 
-    val isInvalidCheckMiddle: Boolean = false,
-
     val cameraSetUpState: CameraSetUpState = CameraSetUpState.Idle,
 
-    val takingHEadZoomState: HelperZoomState = HelperZoomState.ZoomNormal,
+    val takingHeadZoomState: HelperZoomState = HelperZoomState.ZoomNormal,
+
+    val hasAcceptedCheckMiddleInvalid: Boolean = false,
 
     val facesFound: Int  = 0,
     val latestEulerX: Double = 0.0,
@@ -96,6 +101,10 @@ data class FramesMeasureState(
     val measuringUploadError: String = "",
 
     val canAddMeasure: Boolean = false,
+
+    val currentSpeed: Double = slow,
+
+
 ): MavericksState {
     private val tiltFreeThresholdLeftEye = 0.0 // tilt left
     private val tiltBlockedThresholdLeftEye = -7.0 // -tilt right
@@ -147,6 +156,18 @@ data class FramesMeasureState(
         HeadState.LookingForward
     }
 
+    val isCheckMiddleInvalid: Boolean = if (movableParameter == Parameter.CheckMiddle) {
+        val framesRight = positioning.framesRight
+        val framesLeft = positioning.framesLeft
+        val bridgePivot = positioning.bridgePivot
+        val bridgeHelper = (if (eye == Eye.Right) framesRight else bridgePivot) +
+                abs(bridgePivot - (if (eye == Eye.Right) framesRight else framesLeft)) / 2.0
+
+        abs(positioning.checkMiddle - bridgeHelper) > checkMiddleThreshold
+    } else {
+        false
+    }
+
 
     private fun isHorizontalBad(): Boolean {
         return (eye == Eye.Left && !(latestEulerY < freeHorizontalRotationThresholdLeftEye && latestEulerY > blockedHorizontalRotationLeftEye)) ||
@@ -162,6 +183,8 @@ data class FramesMeasureState(
                 (eye == Eye.Right && !(latestEulerZ > tiltFreeThresholdRightEye && latestEulerZ < tiltBlockedThresholdRightEye))
     }
 }
+
+data class Pqp(val pqp: String = "bla")
 
 @Keep
 data class Positioning(
@@ -305,8 +328,8 @@ data class Positioning(
     @PropertyName("is_editable")
     val isEditable: Boolean = false,
 
-    val created: Date = Date(),
-    val updated: Date = Date(),
+//    val created: Date = Date(),
+//    val updated: Date = Date(),
 
     @JvmField
     @PropertyName("created_by")
@@ -324,3 +347,56 @@ data class Positioning(
     @PropertyName("update_allowed_by")
     val updateAllowedBy: String = "",
 )
+
+fun Positioning.updateInitialPositioningState(): Positioning {
+    val opticCenterX = (if (eye == Eye.Left) 0.60 else 0.39) * screenWidth
+    val opticCenterY = (if (eye == Eye.Left) 0.39 else 0.44) * screenHeight
+    val radius = 281.0
+
+    val innerFramesDistance = 180f
+    val bridgeDistance = 160
+
+    val baseLeftDistance = if (eye == Eye.Left) -295.0 else 20.0
+    val checkLeftDistance = if (eye == Eye.Left) 70 else 100
+    val checkRightDistance = if (eye == Eye.Left) 179 else 195
+    val baseRightDistance = if (eye == Eye.Left) 262 else 235
+    val checkBottomDistance = 90f
+    val framesTopDistance = -25f
+
+    val checkTopDistance = -98f
+    val framesBottomDistance = 175f
+
+    val framesLeft = (if (eye == Eye.Left) opticCenterX - innerFramesDistance else opticCenterX - radius)
+    val framesRight = (if (eye == Eye.Left) opticCenterX + radius else opticCenterX + innerFramesDistance)
+    val bridgePivot = (if (eye == Eye.Left) framesLeft - bridgeDistance else framesRight + bridgeDistance)
+    val baseLeft = bridgePivot + baseLeftDistance
+    val checkTop = opticCenterY + checkTopDistance
+
+    val bridgeHelper = (if (eye == Eye.Right) framesRight else bridgePivot) +
+            abs(bridgePivot - (if (eye == Eye.Right) framesRight else framesLeft)) / 2.0
+
+    return copy(
+        baseLeft = baseLeft, // (if (eye == Eye.Left) 0.33 else 0.53) * screenWidth,
+        baseRight = baseLeft + baseRightDistance, // (if (eye == Eye.Left) 0.45 else 0.65) * screenWidth,
+        bridgePivot = bridgePivot, // 0.5 * screenWidth + (if (eye == Eye.Left) 7 else -7),
+        checkMiddle = bridgeHelper + (if (eye == Eye.Left) 7 else -7), // 0.5 * screenWidth,
+        checkLeft = baseLeft + checkLeftDistance, // (if (eye == Eye.Left) 0.36 else 0.57) * screenWidth,
+        checkRight = baseLeft + checkRightDistance, // (if (eye == Eye.Left) 0.41 else 0.62) * screenWidth,
+        framesLeft = framesLeft, // (if (eye == Eye.Left) 0.53 else 0.28) * screenWidth,
+        framesRight = framesRight, // (if (eye == Eye.Left) 0.72 else 0.45) * screenWidth,
+        opticCenterX = opticCenterX, // (if (eye == Eye.Left) 0.60 else 0.39) * screenWidth,
+
+        opticCenterY = opticCenterY, // (if (eye == Eye.Left) 0.39 else 0.44) * screenHeight,
+        checkTop = checkTop, // (if (eye == Eye.Left) 0.35 else 0.42) * screenHeight,
+        checkBottom = checkTop + checkBottomDistance, // (if (eye == Eye.Left) 0.38 else 0.42) * screenHeight,
+        framesBottom = opticCenterY + framesBottomDistance, // (if (eye == Eye.Left) 0.46 else 0.52) * screenHeight,
+        framesTop = checkTop + framesTopDistance, // (if (eye == Eye.Left) 0.39 else 0.41) * screenHeight,
+
+        topPointRotation = if (eye == Eye.Left) -19.0 else -161.0,
+        bottomPointRotation = if (eye == Eye.Left) 45.0 else 135.0,
+
+        opticCenterRadius = radius,
+        topPointLength = radius,
+        bottomPointLength = radius,
+    )
+}

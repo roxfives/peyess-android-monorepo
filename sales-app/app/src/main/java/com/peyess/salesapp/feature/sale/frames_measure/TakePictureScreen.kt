@@ -105,6 +105,8 @@ fun TakePictureScreen(
 ) {
     val context = LocalContext.current
 
+    val viewModel: FramesMeasureViewModel = mavericksViewModel()
+
     val eye = remember { mutableStateOf<Eye>(Eye.None) }
     val eyeParameter = navHostController.currentBackStackEntry
         ?.arguments
@@ -113,9 +115,8 @@ fun TakePictureScreen(
     LaunchedEffect(eyeParameter) {
         Timber.i("Using eye $eyeParameter")
         eye.value = if (eyeParameter == "left") Eye.Left else Eye.Right
+        viewModel.updateEye(eye.value)
     }
-
-    val viewModel: FramesMeasureViewModel = mavericksActivityViewModel()
 
     val headState by viewModel.collectAsState(FramesMeasureState::takingHeadState)
     val helperZoomState by viewModel.collectAsState(FramesMeasureState::takingHeadZoomState)

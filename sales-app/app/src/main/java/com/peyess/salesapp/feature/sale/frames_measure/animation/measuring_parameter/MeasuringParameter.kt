@@ -6,7 +6,6 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.Positi
 import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.RadiusMediator
 import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.RotateMediator
 import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.VerticalMediator
-import com.peyess.salesapp.feature.sale.frames_measure.state.Positioning
 
 abstract class MeasuringParameter(
     protected val positioningMediator: PositioningMediator,

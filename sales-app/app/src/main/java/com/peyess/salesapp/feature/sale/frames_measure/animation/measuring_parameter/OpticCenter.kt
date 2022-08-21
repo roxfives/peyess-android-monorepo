@@ -10,6 +10,7 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.Positi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class OpticCenter(
     positioningMediator: PositioningMediator,
@@ -35,6 +36,8 @@ class OpticCenter(
     override fun drawInactive(canvas: Canvas) {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+        Timber.i("Drawing inactive")
+
         paint.color = positioningMediator.inactiveColorId
         paint.strokeWidth = diameterStrokeWidth
         paint.style = Paint.Style.STROKE
@@ -48,6 +51,8 @@ class OpticCenter(
     override fun drawActive(canvas: Canvas) {
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+        Timber.i("Drawing inactive")
+
         paint.color = positioningMediator.activeColorId
         paint.strokeWidth = diameterStrokeWidth
         paint.style = Paint.Style.STROKE
@@ -60,6 +65,8 @@ class OpticCenter(
 
     private fun drawPath(canvas: Canvas, paint: Paint) {
         val path = Path()
+
+        Timber.i("Drawing path")
 
         path.moveTo(center.x - outerRadius, center.y.toFloat())
         path.quadTo(

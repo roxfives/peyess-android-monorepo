@@ -1,7 +1,6 @@
 package com.peyess.salesapp.database.room.converters
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import timber.log.Timber
 

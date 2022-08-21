@@ -70,10 +70,16 @@ class AnimationPanel(
 
         try {
             for (obj in positioningObjects.values) {
+                Timber.i("Drawing positioning $obj")
+
                 if (obj.isVisible) {
+                    Timber.i("Drawing visible")
+
                     if (obj.isActive) {
+                        Timber.i("Drawing active")
                         obj.drawActive(canvas)
                     } else {
+                        Timber.i("Drawing inactive")
                         obj.drawInactive(canvas)
                     }
                 }

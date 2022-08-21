@@ -15,10 +15,14 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -40,6 +44,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val prescriptionPictureDao: PrescriptionPictureDao,
     private val prescriptionDataDao: PrescriptionDataDao,
     private val framesDataDao: FramesDataDao,
+    private val positioningDao: PositioningDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -142,6 +147,20 @@ class SaleRepositoryImpl @Inject constructor(
                 it ?: FramesEntity(soId = so.id)
             }
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun currentPositioning(eye: Eye): Flow<PositioningEntity> {
+        return activeSO().filterNotNull().flatMapLatest { so ->
+            positioningDao.getById(so.id, eye).map {
+                it ?: PositioningEntity(soId = so.id, eye = eye)
+                    .updateInitialPositioningState()
+            }
+        }
+    }
+
+    override fun updatePositioning(positioning: PositioningEntity) {
+        positioningDao.add(positioning)
     }
 
     override fun updatePrescriptionData(prescriptionDataEntity: PrescriptionDataEntity) {

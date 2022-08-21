@@ -4,6 +4,7 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import kotlin.math.abs
 
 class MediatorFactoryImpl : MediatorFactory {

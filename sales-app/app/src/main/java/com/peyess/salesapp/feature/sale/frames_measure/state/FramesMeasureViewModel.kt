@@ -6,6 +6,8 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
@@ -14,9 +16,11 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.nextState
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.nextStateRightEye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.previousStateLeftEye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.previousStateRightEye
+import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Job
 import timber.log.Timber
 import java.io.IOException
 import kotlin.math.abs
@@ -27,42 +31,63 @@ import kotlin.math.abs
 
 class FramesMeasureViewModel @AssistedInject constructor(
     @Assisted initialState: FramesMeasureState,
-    private val animationParametersFactory: AnimationParametersFactory,
+    animationParametersFactory: AnimationParametersFactory,
+    private val saleRepository: SaleRepository,
 ): MavericksViewModel<FramesMeasureState>(initialState) {
     private val animationParameters = animationParametersFactory.makeMeasuringParameters(
         coroutineScope = viewModelScope,
         viewModel = this@FramesMeasureViewModel,
     )
 
+    private val jobs: MutableList<Job> = mutableListOf()
+
+    private val timeThreshold: Long = 500000000L
+    private val checkMiddleThreshold = 7
+
     init {
         setState { copy(measuringParameters = animationParameters) }
 
         onEach(FramesMeasureState::eye) {
-            setState {
-                copy(
-                    positioning = positioning
-                        .copy(eye = eye)
-                        .updateInitialPositioningState(),
-                )
+            Timber.i("Measuring for eye $it")
+
+            for (job in jobs) {
+                Timber.i("Trying to cancel job at $job")
+
+                if (job.isActive) {
+                    Timber.i("Cancelling job at $job")
+                    job.cancel()
+                }
             }
+
+            jobs.add(
+                saleRepository.currentPositioning(it)
+                    .execute { positioning ->
+                        Timber.i("Current positioning: $positioning")
+                        copy(positioningAsync = positioning)
+                    }
+            )
         }
     }
 
+    private fun updateSpeedMovement() = withState {
+        // https://github.com/airbnb/mavericks/issues/381
+        val firstTouch = it.firstTouch
+        val secondTouch = System.nanoTime()
 
-    val lastTime: Long = 0L
-    val timeThreshold: Long = 2000000L
-    private fun updateSpeedMovement() = setState {
-        val speed = if (System.nanoTime() - lastTime < timeThreshold && currentSpeed < fastest) {
-            (currentSpeed + speedUnit).coerceAtMost(fastest)
-        } else if (System.nanoTime() - lastTime >= timeThreshold) {
-            (currentSpeed - speedUnit).coerceAtLeast(slow)
+        val speed = if (secondTouch - firstTouch < timeThreshold) {
+            (it.currentSpeed + speedUnit).coerceAtMost(fastest)
+        } else if (secondTouch - firstTouch >= timeThreshold) {
+            (it.currentSpeed - speedUnit).coerceAtLeast(slow)
         } else {
-            currentSpeed
+            it.currentSpeed
         }
 
-        copy(
-            currentSpeed = speed,
-        )
+        setState {
+            copy(
+                currentSpeed = speed,
+                firstTouch = secondTouch,
+            )
+        }
     }
 
     private fun animationParameterFromState(animationState: PositioningAnimationState): Parameter? {
@@ -245,15 +270,61 @@ class FramesMeasureViewModel @AssistedInject constructor(
         }
 
         if (to == PositioningAnimationState.PositioningCheckMiddle) {
-            intermediateState = state.copy(
-                positioning = state.positioning.copy(
+            intermediateState = state.copy(isCheckMiddleAttached = false)
+
+            saleRepository.updatePositioning(
+                state.positioning.copy(
                     checkMiddle = bridgeHelper + (if (state.eye == Eye.Left) 7 else -7)
-                ),
-                isCheckMiddleAttached = false
+                )
             )
         }
         
         return intermediateState
+    }
+
+    private fun isCheckMiddleInvalid(positioning: PositioningEntity, eye: Eye): Boolean {
+        val framesRight = positioning.framesRight
+        val framesLeft = positioning.framesLeft
+        val bridgePivot = positioning.bridgePivot
+        val bridgeHelper = (if (eye == Eye.Right) framesRight else bridgePivot) +
+                abs(bridgePivot - (if (eye == Eye.Right) framesRight else framesLeft)) / 2.0
+
+        return abs(positioning.checkMiddle - bridgeHelper) > checkMiddleThreshold
+    }
+
+    fun onFinishMeasure() = setState {
+        val parameters = copy().measuringParameters
+        for (parameter in parameters.values) {
+            parameter.isActive = false
+            parameter.isVisible = false
+        }
+
+        copy(
+            positioningAnimationState = PositioningAnimationState.Idle,
+            movableParameter = animationParameterFromState(PositioningAnimationState.Idle),
+
+            isPointTopAttached = true,
+            isPointBottomAttached = true,
+
+            isOuterFramesAttached = true,
+            isInnerFramesAttached = true,
+            isBridgeAttached = true,
+
+            isBaseLeftAttached = true,
+            isBaseRightAttached = true,
+            isCheckLeftAttached = true,
+            isCheckRightAttached = true,
+
+            isCheckMiddleAttached = true,
+
+            isCheckTopAttached = true,
+            isCheckBottomAttached = true,
+            isFramesTopAttached = true,
+            isFramesBottomAttached = true,
+
+            isCheckMiddleInvalid = false,
+            measuringParameters = parameters,
+        )
     }
 
     fun updateEye(eye: Eye) = setState {
@@ -261,18 +332,16 @@ class FramesMeasureViewModel @AssistedInject constructor(
     }
 
     fun onImageCaptured(uri: Uri, rotation: Double, deviceInfo: String) = setState {
-        Timber.i("Updating state with uri $uri")
-
-        copy(
-            picture = uri,
-            cameraSetUpState = CameraSetUpState.Idle,
-
-            positioning = positioning.copy(
-                picture = uri.path ?: "",
+        saleRepository.updatePositioning(
+            positioning.copy(
+                picture = uri,
                 rotation = rotation,
                 device = deviceInfo,
-            ),
+            )
+        )
 
+        copy(
+            cameraSetUpState = CameraSetUpState.Idle,
             latestDeviceRotation = rotation,
         )
     }
@@ -300,23 +369,29 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun onAcceptInvalidCheckMiddle() {
-        onPreviousState()
+    fun onBackFromCheckMiddle() = setState {
+        copy(
+            positioningAnimationState = PositioningAnimationState.PositioningCheckMiddle,
+            isCheckMiddleInvalid = false,
+        )
     }
-    
+
     fun onNextState() = setState {
-        if (isCheckMiddleInvalid) {
-            copy(positioningAnimationState = PositioningAnimationState.CheckError)
+        val previousAnimationState = positioningAnimationState
+        val nextAnimationState = when (eye) {
+            Eye.Left -> nextStateEyeLeft(positioningAnimationState)
+            else -> nextStateRightEye(positioningAnimationState)
+        }
+
+        val previousParameter = movableParameter
+        val nextParameter = animationParameterFromState(nextAnimationState)
+
+        if (previousParameter is Parameter.CheckMiddle && isCheckMiddleInvalid(positioning, eye)) {
+            copy(
+                positioningAnimationState = PositioningAnimationState.CheckError,
+                isCheckMiddleInvalid = true
+            )
         } else {
-            val previousAnimationState = positioningAnimationState
-            val nextAnimationState = when (eye) {
-                Eye.Left -> nextStateEyeLeft(positioningAnimationState)
-                else -> nextStateRightEye(positioningAnimationState)
-            }
-
-            val previousParameter = movableParameter
-            val nextParameter = animationParameterFromState(nextAnimationState)
-
             var intermediateState = copy(
                 positioningAnimationState = nextAnimationState,
                 movableParameter = nextParameter,
@@ -389,69 +464,101 @@ class FramesMeasureViewModel @AssistedInject constructor(
     }
 
     fun onMoveUp() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.moveUp()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.moveUp()
 
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onMoveDown() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.moveDown()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.moveDown()
 
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onMoveLeft() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.moveLeft()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.moveLeft()
 
-        copy(measuringParameters = params)
+            Timber.i("Moving parameter left: ${params[movableParameter]}")
+
+            copy(measuringParameters = params)
+        }
     }
 
     fun onMoveRight() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.moveRight()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.moveRight()
 
-        copy(measuringParameters = params)
+            Timber.i("Moving parameter right: ${params[movableParameter]}")
+
+            copy(measuringParameters = params)
+        }
     }
 
     fun onExpand() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.expand()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.expand()
 
-        Timber.i("Current param: ${params[movableParameter]}")
-
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onShrink() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.shrink()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.shrink()
 
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onRotateLeft() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.rotateLeft()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.rotateLeft()
 
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onRotateRight() = setState {
-        val params = measuringParameters
-        params[movableParameter]?.rotateRight()
+        if (isCheckMiddleInvalid) {
+            copy()
+        } else {
+            val params = measuringParameters
+            params[movableParameter]?.rotateRight()
 
-        copy(measuringParameters = params)
+            copy(measuringParameters = params)
+        }
     }
 
     fun onCancelMeasure() = setState {
         val intermediateState = copy(
             positioningAnimationState = PositioningAnimationState.Idle,
             movableParameter = animationParameterFromState(PositioningAnimationState.Idle),
-
-            positioning = Positioning(eye = eye),
 
             isPointTopAttached = true,
             isPointBottomAttached = true,
@@ -471,6 +578,8 @@ class FramesMeasureViewModel @AssistedInject constructor(
             isCheckBottomAttached = true,
             isFramesTopAttached = true,
             isFramesBottomAttached = true,
+
+            isCheckMiddleInvalid = false,
         )
 
         val parameters = intermediateState.measuringParameters
@@ -479,8 +588,9 @@ class FramesMeasureViewModel @AssistedInject constructor(
             parameter.isVisible = false
         }
 
+        // TODO: move this task to a worker
         try {
-            val file = picture.toFile()
+            val file = positioning.picture.toFile()
 
             if (file.exists()) {
                 file.delete()
@@ -488,6 +598,10 @@ class FramesMeasureViewModel @AssistedInject constructor(
         } catch (e: IOException) {
             e.printStackTrace()
         }
+
+        saleRepository.updatePositioning(
+            positioning.updateInitialPositioningState()
+        )
 
         intermediateState
     }
@@ -501,30 +615,29 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveOpticCenterLeft() = setState {
+    fun moveOpticCenterLeft() = withState {
         updateSpeedMovement()
 
-        val opticCenterX = positioning.opticCenterX - currentSpeed
-        val framesRight = positioning.framesRight
-        val framesLeft = positioning.framesLeft
+        val opticCenterX = it.positioning.opticCenterX - it.currentSpeed
+        val framesRight = it.positioning.framesRight
+        val framesLeft = it.positioning.framesLeft
 
         val innerFramesDistance = 180f
 
-        val positioning = positioning.copy(opticCenterX = opticCenterX)
-
-        if (eye == Eye.Right) {
-            copy(
-                positioning = positioning.copy(
-                    framesRight = if (isInnerFramesAttached)
+        val positioning = it.positioning.copy(opticCenterX = opticCenterX)
+        if (it.eye == Eye.Right) {
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesRight = if (it.isInnerFramesAttached)
                         opticCenterX + innerFramesDistance
                     else
                         framesRight
                 )
             )
         } else {
-            copy(
-                positioning = positioning.copy(
-                    framesLeft = if (isInnerFramesAttached)
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesLeft = if (it.isInnerFramesAttached)
                         opticCenterX - innerFramesDistance
                     else
                         framesLeft
@@ -533,21 +646,21 @@ class FramesMeasureViewModel @AssistedInject constructor(
         }
     }
 
-    fun moveOpticCenterRight() = setState {
+    fun moveOpticCenterRight() = withState {
         updateSpeedMovement()
 
-        val opticCenterX = positioning.opticCenterX + currentSpeed
-        val framesRight = positioning.framesRight
-        val framesLeft = positioning.framesLeft
+        val opticCenterX = it.positioning.opticCenterX + it.currentSpeed
+        val framesRight = it.positioning.framesRight
+        val framesLeft = it.positioning.framesLeft
 
         val innerFramesDistance = 180f
 
-        val positioning = positioning.copy(opticCenterX = opticCenterX)
+        val positioning = it.positioning.copy(opticCenterX = opticCenterX)
 
-        if (eye == Eye.Right) {
-            copy(
-                positioning = positioning.copy(
-                    framesRight = if (isInnerFramesAttached) {
+        if (it.eye == Eye.Right) {
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesRight = if (it.isInnerFramesAttached) {
                         opticCenterX + innerFramesDistance
                     } else {
                         framesRight
@@ -555,9 +668,9 @@ class FramesMeasureViewModel @AssistedInject constructor(
                 )
             )
         } else {
-            copy(
-                positioning = positioning.copy(
-                    framesLeft = if (isInnerFramesAttached) {
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesLeft = if (it.isInnerFramesAttached) {
                         opticCenterX - innerFramesDistance
                     } else {
                         framesLeft
@@ -567,125 +680,161 @@ class FramesMeasureViewModel @AssistedInject constructor(
         }
     }
 
-    fun moveOpticCenterUp() = setState {
+    fun moveOpticCenterUp() = withState {
         updateSpeedMovement()
 
-        val opticCenterY = positioning.opticCenterY - currentSpeed
-        val checkTop = positioning.checkTop
-        val framesBottom = positioning.framesBottom
+        val opticCenterY = it.positioning.opticCenterY - it.currentSpeed
+        val checkTop = it.positioning.checkTop
+        val framesBottom = it.positioning.framesBottom
 
         val checkTopDistance = -98f
         val framesBottomDistance = 175f
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 opticCenterY = opticCenterY,
 
-                checkTop =
-                if (isCheckTopAttached) opticCenterY + checkTopDistance else checkTop,
-                framesBottom =
-                if (isFramesBottomAttached) opticCenterY + framesBottomDistance else framesBottom,
+                checkTop = if (it.isCheckTopAttached) {
+                    opticCenterY + checkTopDistance
+                } else {
+                    checkTop
+                },
+                framesBottom = if (it.isFramesBottomAttached) {
+                    opticCenterY + framesBottomDistance
+                }
+                else {
+                    framesBottom
+                },
             )
         )
     }
 
-    fun moveOpticCenterDown() = setState {
+    fun moveOpticCenterDown() = withState {
         updateSpeedMovement()
 
-        val opticCenterY = positioning.opticCenterY + currentSpeed
-        val checkTop = positioning.checkTop
-        val framesBottom = positioning.framesBottom
+        val opticCenterY = it.positioning.opticCenterY + it.currentSpeed
+        val checkTop = it.positioning.checkTop
+        val framesBottom = it.positioning.framesBottom
 
         val checkTopDistance = -98f
         val framesBottomDistance = 175f
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 opticCenterY = opticCenterY,
 
-                checkTop =
-                if (isCheckTopAttached) opticCenterY + checkTopDistance else checkTop,
-                framesBottom =
-                if (isFramesBottomAttached) opticCenterY + framesBottomDistance else framesBottom,
+                checkTop = if (it.isCheckTopAttached) {
+                    opticCenterY + checkTopDistance
+                } else {
+                    checkTop
+                },
+                framesBottom = if (it.isFramesBottomAttached) {
+                    opticCenterY + framesBottomDistance
+                } else {
+                    framesBottom
+                },
             )
         )
     }
 
-    fun moveOpticCenterExpand() = setState {
+    fun moveOpticCenterExpand() = withState {
         updateSpeedMovement()
 
-        val opticCenterX = positioning.opticCenterX
-        val radius = positioning.opticCenterRadius + currentSpeed
-        val topLength = positioning.topPointLength
-        val bottomLength = positioning.bottomPointLength
-        val framesRight = positioning.framesRight
-        val framesLeft = positioning.framesLeft
+        val opticCenterX = it.positioning.opticCenterX
+        val radius = it.positioning.opticCenterRadius + it.currentSpeed
+        val topLength = it.positioning.topPointLength
+        val bottomLength = it.positioning.bottomPointLength
+        val framesRight = it.positioning.framesRight
+        val framesLeft = it.positioning.framesLeft
 
-        var positioning = positioning.copy(
+        val positioning = it.positioning.copy(
             opticCenterRadius = radius,
-            topPointLength = if (isPointTopAttached) radius else topLength,
-            bottomPointLength = if (isPointBottomAttached) radius else bottomLength,
+            topPointLength = if (it.isPointTopAttached) radius else topLength,
+            bottomPointLength = if (it.isPointBottomAttached) radius else bottomLength,
         )
 
-        positioning = if (eye == Eye.Left) {
-            positioning.copy(
-                framesRight = if (isOuterFramesAttached)
-                    opticCenterX + radius
-                else
-                    framesRight,
+        if (it.eye == Eye.Left) {
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesRight = if (it.isOuterFramesAttached)
+                        opticCenterX + radius
+                    else
+                        framesRight,
+                )
             )
         } else {
-            positioning.copy(
-                framesLeft = if (isOuterFramesAttached)
-                    opticCenterX - radius
-                else
-                    framesLeft,
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesLeft = if (it.isOuterFramesAttached)
+                        opticCenterX - radius
+                    else
+                        framesLeft,
+                )
             )
         }
-
-        copy(positioning = positioning)
     }
 
-    fun moveOpticCenterShrink() = setState {
+    fun moveOpticCenterShrink() = withState {
         updateSpeedMovement()
 
-        val opticCenterX = positioning.opticCenterX
-        val radius = positioning.opticCenterRadius - currentSpeed
-        val topLength = positioning.topPointLength
-        val bottomLength = positioning.bottomPointLength
-        val framesRight = positioning.framesRight
-        val framesLeft = positioning.framesLeft
+        val opticCenterX = it.positioning.opticCenterX
+        val radius = it.positioning.opticCenterRadius - it.currentSpeed
+        val topLength = it.positioning.topPointLength
+        val bottomLength = it.positioning.bottomPointLength
+        val framesRight = it.positioning.framesRight
+        val framesLeft = it.positioning.framesLeft
 
-        var positioning = positioning.copy(
+        val positioning = it.positioning.copy(
             opticCenterRadius = radius,
-            topPointLength = if (isPointTopAttached) radius else topLength,
-            bottomPointLength = if (isPointBottomAttached) radius else bottomLength,
+            topPointLength = if (it.isPointTopAttached) radius else topLength,
+            bottomPointLength = if (it.isPointBottomAttached) radius else bottomLength,
         )
 
-        positioning = if (eye == Eye.Left) {
-            positioning.copy(
-                framesRight = if (isOuterFramesAttached) opticCenterX + radius else framesRight,
+        if (it.eye == Eye.Left) {
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesRight = if (it.isOuterFramesAttached) opticCenterX + radius else framesRight,
+                )
             )
         } else {
-            positioning.copy(
-                framesLeft = if (isOuterFramesAttached) opticCenterX - radius else framesLeft,
+            saleRepository.updatePositioning(
+                positioning.copy(
+                    framesLeft = if (it.isOuterFramesAttached) opticCenterX - radius else framesLeft,
+                )
             )
         }
-
-        copy(positioning = positioning)
     }
 
-    fun moveFramesRightRight() = setState {
+    fun moveFramesRightRight() = withState {
         updateSpeedMovement()
 
-        val isAttached = eye == Eye.Right && isBridgeAttached
-        val framesRight = positioning.framesRight + currentSpeed
-        val bridgePivot = positioning.bridgePivot
+        val isAttached = it.eye == Eye.Right && it.isBridgeAttached
+        val framesRight = it.positioning.framesRight + it.currentSpeed
+        val bridgePivot = it.positioning.bridgePivot
 
+        // TODO: Remove magic number from here
         val bridgeDistance = 160
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                framesRight = framesRight,
+                bridgePivot = if (isAttached) framesRight + bridgeDistance else bridgePivot
+            )
+        )
+    }
+
+    fun moveFramesRightLeft() = withState {
+        updateSpeedMovement()
+
+        val isAttached = it.eye == Eye.Right && it.isBridgeAttached
+        val framesRight = it.positioning.framesRight - it.currentSpeed
+        val bridgePivot = it.positioning.bridgePivot
+
+        // TODO: Remove magic number from here
+        val bridgeDistance = 160
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 framesRight = framesRight,
 
                 bridgePivot = if (isAttached) framesRight + bridgeDistance else bridgePivot
@@ -693,35 +842,18 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveFramesRightLeft() = setState {
+    fun moveFramesLeftRight() = withState {
         updateSpeedMovement()
 
-        val isAttached = eye == Eye.Right && isBridgeAttached
-        val framesRight = positioning.framesRight - currentSpeed
-        val bridgePivot = positioning.bridgePivot
+        val isAttached = it.eye == Eye.Left && it.isBridgeAttached
+        val framesLeft = it.positioning.framesLeft + it.currentSpeed
+        val bridgePivot = it.positioning.bridgePivot
 
+        // TODO: Remove magic number from here
         val bridgeDistance = 160
 
-        copy(
-            positioning = positioning.copy(
-                framesRight = framesRight,
-
-                bridgePivot = if (isAttached) framesRight + bridgeDistance else bridgePivot
-            )
-        )
-    }
-
-    fun moveFramesLeftRight() = setState {
-        updateSpeedMovement()
-
-        val isAttached = eye == Eye.Left && isBridgeAttached
-        val framesLeft = positioning.framesLeft + currentSpeed
-        val bridgePivot = positioning.bridgePivot
-
-        val bridgeDistance = 160
-
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 framesLeft = framesLeft,
 
                 bridgePivot = if (isAttached) framesLeft - bridgeDistance else bridgePivot
@@ -729,17 +861,18 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveFramesLeftLeft() = setState {
+    fun moveFramesLeftLeft() = withState {
         updateSpeedMovement()
 
-        val isAttached = eye == Eye.Left && isBridgeAttached
-        val framesLeft = positioning.framesLeft - currentSpeed
-        val bridgePivot = positioning.bridgePivot
+        val isAttached = it.eye == Eye.Left && it.isBridgeAttached
+        val framesLeft = it.positioning.framesLeft - it.currentSpeed
+        val bridgePivot = it.positioning.bridgePivot
 
+        // TODO: Remove magic number from here
         val bridgeDistance = 160
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 framesLeft = framesLeft,
 
                 bridgePivot = if (isAttached) framesLeft - bridgeDistance else bridgePivot
@@ -747,19 +880,20 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveBridgePivotRight() = setState {
+    fun moveBridgePivotRight() = withState {
         updateSpeedMovement()
 
-        val bridgePivot = positioning.bridgePivot + currentSpeed
-        val baseLeft = positioning.baseLeft
+        val bridgePivot = it.positioning.bridgePivot + it.currentSpeed
+        val baseLeft = it.positioning.baseLeft
 
-        val positioning = positioning.copy(bridgePivot = bridgePivot)
+        val positioning = it.positioning.copy(bridgePivot = bridgePivot)
 
-        val baseLeftDistance = if (eye == Eye.Right) 20.0 else -295.0
+        // TODO: Remove magic number from here
+        val baseLeftDistance = if (it.eye == Eye.Right) 20.0 else -295.0
 
-        copy(
-            positioning = positioning.copy(
-                baseLeft = if (isBaseLeftAttached) {
+        saleRepository.updatePositioning(
+            positioning.copy(
+                baseLeft = if (it.isBaseLeftAttached) {
                     bridgePivot + baseLeftDistance
                 } else {
                     baseLeft
@@ -768,19 +902,20 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveBridgePivotLeft() = setState {
+    fun moveBridgePivotLeft() = withState {
         updateSpeedMovement()
 
-        val bridgePivot = positioning.bridgePivot - currentSpeed
-        val baseLeft = positioning.baseLeft
+        val bridgePivot = it.positioning.bridgePivot - it.currentSpeed
+        val baseLeft = it.positioning.baseLeft
 
-        val positioning = positioning.copy(bridgePivot = bridgePivot)
+        val positioning = it.positioning.copy(bridgePivot = bridgePivot)
 
-        val baseLeftDistance = if (eye == Eye.Right) 20.0 else -295.0
+        // TODO: Remove magic number from here
+        val baseLeftDistance = if (it.eye == Eye.Right) 20.0 else -295.0
 
-        copy(
-            positioning = positioning.copy(
-                baseLeft = if (isBaseLeftAttached) {
+        saleRepository.updatePositioning(
+            positioning.copy(
+                baseLeft = if (it.isBaseLeftAttached) {
                     bridgePivot + baseLeftDistance
                 } else {
                     baseLeft
@@ -789,402 +924,410 @@ class FramesMeasureViewModel @AssistedInject constructor(
         )
     }
 
-    fun moveCheckMiddleRight() = setState {
+    fun moveCheckMiddleRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkMiddle = positioning.checkMiddle + currentSpeed
+        Timber.i("Moving check middle right to ${it.positioning.checkMiddle + it.currentSpeed}")
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkMiddle = it.positioning.checkMiddle + it.currentSpeed
             )
         )
     }
 
-    fun moveCheckMiddleLeft() = setState {
+    fun moveCheckMiddleLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkMiddle = positioning.checkMiddle - currentSpeed
+        Timber.i("Moving check middle left to ${it.positioning.checkMiddle - it.currentSpeed}")
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkMiddle = it.positioning.checkMiddle - it.currentSpeed
             )
         )
     }
 
-    fun moveBaseLeftRight() = setState {
+    fun moveBaseLeftRight() = withState {
         updateSpeedMovement()
 
-        val baseLeft = positioning.baseLeft + currentSpeed
-        val checkLeft = positioning.checkLeft
-        val checkRight = positioning.checkRight
-        val baseRight = positioning.baseRight
+        val baseLeft = it.positioning.baseLeft + it.currentSpeed
+        val checkLeft = it.positioning.checkLeft
+        val checkRight = it.positioning.checkRight
+        val baseRight = it.positioning.baseRight
 
-        val checkLeftDistance = if (eye == Eye.Right) 100 else 70
-        val checkRightDistance = if (eye == Eye.Right) 195 else 179
-        val baseRightDistance = if (eye == Eye.Right) 235 else 262
+        // TODO: Remove magic numbers from here
+        val checkLeftDistance = if (it.eye == Eye.Right) 100 else 70
+        val checkRightDistance = if (it.eye == Eye.Right) 195 else 179
+        val baseRightDistance = if (it.eye == Eye.Right) 235 else 262
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 baseLeft = baseLeft,
 
-                checkLeft = if (isCheckLeftAttached) baseLeft + checkLeftDistance else checkLeft,
-                checkRight = if (isCheckRightAttached) baseLeft + checkRightDistance else checkRight,
-                baseRight = if (isBaseRightAttached) baseLeft + baseRightDistance else baseRight,
+                checkLeft = if (it.isCheckLeftAttached) baseLeft + checkLeftDistance else checkLeft,
+                checkRight = if (it.isCheckRightAttached) baseLeft + checkRightDistance else checkRight,
+                baseRight = if (it.isBaseRightAttached) baseLeft + baseRightDistance else baseRight,
             )
         )
     }
 
-    fun moveBaseLeftLeft() = setState {
+    fun moveBaseLeftLeft() = withState {
         updateSpeedMovement()
 
-        val baseLeft = positioning.baseLeft - currentSpeed
-        val checkLeft = positioning.checkLeft
-        val checkRight = positioning.checkRight
-        val baseRight = positioning.baseRight
+        val baseLeft = it.positioning.baseLeft - it.currentSpeed
+        val checkLeft = it.positioning.checkLeft
+        val checkRight = it.positioning.checkRight
+        val baseRight = it.positioning.baseRight
 
-        val checkLeftDistance = if (eye == Eye.Right) 100 else 70
-        val checkRightDistance = if (eye == Eye.Right) 195 else 179
-        val baseRightDistance = if (eye == Eye.Right) 235 else 262
+        // TODO: Remove magic numbers from here
+        val checkLeftDistance = if (it.eye == Eye.Right) 100 else 70
+        val checkRightDistance = if (it.eye == Eye.Right) 195 else 179
+        val baseRightDistance = if (it.eye == Eye.Right) 235 else 262
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 baseLeft = baseLeft,
 
-                checkLeft = if (isCheckLeftAttached) baseLeft + checkLeftDistance else checkLeft,
-                checkRight = if (isCheckRightAttached) baseLeft + checkRightDistance else checkRight,
-                baseRight = if (isBaseRightAttached) baseLeft + baseRightDistance else baseRight,
+                checkLeft = if (it.isCheckLeftAttached) baseLeft + checkLeftDistance else checkLeft,
+                checkRight = if (it.isCheckRightAttached) baseLeft + checkRightDistance else checkRight,
+                baseRight = if (it.isBaseRightAttached) baseLeft + baseRightDistance else baseRight,
             )
         )
     }
 
-    fun rotateBaseLeftRight() = setState {
+    fun rotateBaseLeftRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseLeftRotation = positioning.baseLeftRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseLeftRotation = it.positioning.baseLeftRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun rotateBaseLeftLeft() = setState {
+    fun rotateBaseLeftLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseLeftRotation = positioning.baseLeftRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseLeftRotation = it.positioning.baseLeftRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun moveBaseRightRight() = setState {
+    fun moveBaseRightRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseRight = positioning.baseRight + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseRight = it.positioning.baseRight + it.currentSpeed
             )
         )
     }
 
-    fun moveBaseRightLeft() = setState {
+    fun moveBaseRightLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseRight = positioning.baseRight - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseRight = it.positioning.baseRight - it.currentSpeed
             )
         )
     }
 
-    fun rotateBaseRightRight() = setState {
+    fun rotateBaseRightRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseRightRotation = positioning.baseRightRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseRightRotation = it.positioning.baseRightRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun rotateBaseRightLeft() = setState {
+    fun rotateBaseRightLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                baseRightRotation = positioning.baseRightRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseRightRotation = it.positioning.baseRightRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun moveCheckLeftRight() = setState {
+    fun moveCheckLeftRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkLeft = positioning.checkLeft + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkLeft = it.positioning.checkLeft + it.currentSpeed
             )
         )
     }
 
-    fun moveCheckLeftLeft() = setState {
+    fun moveCheckLeftLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkLeft = positioning.checkLeft - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkLeft = it.positioning.checkLeft - it.currentSpeed
             )
         )
     }
 
-    fun rotateCheckLeftRight() = setState {
+    fun rotateCheckLeftRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkLeftRotation = positioning.checkLeftRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkLeftRotation = it.positioning.checkLeftRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun rotateCheckLeftLeft() = setState {
+    fun rotateCheckLeftLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkLeftRotation = positioning.checkLeftRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkLeftRotation = it.positioning.checkLeftRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
+        )
+        )
+    }
+
+    fun moveCheckRightRight() = withState {
+        updateSpeedMovement()
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkRight = it.positioning.checkRight + it.currentSpeed
             )
         )
     }
 
-    fun moveCheckRightRight() = setState {
+    fun moveCheckRightLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkRight = positioning.checkRight + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkRight = it.positioning.checkRight - it.currentSpeed
             )
         )
     }
 
-    fun moveCheckRightLeft() = setState {
+    fun rotateCheckRightRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkRight = positioning.checkRight - currentSpeed
-            )
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkRightRotation = it.positioning.checkRightRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
+        )
         )
     }
 
-    fun rotateCheckRightRight() = setState {
+    fun rotateCheckRightLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkRightRotation = positioning.checkRightRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
-            )
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkRightRotation = it.positioning.checkRightRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
+        )
         )
     }
 
-    fun rotateCheckRightLeft() = setState {
+    fun moveCheckTopUp() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkRightRotation = positioning.checkRightRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
-            )
-        )
-    }
+        val checkTop = it.positioning.checkTop - it.currentSpeed
+        val framesTop = it.positioning.framesTop
+        val checkBottom = it.positioning.checkBottom
 
-    fun moveCheckTopUp() = setState {
-        updateSpeedMovement()
-
-        val checkTop = positioning.checkTop - currentSpeed
-        val framesTop = positioning.framesTop
-        val checkBottom = positioning.checkBottom
-
+        // TODO: Remove magic numbers from here
         val checkBottomDistance = 90f
         val framesTopDistance = -25f
 
-        copy(
-            positioning = positioning.copy(
+        saleRepository.updatePositioning(
+            it.positioning.copy(
                 checkTop = checkTop,
 
-                checkBottom = if (isCheckBottomAttached) checkTop + checkBottomDistance else checkBottom,
-                framesTop = if (isFramesTopAttached) checkTop + framesTopDistance else framesTop,
+                checkBottom = if (it.isCheckBottomAttached) checkTop + checkBottomDistance else checkBottom,
+                framesTop = if (it.isFramesTopAttached) checkTop + framesTopDistance else framesTop,
             )
         )
     }
 
-    fun moveCheckTopDown() = setState {
+    fun moveCheckTopDown() = withState {
         updateSpeedMovement()
 
-        val checkTop = positioning.checkTop + currentSpeed
-        val framesTop = positioning.framesTop
-        val checkBottom = positioning.checkBottom
+        val checkTop = it.positioning.checkTop + it.currentSpeed
+        val framesTop = it.positioning.framesTop
+        val checkBottom = it.positioning.checkBottom
 
+        // TODO: Remove magic numbers from here
         val checkBottomDistance = 90f
         val framesTopDistance = -25f
 
-        copy(
-            positioning = positioning.copy(
-                checkTop = positioning.checkTop + currentSpeed,
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkTop = it.positioning.checkTop + it.currentSpeed,
 
-                checkBottom =
-                if (isCheckBottomAttached) checkTop + checkBottomDistance else checkBottom,
-                framesTop =
-                if (isFramesTopAttached) checkTop + framesTopDistance else framesTop,
+                checkBottom = if (it.isCheckBottomAttached) checkTop + checkBottomDistance else checkBottom,
+                framesTop = if (it.isFramesTopAttached) checkTop + framesTopDistance else framesTop,
             )
         )
     }
 
-    fun moveCheckBottomUp() = setState {
+    fun moveCheckBottomUp() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkBottom = positioning.checkBottom - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkBottom = it.positioning.checkBottom - it.currentSpeed
             )
         )
     }
 
-    fun moveCheckBottomDown() = setState {
+    fun moveCheckBottomDown() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                checkBottom = positioning.checkBottom + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                checkBottom = it.positioning.checkBottom + it.currentSpeed
             )
         )
     }
 
-    fun moveFramesTopUp() = setState {
+    fun moveFramesTopUp() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                framesTop = positioning.framesTop - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                framesTop = it.positioning.framesTop - it.currentSpeed
             )
         )
     }
 
-    fun moveFramesTopDown() = setState {
+    fun moveFramesTopDown() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                framesTop = positioning.framesTop + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                framesTop = it.positioning.framesTop + it.currentSpeed
             )
         )
     }
 
-    fun moveFramesBottomUp() = setState {
+    fun moveFramesBottomUp() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                framesBottom = positioning.framesBottom - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                framesBottom = it.positioning.framesBottom - it.currentSpeed
             )
         )
     }
 
-    fun moveFramesBottomDown() = setState {
+    fun moveFramesBottomDown() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                framesBottom = positioning.framesBottom + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                framesBottom = it.positioning.framesBottom + it.currentSpeed
             )
         )
     }
 
-    fun rotateTopPointRight() = setState {
+    fun rotateTopPointRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                topPointRotation = positioning.topPointRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                topPointRotation = it.positioning.topPointRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun rotateTopPointLeft() = setState {
+    fun rotateTopPointLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                topPointRotation = positioning.topPointRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                topPointRotation = it.positioning.topPointRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun moveTopPointExpand() = setState {
+    fun moveTopPointExpand() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                topPointLength = positioning.topPointLength + currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                topPointLength = it.positioning.topPointLength + it.currentSpeed
             )
         )
     }
 
-    fun moveTopPointShrink() = setState {
+    fun moveTopPointShrink() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                topPointLength = positioning.topPointLength - currentSpeed
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                topPointLength = it.positioning.topPointLength - it.currentSpeed
             )
         )
     }
 
-    fun rotateBottomPointRight() = setState {
+    fun rotateBottomPointRight() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                bottomPointRotation = positioning.bottomPointRotation +
-                        (currentSpeed / 10).coerceAtLeast(slow)
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                bottomPointRotation = it.positioning.bottomPointRotation +
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun rotateBottomPointLeft() = setState {
+    fun rotateBottomPointLeft() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                bottomPointRotation = positioning.bottomPointRotation -
-                        (currentSpeed / 10).coerceAtLeast(slow)
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                bottomPointRotation = it.positioning.bottomPointRotation -
+                        (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
     }
 
-    fun moveBottomPointExpand() = setState {
+    fun moveBottomPointExpand() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                bottomPointLength = positioning.bottomPointLength + currentSpeed
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                bottomPointLength = it.positioning.bottomPointLength + it.currentSpeed
             )
         )
     }
 
-    fun moveBottomPointShrink() = setState {
+    fun moveBottomPointShrink() = withState {
         updateSpeedMovement()
 
-        copy(
-            positioning = positioning.copy(
-                bottomPointLength = positioning.bottomPointLength - currentSpeed
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                bottomPointLength = it.positioning.bottomPointLength - it.currentSpeed
             )
         )
     }

@@ -38,13 +38,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -88,7 +86,7 @@ fun MeasureFramesScreen(
     navHostController: NavHostController = rememberNavController(),
     onDone: () -> Unit = {},
 ) {
-    val viewModel: FramesMeasureViewModel = mavericksActivityViewModel()
+    val viewModel: FramesMeasureViewModel = mavericksViewModel()
 
     val eye = remember { mutableStateOf<Eye>(Eye.None) }
     val eyeParameter = navHostController.currentBackStackEntry
@@ -118,16 +116,19 @@ fun MeasureFramesScreen(
         measuringParameters = measuringParameter,
         animationState = animationState,
 
-        onAcceptInvalidCheckMiddle = viewModel::onAcceptInvalidCheckMiddle,
+        onBackFromCheckMiddle = viewModel::onBackFromCheckMiddle,
         isCheckMiddleInvalid = isInvalidCheckMiddle,
 
         onStart = viewModel::onNextState,
         onNext = viewModel::onNextState,
         onPrevious = viewModel::onPreviousState,
-        onConfirm = onDone,
+        onConfirm = {
+            viewModel.onFinishMeasure()
+            onDone()
+        },
         onCancel = {
             viewModel.onCancelMeasure()
-            // TODO: move to vanigation function
+            // TODO: move to navigation function
             navHostController.navigate(
                 "${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParameter"
             ) {
@@ -162,7 +163,7 @@ private fun MeasureFramesScreenImpl(
     animationState: PositioningAnimationState =
         PositioningAnimationState.PositioningOpticCenter,
 
-    onAcceptInvalidCheckMiddle: () -> Unit = {},
+    onBackFromCheckMiddle: () -> Unit = {},
     isCheckMiddleInvalid: Boolean = false,
 
     onStart: () -> Unit = {},
@@ -407,10 +408,8 @@ private fun MeasureFramesScreenImpl(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
                             .size(width = 60.dp, height = 60.dp)
-                            .holdable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { onExpand() }
-                            ),
+                            .holdable(interactionSource = remember { MutableInteractionSource() },
+                                onClick = { onExpand() }),
                         shape = CircleShape,
                         onClick = {},
                     ) {
@@ -436,6 +435,7 @@ private fun MeasureFramesScreenImpl(
                     factory = { context ->
                         val bitmap = decodeAndRotateBitmapFrom(imageUri)
                         Timber.i("Using uri to load image: $imageUri")
+                        Timber.i("Using parameters: $measuringParameters")
 
                         AnimationPanel(context, bitmap, measuringParameters)
                     }
@@ -601,7 +601,7 @@ private fun MeasureFramesScreenImpl(
                             modifier = Modifier
                                 .padding(8.dp)
                                 .weight(1f),
-                            onClick = { onAcceptInvalidCheckMiddle() },
+                            onClick = { onBackFromCheckMiddle() },
                         ) {
                             Text(
                                 text = stringResource(

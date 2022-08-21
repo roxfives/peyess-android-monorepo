@@ -7,6 +7,7 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
@@ -54,6 +55,7 @@ object RepositoryModule {
         prescriptionPictureDao: PrescriptionPictureDao,
         prescriptionDataDao: PrescriptionDataDao,
         framesDataDao: FramesDataDao,
+        positioningDao: PositioningDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -64,7 +66,8 @@ object RepositoryModule {
             lensTypeCategoryDao,
             prescriptionPictureDao,
             prescriptionDataDao,
-            framesDataDao
+            framesDataDao,
+            positioningDao,
         )
     }
 }

@@ -4,13 +4,30 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
-import com.peyess.salesapp.dao.sale.frames.FramesType
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 
 sealed class Eye {
     object Left: Eye()
     object Right: Eye()
     object None: Eye()
+
+    companion object {
+        fun toName(eye: Eye?): String {
+            return when(eye) {
+                is Right -> "Right"
+                is Left -> "Left"
+                else -> "None"
+            }
+        }
+
+        fun toEye(name: String?): Eye {
+            return when(name?.lowercase()) {
+                "left" -> Left
+                "right" -> Right
+                else -> None
+            }
+        }
+    }
 }
 
 data class FramesState(

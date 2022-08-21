@@ -9,10 +9,13 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.database.room.converters.ConverterEye
 import com.peyess.salesapp.database.room.converters.ConverterFramesType
 import com.peyess.salesapp.database.room.converters.ConverterLensTypeCategoryName
 import com.peyess.salesapp.database.room.converters.ConverterLocalDate
@@ -26,8 +29,9 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         PrescriptionPictureEntity::class,
         PrescriptionDataEntity::class,
         FramesEntity::class,
+        PositioningEntity::class,
     ],
-    version = 13,
+    version = 15,
 )
 @TypeConverters(
     ConverterLocalDate::class,
@@ -35,6 +39,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
     ConverterLensTypeCategoryName::class,
     ConverterPrismPosition::class,
     ConverterFramesType::class,
+    ConverterEye::class,
 )
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao
@@ -46,4 +51,6 @@ abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun prescriptionDataDao(): PrescriptionDataDao
 
     abstract fun framesDataDao(): FramesDataDao
+
+    abstract fun positioningDao(): PositioningDao
 }

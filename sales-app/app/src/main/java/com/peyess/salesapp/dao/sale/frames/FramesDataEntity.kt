@@ -7,17 +7,7 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.feature.sale.prescription_data.state.maxAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.maxPrismAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.minAddition
-import com.peyess.salesapp.feature.sale.prescription_data.state.minAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismAxis
-import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismDegree
 import timber.log.Timber
-import javax.inject.Inject
-import kotlin.math.absoluteValue
-import kotlin.math.floor
-import kotlin.math.max
 
 sealed class FramesType {
     object MetalNylon: FramesType()

@@ -159,6 +159,10 @@
     <string name="measure_invalid_middle_check_retry">Voltar</string>
     <string name="measure_invalid_middle_check_cancel">Tirar outra foto</string>
 
+    <!--  UI Component: Lens Suggestion  -->
+    <string name="lens_suggestion_select">Comparar</string>
+    <string name="lens_suggestion_search_lenses">Procurar por mais lentes</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

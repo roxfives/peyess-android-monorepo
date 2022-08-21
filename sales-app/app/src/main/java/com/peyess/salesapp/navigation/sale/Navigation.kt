@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
+import com.peyess.salesapp.navigation.sale.lens_suggestion.buildLensSuggestionNavGraph
 import com.peyess.salesapp.navigation.sale.prescription.buildPrescriptionScreenNavGraph
 import com.peyess.salesapp.navigation.sale.welcome.buildWelcomeNavGraph
 
@@ -17,4 +18,5 @@ fun buildSaleNavGraph(
     buildPrescriptionScreenNavGraph(modifier, navHostController, builder)
     buildFramesNavGraph(modifier, navHostController, builder)
     buildFramesMeasureNavGraph(modifier, navHostController, builder)
+    buildLensSuggestionNavGraph(modifier, navHostController, builder)
 }

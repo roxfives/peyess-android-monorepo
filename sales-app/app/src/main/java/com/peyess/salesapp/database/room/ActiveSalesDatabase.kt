@@ -31,7 +31,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         FramesEntity::class,
         PositioningEntity::class,
     ],
-    version = 15,
+    version = 16,
 )
 @TypeConverters(
     ConverterLocalDate::class,

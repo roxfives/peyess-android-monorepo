@@ -10,6 +10,7 @@ import com.peyess.salesapp.feature.authentication_user.screen.local_password.sta
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
+import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
@@ -97,5 +98,12 @@ interface ViewModelsModule {
     @ViewModelKey(FramesMeasureViewModel::class)
     fun bindFramesMeasureViewModelFactory(
         factory: FramesMeasureViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LensPickViewModel::class)
+    fun bindLensPickViewModelFactory(
+        factory: LensPickViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

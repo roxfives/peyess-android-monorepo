@@ -10,6 +10,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.products.firestore.lens.FSLocalLens
+import com.peyess.salesapp.dao.products.firestore.lens.getExplanations
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterCategory
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensDescription
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensFamily
@@ -21,6 +22,7 @@ import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensTech
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensType
 import com.peyess.salesapp.dao.products.firestore.lens.toLocalLensEntity
 import com.peyess.salesapp.dao.products.firestore.lens_coloring.FSLensColoring
+import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.users.Collaborator
@@ -39,7 +41,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
-    private suspend fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
+    private fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
         val lenses = docs.mapNotNull { it.toObject(FSLocalLens::class.java) }
 
         Timber.i("Found ${lenses.size} lenses")
@@ -48,14 +50,48 @@ class UpdateProductsWorker @AssistedInject constructor(
             Timber.i("Got lens ${it.id}")
 
             val lens = it.toLocalLensEntity()
+            Timber.i("Adding lens with price ${lens.price}")
             productsDatabase.localLensDao().add(lens)
+
+            try {
+                val explanations = it.getExplanations()
+
+                for (exp in explanations) {
+                    Timber.i("Adding product exp dao for lens ${it.id}: $exp")
+                    productsDatabase.localProdExpDao().add(exp)
+                    Timber.i("Successfully added exp dao for lens ${it.id}: $exp")
+
+                }
+            } catch (e: SQLiteConstraintException) {
+                // Just ignore this error, collisions will happen
+                Timber.e(e, "Error while inserting explanation")
+            } catch (e: Throwable) {
+                Timber.e(e, "Error while inserting explanation")
+            }
 
             populateFilters(it)
 
-
             Timber.i("With disps ${it.disponibilities}")
             it.disponibilities.forEach { disp ->
-                Timber.i("With nested map ${disp.manufacturers}")
+                productsDatabase.localLensDispEntityDao().add(
+                    LocalLensDispEntity(
+                        lensId = it.id,
+                        diam = disp.diam,
+                        maxCyl = disp.maxCyl,
+                        minCyl = disp.minCyl,
+                        maxSph = disp.maxSph,
+                        minSph = disp.minSph,
+                        maxAdd = disp.maxAdd,
+                        minAdd = disp.minAdd,
+                        hasPrism = disp.hasPrism,
+                        prism = disp.prism,
+                        prismPrice = disp.prismPrice,
+                        prismCost = disp.prismCost,
+                        separatePrism = disp.separatePrism,
+                        needsCheck = disp.needsCheck,
+                        sumRule = disp.sumRule,
+                    )
+                )
             }
         }
     }
@@ -160,7 +196,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
-        val firestore = firebaseManager.noCacheFirestore
+        val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             return Result.retry()
         }
@@ -171,7 +207,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             .format(storeId)
 
         withContext(Dispatchers.IO) {
-            Timber.i("Starting products update")
+            Timber.i("Starting products update with path $lensPath")
 
             val initQuery = firestore
                 .collection(lensPath)

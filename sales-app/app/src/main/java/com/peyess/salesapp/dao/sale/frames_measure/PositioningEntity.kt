@@ -104,6 +104,15 @@ data class PositioningEntity(
     }
 }
 
+fun PositioningEntity.updateProportion(): PositioningEntity {
+    val verticalLength = (abs(baseLeft - baseRight) * realParamHeight) / realParamWidth
+
+    return copy(
+        proportionToPictureVertical = realParamHeight / verticalLength,
+        proportionToPictureHorizontal = realParamWidth / abs(baseLeft - baseRight),
+    )
+}
+
 fun PositioningEntity.updateInitialPositioningState(): PositioningEntity {
     val opticCenterX = (if (eye == Eye.Left) 0.60 else 0.39) * screenWidth
     val opticCenterY = (if (eye == Eye.Left) 0.39 else 0.44) * screenHeight

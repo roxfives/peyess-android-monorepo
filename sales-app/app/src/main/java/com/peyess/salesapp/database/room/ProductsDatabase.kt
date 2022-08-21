@@ -36,6 +36,8 @@ import com.peyess.salesapp.dao.products.room.local_lens_base.LocalLensBaseDao
 import com.peyess.salesapp.dao.products.room.local_lens_base.LocalLensBaseEntity
 import com.peyess.salesapp.dao.products.room.local_lens_category_type.LocalLensCategoryTypeDao
 import com.peyess.salesapp.dao.products.room.local_lens_category_type.LocalLensCategoryTypeEntity
+import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
+import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp_manufacturer.LocalLensDispManufacturerDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp_manufacturer.LocalLensDispManufacturerEntity
 import com.peyess.salesapp.dao.products.room.local_lens_material_type.LocalLensMaterialTypeDao
@@ -54,6 +56,8 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
 
         LocalColoringEntity::class,
         LocalColoringDisplayEntity::class,
+
+        LocalLensDispEntity::class,
 
         LocalLensEntity::class,
         LocalLensBaseEntity::class,
@@ -75,7 +79,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
     ],
-    version = 2,
+    version = 13,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao
@@ -91,6 +95,8 @@ abstract class ProductsDatabase: RoomDatabase() {
     abstract fun localLensCategoryTypeDao(): LocalLensCategoryTypeDao
     abstract fun localLensDispManufacturerDao(): LocalLensDispManufacturerDao
     abstract fun localLensMaterialTypeDao(): LocalLensMaterialTypeDao
+
+    abstract fun localLensDispEntityDao(): LocalLensDispDao
 
     abstract fun localProdExpDao(): LocalProductExpDao
 

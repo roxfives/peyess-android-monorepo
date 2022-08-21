@@ -12,6 +12,7 @@ hilt {
 
 dependencies {
     implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.paging:paging-common-ktx:3.1.1")
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
@@ -65,6 +66,9 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-permissions:$accompanistVersion")
 
+    // Paging for compose
+    implementation("androidx.paging:paging-compose:1.0.0-alpha16")
+
     implementation("androidx.security:security-crypto:$androidCrypto")
 
     implementation("androidx.datastore:datastore-preferences:$dataStoreVersion")
@@ -73,9 +77,9 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
+    implementation("androidx.room:room-paging:$roomVersion")
     // To use Kotlin Symbol Processing (KSP)
 //    ksp("androidx.room:room-compiler:$room_version")
-
 
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 

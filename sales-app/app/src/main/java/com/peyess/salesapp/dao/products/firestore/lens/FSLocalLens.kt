@@ -17,6 +17,7 @@ import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupp
 import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpEntity
 import java.util.Date
 
 data class FSLocalLens(
@@ -297,7 +298,7 @@ data class FSLocalLens(
     val reasonLocalDisabled: String = "",
     @Keep
     @JvmField
-    @PropertyName("Price")
+    @PropertyName("price")
     val price: Double = 0.0,
     @Keep
     @JvmField
@@ -338,6 +339,15 @@ data class FSLocalLens(
     @PropertyName("updated_allowed_by")
     val updatedAllowedBy: String = "",
 )
+
+fun FSLocalLens.getExplanations(): List<LocalProductExpEntity> {
+    return explanations.map {
+        LocalProductExpEntity(
+            productId = id,
+            exp = it,
+        )
+    }
+}
 
 fun FSLocalLens.toFilterCategory(): FilterLensCategoryEntity {
     return FilterLensCategoryEntity(
@@ -472,21 +482,6 @@ fun FSLocalLens.toLocalLensEntity(): LocalLensEntity {
         isManufacturingLocal = isManufacturingLocal,
         isEnabled = isEnabled,
         reasonDisabled = reasonDisabled,
-
-
-//        maxCyl = maxCyl,
-//        minCyl = minCyl,
-//        maxSph = maxSph,
-//        minSph = minSph,
-//        maxAdd = maxAdd,
-//        minAdd = minAdd,
-//        hasPrism = hasPrism,
-//        prism = prism,
-//        prismPrice = prismPrice,
-//        prismCost = prismCost,
-//        separatePrism = separatePrism,
-//        needsCheck = needsCheck,
-//        sumRule = sumRule,
     )
 }
 

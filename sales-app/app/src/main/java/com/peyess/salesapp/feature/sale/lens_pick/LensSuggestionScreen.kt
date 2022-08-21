@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.lens_suggestion
+package com.peyess.salesapp.feature.sale.lens_pick
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,16 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BackdropScaffold
-import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.BackdropValue
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -37,58 +31,50 @@ import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
-import com.peyess.salesapp.feature.sale.lens_suggestion.model.LensSuggestionModel
-import com.peyess.salesapp.feature.sale.lens_suggestion.model.name
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
+import com.peyess.salesapp.feature.sale.lens_pick.model.name
+import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.ui.theme.Shapes
+import kotlinx.coroutines.flow.flow
+import timber.log.Timber
 
 @Composable
 fun LensSuggestionScreen(
     modifier: Modifier = Modifier,
     onLensPicked: () -> Unit = {},
 ) {
-    LensSuggestionScreenImpl(modifier = modifier)
+    val viewModel: LensPickViewModel = mavericksViewModel()
+
+    val lensList = viewModel.filteredLenses().collectAsLazyPagingItems()
+
+    LensSuggestionScreenImpl(
+        modifier = modifier,
+        lensesSearch = lensList,
+    )
 }
 
 @Composable
 private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
     suggestions: List<LensSuggestionModel> = listOf(),
-    lensesSearch: List<LensSuggestionModel> = listOf(),
+    lensesSearch: LazyPagingItems<LensSuggestionModel>,
 ) {
-    val lenses = mutableListOf<LensSuggestionModel>()
-    for (i in 1..100) {
-        lenses.add(
-            LensSuggestionModel(
-                id = "$i",
-                supplier = "Zeiss",
-                brand = "Acabadas",
-                design = "DuraVIsion BlueProtect",
-                tech = "Lente Pronta",
-                material = "1.60",
-                price = 10500.0,
-                observation = "As lentes ZEISS EnergizeMe foram feitas para usuários de lentes de contato",
-                explanations = listOf(
-                    "Evitam o aumento da tensão ocular",
-                    "Proteção premium contra os raios UV acima de 400nm",
-                    "Alta tecnologia aliada a uma Visão mais nítida",
-                ),
-            ),
-        )
-    }
-
     LensSuggestionList(
-        lenses = lenses,
+        lenses = lensesSearch,
     )
 }
 
@@ -112,7 +98,7 @@ private fun MainLensSuggestionCard(
 @Composable
 private fun LensSuggestionList(
     modifier: Modifier = Modifier,
-    lenses: List<LensSuggestionModel> = listOf(),
+    lenses: LazyPagingItems<LensSuggestionModel>,
 ) {
     val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
 
@@ -165,14 +151,24 @@ private fun LensSuggestionList(
                     modifier = Modifier.fillMaxSize(),
                     state = listState,
                 ) {
-                    itemsIndexed(
-                        items = lenses,
-                        key = { _, item -> item.id },
-                    ) { _, item ->
-                        LensCard(lens = item)
+                    items(lenses.itemCount) { index ->
+                        Timber.i("Displaying $index for ${lenses.itemCount}")
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        lenses[index].let {
+                            LensCard(lens = it!!)
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
                     }
+
+//                    itemsIndexed(
+//                        items = lenses,
+//                        key = { _, item -> item.id },
+//                    ) { _, item ->
+//                        LensCard(lens = item)
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
+//                    }
                 }
             }
         },
@@ -199,14 +195,33 @@ private fun LensCard(
                 modifier = Modifier
                     .height(60.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                LensCircle()
+                LensCircle(
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        if (lens.needsCheck) {
+                            Color.Yellow
+                        } else {
+                            Color.Green
+                        }
+                    } else {
+                        Color.Gray
+                    }
+                )
 
                 Spacer(modifier = Modifier.width(32.dp))
 
-                Text(text = lens.name())
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = lens.name(),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray
+                    }
+                )
             }
         },
 
@@ -217,7 +232,11 @@ private fun LensCard(
             ) {
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                    } else {
+                        Color.Gray
+                    }
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -225,6 +244,11 @@ private fun LensCard(
                     text = lens.supplier,
                     style = MaterialTheme.typography.body1
                         .copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -232,13 +256,22 @@ private fun LensCard(
                     text = lens.observation,
                     style = MaterialTheme.typography.body1
                         .copy(textAlign = TextAlign.Center),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray
+                    }
                 )
 
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 120.dp),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                    } else {
+                        Color.Gray
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -254,6 +287,11 @@ private fun LensCard(
                                 .padding(8.dp),
                             text = lens.explanations[0],
                             style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                Color.Gray
+                            },
                         )
                     }
 
@@ -264,6 +302,11 @@ private fun LensCard(
                                 .padding(8.dp),
                             text = lens.explanations[1],
                             style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                                MaterialTheme.colors.primary
+                            } else {
+                                Color.Gray
+                            },
                         )
                     }
                 }
@@ -274,13 +317,22 @@ private fun LensCard(
                         modifier = Modifier.fillMaxWidth(),
                         text = lens.explanations[2],
                         style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            Color.Gray
+                        },
                     )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                    } else {
+                        Color.Gray.copy(alpha = 0.3f)
+                    }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -289,13 +341,29 @@ private fun LensCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     // TODO: add installments from store config data
-                    LensPrice(price = lens.price, installments = 10.0)
+                    LensPrice(
+                        price = lens.price,
+                        installments = 10.0,
+                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                        } else {
+                            Color.Gray
+                        }
+                    )
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(
+                        enabled = lens.supportedDisponibilitites.isNotEmpty(),
+                        onClick = { /*TODO*/ }
+                    ) {
                         Text(
-                            text = stringResource(id = R.string.lens_suggestion_select).uppercase()
+                            text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
+                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                                MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                            } else {
+                                Color.Gray
+                            }
                         )
                     }
                 }
@@ -309,6 +377,7 @@ private fun LensCard(
 @Composable
 private fun LensPrice(
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
     price: Double = 2500.0,
     installments: Double = 10.0,
 ) {
@@ -322,12 +391,14 @@ private fun LensPrice(
                 .align(Alignment.Center),
             text = "${price / installments}",
             style = MaterialTheme.typography.h6,
+            color = color,
         )
 
         Text(
             modifier = Modifier.align(Alignment.BottomEnd),
             text = "$installments X",
             style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+            color = color,
         )
     }
 }

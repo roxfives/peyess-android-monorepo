@@ -8,6 +8,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
+import com.peyess.salesapp.dao.sale.frames_measure.updateProportion
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
@@ -293,6 +294,9 @@ class FramesMeasureViewModel @AssistedInject constructor(
     }
 
     fun onFinishMeasure() = setState {
+        val positioning = positioning
+        saleRepository.updatePositioning(positioning.updateProportion())
+
         val parameters = copy().measuringParameters
         for (parameter in parameters.values) {
             parameter.isActive = false

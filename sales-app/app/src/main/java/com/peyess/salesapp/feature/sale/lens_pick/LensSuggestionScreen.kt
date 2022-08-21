@@ -14,21 +14,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.airbnb.mvrx.compose.collectAsState
@@ -45,11 +49,12 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.name
+import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.ui.component.card.ExpandableCard
+import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.ui.theme.Shapes
-import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 
 @Composable
@@ -59,11 +64,22 @@ fun LensSuggestionScreen(
 ) {
     val viewModel: LensPickViewModel = mavericksViewModel()
 
-    val lensList = viewModel.filteredLenses().collectAsLazyPagingItems()
+    val lazyLenses = viewModel.filteredLenses().collectAsLazyPagingItems()
+
+    val isFamilyLensFilterEnabled by
+        viewModel.collectAsState(LensPickState::isFamilyLensFilterEnabled)
+    val isDescriptionLensFilterEnabled by
+        viewModel.collectAsState(LensPickState::isDescriptionLensFilterEnabled)
+    val isMaterialLensFilterEnabled by
+        viewModel.collectAsState(LensPickState::isMaterialLensFilterEnabled)
 
     LensSuggestionScreenImpl(
         modifier = modifier,
-        lensesSearch = lensList,
+        lensesSearch = lazyLenses,
+
+        isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
+        isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
+        isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
     )
 }
 
@@ -72,9 +88,17 @@ private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
     suggestions: List<LensSuggestionModel> = listOf(),
     lensesSearch: LazyPagingItems<LensSuggestionModel>,
+
+    isFamilyLensFilterEnabled: Boolean = false,
+    isDescriptionLensFilterEnabled: Boolean = false,
+    isMaterialLensFilterEnabled: Boolean = false,
 ) {
     LensSuggestionList(
         lenses = lensesSearch,
+
+        isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
+        isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
+        isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
     )
 }
 
@@ -99,6 +123,10 @@ private fun MainLensSuggestionCard(
 private fun LensSuggestionList(
     modifier: Modifier = Modifier,
     lenses: LazyPagingItems<LensSuggestionModel>,
+
+    isFamilyLensFilterEnabled: Boolean = false,
+    isDescriptionLensFilterEnabled: Boolean = false,
+    isMaterialLensFilterEnabled: Boolean = false,
 ) {
     val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
 
@@ -112,8 +140,89 @@ private fun LensSuggestionList(
         appBar = {},
 
         backLayerContent = {
-            Column(Modifier.fillMaxSize()) {
-                Text("Testing field")
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_group),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_type),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_supplier),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_family),
+                        enabled = isFamilyLensFilterEnabled,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_description),
+                        enabled = isDescriptionLensFilterEnabled,
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = stringResource(id = R.string.lens_suggestion_filter_material),
+                        enabled = isMaterialLensFilterEnabled,
+                    )
+                }
             }
         },
         frontLayerContent = {
@@ -161,6 +270,45 @@ private fun LensSuggestionList(
                         }
                     }
 
+                    lenses.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading -> {
+                                item {
+                                    PeyessProgressIndicatorInfinite(
+                                        modifier = Modifier.fillParentMaxSize()
+                                    )
+                                }
+                            }
+
+                            loadState.append is LoadState.Loading -> {
+                                item { CircularProgressIndicator() }
+                            }
+
+                            loadState.refresh is LoadState.Error -> {
+                                val e = lenses.loadState.refresh as LoadState.Error
+
+                                item {
+                                    ErrorItem(
+                                        modifier = Modifier.fillParentMaxSize(),
+                                        message = e.error.localizedMessage!!,
+                                        onRetry = { retry() }
+                                    )
+                                }
+                            }
+
+                            loadState.append is LoadState.Error -> {
+                                val e = lenses.loadState.append as LoadState.Error
+
+                                item {
+                                    ErrorItem(
+                                        message = e.error.localizedMessage!!,
+                                        onRetry = { retry() }
+                                    )
+                                }
+                            }
+                        }
+                    }
+
 //                    itemsIndexed(
 //                        items = lenses,
 //                        key = { _, item -> item.id },
@@ -176,6 +324,51 @@ private fun LensSuggestionList(
         headerHeight = headerHeight,
         gesturesEnabled = true,
     )
+}
+
+@Composable
+private fun ErrorItem(
+   modifier: Modifier = Modifier,
+   message: String = "Aconteceu algo inesperado",
+   onRetry: () -> Unit = {}
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = message, style = MaterialTheme.typography.h6)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = onRetry) {
+            Text(text = stringResource(id = R.string.lens_suggestion_retry))
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun FilterButton(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    onClick: () -> Unit = {},
+    enabled: Boolean = true,
+) {
+    OutlinedButton(
+        modifier = modifier,
+        border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.onPrimary),
+        colors = ButtonDefaults
+            .buttonColors(
+                backgroundColor = MaterialTheme.colors.primary,
+                disabledBackgroundColor = Color.Gray.copy(alpha = 0.5f),
+            ),
+        enabled = enabled,
+        onClick = onClick,
+    ) {
+        Text(text = title, color = MaterialTheme.colors.onPrimary)
+    }
 }
 
 @Composable
@@ -345,7 +538,7 @@ private fun LensCard(
                         price = lens.price,
                         installments = 10.0,
                         color = if (lens.supportedDisponibilitites.isNotEmpty()) {
-                            MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                            MaterialTheme.colors.primary
                         } else {
                             Color.Gray
                         }
@@ -360,7 +553,7 @@ private fun LensCard(
                         Text(
                             text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
                             color = if (lens.supportedDisponibilitites.isNotEmpty()) {
-                                MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                                MaterialTheme.colors.primary
                             } else {
                                 Color.Gray
                             }
@@ -371,6 +564,14 @@ private fun LensCard(
             }
         }
     )
+}
+
+@Preview
+@Composable
+private fun ErrorItemPreview() {
+    SalesAppTheme {
+        ErrorItem()
+    }
 }
 
 @Preview
@@ -418,6 +619,14 @@ private fun LensCircle(
             .width(10.dp)
             .height(10.dp),
     )
+}
+
+@Preview
+@Composable
+private fun FilterButtonPreview() {
+    SalesAppTheme {
+        FilterButton(modifier = Modifier.width(120.dp), title = "Fornecedor")
+    }
 }
 
 @Preview

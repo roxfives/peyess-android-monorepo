@@ -162,6 +162,14 @@
     <!--  UI Component: Lens Suggestion  -->
     <string name="lens_suggestion_select">Comparar</string>
     <string name="lens_suggestion_search_lenses">Procurar por mais lentes</string>
+    <string name="lens_suggestion_filter_group">Categoria</string>
+    <string name="lens_suggestion_filter_type">Tipo</string>
+    <string name="lens_suggestion_filter_supplier">Fornecedor</string>
+    <string name="lens_suggestion_filter_family">Família</string>
+    <string name="lens_suggestion_filter_description">Descrição</string>
+    <string name="lens_suggestion_filter_material">Material</string>
+
+    <string name="lens_suggestion_retry">Tentar novamente</string>
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

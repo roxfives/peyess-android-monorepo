@@ -11,4 +11,15 @@ import kotlinx.coroutines.flow.flowOf
 
 data class LensPickState(
     val lenses: Flow<PagingData<LensSuggestionModel>> = flowOf(),
-): MavericksState
+
+    val groupLensFilter: String = "",
+    val typeLensFilter: String = "",
+    val supplierLensFilter: String = "",
+    val familyLensFilter: String = "",
+    val descriptionLensFilter: String = "",
+    val materialLensFilter: String = "",
+): MavericksState {
+    val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
+    val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()
+    val isMaterialLensFilterEnabled = supplierLensFilter.isNotEmpty()
+}

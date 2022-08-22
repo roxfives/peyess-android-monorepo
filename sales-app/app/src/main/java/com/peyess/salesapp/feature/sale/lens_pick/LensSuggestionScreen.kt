@@ -44,17 +44,30 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
+import com.airbnb.mvrx.appendAt
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
+import com.peyess.salesapp.model.products.LensGroup
+import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.ui.theme.Shapes
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.listItems
+import com.vanpra.composematerialdialogs.listItemsSingleChoice
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 
 @Composable
@@ -73,6 +86,9 @@ fun LensSuggestionScreen(
     val isMaterialLensFilterEnabled by
         viewModel.collectAsState(LensPickState::isMaterialLensFilterEnabled)
 
+    val lensGroups by viewModel.collectAsState(LensPickState::groupsFilter)
+    val lensGroupsFilter by viewModel.collectAsState(LensPickState::groupLensFilter)
+
     LensSuggestionScreenImpl(
         modifier = modifier,
         lensesSearch = lazyLenses,
@@ -80,7 +96,13 @@ fun LensSuggestionScreen(
         isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
         isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
         isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
+
+        selectedLensGroup = lensGroupsFilter,
+        lensGroups = lensGroups,
+        onPickGroup = viewModel::onPickGroup
     )
+
+
 }
 
 @Composable
@@ -92,14 +114,65 @@ private fun LensSuggestionScreenImpl(
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,
     isMaterialLensFilterEnabled: Boolean = false,
+
+    selectedLensGroup: String = "",
+    lensGroups: Async<List<LensGroup>> = Uninitialized,
+    onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 ) {
+    val groupDialogState = rememberMaterialDialogState()
+    PickGroupDialog(
+        dialogState = groupDialogState,
+        groups = lensGroups,
+        onPickGroup = onPickGroup,
+    )
+
     LensSuggestionList(
         lenses = lensesSearch,
 
         isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
         isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
         isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
+
+        selectedLensGroup = selectedLensGroup,
+        groupsDialogState = groupDialogState,
     )
+}
+
+@Composable
+private fun PickGroupDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    groups: Async<List<LensGroup>> = Uninitialized,
+    onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
+) {
+    val groupsList: List<LensGroup>
+
+    if (groups is Success) {
+        groupsList = groups.invoke()
+
+        MaterialDialog(
+            dialogState = dialogState,
+            buttons = {
+                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+            },
+        ) {
+            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_group_none))
+            val options = noneOption + groupsList.map { it.name }
+
+            title(res = R.string.dialog_select_prism_axis_title)
+
+            listItems(
+                list = options
+            ) { index, item ->
+                if (item == noneOption[0]) {
+                    onPickGroup("", "")
+                } else {
+                    onPickGroup(groupsList[index - 1].id, groupsList[index - 1].name)
+                }
+
+                dialogState.hide()
+            }
+        }
+    }
 }
 
 @Composable
@@ -127,6 +200,9 @@ private fun LensSuggestionList(
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,
     isMaterialLensFilterEnabled: Boolean = false,
+
+    selectedLensGroup: String = "",
+    groupsDialogState: MaterialDialogState = rememberMaterialDialogState(),
 ) {
     val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
 
@@ -155,7 +231,12 @@ private fun LensSuggestionList(
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
-                        title = stringResource(id = R.string.lens_suggestion_filter_group),
+                        title = if (selectedLensGroup.isEmpty()) {
+                            stringResource(id = R.string.lens_suggestion_filter_group)
+                        } else {
+                            selectedLensGroup
+                        },
+                        onClick = { groupsDialogState.show() }
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))

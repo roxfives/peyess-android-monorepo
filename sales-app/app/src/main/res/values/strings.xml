@@ -90,7 +90,7 @@
 
     <string name="dialog_select_prism_axis_title">Selecione a posição</string>
     <string name="dialog_select_prism_axis_ok">Selecionar</string>
-    <string name="dialog_select_prism_axis_cancel">Cancear</string>
+    <string name="dialog_select_prism_axis_cancel">Cancelar</string>
 
     <string name="mike_message_far">Coloque o seu grau para Longe</string>
     <string name="mike_message_near">Coloque o seu grau para Perto</string>
@@ -169,6 +169,20 @@
     <string name="lens_suggestion_filter_description">Descrição</string>
     <string name="lens_suggestion_filter_material">Material</string>
 
+    <string name="lens_suggestion_pick_group">Selecione a categoria</string>
+    <string name="lens_suggestion_pick_type">Selecione o tipo</string>
+    <string name="lens_suggestion_pick_supplier">Selecione o fornecedor</string>
+    <string name="lens_suggestion_pick_family">Selecione a família</string>
+    <string name="lens_suggestion_pick_description">Selecione a fescrição</string>
+    <string name="lens_suggestion_pick_material">Selecione o material</string>
+
+    <string name="lens_suggestion_pick_group_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_type_none">Qualquer um</string>
+    <string name="lens_suggestion_pick_supplier_none">Qualquer um</string>
+    <string name="lens_suggestion_pick_family_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_description_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_material_none">Qualquer um</string>
+
     <string name="lens_suggestion_retry">Tentar novamente</string>
 
     <!-- Firestore collections   -->
@@ -176,9 +190,12 @@
     <string name="fs_col_store">optical_stores</string>
     <string name="fs_col_lenses">optical_stores/%1$s/local_optical_lenses</string>
     <string name="fs_col_lenses_types_category">lenses_types_category</string>
+    <string name="fs_col_lenses_groups">lenses_default_groups</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
     <string name="fs_field_lenses_types_category_name">name</string>
     <string name="fs_field_lenses_types_category_priority">priority</string>
+
+    <string name="fs_field_lenses_group_priority">priority</string>
 </resources>

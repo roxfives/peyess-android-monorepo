@@ -20,10 +20,16 @@ class LensPickViewModel @AssistedInject constructor(
     private val productRepository: ProductRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
-    private val lenses: Flow<PagingData<LensSuggestionModel>> =
+    private var lenses: Flow<PagingData<LensSuggestionModel>> =
         productRepository.filteredLenses(lensFilter = LensFilter())
 
     init {
+        loadLensGroups()
+
+        onEach(LensPickState::groupLensFilterId) {
+            lenses = productRepository.filteredLenses(lensFilter = LensFilter())
+        }
+
         onEach(LensPickState::supplierLensFilter) {
             if (it.isEmpty()) {
                 setState {
@@ -31,14 +37,31 @@ class LensPickViewModel @AssistedInject constructor(
                         familyLensFilter = "",
                         descriptionLensFilter = "",
                         materialLensFilter = "",
+
+                        familyLensFilterId = "",
+                        descriptionLensFilterId = "",
+                        materialLensFilterId = "",
                     )
                 }
             }
         }
     }
 
+    private fun loadLensGroups() = withState {
+        productRepository.lensGroups().execute {
+            copy(groupsFilter = it)
+        }
+    }
+
     fun filteredLenses(): Flow<PagingData<LensSuggestionModel>> {
         return lenses
+    }
+
+    fun onPickGroup(groupId: String, groupName: String) = setState {
+        copy(
+            groupLensFilterId = groupId,
+            groupLensFilter = groupName,
+        )
     }
 
     @AssistedFactory

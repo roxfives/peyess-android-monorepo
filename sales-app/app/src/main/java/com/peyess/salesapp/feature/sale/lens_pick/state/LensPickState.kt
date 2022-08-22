@@ -6,6 +6,8 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
+import com.peyess.salesapp.model.products.LensGroup
+import com.peyess.salesapp.model.products.LensTypeCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -18,6 +20,15 @@ data class LensPickState(
     val familyLensFilter: String = "",
     val descriptionLensFilter: String = "",
     val materialLensFilter: String = "",
+
+    val groupLensFilterId: String = "",
+    val typeLensFilterId: String = "",
+    val supplierLensFilterId: String = "",
+    val familyLensFilterId: String = "",
+    val descriptionLensFilterId: String = "",
+    val materialLensFilterId: String = "",
+
+    val groupsFilter: Async<List<LensGroup>> = Uninitialized,
 ): MavericksState {
     val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
     val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()

@@ -6,6 +6,7 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
+import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
@@ -82,12 +83,14 @@ object RepositoryModule {
         localLensDao: LocalLensDao,
         lensDispDao: LocalLensDispDao,
         lensProductExpDao: LocalProductExpDao,
+        lensGroupDao: LensGroupDao,
         saleRepository: SaleRepository,
     ): ProductRepository {
         return ProductRepositoryImpl(
             localLensDao,
             lensDispDao,
             lensProductExpDao,
+            lensGroupDao,
             saleRepository,
         )
     }

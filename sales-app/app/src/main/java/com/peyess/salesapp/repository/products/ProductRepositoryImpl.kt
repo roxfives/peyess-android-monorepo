@@ -6,18 +6,19 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toSuggestionModel
+import com.peyess.salesapp.model.products.LensGroup
 import com.peyess.salesapp.repository.sale.SaleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -36,15 +37,19 @@ class ProductRepositoryImpl @Inject constructor(
     private val localLensesDao: LocalLensDao,
     private val localLensDispDao: LocalLensDispDao,
     private val localProductExpDao: LocalProductExpDao,
+    private val lensGroupDao: LensGroupDao,
     private val saleRepository: SaleRepository,
 ): ProductRepository {
     private fun buildQuery(lensFilter: LensFilter): SimpleSQLiteQuery {
-        val query = SimpleSQLiteQuery(
-            "SELECT * FROM ${LocalLensEntity.tableName} " +
-                    "ORDER BY priority DESC"
-        )
+        var queryString = "SELECT * FROM ${LocalLensEntity.tableName} "
 
-        return query
+        if (lensFilter.groupId.isNotEmpty()) {
+            queryString += "WHERE group_id == ${lensFilter.groupId} "
+        }
+
+        queryString += "ORDER BY priority ASC"
+
+        return SimpleSQLiteQuery(queryString)
     }
 
     private fun isLensSupported(
@@ -175,5 +180,9 @@ class ProductRepositoryImpl @Inject constructor(
                 lensSuggestionModel
             }
         }
+    }
+
+    override fun lensGroups(): Flow<List<LensGroup>> {
+        return lensGroupDao.groups()
     }
 }

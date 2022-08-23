@@ -3,6 +3,7 @@ package com.peyess.salesapp.database.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
@@ -31,7 +32,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         FramesEntity::class,
         PositioningEntity::class,
     ],
-    version = 16,
+    version = 18,
 )
 @TypeConverters(
     ConverterLocalDate::class,

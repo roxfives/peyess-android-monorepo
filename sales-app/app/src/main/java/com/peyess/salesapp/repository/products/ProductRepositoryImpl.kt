@@ -6,7 +6,14 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
+import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
+import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
@@ -19,6 +26,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toSuggestionModel
 import com.peyess.salesapp.model.products.LensGroup
+import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.sale.SaleRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -38,16 +46,54 @@ class ProductRepositoryImpl @Inject constructor(
     private val localLensDispDao: LocalLensDispDao,
     private val localProductExpDao: LocalProductExpDao,
     private val lensGroupDao: LensGroupDao,
+    private val lensTypeDao: FilterLensTypeDao,
+    private val lensSupplierDao: FilterLensSupplierDao,
+    private val lensMaterialDao: FilterLensMaterialDao,
     private val saleRepository: SaleRepository,
 ): ProductRepository {
     private fun buildQuery(lensFilter: LensFilter): SimpleSQLiteQuery {
         var queryString = "SELECT * FROM ${LocalLensEntity.tableName} "
+        val queryConditions = mutableListOf<String>()
+
 
         if (lensFilter.groupId.isNotEmpty()) {
-            queryString += "WHERE group_id == ${lensFilter.groupId} "
+            queryConditions.add(" group_id = \'${lensFilter.groupId}\' ")
         }
 
-        queryString += "ORDER BY priority ASC"
+        if (lensFilter.lensTypeId.isNotEmpty()) {
+            queryConditions.add(" type_id = \'${lensFilter.lensTypeId}\' ")
+        }
+
+        if (lensFilter.supplierId.isNotEmpty()) {
+            queryConditions.add(" supplier_id = \'${lensFilter.supplierId}\' ")
+        }
+
+        if (lensFilter.materialId.isNotEmpty()) {
+            queryConditions.add(" material_id = \'${lensFilter.materialId}\' ")
+        }
+
+        if (lensFilter.familyId.isNotEmpty()) {
+            queryConditions.add(" family_id = \'${lensFilter.familyId}\' ")
+        }
+
+        if (lensFilter.descriptionId.isNotEmpty()) {
+            queryConditions.add(" description_id = \'${lensFilter.descriptionId}\' ")
+        }
+
+        var conditions = if (queryConditions.size > 0) {
+            " WHERE ${queryConditions[0]} "
+        } else {
+            ""
+        }
+
+        if (queryConditions.size > 1) {
+            for (i in 1 until queryConditions.size) {
+                conditions += " AND ${queryConditions[i]}"
+            }
+        }
+
+
+        queryString += "$conditions ORDER BY priority ASC"
 
         return SimpleSQLiteQuery(queryString)
     }
@@ -184,5 +230,17 @@ class ProductRepositoryImpl @Inject constructor(
 
     override fun lensGroups(): Flow<List<LensGroup>> {
         return lensGroupDao.groups()
+    }
+
+    override fun lensTypes(): Flow<List<FilterLensTypeEntity>> {
+        return lensTypeDao.getAll()
+    }
+
+    override fun lensSuppliers(): Flow<List<FilterLensSupplierEntity>> {
+        return lensSupplierDao.getAll()
+    }
+
+    override fun lensMaterialDao(supplierId: String): Flow<List<FilterLensMaterialEntity>> {
+        return lensMaterialDao.getAllWithSupplier(supplierId)
     }
 }

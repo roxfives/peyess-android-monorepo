@@ -25,31 +25,87 @@ class LensPickViewModel @AssistedInject constructor(
 
     init {
         loadLensGroups()
+        loadLensTypes()
+        loadLensSuppliers()
 
-        onEach(LensPickState::groupLensFilterId) {
-            lenses = productRepository.filteredLenses(lensFilter = LensFilter())
+        onEach(LensPickState::filter) {
+            lenses = productRepository.filteredLenses(lensFilter = it)
         }
 
-        onEach(LensPickState::supplierLensFilter) {
-            if (it.isEmpty()) {
-                setState {
-                    copy(
-                        familyLensFilter = "",
-                        descriptionLensFilter = "",
-                        materialLensFilter = "",
+        onEach(LensPickState::groupLensFilterId) {
+            setState { copy(filter = filter.copy(groupId = it)) }
+        }
 
-                        familyLensFilterId = "",
-                        descriptionLensFilterId = "",
-                        materialLensFilterId = "",
-                    )
+        onEach(LensPickState::typeLensFilterId) {
+            setState { copy(filter = filter.copy(lensTypeId = it)) }
+        }
+
+        onEach(LensPickState::materialLensFilterId) {
+            setState { copy(filter = filter.copy(materialId = it)) }
+        }
+
+        onEach(LensPickState::supplierLensFilterId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        supplierId = it,
+                        materialId = "",
+                        familyId = "",
+                        descriptionId = "",
+                    ),
+
+                    materialLensFilter = "",
+                    materialLensFilterId = "",
+
+                    familyLensFilter = "",
+                    familyLensFilterId = "",
+
+                    descriptionLensFilter = "",
+                    descriptionLensFilterId = "",
+                )
+            }
+
+            withState {  state ->
+                if (it.isNotEmpty()) {
+                    productRepository.lensMaterialDao(it).execute { materials ->
+                        copy(materialFilter = materials)
+                    }
                 }
             }
         }
+
+//        onEach(LensPickState::supplierLensFilter) {
+//            if (it.isEmpty()) {
+//                setState {
+//                    copy(
+//                        familyLensFilter = "",
+//                        descriptionLensFilter = "",
+//                        materialLensFilter = "",
+//
+//                        familyLensFilterId = "",
+//                        descriptionLensFilterId = "",
+//                        materialLensFilterId = "",
+//                    )
+//                }
+//            }
+//        }
     }
 
     private fun loadLensGroups() = withState {
         productRepository.lensGroups().execute {
             copy(groupsFilter = it)
+        }
+    }
+
+    private fun loadLensTypes() = withState {
+        productRepository.lensTypes().execute {
+            copy(typesFilter = it)
+        }
+    }
+
+    private fun loadLensSuppliers() = withState {
+        productRepository.lensSuppliers().execute {
+            copy(supplierFilter = it)
         }
     }
 
@@ -61,6 +117,30 @@ class LensPickViewModel @AssistedInject constructor(
         copy(
             groupLensFilterId = groupId,
             groupLensFilter = groupName,
+        )
+    }
+
+
+    fun onPickType(typeId: String, typeName: String) = setState {
+        copy(
+            typeLensFilterId = typeId,
+            typeLensFilter = typeName,
+        )
+    }
+
+
+    fun onPickSupplier(supplierId: String, supplierName: String) = setState {
+        copy(
+            supplierLensFilterId = supplierId,
+            supplierLensFilter = supplierName,
+        )
+    }
+
+
+    fun onPickMaterial(materialId: String, materialName: String) = setState {
+        copy(
+            materialLensFilterId = materialId,
+            materialLensFilter = materialName,
         )
     }
 

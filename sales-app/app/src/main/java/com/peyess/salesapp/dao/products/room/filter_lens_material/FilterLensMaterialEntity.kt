@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
+    tableName = FilterLensMaterialEntity.tableName,
     foreignKeys = [
         ForeignKey(
             entity = LocalLensEntity::class,
@@ -18,6 +19,7 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 data class FilterLensMaterialEntity(
     @PrimaryKey val id: String = "",
     @ColumnInfo(name = "lens_id") val lensId: String = "",
+    @ColumnInfo(name = "supplier_id") val supplierId: String = "",
     @ColumnInfo(name = "name") val name: String = "",
 ) {
     companion object {

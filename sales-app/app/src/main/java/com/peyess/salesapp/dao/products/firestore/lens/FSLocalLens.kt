@@ -393,6 +393,7 @@ fun FSLocalLens.toFilterLensMaterial(): FilterLensMaterialEntity {
     return FilterLensMaterialEntity(
         id = materialId,
         lensId = id,
+        supplierId = supplierId,
         name = material,
     )
 }
@@ -408,7 +409,6 @@ fun FSLocalLens.toFilterLensSpecialty(): FilterLensSpecialtyEntity {
 fun FSLocalLens.toFilterLensSupplier(): FilterLensSupplierEntity {
     return FilterLensSupplierEntity(
         id = supplierId,
-        lensId = id,
         name = supplier,
     )
 }
@@ -424,7 +424,6 @@ fun FSLocalLens.toFilterLensTech(): FilterLensTechEntity {
 fun FSLocalLens.toFilterLensType(): FilterLensTypeEntity {
     return FilterLensTypeEntity(
         id = typeId,
-        lensId = id,
         name = type,
     )
 }

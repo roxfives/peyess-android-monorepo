@@ -21,11 +21,9 @@ import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensSupplier
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensTech
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensType
 import com.peyess.salesapp.dao.products.firestore.lens.toLocalLensEntity
-import com.peyess.salesapp.dao.products.firestore.lens_coloring.FSLensColoring
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
-import com.peyess.salesapp.model.users.Collaborator
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -142,7 +140,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         try {
             val materialFilter = lens.toFilterLensMaterial()
 
-            productsDatabase.filterLensMaterialEntity().add(materialFilter)
+            productsDatabase.filterLensMaterialDao().add(materialFilter)
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
@@ -162,7 +160,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         try {
             val supplierFilter = lens.toFilterLensSupplier()
 
-            productsDatabase.filterLensSupplierEntity().add(supplierFilter)
+            productsDatabase.filterLensSupplierDao().add(supplierFilter)
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
@@ -182,7 +180,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         try {
             val type = lens.toFilterLensType()
 
-            productsDatabase.filterLensTypeEntity().add(type)
+            productsDatabase.filterLensTypeDao().add(type)
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
@@ -192,7 +190,8 @@ class UpdateProductsWorker @AssistedInject constructor(
 
     private fun clearAllProducts() {
         Timber.i("Clearing all current local products")
-        productsDatabase.clearAllTables()
+        // TODO: fix foreign key problem
+//        productsDatabase.clearAllTables()
     }
 
     override suspend fun doWork(): Result {

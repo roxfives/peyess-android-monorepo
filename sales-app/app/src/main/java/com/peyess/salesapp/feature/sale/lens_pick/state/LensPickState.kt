@@ -5,6 +5,8 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
@@ -22,21 +24,23 @@ data class LensPickState(
     val groupLensFilter: String = "",
     val typeLensFilter: String = "",
     val supplierLensFilter: String = "",
+    val materialLensFilter: String = "",
     val familyLensFilter: String = "",
     val descriptionLensFilter: String = "",
-    val materialLensFilter: String = "",
 
     val groupLensFilterId: String = "",
     val typeLensFilterId: String = "",
     val supplierLensFilterId: String = "",
+    val materialLensFilterId: String = "",
     val familyLensFilterId: String = "",
     val descriptionLensFilterId: String = "",
-    val materialLensFilterId: String = "",
 
     val groupsFilter: Async<List<LensGroup>> = Uninitialized,
     val typesFilter: Async<List<FilterLensTypeEntity>> = Uninitialized,
     val supplierFilter: Async<List<FilterLensSupplierEntity>> = Uninitialized,
     val materialFilter: Async<List<FilterLensMaterialEntity>> = Uninitialized,
+    val familyFilter: Async<List<FilterLensFamilyEntity>> = Uninitialized,
+    val descriptionFilter: Async<List<LensDescription>> = Uninitialized,
 ): MavericksState {
     val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
     val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()

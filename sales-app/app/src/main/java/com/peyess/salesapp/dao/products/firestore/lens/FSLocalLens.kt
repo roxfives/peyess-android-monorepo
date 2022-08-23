@@ -368,7 +368,6 @@ fun FSLocalLens.toFilterLensCategory(): FilterLensCategoryEntity {
 fun FSLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
     return FilterLensDescriptionEntity(
         id = designId,
-        lensId = id,
         name = design,
     )
 }
@@ -376,8 +375,8 @@ fun FSLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
 fun FSLocalLens.toFilterLensFamily(): FilterLensFamilyEntity {
     return FilterLensFamilyEntity(
         id = brandId,
-        lensId = id,
         name = brand,
+        supplierId = supplierId,
     )
 }
 

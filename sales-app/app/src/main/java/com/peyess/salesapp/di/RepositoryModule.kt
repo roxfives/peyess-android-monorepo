@@ -6,7 +6,10 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
@@ -90,6 +93,8 @@ object RepositoryModule {
         filterLensTypeDao: FilterLensTypeDao,
         lensSupplierDao: FilterLensSupplierDao,
         lensMaterialDao: FilterLensMaterialDao,
+        lensFamilyDao: FilterLensFamilyDao,
+        lensDescriptionDao: LensDescriptionDao,
         saleRepository: SaleRepository,
     ): ProductRepository {
         return ProductRepositoryImpl(
@@ -100,6 +105,8 @@ object RepositoryModule {
             filterLensTypeDao,
             lensSupplierDao,
             lensMaterialDao,
+            lensFamilyDao,
+            lensDescriptionDao,
             saleRepository,
         )
     }

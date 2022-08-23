@@ -9,8 +9,11 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensCategoryDaoImpl
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDaoImpl
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
@@ -70,7 +73,6 @@ object DaoModule {
         return LensCategoryDaoImpl(application, firebaseManager)
     }
 
-
     @Singleton
     @Provides
     fun provideLensGroupDao(
@@ -78,6 +80,15 @@ object DaoModule {
         application: SalesApplication,
     ): LensGroupDao {
         return LensGroupDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideLensDescriptionDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): LensDescriptionDao {
+        return LensDescriptionDaoImpl(application, firebaseManager)
     }
 
     @Singleton
@@ -180,6 +191,12 @@ object DaoModule {
     @Provides
     fun provideFilterLensMaterialDao(productsDatabase: ProductsDatabase): FilterLensMaterialDao {
         return productsDatabase.filterLensMaterialDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFilterLensFamilyDao(productsDatabase: ProductsDatabase): FilterLensFamilyDao {
+        return productsDatabase.filterLensFamilyDao()
     }
 
     @Singleton

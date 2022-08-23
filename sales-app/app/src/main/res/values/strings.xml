@@ -183,6 +183,7 @@
     <string name="lens_suggestion_pick_description_none">Qualquer uma</string>
     <string name="lens_suggestion_pick_material_none">Qualquer um</string>
 
+    <string name="lens_suggestion_no_results">Não encontramos nenhuma lente compatível com o seu filtro</string>
     <string name="lens_suggestion_retry">Tentar novamente</string>
 
     <!-- Firestore collections   -->
@@ -191,11 +192,15 @@
     <string name="fs_col_lenses">optical_stores/%1$s/local_optical_lenses</string>
     <string name="fs_col_lenses_types_category">lenses_types_category</string>
     <string name="fs_col_lenses_groups">lenses_default_groups</string>
+    <string name="fs_col_family">lenses_designs</string>
+    <string name="fs_col_description">lenses_designs</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
     <string name="fs_field_lenses_types_category_name">name</string>
     <string name="fs_field_lenses_types_category_priority">priority</string>
+    <string name="fs_field_description_families_ids">families_ids</string>
+
 
     <string name="fs_field_lenses_group_priority">priority</string>
 </resources>

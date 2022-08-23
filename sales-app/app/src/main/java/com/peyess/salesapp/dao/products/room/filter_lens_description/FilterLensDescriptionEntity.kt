@@ -7,18 +7,13 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-        )
-    ]
+    tableName = FilterLensDescriptionEntity.tableName
 )
 data class FilterLensDescriptionEntity(
     @PrimaryKey val id: String = "",
-    @ColumnInfo(name = "lens_id") val lensId: String = "",
     @ColumnInfo(name = "name") val name: String = "",
+    @ColumnInfo(name = "priority") val priority: Double = 0.0,
+    @ColumnInfo(name = "family_id") val familyId: String = "",
 ) {
     companion object {
         const val tableName = "filter_lens_description"

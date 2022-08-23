@@ -12,7 +12,6 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.products.firestore.lens.FSLocalLens
 import com.peyess.salesapp.dao.products.firestore.lens.getExplanations
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterCategory
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensDescription
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensFamily
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensGroup
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensMaterial
@@ -108,26 +107,6 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
 
         try {
-            val descriptionFilter = lens.toFilterLensDescription()
-
-            productsDatabase.filterLensDescriptionEntity().add(descriptionFilter)
-        } catch (e: SQLiteConstraintException) {
-            // Just ignore this error, collisions will happen
-        } catch (e: Throwable) {
-            Timber.e(e, "Error while inserting lens filter for description")
-        }
-
-        try {
-            val familyFilter = lens.toFilterLensFamily()
-
-            productsDatabase.filterLensFamilyEntity().add(familyFilter)
-        } catch (e: SQLiteConstraintException) {
-            // Just ignore this error, collisions will happen
-        } catch (e: Throwable) {
-            Timber.e(e, "Error while inserting lens filter for family")
-        }
-
-        try {
             val groupFilter = lens.toFilterLensGroup()
 
             productsDatabase.filterLensGroupEntity().add(groupFilter)
@@ -181,6 +160,16 @@ class UpdateProductsWorker @AssistedInject constructor(
             val type = lens.toFilterLensType()
 
             productsDatabase.filterLensTypeDao().add(type)
+        } catch (e: SQLiteConstraintException) {
+            // Just ignore this error, collisions will happen
+        } catch (e: Throwable) {
+            Timber.e(e, "Error while inserting lens filter for ")
+        }
+
+        try {
+            val family = lens.toFilterLensFamily()
+
+            productsDatabase.filterLensFamilyDao().add(family)
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {

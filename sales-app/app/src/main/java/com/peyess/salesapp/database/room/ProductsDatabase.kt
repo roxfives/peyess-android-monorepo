@@ -4,13 +4,13 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.peyess.salesapp.dao.products.room.filter_lens_category.FilterLensCategoryEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_description.FilterLensDescriptionEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_group.FilterLensGroupEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensCategoryDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensDescriptionDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
@@ -79,7 +79,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
     ],
-    version = 22,
+    version = 23,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao
@@ -104,7 +104,7 @@ abstract class ProductsDatabase: RoomDatabase() {
 
     abstract fun filterLensCategoryEntity(): FilterLensCategoryDao
     abstract fun filterLensDescriptionEntity(): FilterLensDescriptionDao
-    abstract fun filterLensFamilyEntity(): FilterLensFamilyDao
+    abstract fun filterLensFamilyDao(): FilterLensFamilyDao
     abstract fun filterLensGroupEntity(): FilterLensGroupDao
     abstract fun filterLensMaterialDao(): FilterLensMaterialDao
     abstract fun filterLensSpecialtyEntity(): FilterLensSpecialtyDao

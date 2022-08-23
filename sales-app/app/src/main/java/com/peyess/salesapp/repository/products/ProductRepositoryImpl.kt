@@ -7,7 +7,11 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
@@ -49,6 +53,8 @@ class ProductRepositoryImpl @Inject constructor(
     private val lensTypeDao: FilterLensTypeDao,
     private val lensSupplierDao: FilterLensSupplierDao,
     private val lensMaterialDao: FilterLensMaterialDao,
+    private val lensFamilyDao: FilterLensFamilyDao,
+    private val lensDescriptionDao: LensDescriptionDao,
     private val saleRepository: SaleRepository,
 ): ProductRepository {
     private fun buildQuery(lensFilter: LensFilter): SimpleSQLiteQuery {
@@ -73,11 +79,11 @@ class ProductRepositoryImpl @Inject constructor(
         }
 
         if (lensFilter.familyId.isNotEmpty()) {
-            queryConditions.add(" family_id = \'${lensFilter.familyId}\' ")
+            queryConditions.add(" brand_id = \'${lensFilter.familyId}\' ")
         }
 
         if (lensFilter.descriptionId.isNotEmpty()) {
-            queryConditions.add(" description_id = \'${lensFilter.descriptionId}\' ")
+            queryConditions.add(" design_id = \'${lensFilter.descriptionId}\' ")
         }
 
         var conditions = if (queryConditions.size > 0) {
@@ -240,7 +246,15 @@ class ProductRepositoryImpl @Inject constructor(
         return lensSupplierDao.getAll()
     }
 
-    override fun lensMaterialDao(supplierId: String): Flow<List<FilterLensMaterialEntity>> {
+    override fun lensMaterial(supplierId: String): Flow<List<FilterLensMaterialEntity>> {
         return lensMaterialDao.getAllWithSupplier(supplierId)
+    }
+
+    override fun lensFamily(supplierId: String): Flow<List<FilterLensFamilyEntity>> {
+        return lensFamilyDao.getFamiliesWithSupplier(supplierId)
+    }
+
+    override fun lensDescription(familyId: String): Flow<List<LensDescription>> {
+        return lensDescriptionDao.descriptionsFor(familyId)
     }
 }

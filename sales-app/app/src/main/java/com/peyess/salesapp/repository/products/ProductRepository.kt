@@ -1,6 +1,8 @@
 package com.peyess.salesapp.repository.products
 
 import androidx.paging.PagingData
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
@@ -25,5 +27,7 @@ interface ProductRepository {
     fun lensGroups(): Flow<List<LensGroup>>
     fun lensTypes(): Flow<List<FilterLensTypeEntity>>
     fun lensSuppliers(): Flow<List<FilterLensSupplierEntity>>
-    fun lensMaterialDao(supplierId: String): Flow<List<FilterLensMaterialEntity>>
+    fun lensMaterial(supplierId: String): Flow<List<FilterLensMaterialEntity>>
+    fun lensFamily(supplierId: String): Flow<List<FilterLensFamilyEntity>>
+    fun lensDescription(familyId: String): Flow<List<LensDescription>>
 }

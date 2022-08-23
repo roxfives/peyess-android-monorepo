@@ -44,12 +44,19 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
@@ -97,6 +104,12 @@ fun LensSuggestionScreen(
     val lensMaterial by viewModel.collectAsState(LensPickState::materialFilter)
     val lensMaterialFilter by viewModel.collectAsState(LensPickState::materialLensFilter)
 
+    val lensFamily by viewModel.collectAsState(LensPickState::familyFilter)
+    val lensFamilyFilter by viewModel.collectAsState(LensPickState::familyLensFilter)
+
+    val lensDescription by viewModel.collectAsState(LensPickState::descriptionFilter)
+    val lensDescriptionFilter by viewModel.collectAsState(LensPickState::descriptionLensFilter)
+
 
     LensSuggestionScreenImpl(
         modifier = modifier,
@@ -121,6 +134,14 @@ fun LensSuggestionScreen(
         selectedLensMaterial = lensMaterialFilter,
         lensMaterials = lensMaterial,
         onPickMaterial = viewModel::onPickMaterial,
+
+        selectedLensFamily = lensFamilyFilter,
+        lensFamilies = lensFamily,
+        onPickFamily = viewModel::onPickFamily,
+
+        selectedLensDescription = lensDescriptionFilter,
+        lensDescriptions = lensDescription,
+        onPickDescription = viewModel::onPickDescription,
     )
 }
 
@@ -149,6 +170,14 @@ private fun LensSuggestionScreenImpl(
     selectedLensMaterial: String = "",
     lensMaterials: Async<List<FilterLensMaterialEntity>> = Uninitialized,
     onPickMaterial: (materialId: String, materialName: String) -> Unit = { _, _ -> },
+
+    selectedLensFamily: String = "",
+    lensFamilies: Async<List<FilterLensFamilyEntity>> = Uninitialized,
+    onPickFamily: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
+
+    selectedLensDescription: String = "",
+    lensDescriptions: Async<List<LensDescription>> = Uninitialized,
+    onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
 ) {
     val groupDialogState = rememberMaterialDialogState()
     PickGroupDialog(
@@ -178,6 +207,20 @@ private fun LensSuggestionScreenImpl(
         onPickMaterial = onPickMaterial,
     )
 
+    val familyDialogState = rememberMaterialDialogState()
+    PickFamilyDialog(
+        dialogState = familyDialogState,
+        families = lensFamilies,
+        onPickFamily = onPickFamily,
+    )
+
+    val descriptionDialogState = rememberMaterialDialogState()
+    PickDescriptionDialog(
+        dialogState = descriptionDialogState,
+        descriptions = lensDescriptions,
+        onPickDescription = onPickDescription,
+    )
+
     LensSuggestionList(
         lenses = lensesSearch,
 
@@ -196,6 +239,12 @@ private fun LensSuggestionScreenImpl(
 
         selectedLensMaterial = selectedLensMaterial,
         materialsDialogState = materialDialogState,
+
+        selectedLensFamily = selectedLensFamily,
+        familiesDialogState = familyDialogState,
+
+        selectedLensDescription = selectedLensDescription,
+        descriptionsDialogState = descriptionDialogState,
     )
 }
 
@@ -348,6 +397,80 @@ private fun PickMaterialDialog(
 }
 
 @Composable
+private fun PickFamilyDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    families: Async<List<FilterLensFamilyEntity>> = Uninitialized,
+    onPickFamily: (familyId: String, familyName: String) -> Unit = { _, _ -> },
+) {
+    val familiesList: List<FilterLensFamilyEntity>
+
+    if (families is Success) {
+        familiesList = families.invoke()
+
+        MaterialDialog(
+            dialogState = dialogState,
+            buttons = {
+                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+            },
+        ) {
+            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
+            val options = noneOption + familiesList.map { it.name }
+
+            title(res = R.string.dialog_select_prism_axis_title)
+
+            listItems(
+                list = options
+            ) { index, item ->
+                if (item == noneOption[0]) {
+                    onPickFamily("", "")
+                } else {
+                    onPickFamily(familiesList[index - 1].id, familiesList[index - 1].name)
+                }
+
+                dialogState.hide()
+            }
+        }
+    }
+}
+
+@Composable
+private fun PickDescriptionDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    descriptions: Async<List<LensDescription>> = Uninitialized,
+    onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
+) {
+    val familiesList: List<LensDescription>
+
+    if (descriptions is Success) {
+        familiesList = descriptions.invoke()
+
+        MaterialDialog(
+            dialogState = dialogState,
+            buttons = {
+                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+            },
+        ) {
+            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
+            val options = noneOption + familiesList.map { it.name }
+
+            title(res = R.string.dialog_select_prism_axis_title)
+
+            listItems(
+                list = options
+            ) { index, item ->
+                if (item == noneOption[0]) {
+                    onPickDescription("", "")
+                } else {
+                    onPickDescription(familiesList[index - 1].id, familiesList[index - 1].name)
+                }
+
+                dialogState.hide()
+            }
+        }
+    }
+}
+
+@Composable
 private fun MainLensSuggestion(
     modifier: Modifier = Modifier,
     suggestions: List<LensSuggestionModel> = listOf(),
@@ -379,11 +502,17 @@ private fun LensSuggestionList(
     selectedLensType: String = "",
     typesDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
-    selectedLensSupplier: String,
+    selectedLensSupplier: String = "",
     suppliersDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
-    selectedLensMaterial: String,
+    selectedLensMaterial: String = "",
     materialsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    selectedLensFamily: String = "",
+    familiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    selectedLensDescription: String = "",
+    descriptionsDialogState: MaterialDialogState = rememberMaterialDialogState(),
 ) {
     val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
 
@@ -485,8 +614,13 @@ private fun LensSuggestionList(
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
-                        title = stringResource(id = R.string.lens_suggestion_filter_family),
                         enabled = isFamilyLensFilterEnabled,
+                        title = if (selectedLensFamily.isEmpty()) {
+                            stringResource(id = R.string.lens_suggestion_filter_family)
+                        } else {
+                            selectedLensFamily
+                        },
+                        onClick = { familiesDialogState.show() },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -496,8 +630,13 @@ private fun LensSuggestionList(
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
-                        title = stringResource(id = R.string.lens_suggestion_filter_description),
                         enabled = isDescriptionLensFilterEnabled,
+                        title = if (selectedLensDescription.isEmpty()) {
+                            stringResource(id = R.string.lens_suggestion_filter_description)
+                        } else {
+                            selectedLensDescription
+                        },
+                        onClick = { descriptionsDialogState.show() },
                     )
                 }
             }
@@ -549,6 +688,34 @@ private fun LensSuggestionList(
 
                     lenses.apply {
                         when {
+                            loadState.refresh is LoadState.NotLoading -> {
+                                if (lenses.itemCount == 0) {
+                                    item {
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalArrangement = Arrangement.Top,
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                        ) {
+                                            val composition by rememberLottieComposition(
+                                                LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results))
+
+                                            LottieAnimation(
+                                                modifier = modifier.padding(36.dp),
+                                                composition = composition,
+                                                iterations = LottieConstants.IterateForever,
+                                                clipSpec = LottieClipSpec.Progress(0f, 1f),
+                                            )
+
+                                            Text(
+                                                text = stringResource(id = R.string.lens_suggestion_no_results),
+                                                style = MaterialTheme.typography.h6
+                                                    .copy(fontWeight = FontWeight.Bold),
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
                             loadState.refresh is LoadState.Loading -> {
                                 item {
                                     PeyessProgressIndicatorInfinite(
@@ -585,15 +752,6 @@ private fun LensSuggestionList(
                             }
                         }
                     }
-
-//                    itemsIndexed(
-//                        items = lenses,
-//                        key = { _, item -> item.id },
-//                    ) { _, item ->
-//                        LensCard(lens = item)
-//
-//                        Spacer(modifier = Modifier.height(16.dp))
-//                    }
                 }
             }
         },

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    foreignKeys = [
+foreignKeys = [
         ForeignKey(
             entity = LocalLensEntity::class,
             parentColumns = ["id"],

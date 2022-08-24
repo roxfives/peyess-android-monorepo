@@ -30,4 +30,5 @@ interface ProductRepository {
     fun lensMaterial(supplierId: String): Flow<List<FilterLensMaterialEntity>>
     fun lensFamily(supplierId: String): Flow<List<FilterLensFamilyEntity>>
     fun lensDescription(familyId: String): Flow<List<LensDescription>>
+    fun bestLensInGroup(groupId: String): Flow<LensSuggestionModel?>
 }

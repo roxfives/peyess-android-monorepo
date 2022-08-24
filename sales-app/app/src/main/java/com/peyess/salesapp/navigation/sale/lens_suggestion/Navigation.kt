@@ -23,9 +23,9 @@ fun buildLensSuggestionNavGraph(
     ) {
         LensSuggestionScreen(
             modifier = modifier
-                .padding(SalesAppTheme.dimensions.screen_offset)
+//                .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.Home.name)
+            navHostController.navigate(SalesAppScreens.LensComparison.name)
         }
     }
 }

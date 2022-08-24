@@ -186,6 +186,9 @@
     <string name="lens_suggestion_no_results">Não encontramos nenhuma lente compatível com o seu filtro</string>
     <string name="lens_suggestion_retry">Tentar novamente</string>
 
+    <string name="lens_suggestion_filter_none_found">Infelizmente não encontramos nenhuma lente compatível com as restrições do cliente</string>
+    <string name="lens_suggestion_filter_title">Filtre e encontre mais lentes</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

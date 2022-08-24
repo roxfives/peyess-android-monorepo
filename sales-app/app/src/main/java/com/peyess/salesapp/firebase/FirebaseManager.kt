@@ -48,6 +48,7 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
         if (BuildConfig.DEBUG && app != null) {
             Timber.i("Connecting app ${app.name} to emulator")
 
+            // To use without bridge
 //            Firebase.auth(app).useEmulator("10.0.2.2", 9099)
 //            Firebase.firestore(app).useEmulator("10.0.2.2", 8080)
 //            Firebase.storage(app).useEmulator("10.0.2.2", 9199)
@@ -57,10 +58,6 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
             Firebase.storage(app).useEmulator("localhost", 9199)
         } else {
             Timber.i("Connecting to real server")
-
-            Firebase.auth(app!!).useEmulator("localhost", 9099)
-            Firebase.firestore(app).useEmulator("localhost", 8080)
-            Firebase.storage(app).useEmulator("localhost", 9199)
         }
     }
 

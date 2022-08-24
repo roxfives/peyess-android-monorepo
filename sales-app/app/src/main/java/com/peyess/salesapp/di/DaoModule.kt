@@ -32,6 +32,7 @@ import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDa
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
@@ -227,5 +228,11 @@ object DaoModule {
     @Provides
     fun providePositioningDao(saleDatabase: ActiveSalesDatabase): PositioningDao {
         return saleDatabase.positioningDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLensComparisonDao(saleDatabase: ActiveSalesDatabase): LensComparisonDao {
+        return saleDatabase.lensComparisonDao()
     }
 }

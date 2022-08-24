@@ -15,7 +15,11 @@ interface LocalLensDao {
 
     @RawQuery(observedEntities = [LocalLensEntity::class])
     fun getFilteredLenses(query: SimpleSQLiteQuery): PagingSource<Int, LocalLensEntity>
-//
-//    @Query("SELECT * FROM ${LocalLensEntity.tableName} WHERE")
-//    fun getById(lensId: String): Flow<LocalLensEntity?>
+
+    @Query(
+        "SELECT * FROM ${LocalLensEntity.tableName}" +
+                " WHERE group_id = :groupId " +
+                " ORDER BY priority"
+    )
+    fun getAllByGroupId(groupId: String): List<LocalLensEntity>
 }

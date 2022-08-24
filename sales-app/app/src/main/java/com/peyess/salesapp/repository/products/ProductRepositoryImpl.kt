@@ -34,13 +34,17 @@ import com.peyess.salesapp.model.products.LensGroup
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.sale.SaleRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.max
@@ -260,6 +264,53 @@ class ProductRepositoryImpl @Inject constructor(
                 lensSuggestionModel
             }
         }
+    }
+
+    override fun bestLensInGroup(groupId: String): Flow<LensSuggestionModel?> = flow {
+        var lensSuggestionModel: LensSuggestionModel? = null
+        val lenses = localLensesDao.getAllByGroupId(groupId)
+
+        for (lens in lenses) {
+            combine(
+                localProductExpDao.getByProductId(lens.id).filterNotNull().take(1),
+                localLensDispDao.getLensDisp(lens.id).filterNotNull().take(1),
+                saleRepository.activeSO().filterNotNull().take(1),
+                saleRepository.currentPositioning(Eye.Left).filterNotNull().take(1),
+                saleRepository.currentPositioning(Eye.Right).filterNotNull().take(1),
+                saleRepository.currentPrescriptionData().filterNotNull().take(1),
+            ) { expList, lensDisp, so, posLeft, postRight, prescriptionData ->
+                val exp = expList.map { it.exp }
+                val measureLeft = posLeft.toMeasuring()
+                val measureRight = postRight.toMeasuring()
+
+                val supportedDisps = mutableStateListOf<LocalLensDispEntity>()
+                for (disp in lensDisp) {
+                    if (isLensSupported(lens, so,prescriptionData, disp, measureLeft, measureRight)) {
+                        supportedDisps.add(disp)
+                    }
+                }
+
+                var needsCheck = true
+                supportedDisps.forEach {
+                    needsCheck = needsCheck && it.needsCheck
+                }
+
+                Timber.i("Updating lens ${lens.id} using exp $exp from $expList")
+                lensSuggestionModel = lens.toSuggestionModel(exp)
+                    .copy(
+                        supportedDisponibilitites = supportedDisps,
+                        needsCheck = needsCheck,
+                    )
+            }.collect()
+
+            if ((lensSuggestionModel?.supportedDisponibilitites?.size ?: 0) > 0) {
+                emit(lensSuggestionModel)
+                return@flow
+            }
+        }
+
+        emit(null)
+        return@flow
     }
 
     override fun lensGroups(): Flow<List<LensGroup>> {

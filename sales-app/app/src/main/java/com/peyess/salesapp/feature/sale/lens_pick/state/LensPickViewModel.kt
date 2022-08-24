@@ -3,9 +3,12 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 import android.util.Log
 import androidx.paging.PagingData
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.repository.products.LensFilter
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -13,22 +16,37 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
+import okhttp3.internal.toImmutableList
 import timber.log.Timber
 
 class LensPickViewModel @AssistedInject constructor(
     @Assisted initialState: LensPickState,
     private val saleRepository: SaleRepository,
+    private val lensComparisonDao: LensComparisonDao,
     private val productRepository: ProductRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
-    private var lenses: Flow<PagingData<LensSuggestionModel>> =
-        productRepository.filteredLenses(lensFilter = LensFilter())
+    private var lenses: Flow<PagingData<LensSuggestionModel>> = emptyFlow()
+    private var suggestionList: Flow<List<LensSuggestionModel?>> = emptyFlow()
 
     init {
         loadLensGroups()
         loadLensTypes()
         loadLensSuppliers()
+
+        // TODO: load lenses on update click
+        lenses = productRepository.filteredLenses(lensFilter = LensFilter())
 
         onEach(LensPickState::filter) {
             lenses = productRepository.filteredLenses(lensFilter = it)
@@ -54,6 +72,19 @@ class LensPickViewModel @AssistedInject constructor(
             setState { copy(filter = filter.copy(descriptionId = it)) }
         }
 
+        onEach(LensPickState::groupsList) { groupList ->
+            val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
+
+            if (groupList is Success) {
+                for (group in groupList.invoke()) {
+                    lensesByGroup.add(bestLensForGroup(group.id))
+                }
+            }
+
+            suggestionList = combine(lensesByGroup) { it.asList() }
+                .flowOn(Dispatchers.Default)
+        }
+
         onEach(LensPickState::familyLensFilterId) { familyId ->
             withState {
                 Timber.i("Getting descriptions")
@@ -66,11 +97,11 @@ class LensPickViewModel @AssistedInject constructor(
             }
         }
 
-        onEach(LensPickState::supplierLensFilterId) {
+        onEach(LensPickState::supplierLensFilterId) { supplierId ->
             setState {
                 copy(
                     filter = filter.copy(
-                        supplierId = it,
+                        supplierId = supplierId,
                         materialId = "",
                         familyId = "",
                         descriptionId = "",
@@ -88,12 +119,12 @@ class LensPickViewModel @AssistedInject constructor(
             }
 
             withState {  state ->
-                if (it.isNotEmpty()) {
-                    productRepository.lensMaterial(it).execute { materials ->
+                if (supplierId.isNotEmpty()) {
+                    productRepository.lensMaterial(supplierId).execute { materials ->
                         copy(materialFilter = materials)
                     }
 
-                    productRepository.lensFamily(it).execute { families ->
+                    productRepository.lensFamily(supplierId).execute { families ->
                         Timber.i("Got families: $families")
                         copy(familyFilter = families)
                     }
@@ -103,25 +134,39 @@ class LensPickViewModel @AssistedInject constructor(
     }
 
     private fun loadLensGroups() = withState {
-        productRepository.lensGroups().execute {
-            copy(groupsFilter = it)
+        productRepository.lensGroups().execute(Dispatchers.IO) {
+            copy(
+                groupsFilter = it,
+                groupsList = it,
+            )
         }
     }
 
     private fun loadLensTypes() = withState {
-        productRepository.lensTypes().execute {
+        productRepository.lensTypes().execute(Dispatchers.IO) {
             copy(typesFilter = it)
         }
     }
 
     private fun loadLensSuppliers() = withState {
-        productRepository.lensSuppliers().execute {
+        productRepository.lensSuppliers().execute(Dispatchers.IO) {
             copy(supplierFilter = it)
         }
     }
 
+    private fun bestLensForGroup(groupId: String): Flow<LensSuggestionModel?> {
+        return productRepository
+            .bestLensInGroup(groupId)
+            .flowOn(Dispatchers.IO)
+    }
+
     fun filteredLenses(): Flow<PagingData<LensSuggestionModel>> {
         return lenses
+            .flowOn(Dispatchers.IO)
+    }
+
+    fun suggestions(): Flow<List<LensSuggestionModel?>> {
+        return suggestionList
     }
 
     fun onPickGroup(groupId: String, groupName: String) = setState {
@@ -163,6 +208,41 @@ class LensPickViewModel @AssistedInject constructor(
         copy(
             descriptionLensFilterId = descriptionId,
             descriptionLensFilter = descriptionName,
+        )
+    }
+
+    fun onPickLens(lensId: String) = withState {
+        saleRepository
+            .activeSO()
+            .filterNotNull()
+            .execute {
+                if (it is Success) {
+                    lensComparisonDao.add(
+                        LensComparisonEntity(
+                            soId = it.invoke().id,
+                            originalLensId = lensId,
+                            comparisonLensId = lensId,
+                        )
+                    )
+
+                    Timber.i("Adding comparison of lens $lensId")
+
+                    copy(
+                        hasAddedToSuggestion = true
+                    )
+                } else {
+                    copy(
+                        isAddingToSuggestion = true
+                    )
+                }
+
+            }
+    }
+
+    fun lensPicked() = setState {
+        copy(
+            hasAddedToSuggestion = false,
+            isAddingToSuggestion = false,
         )
     }
 

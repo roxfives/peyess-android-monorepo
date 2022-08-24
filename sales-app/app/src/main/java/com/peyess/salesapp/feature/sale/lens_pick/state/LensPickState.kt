@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
@@ -41,6 +42,11 @@ data class LensPickState(
     val materialFilter: Async<List<FilterLensMaterialEntity>> = Uninitialized,
     val familyFilter: Async<List<FilterLensFamilyEntity>> = Uninitialized,
     val descriptionFilter: Async<List<LensDescription>> = Uninitialized,
+
+    val groupsList: Async<List<LensGroup>> = Uninitialized,
+
+    val hasAddedToSuggestion: Boolean = false,
+    val isAddingToSuggestion: Boolean = false,
 ): MavericksState {
     val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
     val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()

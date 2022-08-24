@@ -9,7 +9,6 @@ hilt {
     enableAggregatingTask = true
 }
 
-
 dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.paging:paging-common-ktx:3.1.1")

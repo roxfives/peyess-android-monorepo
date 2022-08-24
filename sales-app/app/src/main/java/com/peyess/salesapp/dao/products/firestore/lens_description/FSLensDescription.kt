@@ -3,6 +3,7 @@ package com.peyess.salesapp.dao.products.firestore.lens_description
 import androidx.annotation.Keep
 import com.google.firebase.firestore.PropertyName
 
+@Keep
 data class FSLensDescription(
     @Keep
     @JvmField

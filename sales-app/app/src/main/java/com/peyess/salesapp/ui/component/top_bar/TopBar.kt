@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -33,6 +34,7 @@ fun TopBar(
             navigationIcon = {
                 NavigationIcon(
                     canNavigateBack = showNavigateBack(currentScreen, navHostController),
+                    navHostController = navHostController,
                 )
             }
         )
@@ -40,12 +42,17 @@ fun TopBar(
 }
 
 @Composable
-fun NavigationIcon(canNavigateBack: Boolean = false) {
+fun NavigationIcon(
+    canNavigateBack: Boolean = false,
+    navHostController: NavHostController,
+) {
     if (canNavigateBack) {
-        Icon(
-            imageVector = Icons.Filled.ArrowBack,
-            contentDescription = stringResource(id = R.string.desc_navigate_back)
-        )
+        IconButton(onClick = { navHostController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.desc_navigate_back)
+            )
+        }
     }
 }
 
@@ -61,9 +68,10 @@ fun shouldShowTopBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-//    return screen == SalesAppScreens.Home
-//            || screen == SalesAppScreens.UserAuth
-    return true
+    return !(screen == SalesAppScreens.UserListAuthentication
+            || screen == SalesAppScreens.StoreAuthentication
+            || screen == SalesAppScreens.FramesMeasureTakePicture
+            || screen == SalesAppScreens.FramesMeasure)
 }
 
 fun showNavigateBack(
@@ -73,6 +81,8 @@ fun showNavigateBack(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-//    return screen == SalesAppScreens.UserAuth
-    return false
+    return !(screen == SalesAppScreens.UserListAuthentication
+            || screen == SalesAppScreens.Home
+            || screen == SalesAppScreens.FramesMeasureTakePicture
+            || screen == SalesAppScreens.FramesMeasure)
 }

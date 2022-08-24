@@ -14,6 +14,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.bottom_bar.BottomBar
 import com.peyess.salesapp.ui.component.bottom_bar.BottomNavBarActions
 import com.peyess.salesapp.ui.component.top_bar.TopBar
+import timber.log.Timber
 
 @Composable
 fun SalesAppRoot(
@@ -21,11 +22,10 @@ fun SalesAppRoot(
     navHostController: NavHostController,
 ) {
     val backstackEntry = navHostController.currentBackStackEntryAsState()
-    val currentScreen = remember {
-        SalesAppScreens.fromRoute(
-            backstackEntry.value?.destination?.route
-        )
-    }
+    val currentScreen = SalesAppScreens.fromRoute(
+        backstackEntry.value?.destination?.route
+    )
+    Timber.i("Current screen: $currentScreen")
 
     val scaffoldState = rememberScaffoldState()
 

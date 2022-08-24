@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_pick.state
 
+import android.util.Log
 import androidx.paging.PagingData
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -59,6 +60,7 @@ class LensPickViewModel @AssistedInject constructor(
 
                 productRepository.lensDescription(familyId).execute { descriptions ->
                     Timber.i("Got descriptions $descriptions")
+                    Log.i("SUPER_TAG","Got descriptions $descriptions")
                     copy(descriptionFilter = descriptions)
                 }
             }

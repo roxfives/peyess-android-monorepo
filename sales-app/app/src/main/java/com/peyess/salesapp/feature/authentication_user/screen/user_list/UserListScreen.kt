@@ -101,7 +101,6 @@ fun UserAuthScreenComposable(
     store: Async<OpticalStore> = Uninitialized,
 
     users: List<Collaborator> = listOf(),
-
     onEnter: (id: String) -> Unit = {},
 ) {
     UserGrid(

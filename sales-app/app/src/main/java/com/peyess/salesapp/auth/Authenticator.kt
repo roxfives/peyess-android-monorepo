@@ -1,5 +1,6 @@
 package com.peyess.salesapp.auth
 
+import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -77,6 +78,7 @@ fun verifyUserIsStore(user: FirebaseUser?): Flow<Boolean> = flow {
     val task = user!!.getIdToken(false).await()
 
     val role = task.claims["role"]
+    Log.i("SUPER_TAG", "The user's role: ${role}")
     Timber.i( "The user's role: ${role}")
 
     emit(role == "store")

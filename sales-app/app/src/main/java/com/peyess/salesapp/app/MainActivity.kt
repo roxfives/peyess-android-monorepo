@@ -10,6 +10,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -25,6 +27,7 @@ import com.peyess.salesapp.feature.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.workmanager.UpdateProductsWorker
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {

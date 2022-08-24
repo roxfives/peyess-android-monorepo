@@ -23,6 +23,7 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
@@ -105,12 +106,15 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     private fun isLensSupported(
+        lens: LocalLensEntity,
+        activeSO: ActiveSOEntity,
         prescriptionData: PrescriptionDataEntity,
         disp: LocalLensDispEntity,
         mesureLeft: Measuring,
         measureRight: Measuring,
     ): Boolean {
-        var fits: Boolean
+        var fits = activeSO.isLensTypeMono && lens.type.lowercase() == "monofocal"
+                || !activeSO.isLensTypeMono && lens.type.lowercase() != "monofocal"
 
         val maxDiam = max(
             mesureLeft.diameter,
@@ -157,7 +161,8 @@ class ProductRepositoryImpl @Inject constructor(
 
         Timber.i("disp: $disp")
 
-        fits = maxCyl <= disp.maxCyl
+        fits = fits
+                && maxCyl <= disp.maxCyl
                 && minCyl >= disp.minCyl
                 && maxSph <= disp.maxSph
                 && minSph >= disp.minSph
@@ -180,6 +185,28 @@ class ProductRepositoryImpl @Inject constructor(
         return fits
     }
 
+    fun <T1, T2, T3, T4, T5, T6, R> combine(
+        flow: Flow<T1>,
+        flow2: Flow<T2>,
+        flow3: Flow<T3>,
+        flow4: Flow<T4>,
+        flow5: Flow<T5>,
+        flow6: Flow<T6>,
+        transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+    ): Flow<R> = combine(
+        combine(flow, flow2, flow3, ::Triple),
+        combine(flow4, flow5, flow6, ::Triple)
+    ) { t1, t2 ->
+        transform(
+            t1.first,
+            t1.second,
+            t1.third,
+            t2.first,
+            t2.second,
+            t2.third
+        )
+    }
+
     override fun filteredLenses(lensFilter: LensFilter): Flow<PagingData<LensSuggestionModel>> {
         val query = buildQuery(lensFilter)
         val pagingSourceFactory =  { localLensesDao.getFilteredLenses(query) }
@@ -199,17 +226,18 @@ class ProductRepositoryImpl @Inject constructor(
                     combine(
                         localProductExpDao.getByProductId(lens.id).filterNotNull().take(1),
                         localLensDispDao.getLensDisp(lens.id).filterNotNull().take(1),
+                        saleRepository.activeSO().filterNotNull().take(1),
                         saleRepository.currentPositioning(Eye.Left).filterNotNull().take(1),
                         saleRepository.currentPositioning(Eye.Right).filterNotNull().take(1),
-                        saleRepository.currentPrescriptionData().filterNotNull().take(1)
-                    ) { expList, lensDisp, posLeft, postRight, prescriptionData ->
+                        saleRepository.currentPrescriptionData().filterNotNull().take(1),
+                    ) { expList, lensDisp, so, posLeft, postRight, prescriptionData ->
                         val exp = expList.map { it.exp }
                         val measureLeft = posLeft.toMeasuring()
                         val measureRight = postRight.toMeasuring()
 
                         val supportedDisps = mutableStateListOf<LocalLensDispEntity>()
                         for (disp in lensDisp) {
-                            if (isLensSupported(prescriptionData, disp, measureLeft, measureRight)) {
+                            if (isLensSupported(lens, so,prescriptionData, disp, measureLeft, measureRight)) {
                                 supportedDisps.add(disp)
                             }
                         }

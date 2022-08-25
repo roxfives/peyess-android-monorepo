@@ -24,6 +24,7 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -73,6 +74,7 @@ object RepositoryModule {
         framesDataDao: FramesDataDao,
         positioningDao: PositioningDao,
         comparisonDao: LensComparisonDao,
+        productPickedDao: ProductPickedDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -86,6 +88,7 @@ object RepositoryModule {
             framesDataDao,
             positioningDao,
             comparisonDao,
+            productPickedDao,
         )
     }
 

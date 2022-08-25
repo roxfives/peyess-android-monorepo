@@ -38,6 +38,7 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -231,6 +232,12 @@ object DaoModule {
     @Provides
     fun providePrescriptionPictureDao(saleDatabase: ActiveSalesDatabase): PrescriptionPictureDao {
         return saleDatabase.prescriptionPictureDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductPickedDao(saleDatabase: ActiveSalesDatabase): ProductPickedDao {
+        return saleDatabase.productPickedDao()
     }
 
     @Singleton

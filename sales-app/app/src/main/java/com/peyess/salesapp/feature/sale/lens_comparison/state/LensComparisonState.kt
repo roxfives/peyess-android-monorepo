@@ -7,4 +7,6 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparis
 
 data class LensComparisonState(
     val comparisons: Async<List<IndividualComparison>> = Uninitialized,
+
+    val hasPickedProduct: Boolean = false,
 ): MavericksState

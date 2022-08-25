@@ -6,6 +6,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +28,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
@@ -52,6 +56,7 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonState
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -80,6 +85,22 @@ fun LensComparisonScreen(
 
     val comparisons by viewModel.comparisons().collectAsState(emptyList())
 
+    val hasPickedProduct by viewModel.collectAsState(LensComparisonState::hasPickedProduct)
+
+    val hasNavigated = remember { mutableStateOf(false) }
+    val canNavigate = remember { mutableStateOf(false) }
+    if (canNavigate.value && hasPickedProduct) {
+        LaunchedEffect(Unit) {
+            if (!hasNavigated.value) {
+                hasNavigated.value = true
+                canNavigate.value = false
+
+                viewModel.lensPicked()
+                onLensPicked()
+            }
+        }
+    }
+
     LensComparisonScreenImpl(
         modifier = modifier,
 
@@ -87,20 +108,20 @@ fun LensComparisonScreen(
 
         onAddComparison = onAddComparison,
         onRemoveComparison = viewModel::removeComparison,
-        onSelectComparison = {},
+        onSelectComparison = {
+            viewModel.onPickProduct(it)
+        },
 
         techsFor = viewModel::techsForComparison,
         materialsFor = viewModel::materialForComparison,
         treatmentsFor = viewModel::treatmentsFor,
         coloringsFor = viewModel::coloringsFor,
 
-
         onPickTech = viewModel::onPickTech,
         onPickMaterial = viewModel::onPickMaterial,
         onPickTreatment = viewModel::onPickTreatment,
         onPickColoring = viewModel::onPickColoring,
     )
-
 }
 
 @Composable
@@ -121,7 +142,7 @@ private fun LensComparisonScreenImpl(
 
     onRemoveComparison: (id: Int) -> Unit = {},
     onAddComparison: () -> Unit = {},
-    onSelectComparison: () -> Unit = {},
+    onSelectComparison: (comparison: IndividualComparison) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -131,6 +152,7 @@ private fun LensComparisonScreenImpl(
             LensComparisonCard(
                 individualComparison = comparisons[it],
                 onRemoveComparison = onRemoveComparison,
+                onSelectComparison = { onSelectComparison(comparisons[it]) },
 
                 techsFor = techsFor,
                 materialsFor = materialsFor,
@@ -214,6 +236,7 @@ private fun LensComparisonCard(
     onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
 
     onRemoveComparison: (id: Int) -> Unit = {},
+    onSelectComparison: () -> Unit = {},
 ) {
     val lensComparison = individualComparison.lensComparison
     val coloringComparison = individualComparison.coloringComparison
@@ -360,10 +383,7 @@ private fun LensComparisonCard(
                             minimumHeightState,
                             density,
                         )
-                        .minimumWidthModifier(
-                            minimumWidthState,
-                            density
-                        ),
+                        .minimumWidthModifier(minimumWidthState, density),
                     name = lensComparison.pickedLens.tech,
                     dialogState = techDialogState,
                 )
@@ -438,7 +458,8 @@ private fun LensComparisonCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp)
-                    .background(color = MaterialTheme.colors.primary.copy(alpha = 0.3f)),
+                    .background(color = MaterialTheme.colors.primary.copy(alpha = 0.3f))
+                    .clickable { onSelectComparison() },
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),

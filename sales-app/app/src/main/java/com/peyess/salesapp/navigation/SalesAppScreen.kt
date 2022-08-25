@@ -89,7 +89,7 @@ enum class SalesAppScreens {
                 FramesMeasure.name -> "Vamos a sua medição"
                 LensSuggestion.name -> "Sugestões de lentes"
                 LensComparison.name -> "Comparação da lente"
-                PickClient.name -> "Comparação da lente"
+                PickClient.name -> "Selecione o cadastro do cliente"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

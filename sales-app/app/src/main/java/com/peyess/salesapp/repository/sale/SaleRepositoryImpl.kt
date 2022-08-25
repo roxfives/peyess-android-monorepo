@@ -24,6 +24,8 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.products.LensTypeCategory
@@ -48,6 +50,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val framesDataDao: FramesDataDao,
     private val positioningDao: PositioningDao,
     private val comparisonDao: LensComparisonDao,
+    private val productPickedDao: ProductPickedDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -197,6 +200,10 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun updateSaleComparison(comparison: LensComparisonEntity) {
         comparisonDao.update(comparison)
+    }
+
+    override fun pickProduct(productPicked: ProductPickedEntity) {
+        productPickedDao.add(productPicked)
     }
 
     companion object {

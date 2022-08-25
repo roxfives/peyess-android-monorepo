@@ -9,6 +9,7 @@ import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEnti
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
@@ -277,6 +278,28 @@ class LensComparisonViewModel @AssistedInject constructor(
 
             saleRepository.updateSaleComparison(comparison)
         }
+    }
+
+    fun onPickProduct(comparison: IndividualComparison) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.activeSO()
+                .filterNotNull()
+                .take(1)
+                .onEach {
+                    saleRepository.pickProduct(
+                        ProductPickedEntity(
+                            soId = it.id,
+                            lensId = comparison.lensComparison.pickedLens.id,
+                            treatmentId = comparison.treatmentComparison.pickedTreatment.id,
+                            coloringId = comparison.coloringComparison.pickedColoring.id
+                        )
+                    )
+            }.collect()
+        }
+    }
+
+    fun lensPicked() = setState {
+        copy(hasPickedProduct = false)
     }
 
     // hilt

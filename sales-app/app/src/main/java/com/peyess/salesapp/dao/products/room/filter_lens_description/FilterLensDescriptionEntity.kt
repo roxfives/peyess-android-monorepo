@@ -10,10 +10,11 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
     tableName = FilterLensDescriptionEntity.tableName
 )
 data class FilterLensDescriptionEntity(
-    @PrimaryKey val id: String = "",
+    @PrimaryKey(autoGenerate = true) val primaryKey: Int = 0,
+    @ColumnInfo(name = "id") val id: String = "",
     @ColumnInfo(name = "name") val name: String = "",
-    @ColumnInfo(name = "priority") val priority: Double = 0.0,
     @ColumnInfo(name = "family_id") val familyId: String = "",
+    @ColumnInfo(name = "supplier_id") val supplierId: String = "",
 ) {
     companion object {
         const val tableName = "filter_lens_description"

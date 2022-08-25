@@ -118,7 +118,7 @@ class LensPickViewModel @AssistedInject constructor(
                 )
             }
 
-            withState {  state ->
+            withState { state ->
                 if (supplierId.isNotEmpty()) {
                     productRepository.lensMaterial(supplierId).execute { materials ->
                         copy(materialFilter = materials)
@@ -161,8 +161,7 @@ class LensPickViewModel @AssistedInject constructor(
     }
 
     fun filteredLenses(): Flow<PagingData<LensSuggestionModel>> {
-        return lenses
-            .flowOn(Dispatchers.IO)
+        return lenses.flowOn(Dispatchers.IO)
     }
 
     fun suggestions(): Flow<List<LensSuggestionModel?>> {

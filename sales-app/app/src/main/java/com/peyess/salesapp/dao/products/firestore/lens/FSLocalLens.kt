@@ -369,6 +369,7 @@ fun FSLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
     return FilterLensDescriptionEntity(
         id = designId,
         name = design,
+        supplierId = supplierId,
     )
 }
 

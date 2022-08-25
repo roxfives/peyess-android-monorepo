@@ -200,10 +200,6 @@ class UpdateProductsWorker @AssistedInject constructor(
     private fun populateTreatments(lens: FSLocalLens) {
         lens.treatments.forEach { (id, fsTreatment) ->
 
-            if (fsTreatment.design.isEmpty()) {
-                Timber.i("EMPTY DESIGN FOR TREATMENT $id (${fsTreatment.brand}) at lens ${lens.id}: $fsTreatment")
-            }
-
             productsDatabase.localTreatmentDao().add(
                 LocalTreatmentEntity(
                     id = id,

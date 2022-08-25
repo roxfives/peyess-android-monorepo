@@ -10,7 +10,7 @@ import com.peyess.salesapp.dao.products.room.filter_lens_group.FilterLensGroupEn
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensCategoryDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensDescriptionDao
+import com.peyess.salesapp.dao.products.room.filter_lens_description.FilterLensDescriptionDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
@@ -86,7 +86,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
     ],
-    version = 41,
+    version = 42,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao

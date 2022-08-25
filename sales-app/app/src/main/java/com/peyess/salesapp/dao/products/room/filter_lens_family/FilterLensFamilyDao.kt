@@ -11,6 +11,10 @@ interface FilterLensFamilyDao {
     @Insert
     fun add(filter: FilterLensFamilyEntity)
 
-    @Query("SELECT * FROM ${FilterLensFamilyEntity.tableName} WHERE supplier_id = :supplierId")
+    @Query(
+        "SELECT * FROM ${FilterLensFamilyEntity.tableName} " +
+                "WHERE supplier_id = :supplierId " +
+                "GROUP BY id"
+    )
     fun getFamiliesWithSupplier(supplierId: String): Flow<List<FilterLensFamilyEntity>>
 }

@@ -234,6 +234,8 @@ class LensPickViewModel @AssistedInject constructor(
                 }
             }
             .execute {
+                Timber.i("Loading adding to comparison: $it")
+
                 if (it is Success) {
                     lensComparisonDao.add(it.invoke())
 

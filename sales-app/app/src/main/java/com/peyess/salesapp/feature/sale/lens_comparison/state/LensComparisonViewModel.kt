@@ -81,7 +81,13 @@ class LensComparisonViewModel @AssistedInject constructor(
                             || pickedColoring == null
                             || pickedTreatment == null
                         ) {
-                            error("One if the suggestions is null")
+                            error("One of the comparisons is null " +
+                                    "originalLens: $originalLens \n" +
+                                    "originalColoring: $originalColoring \n" +
+                                    "originalTreatment: $originalTreatment \n" +
+                                    "pickedLens: $pickedLens \n" +
+                                    "pickedColoring: $pickedColoring \n" +
+                                    "pickedTreatment: $pickedTreatment \n")
                         }
 
 

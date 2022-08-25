@@ -139,7 +139,12 @@ fun LensSuggestionScreen(
     val canNavigate = remember { mutableStateOf(false) }
     if (canNavigate.value && hasAddedSuggestion) {
         LaunchedEffect(Unit) {
+            Timber.i("Trying to navigate: hasNavigated: ${hasNavigated.value} " +
+                    "canNavigate: ${canNavigate.value} " +
+                    "hasAddedSuggestion: $hasAddedSuggestion ")
             if (!hasNavigated.value) {
+                Timber.i("Navigating")
+
                 hasNavigated.value = true
                 canNavigate.value = false
 
@@ -183,7 +188,10 @@ fun LensSuggestionScreen(
         lensDescriptions = lensDescription,
         onPickDescription = viewModel::onPickDescription,
 
-        onPickLens = viewModel::onPickLens,
+        onPickLens = {
+            viewModel.onPickLens(it)
+            canNavigate.value = true
+        },
         isAddingSuggestion = isAddingSuggestion,
     )
 }

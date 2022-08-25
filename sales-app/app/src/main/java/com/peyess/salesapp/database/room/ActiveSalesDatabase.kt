@@ -35,7 +35,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         PositioningEntity::class,
         LensComparisonEntity::class
     ],
-    version = 20,
+    version = 24,
 )
 @TypeConverters(
     ConverterLocalDate::class,

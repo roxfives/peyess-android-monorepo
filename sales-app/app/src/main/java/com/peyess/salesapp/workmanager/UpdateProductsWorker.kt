@@ -20,7 +20,11 @@ import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensSupplier
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensTech
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensType
 import com.peyess.salesapp.dao.products.firestore.lens.toLocalLensEntity
+import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringEntity
+import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentEntity
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
@@ -67,6 +71,8 @@ class UpdateProductsWorker @AssistedInject constructor(
             }
 
             populateFilters(it)
+            populateTreatments(it)
+            populateColorings(it)
 
             Timber.i("With disps ${it.disponibilities}")
             it.disponibilities.forEach { disp ->
@@ -174,6 +180,81 @@ class UpdateProductsWorker @AssistedInject constructor(
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
             Timber.e(e, "Error while inserting lens filter for ")
+        }
+    }
+
+    private fun populateTreatments(lens: FSLocalLens) {
+        lens.treatments.forEach { (id, fsTreatment) ->
+            productsDatabase.localTreatmentDao().add(
+                LocalTreatmentEntity(
+                    id = id,
+                    specialty = fsTreatment.specialty,
+                    isColoringRequired = fsTreatment.isColoringRequired,
+                    priority = fsTreatment.priority,
+                    isGeneric = fsTreatment.isGeneric,
+                    cost = fsTreatment.cost,
+                    price = fsTreatment.price,
+                    suggestedPrice = fsTreatment.suggestedPrice,
+                    shippingTime = fsTreatment.shippingTime,
+                    observation = fsTreatment.observation,
+                    warning = fsTreatment.warning,
+                    brand = fsTreatment.brand,
+                    brandId = fsTreatment.brandId,
+                    design = fsTreatment.design,
+                    designId = fsTreatment.designId,
+                    supplierPicture = fsTreatment.supplierPicture,
+                    supplier = fsTreatment.supplier,
+                    supplierId = fsTreatment.supplierId,
+                    isManufacturingLocal = fsTreatment.isManufacturingLocal,
+                    isEnabled = fsTreatment.isEnabled,
+                    reasonDisabled = fsTreatment.reasonDisabled,
+                )
+            )
+
+            productsDatabase.joinLensTreatmentDao().add(
+                JoinLensTreatmentEntity(
+                    lensId = lens.id,
+                    treatmentId = id
+                )
+            )
+        }
+    }
+
+    private fun populateColorings(lens: FSLocalLens) {
+        lens.colorings.forEach { (id, fsColoring) ->
+
+            productsDatabase.localColoringDao().add(
+                LocalColoringEntity(
+                    id = id,
+                    specialty = fsColoring.specialty,
+                    isColoringRequired = fsColoring.isColoringRequired,
+                    priority = fsColoring.priority,
+                    isGeneric = fsColoring.isGeneric,
+                    cost = fsColoring.cost,
+                    price = fsColoring.price,
+                    suggestedPrice = fsColoring.suggestedPrice,
+                    shippingTime = fsColoring.shippingTime,
+                    observation = fsColoring.observation,
+                    warning = fsColoring.warning,
+                    brand = fsColoring.brand,
+                    brandId = fsColoring.brandId,
+                    design = fsColoring.design,
+                    designId = fsColoring.designId,
+                    supplierPicture = fsColoring.supplierPicture,
+                    supplier = fsColoring.supplier,
+                    supplierId = fsColoring.supplierId,
+                    isManufacturingLocal = fsColoring.isManufacturingLocal,
+                    isEnabled = fsColoring.isEnabled,
+                    reasonDisabled = fsColoring.reasonDisabled,
+                )
+            )
+
+            productsDatabase.joinLensColoringDao().add(
+                JoinLensColoringEntity(
+                    lensId = lens.id,
+                    coloringId = id,
+                )
+            )
         }
     }
 

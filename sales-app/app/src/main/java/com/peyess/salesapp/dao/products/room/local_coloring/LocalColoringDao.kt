@@ -15,7 +15,7 @@ interface LocalColoringDao {
     @Query(
         "SELECT * FROM ${LocalColoringEntity.tableName} AS Colorings " +
                 "JOIN ${JoinLensColoringEntity.tableName} AS JoinTable " +
-                "ON Colorings.id = JoinTable.lens_id " +
+                "ON Colorings.id = JoinTable.coloring_id " +
                 "WHERE lens_id = :lensId"
 
     )

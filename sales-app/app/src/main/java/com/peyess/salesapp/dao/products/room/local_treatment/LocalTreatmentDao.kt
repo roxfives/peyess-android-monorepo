@@ -16,7 +16,7 @@ interface LocalTreatmentDao {
     @Query(
         "SELECT * FROM ${LocalTreatmentEntity.tableName} AS Treatments " +
                 "JOIN ${JoinLensTreatmentEntity.tableName} AS JoinTable " +
-                "ON Treatments.id = JoinTable.lens_id " +
+                "ON Treatments.id = JoinTable.treatment_id " +
                 "WHERE lens_id = :lensId"
 
     )

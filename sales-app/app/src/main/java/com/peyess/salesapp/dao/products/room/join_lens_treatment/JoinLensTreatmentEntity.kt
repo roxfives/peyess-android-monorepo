@@ -9,18 +9,18 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
 @Entity(
     tableName = JoinLensTreatmentEntity.tableName,
     primaryKeys = ["lens_id",  "treatment_id"],
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-        ),
-        ForeignKey(
-            entity = LocalTreatmentEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["treatment_id"],
-        ),
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = LocalLensEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["lens_id"],
+//        ),
+//        ForeignKey(
+//            entity = LocalTreatmentEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["treatment_id"],
+//        ),
+//    ]
 )
 data class JoinLensTreatmentEntity(
     @ColumnInfo(name = "lens_id") val lensId: String = "",

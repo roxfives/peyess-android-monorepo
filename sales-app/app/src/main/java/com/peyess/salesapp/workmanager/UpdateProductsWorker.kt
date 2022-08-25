@@ -21,6 +21,8 @@ import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensTech
 import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensType
 import com.peyess.salesapp.dao.products.firestore.lens.toLocalLensEntity
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringEntity
+import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechEntity
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
@@ -126,6 +128,12 @@ class UpdateProductsWorker @AssistedInject constructor(
             val materialFilter = lens.toFilterLensMaterial()
 
             productsDatabase.filterLensMaterialDao().add(materialFilter)
+            productsDatabase.joinLensMaterialDao().add(
+                JoinLensMaterialEntity(
+                    lensId = lens.id,
+                    materialId = materialFilter.id,
+                )
+            )
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
@@ -155,7 +163,13 @@ class UpdateProductsWorker @AssistedInject constructor(
         try {
             val techFilter = lens.toFilterLensTech()
 
-            productsDatabase.filterLensTechEntity().add(techFilter)
+            productsDatabase.filterLensTechDao().add(techFilter)
+            productsDatabase.joinLensTechDao().add(
+                JoinLensTechEntity(
+                    lensId = lens.id,
+                    techId = techFilter.id,
+                )
+            )
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {
@@ -185,6 +199,11 @@ class UpdateProductsWorker @AssistedInject constructor(
 
     private fun populateTreatments(lens: FSLocalLens) {
         lens.treatments.forEach { (id, fsTreatment) ->
+
+            if (fsTreatment.design.isEmpty()) {
+                Timber.i("EMPTY DESIGN FOR TREATMENT $id (${fsTreatment.brand}) at lens ${lens.id}: $fsTreatment")
+            }
+
             productsDatabase.localTreatmentDao().add(
                 LocalTreatmentEntity(
                     id = id,
@@ -261,7 +280,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     private fun clearAllProducts() {
         Timber.i("Clearing all current local products")
         // TODO: fix foreign key problem
-//        productsDatabase.clearAllTables()
+        productsDatabase.clearAllTables()
     }
 
     override suspend fun doWork(): Result {

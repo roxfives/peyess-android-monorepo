@@ -9,13 +9,13 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 
 @Entity(
     tableName = LensComparisonEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = ActiveSOEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["so_id"],
-        ),
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = ActiveSOEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["so_id"],
+//        ),
+//    ]
 )
 data class LensComparisonEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,

@@ -15,6 +15,9 @@ interface LensComparisonDao {
     )
     fun getBySo(soId: String): Flow<List<LensComparisonEntity>>
 
+    @Query("DELETE FROM ${LensComparisonEntity.tableName} WHERE id = :comparisonId")
+    fun deleteById(comparisonId: Int)
+
     @Insert(onConflict = REPLACE)
     fun add(lensComparisonEntity: LensComparisonEntity)
 

@@ -12,6 +12,7 @@ import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
@@ -100,6 +101,7 @@ object RepositoryModule {
         filterLensTypeDao: FilterLensTypeDao,
         lensSupplierDao: FilterLensSupplierDao,
         lensMaterialDao: FilterLensMaterialDao,
+        lensTechDao: FilterLensTechDao,
         lensFamilyDao: FilterLensFamilyDao,
         lensDescriptionDao: LensDescriptionDao,
         saleRepository: SaleRepository,
@@ -114,6 +116,7 @@ object RepositoryModule {
             filterLensTypeDao,
             lensSupplierDao,
             lensMaterialDao,
+            lensTechDao,
             lensFamilyDao,
             lensDescriptionDao,
             saleRepository,

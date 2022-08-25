@@ -1,6 +1,8 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.model
 
 data class IndividualComparison(
+    val id: Int = 0,
+
     val lensComparison: LensComparison = LensComparison(),
     val coloringComparison: ColoringComparison = ColoringComparison(),
     val treatmentComparison: TreatmentComparison = TreatmentComparison(),

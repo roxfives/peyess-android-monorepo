@@ -8,17 +8,9 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
     tableName = FilterLensMaterialEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-        )
-    ]
 )
 data class FilterLensMaterialEntity(
     @PrimaryKey val id: String = "",
-    @ColumnInfo(name = "lens_id") val lensId: String = "",
     @ColumnInfo(name = "supplier_id") val supplierId: String = "",
     @ColumnInfo(name = "name") val name: String = "",
 ) {

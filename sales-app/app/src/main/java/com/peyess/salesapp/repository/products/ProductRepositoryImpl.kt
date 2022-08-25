@@ -16,7 +16,9 @@ import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMate
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
+import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
@@ -46,6 +48,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -64,6 +67,7 @@ class ProductRepositoryImpl @Inject constructor(
     private val lensTypeDao: FilterLensTypeDao,
     private val lensSupplierDao: FilterLensSupplierDao,
     private val lensMaterialDao: FilterLensMaterialDao,
+    private val lensTechDao: FilterLensTechDao,
     private val lensFamilyDao: FilterLensFamilyDao,
     private val lensDescriptionDao: LensDescriptionDao,
     private val saleRepository: SaleRepository,
@@ -361,5 +365,18 @@ class ProductRepositoryImpl @Inject constructor(
 
     override fun treatmentsForLens(lensId: String): Flow<List<LocalTreatmentEntity>> {
         return treatmentDao.treatmentsForLens(lensId)
+    }
+
+    override fun materialsForLens(supplierId: String, brandId: String, designId: String):
+            Flow<List<FilterLensMaterialEntity>> {
+
+        return lensMaterialDao.materialsForLens(supplierId, brandId, designId)
+            .onEach { Timber.i("Got materials $it") }
+    }
+
+    override fun techsForLens(supplierId: String, brandId: String, designId: String):
+            Flow<List<FilterLensTechEntity>> {
+        return lensTechDao.techsForLens(supplierId, brandId, designId)
+            .onEach { Timber.i("Got techs $it") }
     }
 }

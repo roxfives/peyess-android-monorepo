@@ -43,10 +43,13 @@ data class LocalTreatmentEntity(
 
     @ColumnInfo(name = "brand")
     val brand: String = "",
+
     @ColumnInfo(name = "brand_id")
     val brandId: String = "",
+
     @ColumnInfo(name = "design")
     val design: String = "",
+
     @ColumnInfo(name = "design_id")
     val designId: String = "",
 

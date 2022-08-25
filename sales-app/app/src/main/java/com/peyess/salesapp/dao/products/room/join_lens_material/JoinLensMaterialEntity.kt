@@ -1,14 +1,14 @@
-package com.peyess.salesapp.dao.products.room.join_lens_coloring
+package com.peyess.salesapp.dao.products.room.join_lens_material
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    tableName = JoinLensColoringEntity.tableName,
-    primaryKeys = ["lens_id",  "coloring_id"],
+    tableName = JoinLensMaterialEntity.tableName,
+    primaryKeys = ["lens_id",  "material_id"],
 //    foreignKeys = [
 //        ForeignKey(
 //            entity = LocalLensEntity::class,
@@ -16,17 +16,17 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 //            childColumns = ["lens_id"],
 //        ),
 //        ForeignKey(
-//            entity = LocalColoringEntity::class,
+//            entity = FilterLensMaterialEntity::class,
 //            parentColumns = ["id"],
-//            childColumns = ["coloring_id"],
+//            childColumns = ["material_id"],
 //        ),
 //    ]
 )
-data class JoinLensColoringEntity(
+data class JoinLensMaterialEntity(
     @ColumnInfo(name = "lens_id") val lensId: String = "",
-    @ColumnInfo(name = "coloring_id") val coloringId: String = "",
+    @ColumnInfo(name = "material_id") val materialId: String = "",
 ) {
     companion object {
-        const val tableName = "join_lens_coloring"
+        const val tableName = "join_lens_material"
     }
 }

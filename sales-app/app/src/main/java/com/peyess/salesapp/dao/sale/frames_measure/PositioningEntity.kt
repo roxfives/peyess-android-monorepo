@@ -15,14 +15,14 @@ private const val screenHeight = 3264.0
 @Entity(
     tableName = PositioningEntity.tableName,
     primaryKeys = ["so_id", "eye"],
-    foreignKeys = [
-        ForeignKey(
-            entity = ActiveSOEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["so_id"],
-            onDelete = ForeignKey.CASCADE,
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = ActiveSOEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["so_id"],
+//            onDelete = ForeignKey.CASCADE,
+//        )
+//    ]
 )
 data class PositioningEntity(
     @ColumnInfo(name = "so_id") val soId: String = "",

@@ -178,8 +178,8 @@ class SaleRepositoryImpl @Inject constructor(
         return lensTypeCategoryDao.categories()
     }
 
-    override fun addLensForComparison(lensComparisonEntity: LensComparisonEntity) {
-        comparisonDao.add(lensComparisonEntity)
+    override fun addLensForComparison(comparisonEntity: LensComparisonEntity) {
+        comparisonDao.add(comparisonEntity)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -189,6 +189,10 @@ class SaleRepositoryImpl @Inject constructor(
             .flatMapLatest {
                 comparisonDao.getBySo(it.id)
             }
+    }
+
+    override fun removeComparison(id: Int) {
+        comparisonDao.deleteById(id)
     }
 
     companion object {

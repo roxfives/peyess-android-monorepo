@@ -7,13 +7,14 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-        )
-    ]
+    tableName = FilterLensGroupEntity.tableName,
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = LocalLensEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["lens_id"],
+//        )
+//    ]
 )
 data class FilterLensGroupEntity(
     @PrimaryKey val id: String = "",

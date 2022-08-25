@@ -8,12 +8,13 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 
 @Entity(
-    foreignKeys = [ForeignKey(
-        entity = LocalColoringEntity::class,
-        parentColumns = ["id"],
-        childColumns = ["coloring_id"],
-        onDelete = CASCADE,
-    )]
+    tableName = LocalColoringDisplayEntity.tableName,
+//    foreignKeys = [ForeignKey(
+//        entity = LocalColoringEntity::class,
+//        parentColumns = ["id"],
+//        childColumns = ["coloring_id"],
+//        onDelete = CASCADE,
+//    )]
 )
 data class LocalColoringDisplayEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

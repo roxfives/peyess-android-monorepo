@@ -82,7 +82,6 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.model.products.LensGroup
-import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -237,7 +236,7 @@ private fun LensSuggestionScreenImpl(
     val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
 
     val groupDialogState = rememberMaterialDialogState()
-    PickGroupDialog(
+    PickTechDialog(
         dialogState = groupDialogState,
         groups = lensGroups,
         onPickGroup = onPickGroup,
@@ -411,7 +410,7 @@ private fun TierSuggestion(
 }
 
 @Composable
-private fun PickGroupDialog(
+private fun PickTechDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
     groups: Async<List<LensGroup>> = Uninitialized,
     onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },

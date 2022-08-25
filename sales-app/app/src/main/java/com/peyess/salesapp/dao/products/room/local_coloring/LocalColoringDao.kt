@@ -16,7 +16,9 @@ interface LocalColoringDao {
         "SELECT * FROM ${LocalColoringEntity.tableName} AS Colorings " +
                 "JOIN ${JoinLensColoringEntity.tableName} AS JoinTable " +
                 "ON Colorings.id = JoinTable.coloring_id " +
-                "WHERE lens_id = :lensId"
+                "WHERE lens_id = :lensId " +
+                "GROUP BY Colorings.id " +
+                "ORDER BY priority"
 
     )
     fun coloringsForLens(lensId: String): Flow<List<LocalColoringEntity>>

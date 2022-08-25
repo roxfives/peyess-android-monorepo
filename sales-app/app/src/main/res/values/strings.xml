@@ -189,6 +189,14 @@
     <string name="lens_suggestion_filter_none_found">Infelizmente não encontramos nenhuma lente compatível com as restrições do cliente</string>
     <string name="lens_suggestion_filter_title">Filtre e encontre mais lentes</string>
 
+    <!--  UI Component: Lens Comparison  -->
+    <string name="lens_comparison_add_another">Adicionar nova lente para comparação</string>
+
+    <string name="dialog_select_tech">Selecione a tecnologia</string>
+    <string name="dialog_select_material">Selecione a material</string>
+    <string name="dialog_select_coloring">Selecione a coloração</string>
+    <string name="dialog_select_treatment">Selecione a tratamento</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

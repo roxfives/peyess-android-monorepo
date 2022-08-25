@@ -5,6 +5,7 @@ import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescripti
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
@@ -39,4 +40,9 @@ interface ProductRepository {
     fun coloringById(coloringId: String): Flow<LocalColoringEntity?>
     fun treatmentsForLens(lensId: String): Flow<List<LocalTreatmentEntity>>
     fun coloringsForLens(lensId: String): Flow<List<LocalColoringEntity>>
+
+    fun techsForLens(supplierId: String, brandId: String, designId: String):
+            Flow<List<FilterLensTechEntity>>
+    fun materialsForLens(supplierId: String, brandId: String, designId: String):
+            Flow<List<FilterLensMaterialEntity>>
 }

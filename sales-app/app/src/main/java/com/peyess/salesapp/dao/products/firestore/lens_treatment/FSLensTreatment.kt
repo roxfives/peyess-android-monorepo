@@ -66,7 +66,7 @@ data class FSLensTreatment(
 
     @Keep
     @JvmField
-    @PropertyName("DESIGN")
+    @PropertyName("design")
     val design: String = "",
 
     @Keep
@@ -81,7 +81,7 @@ data class FSLensTreatment(
 
     @Keep
     @JvmField
-    @PropertyName("SUPPLIER")
+    @PropertyName("supplier")
     val supplier: String = "",
 
     @Keep

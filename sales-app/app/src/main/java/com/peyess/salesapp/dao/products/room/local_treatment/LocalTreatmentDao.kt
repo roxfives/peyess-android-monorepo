@@ -17,7 +17,9 @@ interface LocalTreatmentDao {
         "SELECT * FROM ${LocalTreatmentEntity.tableName} AS Treatments " +
                 "JOIN ${JoinLensTreatmentEntity.tableName} AS JoinTable " +
                 "ON Treatments.id = JoinTable.treatment_id " +
-                "WHERE lens_id = :lensId"
+                "WHERE lens_id = :lensId " +
+                "GROUP BY Treatments.id " +
+                "ORDER BY priority"
 
     )
     fun treatmentsForLens(lensId: String): Flow<List<LocalTreatmentEntity>>

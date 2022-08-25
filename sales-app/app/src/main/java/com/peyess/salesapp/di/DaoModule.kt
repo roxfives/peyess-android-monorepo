@@ -16,8 +16,11 @@ import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDaoImpl
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringDao
+import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialDao
+import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechDao
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentDao
 import com.peyess.salesapp.dao.products.room.local_alt_height.LocalAltHeightDao
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
@@ -118,6 +121,18 @@ object DaoModule {
 
     @Singleton
     @Provides
+    fun provideJoinLensMaterialDao(productsDatabase: ProductsDatabase): JoinLensMaterialDao {
+        return productsDatabase.joinLensMaterialDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideJoinLensTechDao(productsDatabase: ProductsDatabase): JoinLensTechDao {
+        return productsDatabase.joinLensTechDao()
+    }
+
+    @Singleton
+    @Provides
     fun provideLocalAltHeightDao(appDatabase: ProductsDatabase): LocalAltHeightDao {
         return appDatabase.localAltHeightDao()
     }
@@ -192,6 +207,12 @@ object DaoModule {
     @Provides
     fun provideFilterLensMaterialDao(productsDatabase: ProductsDatabase): FilterLensMaterialDao {
         return productsDatabase.filterLensMaterialDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFilterLensTechDao(productsDatabase: ProductsDatabase): FilterLensTechDao {
+        return productsDatabase.filterLensTechDao()
     }
 
     @Singleton

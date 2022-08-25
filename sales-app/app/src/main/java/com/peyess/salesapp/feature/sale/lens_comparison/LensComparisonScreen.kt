@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -41,6 +43,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
@@ -52,6 +56,14 @@ import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonView
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.listItems
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import timber.log.Timber
 
 val buttonHeight = 120.dp
 
@@ -64,11 +76,24 @@ fun LensComparisonScreen(
 
     val comparisons by viewModel.comparisons().collectAsState(emptyList())
 
+
+
     LensComparisonScreenImpl(
         modifier = modifier,
 
         comparisons = comparisons,
-        onSelectComparison = {}
+
+        onRemoveComparison = viewModel::removeComparison,
+        onSelectComparison = {},
+
+        techsFor = viewModel::techsForComparison,
+        materialsFor = viewModel::materialForComparison,
+        treatmentsFor = viewModel::treatmentsFor,
+        coloringsFor = viewModel::coloringsFor,
+
+
+//        onPickTech = {_, },
+//        onPickMaterial = onPickMaterial,
     )
 
 }
@@ -78,47 +103,88 @@ private fun LensComparisonScreenImpl(
     modifier: Modifier = Modifier,
 
     comparisons: List<IndividualComparison> = emptyList(),
+
+    techsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensTechEntity>> = { emptyFlow() },
+    materialsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensMaterialEntity>> = { emptyFlow() },
+    treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
+    coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
+
+    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+
+    onRemoveComparison: (id: Int) -> Unit = {},
     onSelectComparison: () -> Unit = {},
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
         items(comparisons.size) {
             LensComparisonCard(
-                individualComparison = comparisons[it]
+                individualComparison = comparisons[it],
+                onRemoveComparison = onRemoveComparison,
+
+                techsFor = techsFor,
+                materialsFor = materialsFor,
+                treatmentsFor = treatmentsFor,
+                coloringsFor = coloringsFor,
+
+                onPickTech = onPickTech,
+                onPickMaterial = onPickMaterial,
+                onPickColoring = onPickColoring,
+                onPickTreatment = onPickTreatment,
             )
         }
 
         item {
-            OutlinedButton(
-                modifier = Modifier
-                    .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-                    .fillMaxWidth()
-                    .height(buttonHeight),
-                shape = MaterialTheme.shapes.large,
-                onClick = {},
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = SalesAppTheme.dimensions.grid_3)
-                            .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            tint = MaterialTheme.colors.onPrimary,
-                            contentDescription = "",
-                        )
-                    }
+            AddNewComparisonButton()
+        }
+    }
+}
 
-                    Text(
-                        text = stringResource(id = R.string.btn_make_new_sale),
-                        style = MaterialTheme.typography.body1,
-                    )
-                }
+@Composable
+private fun AddNewComparisonButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    OutlinedButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(buttonHeight),
+        shape = MaterialTheme.shapes.large,
+        onClick = onClick,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(buttonHeight)
+                    .width(buttonHeight)
+                    .padding(SalesAppTheme.dimensions.grid_2)
+                    .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .height(buttonHeight)
+                        .width(buttonHeight)
+                        .padding(8.dp),
+                    imageVector = Icons.Filled.Add,
+                    tint = MaterialTheme.colors.onPrimary,
+                    contentDescription = "",
+                )
             }
+
+            Text(
+                text = stringResource(id = R.string.lens_comparison_add_another),
+                style = MaterialTheme.typography.body1
+                    .copy(textAlign = TextAlign.Center),
+            )
         }
     }
 }
@@ -127,14 +193,63 @@ private fun LensComparisonScreenImpl(
 @Composable
 private fun LensComparisonCard(
     modifier: Modifier = Modifier,
-    individualComparison: IndividualComparison, // TODO: Create an empty instace
+    individualComparison: IndividualComparison, // TODO: Create an empty instance
+
+    techsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensTechEntity>> = { emptyFlow() },
+    materialsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensMaterialEntity>> = { emptyFlow() },
+    treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
+    coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
+
+    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+
+    onRemoveComparison: (id: Int) -> Unit = {},
 ) {
     val lensComparison = individualComparison.lensComparison
     val coloringComparison = individualComparison.coloringComparison
     val treatmentComparison = individualComparison.treatmentComparison
 
+    val techs = techsFor(individualComparison).collectAsState(emptyList())
+    val materials = materialsFor(individualComparison).collectAsState(emptyList())
+    val treatments = treatmentsFor(individualComparison).collectAsState(emptyList())
+    val colorings = coloringsFor(individualComparison).collectAsState(emptyList())
+
+    val techDialogState = rememberMaterialDialogState()
+    PickTechDialog(
+        dialogState = techDialogState,
+        techs = techs.value,
+        comparison = individualComparison,
+        onPickTech = onPickTech,
+    )
+
+    val materialDialogState = rememberMaterialDialogState()
+    PickMaterialDialog(
+        dialogState = materialDialogState,
+        materials = materials.value,
+        comparison = individualComparison,
+        onPickMaterial = onPickMaterial,
+    )
+
+    val treatmentDialogState = rememberMaterialDialogState()
+    PickTreatmentDialog(
+        dialogState = treatmentDialogState,
+        treatments = treatments.value,
+        comparison = individualComparison,
+        onPickTreatment = onPickTreatment,
+    )
+
+    val coloringDialogState = rememberMaterialDialogState()
+    PickColoringDialog(
+        dialogState = coloringDialogState,
+        colorings = colorings.value,
+        comparison = individualComparison,
+        onPickColoring = onPickColoring,
+    )
+
     Column(
-        modifier = modifier,
+        modifier = modifier.shadow(elevation = 1.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -147,10 +262,12 @@ private fun LensComparisonCard(
         ) {
             Spacer(modifier = Modifier.width(12.dp))
 
-            Icon(
-                imageVector = Icons.Filled.Close,
-                contentDescription = ""
-            )
+            IconButton(onClick = { onRemoveComparison(individualComparison.id) }) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = ""
+                )
+            }
         }
 
         Row(
@@ -233,6 +350,7 @@ private fun LensComparisonCard(
                         density
                     ),
                     name = lensComparison.pickedLens.tech,
+                    dialogState = techDialogState,
                 )
 
                 FeatureSelection(
@@ -241,6 +359,7 @@ private fun LensComparisonCard(
                         density
                     ),
                     name =  lensComparison.pickedLens.material,
+                    dialogState = materialDialogState,
                 )
             }
 
@@ -251,20 +370,32 @@ private fun LensComparisonCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                FeatureSelection(
-                    modifier = Modifier.minimumWidthModifier(
-                        minimumWidthState,
-                        density
-                    ),
-                    name = treatmentComparison.pickedTreatment.brand,
-                )
+                // TODO: remove predicate when migration is run
+                val treatmentName = "${treatmentComparison.pickedTreatment.brand} " +
+                        treatmentComparison.pickedTreatment.design
+
+                val coloringName = "${coloringComparison.pickedColoring.brand} " +
+                        coloringComparison.pickedColoring.design
+
+                Timber.i("Got name $treatmentName from ${treatmentComparison.pickedTreatment}")
 
                 FeatureSelection(
                     modifier = Modifier.minimumWidthModifier(
                         minimumWidthState,
                         density
                     ),
-                    name = coloringComparison.pickedColoring.brand,
+                    name = treatmentName,
+                    dialogState = treatmentDialogState,
+                )
+
+                Timber.i("The picked coloring is ${coloringComparison.pickedColoring}")
+                FeatureSelection(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density
+                    ),
+                    name = coloringName,
+                    dialogState = coloringDialogState,
                 )
             }
 
@@ -297,7 +428,8 @@ private fun FeatureSelection(
     modifier: Modifier = Modifier,
     name: String = "",
     enabled: Boolean = true,
-    onSelect: () -> Unit = {}
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onClick: () -> Unit = {},
 ) {
     OutlinedButton(
         modifier = modifier
@@ -309,9 +441,17 @@ private fun FeatureSelection(
 //                disabledBackgroundColor = Color.Gray.copy(alpha = 0.5f),
 //            ),
         enabled = enabled,
-        onClick = onSelect,
+        onClick = { dialogState.show() },
     ) {
         Text(text = name)
+    }
+}
+
+@Preview
+@Composable
+private fun AddNewComparisonButtonPreview() {
+    SalesAppTheme {
+        AddNewComparisonButton()
     }
 }
 
@@ -406,5 +546,122 @@ private fun LensComparisonCardPreview() {
                 )
             )
         )
+    }
+}
+
+@Composable
+private fun PickTechDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    techs: List<FilterLensTechEntity> = emptyList(),
+    comparison: IndividualComparison,
+    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+) {
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        val options = techs.map { it.name }
+
+        title(res = R.string.dialog_select_tech)
+
+        listItems(
+            list = options
+        ) { index, _ ->
+            onPickTech(techs[index].id, comparison)
+
+            dialogState.hide()
+        }
+    }
+}
+
+@Composable
+private fun PickMaterialDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    materials: List<FilterLensMaterialEntity> = emptyList(),
+    comparison: IndividualComparison,
+    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+) {
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        val options = materials.map { it.name }
+
+        title(res = R.string.dialog_select_material)
+
+        listItems(
+            list = options
+        ) { index, _ ->
+            onPickMaterial(materials[index].id, comparison)
+
+            dialogState.hide()
+        }
+    }
+}
+
+@Composable
+private fun PickTreatmentDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    treatments: List<LocalTreatmentEntity> = emptyList(),
+    comparison: IndividualComparison,
+    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+) {
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        val options = treatments.map {
+            Timber.i("Displaying treatment option: $it")
+
+            "${it.brand} ${it.design}"
+        }
+
+        title(res = R.string.dialog_select_treatment)
+
+        listItems(
+            list = options
+        ) { index, _ ->
+            onPickTreatment(treatments[index].id, comparison)
+
+            dialogState.hide()
+        }
+    }
+}
+
+@Composable
+private fun PickColoringDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    colorings: List<LocalColoringEntity> = emptyList(),
+    comparison: IndividualComparison,
+    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+) {
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        val options = colorings.map {
+            "${it.brand} ${it.design}"
+        }
+
+        title(res = R.string.dialog_select_coloring)
+
+        listItems(
+            list = options
+        ) { index, _ ->
+            onPickColoring(colorings[index].id, comparison)
+
+            dialogState.hide()
+        }
     }
 }

@@ -37,14 +37,14 @@ sealed class LensTypeCategoryName {
 
 @Entity(
     tableName = ActiveSOEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = ActiveSalesEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["sale_id"],
-            onDelete = CASCADE
-         )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = ActiveSalesEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["sale_id"],
+//            onDelete = CASCADE
+//         )
+//    ]
 )
 data class ActiveSOEntity(
     @PrimaryKey val id: String = "",

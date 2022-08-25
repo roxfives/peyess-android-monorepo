@@ -11,14 +11,14 @@ import java.time.LocalDate
 
 @Entity(
     tableName = PrescriptionPictureEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = ActiveSOEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["so_id"],
-            onDelete = CASCADE,
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = ActiveSOEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["so_id"],
+//            onDelete = CASCADE,
+//        )
+//    ]
 )
 data class PrescriptionPictureEntity(
     @PrimaryKey @ColumnInfo(name = "so_id") val soId: String = "",

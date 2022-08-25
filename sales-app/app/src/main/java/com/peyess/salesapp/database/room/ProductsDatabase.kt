@@ -22,6 +22,10 @@ import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEnti
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringDao
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringEntity
+import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialDao
+import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechDao
+import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechEntity
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentDao
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentEntity
 import com.peyess.salesapp.dao.products.room.local_alt_height.LocalAltHeightDao
@@ -52,6 +56,9 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         JoinLensTreatmentEntity::class,
         JoinLensColoringEntity::class,
 
+        JoinLensTechEntity::class,
+        JoinLensMaterialEntity::class,
+
         LocalAltHeightEntity::class,
 
         LocalColoringEntity::class,
@@ -79,11 +86,13 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
     ],
-    version = 34,
+    version = 41,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao
     abstract fun joinLensColoringDao(): JoinLensColoringDao
+    abstract fun joinLensMaterialDao(): JoinLensMaterialDao
+    abstract fun joinLensTechDao(): JoinLensTechDao
 
     abstract fun localAltHeightDao(): LocalAltHeightDao
 
@@ -110,5 +119,5 @@ abstract class ProductsDatabase: RoomDatabase() {
     abstract fun filterLensSpecialtyEntity(): FilterLensSpecialtyDao
     abstract fun filterLensSupplierDao(): FilterLensSupplierDao
     abstract fun filterLensTypeDao(): FilterLensTypeDao
-    abstract fun filterLensTechEntity(): FilterLensTechDao
+    abstract fun filterLensTechDao(): FilterLensTechDao
 }

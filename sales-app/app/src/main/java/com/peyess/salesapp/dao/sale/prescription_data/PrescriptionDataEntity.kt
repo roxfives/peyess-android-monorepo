@@ -60,14 +60,14 @@ sealed class PrismPosition {
 
 @Entity(
     tableName = PrescriptionDataEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = ActiveSOEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["so_id"],
-            onDelete = CASCADE,
-        )
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = ActiveSOEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["so_id"],
+//            onDelete = CASCADE,
+//        )
+//    ]
 )
 data class PrescriptionDataEntity(
     @PrimaryKey @ColumnInfo(name = "so_id") val soId: String = "",

@@ -9,14 +9,14 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 @Entity(
     tableName = LocalProductExpEntity.tableName,
     primaryKeys = ["product_id", "exp"],
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["product_id"],
-            onUpdate = CASCADE,
-        ),
-    ]
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = LocalLensEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["product_id"],
+//            onUpdate = CASCADE,
+//        ),
+//    ]
 )
 data class LocalProductExpEntity(
     @ColumnInfo(name = "product_id") val productId: String = "",

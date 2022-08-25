@@ -45,4 +45,12 @@ interface ProductRepository {
             Flow<List<FilterLensTechEntity>>
     fun materialsForLens(supplierId: String, brandId: String, designId: String):
             Flow<List<FilterLensMaterialEntity>>
+
+    fun lensWith(
+        supplierId: String,
+        brandId: String,
+        designId: String,
+        techId: String,
+        materialId: String
+    ): Flow<LocalLensEntity?>
 }

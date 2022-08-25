@@ -195,6 +195,10 @@ class SaleRepositoryImpl @Inject constructor(
         comparisonDao.deleteById(id)
     }
 
+    override fun updateSaleComparison(comparison: LensComparisonEntity) {
+        comparisonDao.update(comparison)
+    }
+
     companion object {
         val currentSaleFileName =
             "com.peyess.salesapp.repository.sale.SaleRepositoryImpl__CurrnetSale"

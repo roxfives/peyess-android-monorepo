@@ -374,6 +374,16 @@ class ProductRepositoryImpl @Inject constructor(
             .onEach { Timber.i("Got materials $it") }
     }
 
+    override fun lensWith(
+        supplierId: String,
+        brandId: String,
+        designId: String,
+        techId: String,
+        materialId: String
+    ): Flow<LocalLensEntity?> {
+        return localLensesDao.searchForLens(supplierId, brandId, designId, techId, materialId)
+    }
+
     override fun techsForLens(supplierId: String, brandId: String, designId: String):
             Flow<List<FilterLensTechEntity>> {
         return lensTechDao.techsForLens(supplierId, brandId, designId)

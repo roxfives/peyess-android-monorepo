@@ -64,12 +64,14 @@ import com.vanpra.composematerialdialogs.title
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
+import kotlin.math.abs
 
 val buttonHeight = 120.dp
 
 @Composable
 fun LensComparisonScreen(
     modifier: Modifier = Modifier,
+    onAddNewComparison: () -> Unit = {},
     onLensPicked: () -> Unit = {},
 ) {
     val viewModel: LensComparisonViewModel = mavericksViewModel()
@@ -92,8 +94,10 @@ fun LensComparisonScreen(
         coloringsFor = viewModel::coloringsFor,
 
 
-//        onPickTech = {_, },
-//        onPickMaterial = onPickMaterial,
+        onPickTech = viewModel::onPickTech,
+        onPickMaterial = viewModel::onPickMaterial,
+        onPickTreatment = viewModel::onPickTreatment,
+        onPickColoring = viewModel::onPickColoring,
     )
 
 }
@@ -476,7 +480,7 @@ private fun PriceDifference(
     } else {
         ""
     }
-    priceTag += "R$ %.2f".format(priceDiff / installments)
+    priceTag += "R$ %.2f".format(abs(priceDiff / installments))
 
     Box(modifier = modifier) {
         Text(

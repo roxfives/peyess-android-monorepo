@@ -25,4 +25,22 @@ interface LocalLensDao {
                 " ORDER BY priority"
     )
     fun getAllByGroupId(groupId: String): List<LocalLensEntity>
+
+    @Query(
+        "SELECT * FROM ${LocalLensEntity.tableName} " +
+                "WHERE supplier_id = :supplierId " +
+                "AND brand_id = :brandId " +
+                "AND design_id = :designId " +
+                "AND tech_id = :techId " +
+                "AND material_id = :materialId " +
+                "ORDER BY brand, design ASC " +
+                "LIMIT 1"
+    )
+    fun searchForLens(
+        supplierId: String,
+        brandId: String,
+        designId: String,
+        techId: String,
+        materialId: String,
+    ): Flow<LocalLensEntity?>
 }

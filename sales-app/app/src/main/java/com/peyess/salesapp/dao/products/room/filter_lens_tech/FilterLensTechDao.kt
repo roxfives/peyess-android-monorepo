@@ -17,7 +17,7 @@ interface FilterLensTechDao {
     fun add(filter: FilterLensTechEntity)
 
     @Query(
-        "SELECT * FROM ${FilterLensTechEntity.tableName} AS Techs " +
+        "SELECT Techs.id, Techs.name FROM ${FilterLensTechEntity.tableName} AS Techs " +
                 "JOIN ${LocalLensEntity.tableName} AS Lenses " +
                 "ON Techs.id = Lenses.tech_id " +
                 "WHERE Lenses.supplier_id = :supplierId " +

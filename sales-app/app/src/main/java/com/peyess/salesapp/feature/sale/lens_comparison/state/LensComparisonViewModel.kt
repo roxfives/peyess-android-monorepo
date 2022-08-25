@@ -13,6 +13,7 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.toLensComparison
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -39,25 +41,28 @@ class LensComparisonViewModel @AssistedInject constructor(
     val saleRepository: SaleRepository,
 ): MavericksViewModel<LensComparisonState>(initialState) {
 
-    private fun <T1, T2, T3, T4, T5, T6, R> combineAll(
+    data class NTuple4<T1, T2, T3, T4>(val t1: T1, val t2: T2, val t3: T3, val t4: T4)
+    private fun <T1, T2, T3, T4, T5, T6, T7, R> combineAll(
         flow: Flow<T1>,
         flow2: Flow<T2>,
         flow3: Flow<T3>,
         flow4: Flow<T4>,
         flow5: Flow<T5>,
         flow6: Flow<T6>,
-        transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+        flow7: Flow<T7>,
+        transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
     ): Flow<R> = combine(
         combine(flow, flow2, flow3, ::Triple),
-        combine(flow4, flow5, flow6, ::Triple)
+        combine(flow4, flow5, flow6, flow7, ::NTuple4),
     ) { t1, t2 ->
         transform(
             t1.first,
             t1.second,
             t1.third,
-            t2.first,
-            t2.second,
-            t2.third
+            t2.t1,
+            t2.t2,
+            t2.t3,
+            t2.t4,
         )
     }
 
@@ -78,8 +83,10 @@ class LensComparisonViewModel @AssistedInject constructor(
                             productRepository.lensById(comparison.comparisonLensId).take(1),
                             productRepository.coloringById(comparison.comparisonColoringId).take(1),
                             productRepository.treatmentById(comparison.comparisonTreatmentId).take(1),
+
+                            saleRepository.activeSO().filterNotNull().take(1),
                         ) { originalLens, originalColoring, originalTreatment,
-                            pickedLens, pickedColoring, pickedTreatment, ->
+                            pickedLens, pickedColoring, pickedTreatment, so ->
 
                             if (
                                 originalLens == null
@@ -109,6 +116,7 @@ class LensComparisonViewModel @AssistedInject constructor(
 
                             IndividualComparison(
                                 id = comparison.id,
+                                soId = so.id,
 
                                 lensComparison = LensComparison(
                                     originalLens = originalLens,
@@ -167,6 +175,108 @@ class LensComparisonViewModel @AssistedInject constructor(
     fun coloringsFor(lensComparison: IndividualComparison): Flow<List<LocalColoringEntity>> {
         return productRepository
             .coloringsForLens(lensComparison.lensComparison.pickedLens.id)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun onPickTech(techId: String, lensComparison: IndividualComparison) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            val supplierId = lensComparison.lensComparison.pickedLens.supplierId
+            val brandId = lensComparison.lensComparison.pickedLens.brandId
+            val designId = lensComparison.lensComparison.pickedLens.designId
+            val materialId = lensComparison.lensComparison.pickedLens.materialId
+
+            productRepository.lensWith(
+                supplierId = supplierId,
+                brandId = brandId,
+                designId = designId,
+                materialId = materialId,
+                techId = techId
+            ).flatMapLatest {
+                combine(
+                    productRepository.treatmentsForLens(it?.id ?: ""),
+                    productRepository.coloringsForLens(it?.id ?: ""),
+                ) { treatments, colorings ->
+                    lensComparison
+                        .toLensComparison()
+                        .copy(
+                            comparisonLensId = it?.id ?: "",
+                            comparisonTreatmentId = treatments[0].id,
+                            comparisonColoringId = colorings[0].id,
+                        )
+                }
+            }.take(1)
+                .onEach {
+                    saleRepository.updateSaleComparison(it)
+                }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun onPickMaterial(materialId: String, lensComparison: IndividualComparison) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            val supplierId = lensComparison.lensComparison.pickedLens.supplierId
+            val brandId = lensComparison.lensComparison.pickedLens.brandId
+            val designId = lensComparison.lensComparison.pickedLens.designId
+            val techId = lensComparison.lensComparison.pickedLens.techId
+
+            productRepository.lensWith(
+                supplierId = supplierId,
+                brandId = brandId,
+                designId = designId,
+                materialId = materialId,
+                techId = techId
+            ).flatMapLatest {
+                Timber.i("Found lens id: ${it?.id}")
+
+                Timber.i("Looked with $supplierId")
+                Timber.i("Looked with $brandId")
+                Timber.i("Looked with $designId")
+                Timber.i("Looked with $materialId")
+                Timber.i("Looked with $techId")
+
+                combine(
+                    productRepository.treatmentsForLens(it?.id ?: ""),
+                    productRepository.coloringsForLens(it?.id ?: ""),
+                ) { treatments, colorings ->
+                    lensComparison
+                        .toLensComparison()
+                        .copy(
+                            comparisonLensId = it?.id ?: "",
+                            comparisonTreatmentId = treatments[0].id,
+                            comparisonColoringId = colorings[0].id,
+                        )
+                }
+            }.take(1)
+                .onEach {
+                    saleRepository.updateSaleComparison(it)
+                }
+                .flowOn(Dispatchers.IO)
+                .collect()
+        }
+    }
+
+    fun onPickTreatment(treatmentId: String, lensComparison: IndividualComparison) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            val comparison = lensComparison
+                .toLensComparison()
+                .copy(
+                    comparisonTreatmentId = treatmentId,
+                )
+
+            saleRepository.updateSaleComparison(comparison)
+        }
+    }
+
+    fun onPickColoring(coloringId: String, lensComparison: IndividualComparison) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            val comparison = lensComparison
+                .toLensComparison()
+                .copy(
+                    comparisonColoringId = coloringId,
+                )
+
+            saleRepository.updateSaleComparison(comparison)
+        }
     }
 
     // hilt

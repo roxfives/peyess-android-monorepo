@@ -19,7 +19,8 @@ interface FilterLensMaterialDao {
     fun getAllWithSupplier(supplierId: String): Flow<List<FilterLensMaterialEntity>>
 
     @Query(
-        "SELECT * FROM ${FilterLensMaterialEntity.tableName} AS Materials " +
+        "SELECT Materials.id, Materials.supplier_id, Materials.name " +
+                "FROM ${FilterLensMaterialEntity.tableName} AS Materials " +
                 "JOIN ${LocalLensEntity.tableName} AS Lenses " +
                 "ON Materials.id = Lenses.material_id " +
                 "WHERE Lenses.supplier_id = :supplierId " +

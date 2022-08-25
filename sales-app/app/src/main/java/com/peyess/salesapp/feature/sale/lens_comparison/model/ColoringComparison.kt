@@ -8,7 +8,7 @@ data class ColoringComparison(
     val originalColoring: LocalColoringEntity = LocalColoringEntity(),
     val pickedColoring: LocalColoringEntity = LocalColoringEntity(),
 ) {
-    val priceDifference = ceil(pickedColoring.price - originalColoring.price)
-    val finalPrice = pickedColoring.price
-
+    // TODO: update to price instead of suggestedPrice
+    val priceDifference = ceil(pickedColoring.suggestedPrice - originalColoring.suggestedPrice)
+    val finalPrice = pickedColoring.suggestedPrice
 }

@@ -40,9 +40,10 @@ fun buildLensSuggestionNavGraph(
     ) {
         LensComparisonScreen(
             modifier = modifier
-                .padding(SalesAppTheme.dimensions.screen_offset)
+                .padding(SalesAppTheme.dimensions.screen_offset),
+            onAddComparison = { navHostController.popBackStack() }
         ) {
-//            navHostController.navigate(SalesAppScreens.LensComparison.name)
+//            navHostController.navigate(SalesAppScreens.PickClient.name)
         }
     }
 }

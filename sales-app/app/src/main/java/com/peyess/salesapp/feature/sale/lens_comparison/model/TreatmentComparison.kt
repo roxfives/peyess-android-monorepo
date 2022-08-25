@@ -7,6 +7,7 @@ data class TreatmentComparison(
     val originalTreatment: LocalTreatmentEntity = LocalTreatmentEntity(),
     val pickedTreatment: LocalTreatmentEntity = LocalTreatmentEntity(),
 ) {
-    val priceDifference = ceil(pickedTreatment.price - originalTreatment.price)
-    val finalPrice = pickedTreatment.price
+    // TODO: update to price instead of suggestedPrice
+    val priceDifference = ceil(pickedTreatment.suggestedPrice - originalTreatment.suggestedPrice)
+    val finalPrice = pickedTreatment.suggestedPrice
 }

@@ -22,6 +22,7 @@ enum class SalesAppScreens {
     FramesMeasure,
     LensSuggestion,
     LensComparison,
+    PickClient,
     People,
     AddPerson,
     Frames,
@@ -52,6 +53,7 @@ enum class SalesAppScreens {
                 FramesMeasure.name -> FramesMeasure
                 LensSuggestion.name -> LensSuggestion
                 LensComparison.name -> LensComparison
+                PickClient.name -> PickClient
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People
@@ -87,6 +89,7 @@ enum class SalesAppScreens {
                 FramesMeasure.name -> "Vamos a sua medição"
                 LensSuggestion.name -> "Sugestões de lentes"
                 LensComparison.name -> "Comparação da lente"
+                PickClient.name -> "Comparação da lente"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

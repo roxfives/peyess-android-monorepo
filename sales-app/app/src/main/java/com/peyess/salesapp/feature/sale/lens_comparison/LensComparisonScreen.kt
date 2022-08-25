@@ -53,7 +53,9 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparis
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
+import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
+import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -71,20 +73,19 @@ val buttonHeight = 120.dp
 @Composable
 fun LensComparisonScreen(
     modifier: Modifier = Modifier,
-    onAddNewComparison: () -> Unit = {},
+    onAddComparison: () -> Unit = {},
     onLensPicked: () -> Unit = {},
 ) {
     val viewModel: LensComparisonViewModel = mavericksViewModel()
 
     val comparisons by viewModel.comparisons().collectAsState(emptyList())
 
-
-
     LensComparisonScreenImpl(
         modifier = modifier,
 
         comparisons = comparisons,
 
+        onAddComparison = onAddComparison,
         onRemoveComparison = viewModel::removeComparison,
         onSelectComparison = {},
 
@@ -119,6 +120,7 @@ private fun LensComparisonScreenImpl(
     onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
 
     onRemoveComparison: (id: Int) -> Unit = {},
+    onAddComparison: () -> Unit = {},
     onSelectComparison: () -> Unit = {},
 ) {
     LazyColumn(
@@ -143,7 +145,9 @@ private fun LensComparisonScreenImpl(
         }
 
         item {
-            AddNewComparisonButton()
+            AddNewComparisonButton(
+                onClick = onAddComparison,
+            )
         }
     }
 }
@@ -342,6 +346,7 @@ private fun LensComparisonCard(
         ) {
             val density = LocalDensity.current
             val minimumWidthState = remember { MinimumWidthState() }
+            val minimumHeightState = remember { MinimumHeightState() }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -349,19 +354,31 @@ private fun LensComparisonCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 FeatureSelection(
-                    modifier = Modifier.minimumWidthModifier(
-                        minimumWidthState,
-                        density
-                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .minimumHeightModifier(
+                            minimumHeightState,
+                            density,
+                        )
+                        .minimumWidthModifier(
+                            minimumWidthState,
+                            density
+                        ),
                     name = lensComparison.pickedLens.tech,
                     dialogState = techDialogState,
                 )
 
                 FeatureSelection(
-                    modifier = Modifier.minimumWidthModifier(
-                        minimumWidthState,
-                        density
-                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .minimumHeightModifier(
+                            minimumHeightState,
+                            density,
+                        )
+                        .minimumWidthModifier(
+                            minimumWidthState,
+                            density
+                        ),
                     name =  lensComparison.pickedLens.material,
                     dialogState = materialDialogState,
                 )
@@ -384,20 +401,32 @@ private fun LensComparisonCard(
                 Timber.i("Got name $treatmentName from ${treatmentComparison.pickedTreatment}")
 
                 FeatureSelection(
-                    modifier = Modifier.minimumWidthModifier(
-                        minimumWidthState,
-                        density
-                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .minimumHeightModifier(
+                            minimumHeightState,
+                            density,
+                        )
+                        .minimumWidthModifier(
+                            minimumWidthState,
+                            density
+                        ),
                     name = treatmentName,
                     dialogState = treatmentDialogState,
                 )
 
                 Timber.i("The picked coloring is ${coloringComparison.pickedColoring}")
                 FeatureSelection(
-                    modifier = Modifier.minimumWidthModifier(
-                        minimumWidthState,
-                        density
-                    ),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .minimumHeightModifier(
+                            minimumHeightState,
+                            density,
+                        )
+                        .minimumWidthModifier(
+                            minimumWidthState,
+                            density
+                        ),
                     name = coloringName,
                     dialogState = coloringDialogState,
                 )
@@ -447,7 +476,11 @@ private fun FeatureSelection(
         enabled = enabled,
         onClick = { dialogState.show() },
     ) {
-        Text(text = name)
+        Text(
+            text = name,
+            style = MaterialTheme.typography.button
+                .copy(textAlign = TextAlign.Center),
+        )
     }
 }
 

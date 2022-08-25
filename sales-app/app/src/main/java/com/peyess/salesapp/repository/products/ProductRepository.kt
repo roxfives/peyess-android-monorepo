@@ -6,7 +6,9 @@ import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamily
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.model.products.LensGroup
 import com.peyess.salesapp.model.products.LensTypeCategory
@@ -31,4 +33,10 @@ interface ProductRepository {
     fun lensFamily(supplierId: String): Flow<List<FilterLensFamilyEntity>>
     fun lensDescription(familyId: String): Flow<List<LensDescription>>
     fun bestLensInGroup(groupId: String): Flow<LensSuggestionModel?>
+
+    fun lensById(lensId: String): Flow<LocalLensEntity?>
+    fun treatmentById(treatmentId: String): Flow<LocalTreatmentEntity?>
+    fun coloringById(coloringId: String): Flow<LocalColoringEntity?>
+    fun treatmentsForLens(lensId: String): Flow<List<LocalTreatmentEntity>>
+    fun coloringsForLens(lensId: String): Flow<List<LocalColoringEntity>>
 }

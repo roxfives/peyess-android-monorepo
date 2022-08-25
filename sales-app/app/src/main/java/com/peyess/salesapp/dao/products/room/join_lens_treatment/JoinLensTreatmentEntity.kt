@@ -7,6 +7,7 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 
 @Entity(
+    tableName = JoinLensTreatmentEntity.tableName,
     primaryKeys = ["lens_id",  "treatment_id"],
     foreignKeys = [
         ForeignKey(

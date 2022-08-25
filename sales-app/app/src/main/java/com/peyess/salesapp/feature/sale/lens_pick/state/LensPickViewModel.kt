@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMap
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -91,7 +92,6 @@ class LensPickViewModel @AssistedInject constructor(
 
                 productRepository.lensDescription(familyId).execute { descriptions ->
                     Timber.i("Got descriptions $descriptions")
-                    Log.i("SUPER_TAG","Got descriptions $descriptions")
                     copy(descriptionFilter = descriptions)
                 }
             }
@@ -211,19 +211,31 @@ class LensPickViewModel @AssistedInject constructor(
         )
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun onPickLens(lensId: String) = withState {
         saleRepository
             .activeSO()
             .filterNotNull()
+            .flatMapLatest {
+                combine(
+                    productRepository.treatmentsForLens(lensId).map { if (it.isNotEmpty()) it[0].id else "" },
+                    productRepository.coloringsForLens(lensId).map { if (it.isNotEmpty()) it[0].id else "" },
+                ) { treatmentId, coloringId ->
+                    LensComparisonEntity(
+                        soId = it.id,
+                        originalLensId = lensId,
+                        originalTreatmentId = treatmentId,
+                        originalColoringId = coloringId,
+
+                        comparisonLensId = lensId,
+                        comparisonTreatmentId = treatmentId,
+                        comparisonColoringId = coloringId,
+                    )
+                }
+            }
             .execute {
                 if (it is Success) {
-                    lensComparisonDao.add(
-                        LensComparisonEntity(
-                            soId = it.invoke().id,
-                            originalLensId = lensId,
-                            comparisonLensId = lensId,
-                        )
-                    )
+                    lensComparisonDao.add(it.invoke())
 
                     Timber.i("Adding comparison of lens $lensId")
 

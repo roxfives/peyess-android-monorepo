@@ -18,11 +18,15 @@ import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupp
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
@@ -52,6 +56,8 @@ import kotlin.math.min
 
 class ProductRepositoryImpl @Inject constructor(
     private val localLensesDao: LocalLensDao,
+    private val treatmentDao: LocalTreatmentDao,
+    private val coloringDao: LocalColoringDao,
     private val localLensDispDao: LocalLensDispDao,
     private val localProductExpDao: LocalProductExpDao,
     private val lensGroupDao: LensGroupDao,
@@ -189,7 +195,7 @@ class ProductRepositoryImpl @Inject constructor(
         return fits
     }
 
-    fun <T1, T2, T3, T4, T5, T6, R> combine(
+    private fun <T1, T2, T3, T4, T5, T6, R> combine(
         flow: Flow<T1>,
         flow2: Flow<T2>,
         flow3: Flow<T3>,
@@ -335,5 +341,25 @@ class ProductRepositoryImpl @Inject constructor(
 
     override fun lensDescription(familyId: String): Flow<List<LensDescription>> {
         return lensDescriptionDao.descriptionsFor(familyId)
+    }
+
+    override fun lensById(lensId: String): Flow<LocalLensEntity?> {
+        return localLensesDao.getById(lensId)
+    }
+
+    override fun coloringById(coloringId: String): Flow<LocalColoringEntity?> {
+        return coloringDao.getById(coloringId)
+    }
+
+    override fun treatmentById(treatmentId: String): Flow<LocalTreatmentEntity?> {
+        return treatmentDao.getById(treatmentId)
+    }
+
+    override fun coloringsForLens(lensId: String): Flow<List<LocalColoringEntity>> {
+        return coloringDao.coloringsForLens(lensId)
+    }
+
+    override fun treatmentsForLens(lensId: String): Flow<List<LocalTreatmentEntity>> {
+        return treatmentDao.treatmentsForLens(lensId)
     }
 }

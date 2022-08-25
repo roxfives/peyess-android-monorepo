@@ -20,9 +20,15 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 data class LensComparisonEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,
     @ColumnInfo(name = "so_id") val soId: String = "",
+
     // TODO: Add as foreign key
     @ColumnInfo(name = "original_lens_id") val originalLensId: String = "",
+    @ColumnInfo(name = "original_coloring_id") val originalColoringId: String = "",
+    @ColumnInfo(name = "original_treatment_id") val originalTreatmentId: String = "",
+
     @ColumnInfo(name = "comparison_lens_id") val comparisonLensId: String = "",
+    @ColumnInfo(name = "comparison_coloring_id") val comparisonColoringId: String = "",
+    @ColumnInfo(name = "comparison_treatment_id") val comparisonTreatmentId: String = "",
 ) {
     companion object {
         const val tableName = "lens_comparison"

@@ -8,21 +8,11 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-            onDelete = CASCADE,
-        )
-    ]
+    tableName = LocalColoringEntity.tableName
 )
 data class LocalColoringEntity(
     @PrimaryKey
     val id: String = "",
-
-    @ColumnInfo(name = "lens_id")
-    val lensId: String = "",
 
     @ColumnInfo(name = "specialty")
     val specialty: String = "",

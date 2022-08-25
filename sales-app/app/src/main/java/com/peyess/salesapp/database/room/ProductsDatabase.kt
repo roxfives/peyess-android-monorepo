@@ -79,7 +79,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
     ],
-    version = 23,
+    version = 27,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao

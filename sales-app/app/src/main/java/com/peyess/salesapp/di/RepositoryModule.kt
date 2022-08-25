@@ -13,11 +13,14 @@ import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamily
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
@@ -68,6 +71,7 @@ object RepositoryModule {
         prescriptionDataDao: PrescriptionDataDao,
         framesDataDao: FramesDataDao,
         positioningDao: PositioningDao,
+        comparisonDao: LensComparisonDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -80,6 +84,7 @@ object RepositoryModule {
             prescriptionDataDao,
             framesDataDao,
             positioningDao,
+            comparisonDao,
         )
     }
 
@@ -87,6 +92,8 @@ object RepositoryModule {
     @Singleton
     fun provideProductsRepository(
         localLensDao: LocalLensDao,
+        localTreatmentDao: LocalTreatmentDao,
+        localColoringDao: LocalColoringDao,
         lensDispDao: LocalLensDispDao,
         lensProductExpDao: LocalProductExpDao,
         lensGroupDao: LensGroupDao,
@@ -99,6 +106,8 @@ object RepositoryModule {
     ): ProductRepository {
         return ProductRepositoryImpl(
             localLensDao,
+            localTreatmentDao,
+            localColoringDao,
             lensDispDao,
             lensProductExpDao,
             lensGroupDao,

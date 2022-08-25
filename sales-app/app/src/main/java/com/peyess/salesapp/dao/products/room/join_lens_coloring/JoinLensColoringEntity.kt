@@ -7,6 +7,7 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
+    tableName = JoinLensColoringEntity.tableName,
     primaryKeys = ["lens_id",  "coloring_id"],
     foreignKeys = [
         ForeignKey(

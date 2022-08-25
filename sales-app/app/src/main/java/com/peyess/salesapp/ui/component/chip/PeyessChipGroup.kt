@@ -29,8 +29,8 @@ fun <T> PeyessChipGroup(
 ) {
     val chipModifier = if (keepSameWidth) {
         val density = LocalDensity.current
-
         val minimumWidthState = remember { MinimumWidthState() }
+
         Modifier.minimumWidthModifier(
             minimumWidthState,
             density

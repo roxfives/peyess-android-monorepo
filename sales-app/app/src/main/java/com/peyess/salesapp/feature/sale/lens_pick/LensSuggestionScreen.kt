@@ -1181,7 +1181,8 @@ private fun LensPrice(
                     vertical = 12.dp,
                 )
                 .align(Alignment.Center),
-            text = "${price / installments}",
+            // TODO: localize price symbol
+            text = "R$ ${price / installments}",
             style = MaterialTheme.typography.h6,
             color = color,
         )

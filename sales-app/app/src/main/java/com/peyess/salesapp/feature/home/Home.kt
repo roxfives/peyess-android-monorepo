@@ -51,7 +51,6 @@ fun Home(
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
     val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
 
-
     val hasStartedNewSale = remember {
         mutableStateOf(false)
     }

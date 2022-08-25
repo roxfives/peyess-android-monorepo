@@ -18,6 +18,8 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
+import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
@@ -45,6 +47,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val prescriptionDataDao: PrescriptionDataDao,
     private val framesDataDao: FramesDataDao,
     private val positioningDao: PositioningDao,
+    private val comparisonDao: LensComparisonDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -173,6 +176,19 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun lensTypeCategories(): Flow<List<LensTypeCategory>> {
         return lensTypeCategoryDao.categories()
+    }
+
+    override fun addLensForComparison(lensComparisonEntity: LensComparisonEntity) {
+        comparisonDao.add(lensComparisonEntity)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun comparisons(): Flow<List<LensComparisonEntity>> {
+        return activeSO()
+            .filterNotNull()
+            .flatMapLatest {
+                comparisonDao.getBySo(it.id)
+            }
     }
 
     companion object {

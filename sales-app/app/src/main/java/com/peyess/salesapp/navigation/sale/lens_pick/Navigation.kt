@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.sale.lens_suggestion
+package com.peyess.salesapp.navigation.sale.lens_pick
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
@@ -6,8 +6,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
+import com.peyess.salesapp.feature.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.lens_pick.LensSuggestionScreen
+import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition
+import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
+import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition
+import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -22,10 +27,22 @@ fun buildLensSuggestionNavGraph(
         exitTransition = lensSuggestionExitTransition()
     ) {
         LensSuggestionScreen(
-            modifier = modifier
-//                .padding(SalesAppTheme.dimensions.screen_offset)
+            modifier = modifier,
         ) {
             navHostController.navigate(SalesAppScreens.LensComparison.name)
+        }
+    }
+
+    builder.composable(
+        route = SalesAppScreens.LensComparison.name,
+        enterTransition = lensComparisonEnterTransition(),
+        exitTransition = lensComparisonExitTransition()
+    ) {
+        LensComparisonScreen(
+            modifier = modifier
+                .padding(SalesAppTheme.dimensions.screen_offset)
+        ) {
+//            navHostController.navigate(SalesAppScreens.LensComparison.name)
         }
     }
 }

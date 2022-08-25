@@ -8,21 +8,11 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 
 @Entity(
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalLensEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["lens_id"],
-            onDelete = CASCADE,
-        )
-    ]
+    tableName = LocalTreatmentEntity.tableName,
 )
 data class LocalTreatmentEntity(
     @PrimaryKey
     val id: String = "",
-
-    @ColumnInfo(name = "lens_id")
-    val lensId: String = "",
 
     @ColumnInfo(name = "specialty")
     val specialty: String = "",
@@ -73,9 +63,6 @@ data class LocalTreatmentEntity(
     val isEnabled: Boolean = false,
     @ColumnInfo(name = "reason_disabled")
     val reasonDisabled: String = "",
-
-//    @ColumnInfo(name = "release_date")
-//    val releaseDate: Date = Date(),
 ) {
     companion object {
         const val tableName = "local_treatment"

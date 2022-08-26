@@ -85,6 +85,10 @@ data class FramesEntity(
     }
 }
 
+fun FramesEntity.name(): String {
+    return "Descrição: $description, Referência: $reference, Código de referência: $tagCode"
+}
+
 fun FramesEntity.hasPotentialProblemsWith(prescriptionData: PrescriptionDataEntity): Boolean {
 //    val hasProblemsOnLeft =
 //        (prescriptionData.sphericalLeft <= -4.0) ||

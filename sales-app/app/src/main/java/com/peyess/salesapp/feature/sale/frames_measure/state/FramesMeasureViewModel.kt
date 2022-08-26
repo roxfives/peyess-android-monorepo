@@ -42,7 +42,7 @@ class FramesMeasureViewModel @AssistedInject constructor(
 
     private val jobs: MutableList<Job> = mutableListOf()
 
-    private val timeThreshold: Long = 500000000L
+    private val timeThreshold = 2000000
     private val checkMiddleThreshold = 7
 
     init {
@@ -75,9 +75,11 @@ class FramesMeasureViewModel @AssistedInject constructor(
         val firstTouch = it.firstTouch
         val secondTouch = System.nanoTime()
 
-        val speed = if (secondTouch - firstTouch < timeThreshold) {
+        Timber.i("Current diff: ${(secondTouch - firstTouch)}")
+        Timber.i("Current diff as Int: ${(secondTouch - firstTouch).toInt()}")
+        val speed = if ((secondTouch - firstTouch) < timeThreshold) {
             (it.currentSpeed + speedUnit).coerceAtMost(fastest)
-        } else if (secondTouch - firstTouch >= timeThreshold) {
+        } else if ((secondTouch - firstTouch) >= timeThreshold) {
             (it.currentSpeed - speedUnit).coerceAtLeast(slow)
         } else {
             it.currentSpeed

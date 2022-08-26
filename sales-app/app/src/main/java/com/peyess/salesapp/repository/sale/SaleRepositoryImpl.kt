@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.dao.client.room.ClientEntity
+import com.peyess.salesapp.dao.client.room.ClientPickedDao
+import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
@@ -30,11 +33,19 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -51,6 +62,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val positioningDao: PositioningDao,
     private val comparisonDao: LensComparisonDao,
     private val productPickedDao: ProductPickedDao,
+    private val clientPickedDao: ClientPickedDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -204,6 +216,21 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun pickProduct(productPicked: ProductPickedEntity) {
         productPickedDao.add(productPicked)
+    }
+
+    @OptIn(FlowPreview::class)
+    override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
+        return activeSO()
+            .filterNotNull()
+            .flatMapConcat { so ->
+                Timber.i("Got so $so")
+                clientPickedDao.getClientForSO(role = role, soId = so.id)
+            }
+    }
+
+    override fun pickClient(client: ClientEntity) {
+        Timber.i("Adding client $client")
+        clientPickedDao.add(client)
     }
 
     companion object {

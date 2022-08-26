@@ -197,6 +197,30 @@
     <string name="dialog_select_coloring">Selecione a coloração</string>
     <string name="dialog_select_treatment">Selecione a tratamento</string>
 
+    <!--  UI Component: PickClient  -->
+    <string name="no_clients_yet">Ainda não há clientes cadastrados</string>
+    <string name="btn_add_new_client">Adicionar cliente</string>
+    <string name="btn_select_client">Selecionar</string>
+
+    <!--  UI Component: Service Order  -->
+    <string name="so_section_title_clients">Cliente</string>
+    <string name="so_subsection_title_user">Usuário</string>
+    <string name="so_subsection_title_responsible">Responsável</string>
+    <string name="so_subsection_title_witness">Testemunha</string>
+
+    <string name="btn_change_client">Alterar</string>
+
+    <string name="so_section_title_prescription">Receita</string>
+
+    <string name="so_section_title_measure">Medidas</string>
+
+    <string name="so_section_title_products">Produtos</string>
+    <string name="so_subsection_title_left_eye">Olho esquerdo</string>
+    <string name="so_subsection_title_right_eye">Olho direito</string>
+    <string name="so_subsection_title_frames">Armação</string>
+
+    <string name="so_section_title_payments">Pagamentos</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>
@@ -205,6 +229,8 @@
     <string name="fs_col_lenses_groups">lenses_default_groups</string>
     <string name="fs_col_family">lenses_designs</string>
     <string name="fs_col_description">lenses_designs</string>
+    <string name="fs_col_clients">optical_stores/%1$s/local_optical_client</string>
+    <string name="fs_field_clients_name">name</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

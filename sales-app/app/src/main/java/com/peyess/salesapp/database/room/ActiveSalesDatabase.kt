@@ -3,6 +3,8 @@ package com.peyess.salesapp.database.room
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.peyess.salesapp.dao.client.room.ClientEntity
+import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
@@ -20,6 +22,7 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
+import com.peyess.salesapp.database.room.converters.ConverterClientRole
 import com.peyess.salesapp.database.room.converters.ConverterEye
 import com.peyess.salesapp.database.room.converters.ConverterFramesType
 import com.peyess.salesapp.database.room.converters.ConverterLensTypeCategoryName
@@ -37,8 +40,9 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         PositioningEntity::class,
         LensComparisonEntity::class,
         ProductPickedEntity::class,
+        ClientEntity::class,
     ],
-    version = 26,
+    version = 28,
 )
 @TypeConverters(
     ConverterLocalDate::class,
@@ -47,6 +51,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
     ConverterPrismPosition::class,
     ConverterFramesType::class,
     ConverterEye::class,
+    ConverterClientRole::class,
 )
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao
@@ -64,4 +69,6 @@ abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun lensComparisonDao(): LensComparisonDao
 
     abstract fun productPickedDao(): ProductPickedDao
+
+    abstract fun clientPickedDao(): ClientPickedDao
 }

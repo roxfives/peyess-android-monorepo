@@ -1,9 +1,11 @@
 package com.peyess.salesapp.dao.products.firestore.lens_description
 
 import androidx.annotation.Keep
+import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 
 @Keep
+@IgnoreExtraProperties
 data class FSLensDescription(
     @Keep
     @JvmField

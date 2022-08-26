@@ -64,6 +64,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-permissions:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-placeholder-material:$accompanistVersion")
 
     // Paging for compose
     implementation("androidx.paging:paging-compose:1.0.0-alpha16")

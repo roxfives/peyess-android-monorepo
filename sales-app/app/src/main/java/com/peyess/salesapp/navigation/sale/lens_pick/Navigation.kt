@@ -43,7 +43,7 @@ fun buildLensSuggestionNavGraph(
                 .padding(SalesAppTheme.dimensions.screen_offset),
             onAddComparison = { navHostController.popBackStack() }
         ) {
-//            navHostController.navigate(SalesAppScreens.PickClient.name)
+            navHostController.navigate(SalesAppScreens.PickClient.name)
         }
     }
 }

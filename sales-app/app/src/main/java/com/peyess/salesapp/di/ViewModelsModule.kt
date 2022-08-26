@@ -12,9 +12,11 @@ import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
+import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
+import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.feature.sale.welcome.state.WelcomeViewModel
 import dagger.Binds
 import dagger.Module
@@ -113,5 +115,19 @@ interface ViewModelsModule {
     @ViewModelKey(LensComparisonViewModel::class)
     fun bindLensComparisonViewModelFactory(
         factory: LensComparisonViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PickClientViewModel::class)
+    fun bindPickClientViewModelFactory(
+        factory: PickClientViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ServiceOrderViewModel::class)
+    fun bindServiceOrderViewModelFactory(
+        factory: ServiceOrderViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

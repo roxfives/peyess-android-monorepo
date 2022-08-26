@@ -68,9 +68,9 @@ class MainActivity: ComponentActivity() {
             OneTimeWorkRequestBuilder<UpdateProductsWorker>()
                 .build()
 
-        WorkManager
-            .getInstance(this)
-            .enqueue(uploadWorkRequest)
+//        WorkManager
+//            .getInstance(this)
+//            .enqueue(uploadWorkRequest)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {

@@ -7,6 +7,10 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDaoImpl
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
+import com.peyess.salesapp.dao.client.firestore.ClientDao
+import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
+import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl_Factory
+import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensCategoryDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
@@ -94,6 +98,15 @@ object DaoModule {
         application: SalesApplication,
     ): LensDescriptionDao {
         return LensDescriptionDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideClientsDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): ClientDao {
+        return ClientDaoImpl(application, firebaseManager)
     }
 
     @Singleton
@@ -262,5 +275,11 @@ object DaoModule {
     @Provides
     fun provideLensComparisonDao(saleDatabase: ActiveSalesDatabase): LensComparisonDao {
         return saleDatabase.lensComparisonDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideClientPickedDao(saleDatabase: ActiveSalesDatabase): ClientPickedDao {
+        return saleDatabase.clientPickedDao()
     }
 }

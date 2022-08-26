@@ -280,7 +280,7 @@ class LensComparisonViewModel @AssistedInject constructor(
         }
     }
 
-    fun onPickProduct(comparison: IndividualComparison) {
+    fun onPickProduct(comparison: IndividualComparison) = setState {
         viewModelScope.launch(Dispatchers.IO) {
             saleRepository.activeSO()
                 .filterNotNull()
@@ -296,6 +296,8 @@ class LensComparisonViewModel @AssistedInject constructor(
                     )
             }.collect()
         }
+
+        copy(hasPickedProduct = true)
     }
 
     fun lensPicked() = setState {

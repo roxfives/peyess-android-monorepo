@@ -109,6 +109,7 @@ fun LensComparisonScreen(
         onAddComparison = onAddComparison,
         onRemoveComparison = viewModel::removeComparison,
         onSelectComparison = {
+            canNavigate.value = true
             viewModel.onPickProduct(it)
         },
 

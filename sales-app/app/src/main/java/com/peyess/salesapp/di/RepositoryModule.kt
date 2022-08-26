@@ -5,6 +5,8 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
+import com.peyess.salesapp.dao.client.firestore.ClientDao
+import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDaoImpl
@@ -29,6 +31,8 @@ import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeMana
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
+import com.peyess.salesapp.repository.clients.ClientRepository
+import com.peyess.salesapp.repository.clients.ClientRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.products.ProductRepositoryImpl
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -62,6 +66,14 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun provideClientRepository(
+        clientDao: ClientDao
+    ): ClientRepository {
+        return ClientRepositoryImpl(clientDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideSaleRepository(
         application: SalesApplication,
         firebaseManager: FirebaseManager,
@@ -75,6 +87,7 @@ object RepositoryModule {
         positioningDao: PositioningDao,
         comparisonDao: LensComparisonDao,
         productPickedDao: ProductPickedDao,
+        clientPickedDao: ClientPickedDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -89,6 +102,7 @@ object RepositoryModule {
             positioningDao,
             comparisonDao,
             productPickedDao,
+            clientPickedDao,
         )
     }
 

@@ -1,6 +1,7 @@
 package com.peyess.salesapp.dao.products.firestore.lens
 
 import androidx.annotation.Keep
+import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.dao.products.firestore.disponibility.FSDisponibility
 import com.peyess.salesapp.dao.products.firestore.lens_alt_height.FSLensAltHeight
@@ -20,6 +21,8 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpEntity
 import java.util.Date
 
+@Keep
+@IgnoreExtraProperties
 data class FSLocalLens(
     @Keep
     @JvmField

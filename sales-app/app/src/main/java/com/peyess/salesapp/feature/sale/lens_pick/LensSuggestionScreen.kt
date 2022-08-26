@@ -236,7 +236,7 @@ private fun LensSuggestionScreenImpl(
     val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
 
     val groupDialogState = rememberMaterialDialogState()
-    PickTechDialog(
+    PickGroupDialog(
         dialogState = groupDialogState,
         groups = lensGroups,
         onPickGroup = onPickGroup,
@@ -410,7 +410,7 @@ private fun TierSuggestion(
 }
 
 @Composable
-private fun PickTechDialog(
+private fun PickGroupDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
     groups: Async<List<LensGroup>> = Uninitialized,
     onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
@@ -429,7 +429,9 @@ private fun PickTechDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_group_none))
             val options = noneOption + groupsList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+
+            // TODO: use string resource
+            title("Selecione o grupo")
 
             listItems(
                 list = options
@@ -466,7 +468,8 @@ private fun PickTypeDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_type_none))
             val options = noneOption + typesList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+            // TODO: use string resource
+            title("Selecione o tipo")
 
             listItems(
                 list = options
@@ -503,7 +506,8 @@ private fun PickSupplierDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
             val options = noneOption + suppliersList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+            // TODO: use string resource
+            title("Selecione o fornecedor")
 
             listItems(
                 list = options
@@ -540,7 +544,8 @@ private fun PickMaterialDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
             val options = noneOption + materialsList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+            // TODO: use string resource
+            title("Selecione o material")
 
             listItems(
                 list = options
@@ -577,7 +582,8 @@ private fun PickFamilyDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
             val options = noneOption + familiesList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+            // TODO: use string resource
+            title("Selecione a família")
 
             listItems(
                 list = options
@@ -614,7 +620,8 @@ private fun PickDescriptionDialog(
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
             val options = noneOption + familiesList.map { it.name }
 
-            title(res = R.string.dialog_select_prism_axis_title)
+            // TODO: use string resource
+            title("Selecione a descrição")
 
             listItems(
                 list = options

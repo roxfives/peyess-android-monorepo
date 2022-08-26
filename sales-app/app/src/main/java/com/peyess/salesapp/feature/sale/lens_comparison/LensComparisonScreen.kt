@@ -307,35 +307,44 @@ private fun LensComparisonCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-
             Text(
                 modifier = Modifier.weight(2f),
-                text = lensComparison.originalLens.supplier,
+                text = "${lensComparison.originalLens.supplier} " +
+                        "${lensComparison.originalLens.brand} " +
+                        "${lensComparison.originalLens.design}",
                 style = MaterialTheme.typography.caption
                     .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            Text(
-                modifier = Modifier.weight(2f),
-                text = lensComparison.originalLens.brand,
-                style = MaterialTheme.typography.caption
-                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-
-            Text(
-                modifier = Modifier.weight(2f),
-                text = lensComparison.originalLens.design,
-                style = MaterialTheme.typography.caption
-                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//            Text(
+//                modifier = Modifier.weight(2f),
+//                text = lensComparison.originalLens.supplier,
+//                style = MaterialTheme.typography.caption
+//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+//            )
+//
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//            Text(
+//                modifier = Modifier.weight(2f),
+//                text = lensComparison.originalLens.brand,
+//                style = MaterialTheme.typography.caption
+//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+//            )
+//
+//            Spacer(modifier = Modifier.weight(1f))
+//
+//
+//            Text(
+//                modifier = Modifier.weight(2f),
+//                text = lensComparison.originalLens.design,
+//                style = MaterialTheme.typography.caption
+//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+//            )
+//
+//            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(12.dp))

@@ -52,8 +52,8 @@ data class PrescriptionDataState(
     val hasAstigmatismLeft = cylindricalLeft < 0;
     val hasPresbyopiaLeft = lensTypeCategoryName is Success
             && (
-                lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
-                || lensTypeCategoryName.invoke() !is LensTypeCategoryName.Multi
+                lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
+                || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
             )
 
     val hasHypermetropiaRight =  sphericalRight > 0
@@ -63,7 +63,7 @@ data class PrescriptionDataState(
     val hasAstigmatismRight = cylindricalRight < 0;
     val hasPresbyopiaRight = lensTypeCategoryName is Success
             && (
-            lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
-                    || lensTypeCategoryName.invoke() !is LensTypeCategoryName.Multi
+            lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
+                    || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
             )
 }

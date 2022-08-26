@@ -1,7 +1,11 @@
 package com.peyess.salesapp.navigation.sale.service_order
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -22,8 +26,9 @@ fun buildServiceOrderNavGraph(
         enterTransition = serviceOrderEnterTransition(),
         exitTransition = serviceOrderExitTransition(),
     ) {
-        ServiceOrderScreen(modifier = modifier
-            .padding(SalesAppTheme.dimensions.screen_offset)
+        ServiceOrderScreen(
+            modifier = modifier
+//            .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
             navHostController.navigate(SalesAppScreens.ServiceOrder.name)
         }

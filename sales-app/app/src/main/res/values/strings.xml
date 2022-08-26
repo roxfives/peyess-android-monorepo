@@ -221,6 +221,10 @@
 
     <string name="so_section_title_payments">Pagamentos</string>
 
+    <string name="so_prescription_emission">Data de emissão</string>
+    <string name="so_prescription_name">Profissional</string>
+    <string name="so_prescription_id">CRM ou CROO</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

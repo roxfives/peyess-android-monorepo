@@ -1,7 +1,10 @@
 package com.peyess.salesapp.feature.sale.service_order
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -13,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -34,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -44,12 +49,25 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
+import com.peyess.salesapp.dao.products.room.local_coloring.name
+import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.dao.products.room.local_lens.name
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.dao.products.room.local_treatment.name
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.frames.name
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 private val pictureSize = 60.dp
 private val pictureSizePx = 60
+
+private val prescriptionPictureSize = 60.dp
+private val prescriptionPictureSizePx = 60
 
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
@@ -83,6 +101,12 @@ fun ServiceOrderScreen(
     val responsibleIsLoading by viewModel.collectAsState(ServiceOrderState::isResponsibleLoading)
     val witnessIsLoading by viewModel.collectAsState(ServiceOrderState::isWitnessLoading)
 
+    val prescriptionPicture by viewModel.collectAsState(ServiceOrderState::prescriptionPicture)
+    val isPrescriptionPictureLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionPictureLoading)
+
+    val prescriptionData by viewModel.collectAsState(ServiceOrderState::prescriptionData)
+    val isPrescriptionDataLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionDataLoading)
+
     ServiceOrderScreenImpl(
         modifier = modifier,
 
@@ -92,6 +116,10 @@ fun ServiceOrderScreen(
         user = user,
         responsible = responsible,
         witness = witness,
+
+        isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
+        prescriptionData = prescriptionData,
+        prescriptionPicture = prescriptionPicture,
     )
 }
 
@@ -105,9 +133,23 @@ private fun ServiceOrderScreenImpl(
     user: ClientEntity = ClientEntity(),
     responsible: ClientEntity = ClientEntity(),
     witness: ClientEntity? = null,
+
+    isPrescriptionLoading: Boolean = false,
+    prescriptionData: PrescriptionDataEntity,
+    prescriptionPicture: PrescriptionPictureEntity,
+
+    isProductLoading: Boolean = false,
+    lensEntity: LocalLensEntity = LocalLensEntity(),
+    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
+    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
+    framesEntity: FramesEntity = FramesEntity(),
 ) {
+    val scrollableState = rememberScrollState()
+
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .scrollable(scrollableState, orientation = Orientation.Vertical),
     ) {
         ClientSection(
             isLoading = areUsersLoading,
@@ -115,6 +157,25 @@ private fun ServiceOrderScreenImpl(
             user = user,
             responsible = responsible,
             witness = witness,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PrescriptionSection(
+            isLoading = isPrescriptionLoading,
+            prescriptionData = prescriptionData,
+            prescriptionPicture = prescriptionPicture,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ProductsSection(
+            isLoading = isProductLoading,
+
+            lensEntity = lensEntity,
+            coloringEntity = coloringEntity,
+            treatmentEntity = treatmentEntity,
+            framesEntity = framesEntity,
         )
     }
 }
@@ -289,9 +350,7 @@ private fun ClientCard(
                     Icon(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .placeholder(
-                                visible = isLoading
-                            ),
+                            .placeholder(visible = isLoading),
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = "",
                     )
@@ -299,9 +358,7 @@ private fun ClientCard(
                     Text(
                         modifier = Modifier
                             .padding(vertical = 4.dp)
-                            .placeholder(
-                                visible = isLoading
-                            ),
+                            .placeholder(visible = isLoading),
                         text = client.shortAddress,
                     )
                 }
@@ -322,6 +379,399 @@ private fun ClientCard(
 
             Spacer(modifier = Modifier.width(endingSpacerWidth))
         }
+    }
+}
+
+@Composable
+private fun PrescriptionSection(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+
+    prescriptionPicture: PrescriptionPictureEntity = PrescriptionPictureEntity(),
+    prescriptionData: PrescriptionDataEntity = PrescriptionDataEntity(),
+) {
+    Column(
+        modifier = modifier
+            .padding(sectionPadding),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            SectionTitle(
+                title = stringResource(id = R.string.so_section_title_prescription)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                enabled = !isLoading,
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            }
+        }
+
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                AsyncImage(
+                    modifier = Modifier
+                        .padding(profilePicPadding)
+                        .size(prescriptionPictureSize)
+                        // Clip image to be shaped as a circle
+                        .border(width = 2.dp,
+                            color = MaterialTheme.colors.primary,
+                            shape = CircleShape)
+                        .clip(CircleShape)
+                        .align(Alignment.Center),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(prescriptionPicture.pictureUri)
+                        .crossfade(true)
+                        .size(
+                            width = prescriptionPictureSizePx,
+                            height = prescriptionPictureSizePx
+                        )
+                        .build(),
+                    contentScale = ContentScale.FillBounds,
+                    contentDescription = "",
+                    error = painterResource(id = R.drawable.ic_default_placeholder),
+                    fallback = painterResource(id = R.drawable.ic_default_placeholder),
+                    placeholder = painterResource(id = R.drawable.ic_default_placeholder),
+                )
+            }
+
+            Row(modifier = Modifier.weight(2f)) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = stringResource(id = R.string.so_prescription_emission),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                    )
+
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = stringResource(id = R.string.so_prescription_name),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                    )
+
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = stringResource(id = R.string.so_prescription_id),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = prescriptionPicture.prescriptionDate.toString(),
+                        style = MaterialTheme.typography.body1
+                            .copy(textAlign = TextAlign.Start),
+                    )
+
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = prescriptionPicture.professionalName,
+                        style = MaterialTheme.typography.body1
+                            .copy(textAlign = TextAlign.Start),
+                    )
+
+                    Text(
+                        modifier = Modifier.width(IntrinsicSize.Max),
+                        text = prescriptionPicture.professionalId,
+                        style = MaterialTheme.typography.body1
+                            .copy(textAlign = TextAlign.Start),
+                    )
+                }
+            }
+        }
+
+//        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+//        Divider(
+//            modifier = Modifier.padding(horizontal = 16.dp),
+//            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+//        )
+//        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        // TODO: add Prescription here
+    }
+}
+
+@Composable
+private fun ProductsSection(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+
+    lensEntity: LocalLensEntity = LocalLensEntity(),
+    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
+    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
+    framesEntity: FramesEntity = FramesEntity(),
+) {
+    Column(
+        modifier = modifier
+            .padding(sectionPadding),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            SectionTitle(title = stringResource(id = R.string.so_section_title_products))
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                enabled = !isLoading,
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            }
+        }
+
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        // TODO: use string resource
+        SubSectionTitle(title = "Olho esquerdo")
+        LensCard(lensEntity = lensEntity)
+        ColoringCard(coloringEntity = coloringEntity)
+        TreatmentCard(treatmentEntity = treatmentEntity)
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        // TODO: use string resource
+        SubSectionTitle(title = "Olho direito")
+        LensCard(lensEntity = lensEntity)
+        ColoringCard(coloringEntity = coloringEntity)
+        TreatmentCard(treatmentEntity = treatmentEntity)
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        // TODO: use string resource
+        SubSectionTitle(title = "Armação")
+        FramesCard(framesEntity = framesEntity)
+    }
+}
+
+@Composable
+private fun LensCard(
+    modifier: Modifier = Modifier,
+    lensEntity: LocalLensEntity = LocalLensEntity(),
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        // TODO: use string resource
+        Text(text = "Lente", style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = lensEntity.name(),
+            style = MaterialTheme.typography.body1
+                .copy(textAlign = TextAlign.Start)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(text = "R$ %.2f".format(lensEntity.price), style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+    }
+}
+
+@Composable
+private fun ColoringCard(
+    modifier: Modifier = Modifier,
+    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        // TODO: use string resource
+        Text(text = "Coloração", style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = coloringEntity.name(),
+            style = MaterialTheme.typography.body1
+                .copy(textAlign = TextAlign.Start)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(text = "R$ %.2f".format(coloringEntity.price), style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+    }
+}
+
+@Composable
+private fun TreatmentCard(
+    modifier: Modifier = Modifier,
+    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        // TODO: use string resource
+        Text(text = "Tratamento", style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = treatmentEntity.name(),
+            style = MaterialTheme.typography.body1
+                .copy(textAlign = TextAlign.Start)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(text = "R$ %.2f".format(treatmentEntity.price), style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+    }
+}
+
+@Composable
+private fun FramesCard(
+    modifier: Modifier = Modifier,
+    framesEntity: FramesEntity = FramesEntity(),
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        // TODO: use string resource
+        Text(text = "Armação", style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = framesEntity.name(),
+            style = MaterialTheme.typography.body1
+                .copy(textAlign = TextAlign.Start)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(text = framesEntity.value, style = MaterialTheme.typography.body1
+            .copy(fontWeight = FontWeight.Bold))
+    }
+}
+
+@Preview
+@Composable
+private fun LensCardPreview() {
+    SalesAppTheme {
+        LensCard(
+            modifier = Modifier.fillMaxWidth(),
+            lensEntity =  LocalLensEntity(
+                brand = "Família",
+                design = "Descrição",
+                tech = "Tecnologia",
+                material = "Material",
+                price = 1250.0,
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ColoringCardPreview() {
+    SalesAppTheme {
+        ColoringCard(
+            modifier = Modifier.fillMaxWidth(),
+            coloringEntity = LocalColoringEntity(
+                brand = "Família",
+                design = "Descrição",
+                price = 1250.0,
+                suggestedPrice = 1250.0,
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TreatmentCardPreview() {
+    SalesAppTheme {
+        TreatmentCard(
+            modifier = Modifier.fillMaxWidth(),
+            treatmentEntity = LocalTreatmentEntity(
+                brand = "Família",
+                design = "Descrição",
+                price = 1250.0,
+                suggestedPrice = 1250.0,
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FramesCardPreview() {
+    SalesAppTheme {
+        FramesCard(
+            modifier = Modifier.fillMaxWidth(),
+            framesEntity = FramesEntity(
+                description = "Descrição",
+                reference = "Referência",
+                tagCode = "XXXXXX",
+                value = "450.0",
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ProductsSectionPreview() {
+    SalesAppTheme {
+        ProductsSection()
+    }
+}
+
+@Preview
+@Composable
+private fun PrescriptionSectionPreview() {
+    SalesAppTheme {
+        PrescriptionSection()
     }
 }
 

@@ -43,6 +43,7 @@ interface SaleRepository {
     fun updateSaleComparison(comparison: LensComparisonEntity)
 
     fun pickProduct(productPicked: ProductPickedEntity)
+    fun pickedProduct(): Flow<ProductPickedEntity?>
 
     fun pickClient(client: ClientEntity)
     fun clientPicked(role: ClientRole): Flow<ClientEntity?>

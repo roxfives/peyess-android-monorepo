@@ -181,6 +181,10 @@ data class LocalLensEntity(
     }
 }
 
+fun LocalLensEntity.name(): String {
+    return "$brand $design $tech $material"
+}
+
 
 //   @ColumnInfo(name = "bases")
 //   val bases: Double = 0.0,

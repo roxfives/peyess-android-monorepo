@@ -71,3 +71,7 @@ data class LocalTreatmentEntity(
         const val tableName = "local_treatment"
     }
 }
+
+fun LocalTreatmentEntity.name(): String {
+    return "$brand $design"
+}

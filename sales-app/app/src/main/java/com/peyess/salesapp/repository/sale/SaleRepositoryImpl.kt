@@ -218,6 +218,15 @@ class SaleRepositoryImpl @Inject constructor(
         productPickedDao.add(productPicked)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun pickedProduct(): Flow<ProductPickedEntity?> {
+        return activeSale()
+            .filterNotNull()
+            .flatMapLatest {
+                productPickedDao.getById(it.id)
+            }
+    }
+
     @OptIn(FlowPreview::class)
     override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
         return activeSO()

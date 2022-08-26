@@ -78,5 +78,9 @@ data class LocalColoringEntity(
     }
 }
 
+fun LocalColoringEntity.name(): String {
+    return "$brand $design"
+}
+
 
 //  display: string[];

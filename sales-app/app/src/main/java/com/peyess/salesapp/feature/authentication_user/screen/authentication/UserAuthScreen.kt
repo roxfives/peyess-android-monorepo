@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -281,7 +282,7 @@ fun UserSignIn(
                     onValueChange = onPasscodeChanged,
                     isError = hasPasscodeError,
                     errorMessage = passcodeErrorMessage,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.NumberPassword),
                     keyboardActions = KeyboardActions(onDone = {
                         onPasscodeConfirm()
                     })

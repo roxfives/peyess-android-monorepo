@@ -431,7 +431,7 @@ private fun PickGroupDialog(
 
 
             // TODO: use string resource
-            title("Selecione o grupo")
+            title("Selecione a categoria")
 
             listItems(
                 list = options
@@ -1196,7 +1196,7 @@ private fun LensPrice(
                 )
                 .align(Alignment.Center),
             // TODO: localize price symbol
-            text = "R$ ${price / installments}",
+            text = "R$ %.2f".format(price / installments),
             style = MaterialTheme.typography.h6,
             color = color,
         )

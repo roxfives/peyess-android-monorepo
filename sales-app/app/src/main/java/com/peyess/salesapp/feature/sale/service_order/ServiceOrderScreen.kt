@@ -14,15 +14,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -30,11 +34,15 @@ import androidx.compose.material.icons.filled.LocationOn
 //import com.google.accompanist.placeholder.placeholder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -58,16 +66,20 @@ import com.peyess.salesapp.dao.products.room.local_treatment.name
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
+import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
+import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import java.text.NumberFormat
 
 private val pictureSize = 60.dp
 private val pictureSizePx = 60
 
-private val prescriptionPictureSize = 60.dp
-private val prescriptionPictureSizePx = 60
+private val prescriptionPictureSize = 160.dp
+private val prescriptionPictureSizePx = 160
 
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
@@ -78,6 +90,8 @@ private val endingSpacerWidth = profilePicPadding
 
 private val sectionPadding = 16.dp
 private val subsectionSpacerSize = 16.dp
+
+private val productSpacerSize = 8.dp
 
 @Composable
 fun ServiceOrderScreen(
@@ -107,6 +121,16 @@ fun ServiceOrderScreen(
     val prescriptionData by viewModel.collectAsState(ServiceOrderState::prescriptionData)
     val isPrescriptionDataLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionDataLoading)
 
+    val lensEntity by viewModel.collectAsState(ServiceOrderState::lensEntity)
+    val coloringEntity by viewModel.collectAsState(ServiceOrderState::coloringEntity)
+    val treatmentEntity by viewModel.collectAsState(ServiceOrderState::treatmentEntity)
+    val framesEntity by viewModel.collectAsState(ServiceOrderState::framesEntity)
+
+    val isLensLoading by viewModel.collectAsState(ServiceOrderState::isLensLoading)
+    val isColoringLoading by viewModel.collectAsState(ServiceOrderState::isColoringLoading)
+    val isTreatmentLoading by viewModel.collectAsState(ServiceOrderState::isTreatmentLoading)
+    val isFramesLoading by viewModel.collectAsState(ServiceOrderState::isFramesLoading)
+
     ServiceOrderScreenImpl(
         modifier = modifier,
 
@@ -120,6 +144,15 @@ fun ServiceOrderScreen(
         isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
         prescriptionData = prescriptionData,
         prescriptionPicture = prescriptionPicture,
+
+        isProductLoading = isLensLoading
+                || isColoringLoading
+                || isTreatmentLoading
+                || isFramesLoading,
+        lensEntity = lensEntity,
+        coloringEntity = coloringEntity,
+        treatmentEntity = treatmentEntity,
+        framesEntity = framesEntity,
     )
 }
 
@@ -144,39 +177,47 @@ private fun ServiceOrderScreenImpl(
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
     framesEntity: FramesEntity = FramesEntity(),
 ) {
-    val scrollableState = rememberScrollState()
+    val scrollState = rememberScrollState()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .scrollable(scrollableState, orientation = Orientation.Vertical),
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .padding(4.dp)
+        .verticalScroll(
+            state = scrollState,
+            enabled = true,
+        ),
     ) {
-        ClientSection(
-            isLoading = areUsersLoading,
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+        ) {
+            ClientSection(
+                isLoading = areUsersLoading,
 
-            user = user,
-            responsible = responsible,
-            witness = witness,
-        )
+                user = user,
+                responsible = responsible,
+                witness = witness,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        PrescriptionSection(
-            isLoading = isPrescriptionLoading,
-            prescriptionData = prescriptionData,
-            prescriptionPicture = prescriptionPicture,
-        )
+            PrescriptionSection(
+                isLoading = isPrescriptionLoading,
+                prescriptionData = prescriptionData,
+                prescriptionPicture = prescriptionPicture,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        ProductsSection(
-            isLoading = isProductLoading,
+            ProductsSection(
+                isLoading = isProductLoading,
 
-            lensEntity = lensEntity,
-            coloringEntity = coloringEntity,
-            treatmentEntity = treatmentEntity,
-            framesEntity = framesEntity,
-        )
+                lensEntity = lensEntity,
+                coloringEntity = coloringEntity,
+                treatmentEntity = treatmentEntity,
+                framesEntity = framesEntity,
+            )
+        }
     }
 }
 
@@ -508,16 +549,387 @@ private fun PrescriptionSection(
             }
         }
 
-//        Spacer(modifier = Modifier.size(subsectionSpacerSize))
-//        Divider(
-//            modifier = Modifier.padding(horizontal = 16.dp),
-//            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-//        )
-//        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
-        // TODO: add Prescription here
+        Column(modifier = Modifier.fillMaxWidth()) {
+            val density = LocalDensity.current
+            val minimumWidthState = remember { MinimumWidthState() }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    )
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.degree_spherical),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.degree_cylindrical),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.prism_axis),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Spacer(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.right_eye),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.sphericalRight),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.cylindricalRight),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.axisRight),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Spacer(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    )
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.left_eye),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.sphericalLeft),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.cylindricalLeft),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = "%.2f".format(prescriptionData.axisLeft),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Spacer(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Spacer(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    )
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.title_addition),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.title_prism),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.prism_position),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.prism_axis),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.right_eye),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasAddition) {
+                        "%.2f".format(prescriptionData.additionRight)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasPrism) {
+                        "%.2f".format(prescriptionData.prismDegreeRight)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (
+                        prescriptionData.hasPrism
+                        && prescriptionData.prismPositionRight == PrismPosition.Axis
+                    ) {
+                        PrismPosition.toName(prescriptionData.prismPositionRight)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasPrism) {
+                        "%.2fº".format(prescriptionData.prismAxisRight)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = stringResource(id = R.string.left_eye),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasAddition) {
+                        "%.2f".format(prescriptionData.additionLeft)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasPrism) {
+                        "%.2f".format(prescriptionData.prismDegreeLeft)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (prescriptionData.hasPrism) {
+                        PrismPosition.toName(prescriptionData.prismPositionLeft)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Text(
+                    modifier = Modifier.minimumWidthModifier(
+                        minimumWidthState,
+                        density,
+                    ),
+                    text = if (
+                        prescriptionData.hasPrism
+                        && prescriptionData.prismPositionLeft == PrismPosition.Axis
+                    ) {
+                        "%.2fº".format(prescriptionData.prismAxisLeft)
+                    } else {
+                        // TODO: use string resource
+                        "-"
+                    },
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+            }
+        }
     }
 }
+
+//@Composable
+//private fun ProductsSection(
+//    modifier: Modifier = Modifier,
+//    isLoading: Boolean = false,
+//
+//    lensEntity: LocalLensEntity = LocalLensEntity(),
+//    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
+//    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
+//    framesEntity: FramesEntity = FramesEntity(),
+//) {
+//
+//}
 
 @Composable
 private fun ProductsSection(
@@ -535,6 +947,16 @@ private fun ProductsSection(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start,
     ) {
+        val density = LocalDensity.current
+
+        val minimumTitleWidthState = remember { MinimumWidthState() }
+        val minimumPriceWidthState = remember { MinimumWidthState() }
+
+        val minimumTitleModifier = Modifier
+            .minimumWidthModifier(state = minimumTitleWidthState, density = density)
+        val minimumPriceModifier = Modifier
+            .minimumWidthModifier(state = minimumTitleWidthState, density = density)
+
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_products))
 
@@ -557,17 +979,47 @@ private fun ProductsSection(
 
         // TODO: use string resource
         SubSectionTitle(title = "Olho esquerdo")
-        LensCard(lensEntity = lensEntity)
-        ColoringCard(coloringEntity = coloringEntity)
-        TreatmentCard(treatmentEntity = treatmentEntity)
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        LensCard(
+            lensEntity = lensEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        ColoringCard(
+            coloringEntity = coloringEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        TreatmentCard(
+            treatmentEntity = treatmentEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
 
         Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
         // TODO: use string resource
         SubSectionTitle(title = "Olho direito")
-        LensCard(lensEntity = lensEntity)
-        ColoringCard(coloringEntity = coloringEntity)
-        TreatmentCard(treatmentEntity = treatmentEntity)
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        LensCard(
+            lensEntity = lensEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        ColoringCard(
+            coloringEntity = coloringEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
+        Spacer(modifier = Modifier.size(productSpacerSize))
+        TreatmentCard(
+            treatmentEntity = treatmentEntity,
+            minPriceModifier = minimumPriceModifier,
+            minTitleModifier = minimumTitleModifier,
+        )
 
         Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
@@ -580,15 +1032,21 @@ private fun ProductsSection(
 @Composable
 private fun LensCard(
     modifier: Modifier = Modifier,
+    minTitleModifier: Modifier = Modifier,
+    minPriceModifier: Modifier = Modifier,
     lensEntity: LocalLensEntity = LocalLensEntity(),
 ) {
     Row(
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
         // TODO: use string resource
-        Text(text = "Lente", style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minTitleModifier,
+            text = "Lente",
+            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -601,23 +1059,33 @@ private fun LensCard(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = "R$ %.2f".format(lensEntity.price), style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minPriceModifier,
+            text = "R$ %.2f".format(lensEntity.price),
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
+        )
     }
 }
 
 @Composable
 private fun ColoringCard(
     modifier: Modifier = Modifier,
+    minTitleModifier: Modifier = Modifier,
+    minPriceModifier: Modifier = Modifier,
     coloringEntity: LocalColoringEntity = LocalColoringEntity(),
 ) {
     Row(
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
         // TODO: use string resource
-        Text(text = "Coloração", style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minTitleModifier,
+            text = "Coloração",
+            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -630,23 +1098,34 @@ private fun ColoringCard(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = "R$ %.2f".format(coloringEntity.price), style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        // TODO: change suggestedPrice to price
+        Text(
+            modifier = minPriceModifier,
+            text = NumberFormat.getCurrencyInstance().format(coloringEntity.suggestedPrice),
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
+        )
     }
 }
 
 @Composable
 private fun TreatmentCard(
     modifier: Modifier = Modifier,
+    minTitleModifier: Modifier = Modifier,
+    minPriceModifier: Modifier = Modifier,
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
 ) {
     Row(
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
         // TODO: use string resource
-        Text(text = "Tratamento", style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minTitleModifier,
+            text = "Tratamento", style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold),
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -659,24 +1138,34 @@ private fun TreatmentCard(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = "R$ %.2f".format(treatmentEntity.price), style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        // TODO: change suggestedPrice to price
+        Text(
+            modifier = minPriceModifier,
+            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.suggestedPrice),
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
+        )
     }
 }
 
 @Composable
 private fun FramesCard(
     modifier: Modifier = Modifier,
+    minTitleModifier: Modifier = Modifier,
+    minPriceModifier: Modifier = Modifier,
     framesEntity: FramesEntity = FramesEntity(),
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
         // TODO: use string resource
-        Text(text = "Armação", style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minTitleModifier,
+            text = "Armação",
+            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+        )
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -689,8 +1178,12 @@ private fun FramesCard(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = framesEntity.value, style = MaterialTheme.typography.body1
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            modifier = minPriceModifier,
+            text = framesEntity.value,
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
+        )
     }
 }
 

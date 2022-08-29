@@ -18,7 +18,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.take
+import timber.log.Timber
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
@@ -29,6 +33,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     init {
         loadClients()
         loadPrescriptionPicture()
+        loadPrescriptionData()
         loadProducts()
         loadFrames()
     }
@@ -48,19 +53,19 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     private fun loadPrescriptionPicture() = withState {
-        saleRepository.currentPrescriptionPicture().execute {
+        saleRepository.currentPrescriptionPicture().execute(Dispatchers.IO) {
             copy(prescriptionPictureAsync = it)
         }
     }
 
     private fun loadPrescriptionData() = withState {
-        saleRepository.currentPrescriptionData().execute {
+        saleRepository.currentPrescriptionData().execute(Dispatchers.IO) {
             copy(prescriptionDataAsync = it)
         }
     }
 
     private fun loadFrames() = withState {
-        saleRepository.currentFramesData().execute {
+        saleRepository.currentFramesData().execute(Dispatchers.IO) {
             copy(framesEntityAsync = it)
         }
     }
@@ -71,13 +76,17 @@ class ServiceOrderViewModel @AssistedInject constructor(
             .pickedProduct()
             .filterNotNull()
             .flatMapLatest {
+                Timber.i("Getting ids lens: ${it.lensId}, coloring: ${it.coloringId}, treatment: ${it.treatmentId}")
+
                 combine(
-                    productRepository.lensById(it.lensId),
-                    productRepository.coloringById(it.coloringId),
-                    productRepository.treatmentById(it.treatmentId),
-                    ::Triple
+                    productRepository.lensById(it.lensId).filterNotNull().take(1),
+                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
+                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
+                    ::Triple,
                 )
-            }.execute {
+            }.execute(Dispatchers.IO) {
+                Timber.i("Got products $it")
+
                 when(it) {
                     Uninitialized ->
                         copy(

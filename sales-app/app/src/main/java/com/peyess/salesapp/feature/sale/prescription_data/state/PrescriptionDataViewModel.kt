@@ -57,8 +57,14 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         loadClientName()
         loadLensTypeCategory()
 
-        onEach(PrescriptionDataState::hasAddition) {
-            updateHasAddition(it)
+        onEach(
+            PrescriptionDataState::hasAdditionAsync,
+            PrescriptionDataState::_currentPrescriptionData,
+        ) { hasAddition, currPrescription ->
+            if (hasAddition is Success && currPrescription != null) {
+                Timber.i("Updating hasAddition $hasAddition")
+                updateHasAddition(hasAddition.invoke())
+            }
         }
 
         onEach {
@@ -71,6 +77,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             .filterNotNull()
             .map { !it.isLensTypeMono }
             .execute(Dispatchers.IO) {
+                Timber.i("Loading has addition $it")
                 copy(hasAdditionAsync = it)
             }
     }
@@ -192,6 +199,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     }
 
     private fun updateHasAddition(hasAddition: Boolean) = withState {
+        Timber.i("Updating has addition ($hasAddition) with prescription ${it._currentPrescriptionData}")
         if (it._currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
                 it._currentPrescriptionData.copy(hasAddition = hasAddition)

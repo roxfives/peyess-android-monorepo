@@ -86,7 +86,7 @@ data class FramesEntity(
 }
 
 fun FramesEntity.name(): String {
-    return "Descrição: $description, Referência: $reference, Código de referência: $tagCode"
+    return "$description, $reference ($tagCode)"
 }
 
 fun FramesEntity.hasPotentialProblemsWith(prescriptionData: PrescriptionDataEntity): Boolean {

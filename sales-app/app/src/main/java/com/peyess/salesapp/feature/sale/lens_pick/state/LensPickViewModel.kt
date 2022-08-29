@@ -83,14 +83,14 @@ class LensPickViewModel @AssistedInject constructor(
             }
 
             suggestionList = combine(lensesByGroup) { it.asList() }
-                .flowOn(Dispatchers.Default)
+                .flowOn(Dispatchers.IO)
         }
 
         onEach(LensPickState::familyLensFilterId) { familyId ->
             withState {
                 Timber.i("Getting descriptions")
 
-                productRepository.lensDescription(familyId).execute { descriptions ->
+                productRepository.lensDescription(familyId).execute(Dispatchers.IO) { descriptions ->
                     Timber.i("Got descriptions $descriptions")
                     copy(descriptionFilter = descriptions)
                 }
@@ -120,11 +120,11 @@ class LensPickViewModel @AssistedInject constructor(
 
             withState { state ->
                 if (supplierId.isNotEmpty()) {
-                    productRepository.lensMaterial(supplierId).execute { materials ->
+                    productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
                         copy(materialFilter = materials)
                     }
 
-                    productRepository.lensFamily(supplierId).execute { families ->
+                    productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
                         Timber.i("Got families: $families")
                         copy(familyFilter = families)
                     }
@@ -217,7 +217,7 @@ class LensPickViewModel @AssistedInject constructor(
             .filterNotNull()
             .flatMapLatest {
                 combine(
-                    productRepository.treatmentsForLens(lensId).map { if (it.isNotEmpty()) it[0].id else "" },
+                    productRepository.lensById(lensId).map { it?.defaultTreatment ?: "" },
                     productRepository.coloringsForLens(lensId).map { if (it.isNotEmpty()) it[0].id else "" },
                 ) { treatmentId, coloringId ->
                     LensComparisonEntity(
@@ -232,7 +232,7 @@ class LensPickViewModel @AssistedInject constructor(
                     )
                 }
             }
-            .execute {
+            .execute(Dispatchers.IO) {
                 Timber.i("Loading adding to comparison: $it")
 
                 if (it is Success) {

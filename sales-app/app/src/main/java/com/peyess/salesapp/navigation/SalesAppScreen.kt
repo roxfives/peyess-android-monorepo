@@ -84,7 +84,7 @@ enum class SalesAppScreens {
                 SalePrescriptionLensType.name -> "Vamos aos dados da sua receita"
                 SalePrescriptionPicture.name -> "Vamos aos dados da sua receita"
                 SalePrescriptionData.name -> "Vamos aos dados da sua receita"
-                SalePrescriptionDataSymptoms.name -> "Simtomas e Curiosidades"
+                SalePrescriptionDataSymptoms.name -> "Sintomas e Curiosidades"
                 FramesLanding.name -> "Vamos escolher e medir a sua armação"
                 SetFramesData.name -> "Vamos escolher e medir a sua armação"
                 FramesMeasureAnimation.name -> "Vamos a sua medição"

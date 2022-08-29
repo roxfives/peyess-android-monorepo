@@ -9,6 +9,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -18,11 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.take
-import timber.log.Timber
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
@@ -34,6 +32,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadClients()
         loadPrescriptionPicture()
         loadPrescriptionData()
+        loadPositioning()
         loadProducts()
         loadFrames()
     }
@@ -64,6 +63,16 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadPositioning() = withState {
+        saleRepository.currentPositioning(Eye.Left).execute(Dispatchers.IO) {
+            copy(positioningLeftAsync = it)
+        }
+
+        saleRepository.currentPositioning(Eye.Right).execute(Dispatchers.IO) {
+            copy(positioningRightAsync = it)
+        }
+    }
+
     private fun loadFrames() = withState {
         saleRepository.currentFramesData().execute(Dispatchers.IO) {
             copy(framesEntityAsync = it)
@@ -76,8 +85,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
             .pickedProduct()
             .filterNotNull()
             .flatMapLatest {
-                Timber.i("Getting ids lens: ${it.lensId}, coloring: ${it.coloringId}, treatment: ${it.treatmentId}")
-
                 combine(
                     productRepository.lensById(it.lensId).filterNotNull().take(1),
                     productRepository.coloringById(it.coloringId).filterNotNull().take(1),
@@ -85,8 +92,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
                     ::Triple,
                 )
             }.execute(Dispatchers.IO) {
-                Timber.i("Got products $it")
-
                 when(it) {
                     Uninitialized ->
                         copy(
@@ -108,9 +113,9 @@ class ServiceOrderViewModel @AssistedInject constructor(
                         )
                     is Success ->
                         copy(
-                            lensEntityAsync = Success(it.invoke().first!!),
-                            coloringEntityAsync = Success(it.invoke().second!!),
-                            treatmentEntityAsync = Success(it.invoke().third!!),
+                            lensEntityAsync = Success(it.invoke().first),
+                            coloringEntityAsync = Success(it.invoke().second),
+                            treatmentEntityAsync = Success(it.invoke().third),
                         )
                 }
             }

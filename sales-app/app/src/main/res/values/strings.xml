@@ -225,6 +225,18 @@
     <string name="so_prescription_name">Profissional</string>
     <string name="so_prescription_id">CRM ou CROO</string>
 
+    <string name="so_ipd">DNP</string>
+    <string name="so_height">Altura</string>
+    <string name="so_diameter">Diâmetro:</string>
+    <string name="so_bridge_hoop">Ponto-aro:</string>
+    <string name="so_vertical_hoop">Aro vertical:</string>
+    <string name="so_horizontal_hoop">Aro horizontal:</string>
+    <string name="so_bridge">Ponte:</string>
+    <string name="so_measure_status_title">Status</string>
+    <string name="so_measure_status_pending">Pendente confirmação</string>
+    <string name="so_measure_status_confirmed">Confirmado</string>
+    <string name="so_btn_measure_confirm">Confirmar</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

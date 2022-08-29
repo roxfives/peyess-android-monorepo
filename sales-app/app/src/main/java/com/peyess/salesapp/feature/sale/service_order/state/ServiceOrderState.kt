@@ -10,9 +10,11 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
-import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
+import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
+import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 
 data class ServiceOrderState(
     val userClientAsync: Async<ClientEntity?> = Uninitialized,
@@ -26,6 +28,9 @@ data class ServiceOrderState(
     val coloringEntityAsync: Async<LocalColoringEntity> = Uninitialized,
     val treatmentEntityAsync: Async<LocalTreatmentEntity> = Uninitialized,
     val framesEntityAsync: Async<FramesEntity> = Uninitialized,
+
+    val positioningLeftAsync: Async<PositioningEntity> = Uninitialized,
+    val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
 ): MavericksState {
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
@@ -84,5 +89,19 @@ data class ServiceOrderState(
         framesEntityAsync.invoke()
     } else {
         FramesEntity()
+    }
+
+    val isPositioningLeftLoading = positioningLeftAsync is Loading
+    val measureLeft = if (positioningLeftAsync is Success) {
+        positioningLeftAsync.invoke().toMeasuring()
+    } else {
+        Measuring()
+    }
+
+    val isPositioningRightLoading = positioningRightAsync is Loading
+    val measureRight = if (positioningRightAsync is Success) {
+        positioningRightAsync.invoke().toMeasuring()
+    } else {
+        Measuring()
     }
 }

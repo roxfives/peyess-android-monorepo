@@ -1,8 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -38,9 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -68,11 +62,13 @@ import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import java.lang.Double.max
 import java.text.NumberFormat
 
 private val pictureSize = 60.dp
@@ -92,6 +88,8 @@ private val sectionPadding = 16.dp
 private val subsectionSpacerSize = 16.dp
 
 private val productSpacerSize = 8.dp
+
+private val spaceBetweenMeasureValue = 8.dp
 
 @Composable
 fun ServiceOrderScreen(
@@ -131,6 +129,11 @@ fun ServiceOrderScreen(
     val isTreatmentLoading by viewModel.collectAsState(ServiceOrderState::isTreatmentLoading)
     val isFramesLoading by viewModel.collectAsState(ServiceOrderState::isFramesLoading)
 
+    val isPositioningLeftLoading by viewModel.collectAsState(ServiceOrderState::isPositioningLeftLoading)
+    val measureLeft by viewModel.collectAsState(ServiceOrderState::measureLeft)
+    val isPositioningRightLoading by viewModel.collectAsState(ServiceOrderState::isPositioningRightLoading)
+    val measureRight by viewModel.collectAsState(ServiceOrderState::measureRight)
+
     ServiceOrderScreenImpl(
         modifier = modifier,
 
@@ -153,6 +156,10 @@ fun ServiceOrderScreen(
         coloringEntity = coloringEntity,
         treatmentEntity = treatmentEntity,
         framesEntity = framesEntity,
+
+        isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
+        measureLeft = measureLeft,
+        measureRight = measureRight,
     )
 }
 
@@ -176,6 +183,10 @@ private fun ServiceOrderScreenImpl(
     coloringEntity: LocalColoringEntity = LocalColoringEntity(),
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
     framesEntity: FramesEntity = FramesEntity(),
+
+    isMeasureLoading: Boolean = false,
+    measureLeft: Measuring = Measuring(),
+    measureRight: Measuring = Measuring(),
 ) {
     val scrollState = rememberScrollState()
 
@@ -205,6 +216,14 @@ private fun ServiceOrderScreenImpl(
                 isLoading = isPrescriptionLoading,
                 prescriptionData = prescriptionData,
                 prescriptionPicture = prescriptionPicture,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            MeasuresSection(
+                isLoading = isMeasureLoading,
+                measureLeft = measureLeft,
+                measureRight = measureRight,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -918,18 +937,233 @@ private fun PrescriptionSection(
     }
 }
 
-//@Composable
-//private fun ProductsSection(
-//    modifier: Modifier = Modifier,
-//    isLoading: Boolean = false,
-//
-//    lensEntity: LocalLensEntity = LocalLensEntity(),
-//    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
-//    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
-//    framesEntity: FramesEntity = FramesEntity(),
-//) {
-//
-//}
+@Composable
+private fun MeasuresSection(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
+
+    measureLeft: Measuring = Measuring(),
+    measureRight: Measuring = Measuring(),
+) {
+    Column(
+        modifier = modifier
+            .padding(sectionPadding),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
+    ) {
+        val density = LocalDensity.current
+        val minimumWidthState = remember { MinimumWidthState() }
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            SectionTitle(title = stringResource(id = R.string.so_section_title_measure))
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                enabled = !isLoading,
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            }
+        }
+
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+           horizontalArrangement = Arrangement.SpaceBetween,
+           verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .width(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                   Spacer(
+                       modifier= Modifier
+                           .minimumWidthModifier(state = minimumWidthState, density = density)
+                   )
+
+                   Text(
+                       modifier = Modifier
+                           .minimumWidthModifier(state = minimumWidthState, density = density),
+                       text = stringResource(id = R.string.so_ipd),
+                       style = MaterialTheme.typography.body1
+                           .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                   )
+
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = stringResource(id = R.string.so_height),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .width(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = stringResource(id = R.string.right_eye),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = "%.2f".format(measureRight.fixedIpd),
+                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = "%.2f".format(measureRight.fixedHe),
+                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .width(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = stringResource(id = R.string.left_eye),
+                        style = MaterialTheme.typography.body1
+                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = "%.2f".format(measureLeft.fixedIpd),
+                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .minimumWidthModifier(state = minimumWidthState, density = density),
+                        text = "%.2f".format(measureLeft.fixedHe),
+                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = stringResource(id = R.string.so_diameter))
+                    Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
+                    Text(text = "%.2f".format(max(measureLeft.diameter, measureRight.diameter)))
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = stringResource(id = R.string.so_bridge_hoop))
+                    Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
+                    Text(
+                        text = "%.2f".format(
+                            max(measureLeft.horizontalBridgeHoop, measureRight.horizontalBridgeHoop)
+                        )
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = stringResource(id = R.string.so_vertical_hoop))
+                    Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
+                    Text(
+                        text = "%.2f".format(
+                            max(measureLeft.verticalHoop, measureRight.verticalHoop)
+                        )
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = stringResource(id = R.string.so_horizontal_hoop))
+                    Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
+                    Text(
+                        text = "%.2f".format(
+                            max(measureLeft.horizontalHoop, measureRight.horizontalHoop)
+                        )
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(text = stringResource(id = R.string.so_bridge))
+                    Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
+                    Text(
+                        text = "%.2f".format(
+                            max(measureLeft.bridge, measureRight.bridge)
+                        )
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top,
+            ) {
+                Text(
+                    text = stringResource(id = R.string.so_measure_status_title),
+                    style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+                )
+
+                Spacer(modifier = Modifier.height(subsectionSpacerSize))
+
+                Text(
+                    text = stringResource(id = R.string.so_measure_status_pending),
+                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                )
+
+                Spacer(modifier = Modifier.height(subsectionSpacerSize))
+
+                OutlinedButton(onClick = { /*TODO*/ }) {
+                    Text(text = stringResource(id = R.string.so_btn_measure_confirm))
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun ProductsSection(
@@ -955,7 +1189,7 @@ private fun ProductsSection(
         val minimumTitleModifier = Modifier
             .minimumWidthModifier(state = minimumTitleWidthState, density = density)
         val minimumPriceModifier = Modifier
-            .minimumWidthModifier(state = minimumTitleWidthState, density = density)
+            .minimumWidthModifier(state = minimumPriceWidthState, density = density)
 
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_products))
@@ -1184,6 +1418,15 @@ private fun FramesCard(
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
+    }
+}
+
+
+@Preview
+@Composable
+private fun MeasuresSectionPreview() {
+    SalesAppTheme {
+        MeasuresSection(modifier = Modifier.fillMaxWidth())
     }
 }
 

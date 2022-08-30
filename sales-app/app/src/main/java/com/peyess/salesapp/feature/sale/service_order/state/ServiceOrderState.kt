@@ -6,11 +6,13 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.room.ClientEntity
+import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
@@ -31,6 +33,8 @@ data class ServiceOrderState(
 
     val positioningLeftAsync: Async<PositioningEntity> = Uninitialized,
     val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
+
+    val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
 ): MavericksState {
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
@@ -103,5 +107,12 @@ data class ServiceOrderState(
         positioningRightAsync.invoke().toMeasuring()
     } else {
         Measuring()
+    }
+
+    val isPaymentLoading = paymentsAsync is Loading
+    val payments = if (paymentsAsync is Success) {
+        paymentsAsync.invoke()
+    } else {
+        emptyList()
     }
 }

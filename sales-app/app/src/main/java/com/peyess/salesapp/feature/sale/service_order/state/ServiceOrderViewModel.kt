@@ -35,6 +35,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadPositioning()
         loadProducts()
         loadFrames()
+        loadPayments()
     }
 
     private fun loadClients() = withState {
@@ -76,6 +77,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private fun loadFrames() = withState {
         saleRepository.currentFramesData().execute(Dispatchers.IO) {
             copy(framesEntityAsync = it)
+        }
+    }
+
+    private fun loadPayments() = withState {
+        saleRepository.payments().execute(Dispatchers.IO) {
+            copy(paymentsAsync = it)
         }
     }
 

@@ -2,11 +2,13 @@ package com.peyess.salesapp.repository.sale
 
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
@@ -47,4 +49,9 @@ interface SaleRepository {
 
     fun pickClient(client: ClientEntity)
     fun clientPicked(role: ClientRole): Flow<ClientEntity?>
+
+    fun payments(): Flow<List<SalePaymentEntity>>
+    fun paymentById(paymentId: String): Flow<SalePaymentEntity?>
+    fun addPayment(payment: SalePaymentEntity)
+    fun updatePayment(payment: SalePaymentEntity)
 }

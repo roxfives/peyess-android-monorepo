@@ -1,5 +1,9 @@
 package com.peyess.salesapp.feature.sale.service_order
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -25,6 +30,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 //import com.google.accompanist.placeholder.placeholder
@@ -45,6 +51,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.placeholder.material.placeholder
@@ -59,6 +70,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
 import com.peyess.salesapp.dao.products.room.local_treatment.name
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames.name
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
@@ -134,6 +146,9 @@ fun ServiceOrderScreen(
     val isPositioningRightLoading by viewModel.collectAsState(ServiceOrderState::isPositioningRightLoading)
     val measureRight by viewModel.collectAsState(ServiceOrderState::measureRight)
 
+    val isPaymentsLoading by viewModel.collectAsState(ServiceOrderState::isPaymentLoading)
+    val payments by viewModel.collectAsState(ServiceOrderState::payments)
+
     ServiceOrderScreenImpl(
         modifier = modifier,
 
@@ -160,6 +175,9 @@ fun ServiceOrderScreen(
         isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
         measureLeft = measureLeft,
         measureRight = measureRight,
+
+        isPaymentLoading = isPaymentsLoading,
+        payments = payments,
     )
 }
 
@@ -187,6 +205,9 @@ private fun ServiceOrderScreenImpl(
     isMeasureLoading: Boolean = false,
     measureLeft: Measuring = Measuring(),
     measureRight: Measuring = Measuring(),
+
+    isPaymentLoading: Boolean = false,
+    payments: List<SalePaymentEntity> = emptyList(),
 ) {
     val scrollState = rememberScrollState()
 
@@ -235,6 +256,13 @@ private fun ServiceOrderScreenImpl(
                 coloringEntity = coloringEntity,
                 treatmentEntity = treatmentEntity,
                 framesEntity = framesEntity,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PaymentSection(
+                isLoading = isPaymentLoading,
+                payments = payments,
             )
         }
     }
@@ -1421,6 +1449,101 @@ private fun FramesCard(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun PaymentSection(
+    modifier: Modifier = Modifier,
+
+    isLoading: Boolean = false,
+    payments: List<SalePaymentEntity> = emptyList(),
+    onAddPayment: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier.padding(sectionPadding),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            SectionTitle(title = stringResource(id = R.string.so_section_title_payments))
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = { /*TODO*/ },
+                enabled = !isLoading,
+            ) {
+                Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "")
+            }
+        }
+
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+
+        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+        AnimatedVisibility(
+            visible = isLoading,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            CircularProgressIndicator()
+        }
+
+        AnimatedVisibility(
+            visible = !isLoading && payments.isEmpty(),
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            NoPaymentsYet(modifier = Modifier.fillMaxWidth())
+        }
+
+        AnimatedVisibility(
+            visible = !isLoading && payments.isNotEmpty(),
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Text(text = "payments")
+        }
+    }
+}
+
+@Composable
+private fun NoPaymentsYet(modifier: Modifier = Modifier) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_empty)
+    )
+
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        LottieAnimation(
+            modifier = modifier
+                .height(169.dp)
+                .width(338.dp),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(id = R.string.so_no_payments_added_yet),
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PaymentSectionPreview() {
+    SalesAppTheme {
+        PaymentSection()
+    }
+}
 
 @Preview
 @Composable

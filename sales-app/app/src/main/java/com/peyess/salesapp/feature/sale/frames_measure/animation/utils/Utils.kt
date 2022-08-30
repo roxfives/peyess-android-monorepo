@@ -5,8 +5,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.state.HeadState
 
-fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye):
-    LottieCompositionSpec.RawRes {
+fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye): LottieCompositionSpec.RawRes {
     if (eye == Eye.None) {
         return LottieCompositionSpec.RawRes(R.raw.lottie_measuring_adjust_left)
     }

@@ -237,6 +237,9 @@
     <string name="so_measure_status_confirmed">Confirmado</string>
     <string name="so_btn_measure_confirm">Confirmar</string>
 
+    <string name="so_no_payments_added_yet">Ainda não foi adicionado nenhum pagamento</string>
+
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>
@@ -246,13 +249,16 @@
     <string name="fs_col_family">lenses_designs</string>
     <string name="fs_col_description">lenses_designs</string>
     <string name="fs_col_clients">optical_stores/%1$s/local_optical_client</string>
-    <string name="fs_field_clients_name">name</string>
+    <string name="fs_col_payments">optical_stores/%1$s/local_optical_payment_method</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
     <string name="fs_field_lenses_types_category_name">name</string>
     <string name="fs_field_lenses_types_category_priority">priority</string>
     <string name="fs_field_description_families_ids">families_ids</string>
+    <string name="fs_field_clients_name">name</string>
+    <string name="fs_field_payments_priority">priority</string>
+    <string name="fs_field_payments_is_enabled">is_enabled</string>
 
 
     <string name="fs_field_lenses_group_priority">priority</string>

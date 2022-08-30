@@ -16,6 +16,8 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
@@ -41,8 +43,9 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         LensComparisonEntity::class,
         ProductPickedEntity::class,
         ClientEntity::class,
+        SalePaymentEntity::class,
     ],
-    version = 28,
+    version = 29,
 )
 @TypeConverters(
     ConverterLocalDate::class,
@@ -71,4 +74,6 @@ abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun productPickedDao(): ProductPickedDao
 
     abstract fun clientPickedDao(): ClientPickedDao
+
+    abstract fun salePaymentsDao(): SalePaymentDao
 }

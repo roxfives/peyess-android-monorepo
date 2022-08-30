@@ -9,8 +9,9 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
-import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl_Factory
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
+import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
+import com.peyess.salesapp.dao.payment_methods.PaymentMethodDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensCategoryDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
@@ -40,6 +41,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
+import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
@@ -107,6 +109,15 @@ object DaoModule {
         application: SalesApplication,
     ): ClientDao {
         return ClientDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun providePaymentsDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): PaymentMethodDao {
+        return PaymentMethodDaoImpl(application, firebaseManager)
     }
 
     @Singleton
@@ -281,5 +292,11 @@ object DaoModule {
     @Provides
     fun provideClientPickedDao(saleDatabase: ActiveSalesDatabase): ClientPickedDao {
         return saleDatabase.clientPickedDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSalePaymentDao(saleDatabase: ActiveSalesDatabase): SalePaymentDao {
+        return saleDatabase.salePaymentsDao()
     }
 }

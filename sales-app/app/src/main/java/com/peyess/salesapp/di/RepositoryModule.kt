@@ -7,9 +7,9 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
+import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDaoImpl
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
@@ -24,6 +24,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
+import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
@@ -33,6 +34,8 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.clients.ClientRepositoryImpl
+import com.peyess.salesapp.repository.payments.PaymentRepository
+import com.peyess.salesapp.repository.payments.PaymentRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.products.ProductRepositoryImpl
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -74,6 +77,14 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun providePaymentRepository(
+        clientDao: PaymentMethodDao
+    ): PaymentRepository {
+        return PaymentRepositoryImpl(clientDao)
+    }
+
+    @Provides
+    @Singleton
     fun provideSaleRepository(
         application: SalesApplication,
         firebaseManager: FirebaseManager,
@@ -88,6 +99,7 @@ object RepositoryModule {
         comparisonDao: LensComparisonDao,
         productPickedDao: ProductPickedDao,
         clientPickedDao: ClientPickedDao,
+        salePaymentDao: SalePaymentDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -103,6 +115,7 @@ object RepositoryModule {
             comparisonDao,
             productPickedDao,
             clientPickedDao,
+            salePaymentDao,
         )
     }
 

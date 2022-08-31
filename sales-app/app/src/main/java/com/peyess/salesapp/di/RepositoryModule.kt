@@ -34,8 +34,8 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.clients.ClientRepositoryImpl
-import com.peyess.salesapp.repository.payments.PaymentRepository
-import com.peyess.salesapp.repository.payments.PaymentRepositoryImpl
+import com.peyess.salesapp.repository.payments.PaymentMethodRepository
+import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.products.ProductRepositoryImpl
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -79,8 +79,8 @@ object RepositoryModule {
     @Singleton
     fun providePaymentRepository(
         clientDao: PaymentMethodDao
-    ): PaymentRepository {
-        return PaymentRepositoryImpl(clientDao)
+    ): PaymentMethodRepository {
+        return PaymentMethodRepositoryImpl(clientDao)
     }
 
     @Provides

@@ -2,8 +2,7 @@ package com.peyess.salesapp.dao.client.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.peyess.salesapp.dao.client.firestore.Client
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 
 @Entity(
     tableName = ClientEntity.tableName,
@@ -44,7 +43,7 @@ data class ClientEntity(
     }
 }
 
-fun Client.toEntity(soId: String, clientRole: ClientRole): ClientEntity {
+fun ClientDocument.toEntity(soId: String, clientRole: ClientRole): ClientEntity {
     return ClientEntity(
         id = id,
         nameDisplay = nameDisplay,

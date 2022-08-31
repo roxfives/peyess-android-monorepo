@@ -4,10 +4,10 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.client.firestore.Client
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 
 data class PickClientState(
-    val clientListAsync: Async<List<Client>> = Uninitialized,
+    val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
 
     val hasPickedClient: Boolean = false,
 ): MavericksState {

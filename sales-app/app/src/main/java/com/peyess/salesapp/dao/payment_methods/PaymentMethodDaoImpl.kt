@@ -29,7 +29,7 @@ class PaymentMethodDaoImpl @Inject constructor(
             .await()
 
         val payments = snaps.mapNotNull {
-                it.toObject(FSPayment::class.java).toDocument(it.id)
+                it.toObject(FSPaymentMethod::class.java).toDocument(it.id)
             }
 
         emit(payments)

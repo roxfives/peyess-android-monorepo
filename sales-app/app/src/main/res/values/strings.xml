@@ -239,6 +239,10 @@
 
     <string name="so_no_payments_added_yet">Ainda não foi adicionado nenhum pagamento</string>
 
+    <!--  UI Component: Payment Screen  -->
+    <string name="payment_still_missing">Ainda falta ser pago:</string>
+    <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
+
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

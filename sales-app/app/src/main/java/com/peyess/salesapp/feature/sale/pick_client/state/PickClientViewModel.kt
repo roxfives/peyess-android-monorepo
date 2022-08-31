@@ -5,7 +5,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.client.firestore.Client
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.client.room.toEntity
 import com.peyess.salesapp.repository.clients.ClientRepository
@@ -14,11 +14,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.launch
 
 class PickClientViewModel @AssistedInject constructor(
     @Assisted initialState: PickClientState,
@@ -37,7 +34,7 @@ class PickClientViewModel @AssistedInject constructor(
             }
     }
 
-    fun pickClient(client: Client) = withState {
+    fun pickClient(client: ClientDocument) = withState {
         saleRepository.activeSO()
             .filterNotNull()
             .take(1)

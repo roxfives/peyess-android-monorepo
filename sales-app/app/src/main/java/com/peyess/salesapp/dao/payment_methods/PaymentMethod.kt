@@ -21,10 +21,10 @@ data class PaymentMethod(
     val hasDocumentPicture: Boolean = false,
     val hasDocument: Boolean = false,
 
-    val cardFlags: List<PaymentCardFlagDesc>,
+    val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
 )
 
-fun FSPayment.toDocument(id: String): PaymentMethod {
+fun FSPaymentMethod.toDocument(id: String): PaymentMethod {
     return PaymentMethod(
         id = id,
         type = type,

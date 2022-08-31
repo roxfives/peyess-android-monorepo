@@ -1,10 +1,12 @@
 package com.peyess.salesapp.repository.clients
 
-import com.peyess.salesapp.dao.client.firestore.Client
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import kotlinx.coroutines.flow.Flow
 
 interface ClientRepository {
-    fun clients(): Flow<List<Client>>
+    fun clients(): Flow<List<ClientDocument>>
 
-    fun addClient(client: Client): Flow<Boolean>
+    fun clientById(clientId: String): Flow<ClientDocument?>
+
+    fun addClient(client: ClientDocument): Flow<Boolean>
 }

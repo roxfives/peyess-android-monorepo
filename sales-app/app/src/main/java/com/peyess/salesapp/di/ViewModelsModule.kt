@@ -12,6 +12,7 @@ import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
+import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
@@ -129,5 +130,12 @@ interface ViewModelsModule {
     @ViewModelKey(ServiceOrderViewModel::class)
     fun bindServiceOrderViewModelFactory(
         factory: ServiceOrderViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PaymentViewModel::class)
+    fun bindPaymentViewModelFactory(
+        factory: PaymentViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

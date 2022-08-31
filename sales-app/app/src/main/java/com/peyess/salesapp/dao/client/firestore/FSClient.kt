@@ -3,7 +3,6 @@ package com.peyess.salesapp.dao.client.firestore
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
-import com.peyess.salesapp.dao.products.firestore.disponibility.FSDispManufacturer
 
 @Keep
 @IgnoreExtraProperties
@@ -54,7 +53,7 @@ data class FSClient(
     val accountStatus: String = "",
 )
 
-fun Client.toFirestore(): FSClient {
+fun ClientDocument.toFirestore(): FSClient {
     return FSClient(
         id = id,
         nameDisplay = nameDisplay,

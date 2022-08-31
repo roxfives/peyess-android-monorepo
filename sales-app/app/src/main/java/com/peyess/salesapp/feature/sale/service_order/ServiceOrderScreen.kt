@@ -111,6 +111,7 @@ fun ServiceOrderScreen(
     onChangeLens: () -> Unit = {},
     onChangeFrames: () -> Unit = {},
     onConfirmMeasure: () -> Unit = {},
+    onAddPayment: (paymentId: Long) -> Unit = {},
 
     onGenerateBudget: () -> Unit = {},
     onFinishSale: () -> Unit = {},
@@ -178,6 +179,11 @@ fun ServiceOrderScreen(
 
         isPaymentLoading = isPaymentsLoading,
         payments = payments,
+        onAddPayment = {
+            viewModel.createPayment {
+                onAddPayment(it)
+            }
+        }
     )
 }
 
@@ -208,6 +214,7 @@ private fun ServiceOrderScreenImpl(
 
     isPaymentLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
+    onAddPayment: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -263,6 +270,7 @@ private fun ServiceOrderScreenImpl(
             PaymentSection(
                 isLoading = isPaymentLoading,
                 payments = payments,
+                onAddPayment = onAddPayment,
             )
         }
     }
@@ -1467,7 +1475,7 @@ private fun PaymentSection(
             Spacer(modifier = Modifier.weight(1f))
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onAddPayment,
                 enabled = !isLoading,
             ) {
                 Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "")

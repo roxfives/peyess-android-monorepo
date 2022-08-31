@@ -27,8 +27,13 @@ fun buildServiceOrderNavGraph(
         exitTransition = serviceOrderExitTransition(),
     ) {
         ServiceOrderScreen(
-            modifier = modifier
-//            .padding(SalesAppTheme.dimensions.screen_offset)
+            modifier = modifier,
+            onAddPayment = {
+                val client = "0mDFNnzD3ZzH9fdE1q6x"
+
+                navHostController
+                    .navigate("${SalesAppScreens.SalePayment.name}/$it/$client")
+            }
         ) {
             navHostController.navigate(SalesAppScreens.ServiceOrder.name)
         }

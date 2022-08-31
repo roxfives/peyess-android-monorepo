@@ -6,6 +6,7 @@ import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import java.lang.Integer.max
 import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.*
 
 // https://github.com/banmarkovic/CurrencyAmountInput/blob/master/app/src/main/java/com/ban/currencyamountinput/CurrencyAmountInputVisualTransformation.kt
@@ -44,7 +45,7 @@ class CurrencyVisualTransformation(
             }
         }
 
-        val formattedNumber = "R$ " + intPart + decimalSeparator + fractionPart
+        val formattedNumber = "R$ $intPart$decimalSeparator$fractionPart"
 
         val newText = AnnotatedString(
             text = formattedNumber,

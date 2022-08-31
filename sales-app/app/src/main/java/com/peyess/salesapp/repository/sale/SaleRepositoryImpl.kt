@@ -248,15 +248,15 @@ class SaleRepositoryImpl @Inject constructor(
             .flatMapLatest { salePaymentDao.getBySO(it.id) }
     }
 
-    override fun addPayment(payment: SalePaymentEntity) {
-        salePaymentDao.add(payment)
+    override fun addPayment(payment: SalePaymentEntity): Long {
+        return salePaymentDao.add(payment)
     }
 
     override fun updatePayment(payment: SalePaymentEntity) {
         salePaymentDao.update(payment)
     }
 
-    override fun paymentById(paymentId: String): Flow<SalePaymentEntity?> {
+    override fun paymentById(paymentId: Long): Flow<SalePaymentEntity?> {
         return salePaymentDao
             .getById(paymentId)
     }

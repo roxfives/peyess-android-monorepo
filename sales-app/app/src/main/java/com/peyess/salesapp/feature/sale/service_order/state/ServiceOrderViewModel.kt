@@ -9,6 +9,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
@@ -127,6 +130,16 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 }
             }
 
+    }
+
+    fun createPayment(onAdded: (id: Long) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val id = saleRepository.addPayment(SalePaymentEntity())
+
+            withContext(Dispatchers.Main) {
+                onAdded(id)
+            }
+        }
     }
 
     // hilt

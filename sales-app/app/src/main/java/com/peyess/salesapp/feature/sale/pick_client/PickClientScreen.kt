@@ -23,7 +23,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
@@ -51,10 +50,9 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.client.firestore.Client
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
-import com.peyess.salesapp.feature.sale.prescription_data.betweenSectionSpacer
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -116,8 +114,8 @@ fun PickClientScreen(
 @Composable
 private fun PickClientScreenImpl(
     modifier: Modifier = Modifier,
-    clients: List<Client> = emptyList(),
-    onClientPicked: (client: Client) -> Unit = {}
+    clients: List<ClientDocument> = emptyList(),
+    onClientPicked: (client: ClientDocument) -> Unit = {}
 ) {
     if (clients.isEmpty()) {
         NoClientsYet(modifier = modifier)
@@ -179,8 +177,8 @@ private fun PickClientScreenImpl(
 @Composable
 private fun ClientCard(
     modifier: Modifier = Modifier,
-    client: Client = Client(),
-    onClientPicked: (client: Client) -> Unit = {},
+    client: ClientDocument = ClientDocument(),
+    onClientPicked: (client: ClientDocument) -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -287,7 +285,7 @@ private fun ClientCardPreview() {
     SalesAppTheme {
         ClientCard(
             modifier = Modifier.fillMaxWidth(),
-            client = Client(
+            client = ClientDocument(
                 name = "João Ferreira",
                 shortAddress = "Guarulhos, SP",
                 picture = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",

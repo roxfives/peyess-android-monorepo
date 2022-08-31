@@ -7,6 +7,7 @@ import com.peyess.salesapp.navigation.pick_client.buildPickClientNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavGraph
+import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavGraph
 import com.peyess.salesapp.navigation.sale.prescription.buildPrescriptionScreenNavGraph
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderNavGraph
 import com.peyess.salesapp.navigation.sale.welcome.buildWelcomeNavGraph
@@ -23,4 +24,5 @@ fun buildSaleNavGraph(
     buildLensSuggestionNavGraph(modifier, navHostController, builder)
     buildPickClientNavGraph(modifier, navHostController, builder)
     buildServiceOrderNavGraph(modifier, navHostController, builder)
+    buildPaymentNavGraph(modifier, navHostController, builder)
 }

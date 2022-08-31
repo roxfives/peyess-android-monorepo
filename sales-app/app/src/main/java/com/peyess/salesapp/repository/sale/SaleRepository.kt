@@ -51,7 +51,7 @@ interface SaleRepository {
     fun clientPicked(role: ClientRole): Flow<ClientEntity?>
 
     fun payments(): Flow<List<SalePaymentEntity>>
-    fun paymentById(paymentId: String): Flow<SalePaymentEntity?>
-    fun addPayment(payment: SalePaymentEntity)
+    fun paymentById(paymentId: Long): Flow<SalePaymentEntity?>
+    fun addPayment(payment: SalePaymentEntity): Long
     fun updatePayment(payment: SalePaymentEntity)
 }

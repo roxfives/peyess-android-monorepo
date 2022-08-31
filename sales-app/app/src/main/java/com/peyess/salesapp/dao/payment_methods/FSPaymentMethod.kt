@@ -6,7 +6,7 @@ import com.google.firebase.firestore.PropertyName
 
 @Keep
 @IgnoreExtraProperties
-data class FSPayment(
+data class FSPaymentMethod(
     @Keep
     @PropertyName("type")
     @JvmField
@@ -64,8 +64,8 @@ data class FSPayment(
     val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
 )
 
-fun PaymentMethod.toFirestore(): FSPayment {
-    return FSPayment(
+fun PaymentMethod.toFirestore(): FSPaymentMethod {
+    return FSPaymentMethod(
         type = type,
         priority = priority,
         name = name,

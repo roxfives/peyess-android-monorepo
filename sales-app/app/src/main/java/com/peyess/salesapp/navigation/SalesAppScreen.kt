@@ -24,6 +24,7 @@ enum class SalesAppScreens {
     LensComparison,
     PickClient,
     ServiceOrder,
+    SalePayment,
 
     People,
     AddPerson,
@@ -57,6 +58,7 @@ enum class SalesAppScreens {
                 LensComparison.name -> LensComparison
                 PickClient.name -> PickClient
                 ServiceOrder.name -> ServiceOrder
+                SalePayment.name -> SalePayment
                 Home.name -> Home
                 AddMeasure.name -> AddMeasure
                 People.name -> People
@@ -75,7 +77,7 @@ enum class SalesAppScreens {
 
         fun title(route: String?): String =
             when (route?.substringBefore("/")?.substringBefore("?")) {
-                Home.name -> "Medidas"
+                Home.name -> "Vendas"
                 AddMeasure.name -> "Adicionar medida"
                 People.name -> "Pessoas"
                 UserAuth.name -> "Entrar na loja"
@@ -94,6 +96,7 @@ enum class SalesAppScreens {
                 LensComparison.name -> "Comparação da lente"
                 PickClient.name -> "Selecione o cadastro do cliente"
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
+                SalePayment.name -> "Pagamento"
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

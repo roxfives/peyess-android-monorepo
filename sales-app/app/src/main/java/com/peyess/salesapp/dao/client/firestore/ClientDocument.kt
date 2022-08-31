@@ -1,6 +1,6 @@
 package com.peyess.salesapp.dao.client.firestore
 
-data class Client(
+data class ClientDocument(
     val id: String = "",
     val nameDisplay: String = "",
     val name: String = "",
@@ -12,8 +12,8 @@ data class Client(
     val accountStatus: UserAccountStatus = UserAccountStatus.Activated,
 )
 
-fun FSClient.toDocument(): Client {
-    return Client(
+fun FSClient.toDocument(): ClientDocument {
+    return ClientDocument(
         id = id,
         nameDisplay = nameDisplay,
         name = name,

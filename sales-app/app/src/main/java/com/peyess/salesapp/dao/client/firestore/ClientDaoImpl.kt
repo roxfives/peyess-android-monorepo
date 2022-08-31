@@ -13,7 +13,7 @@ class ClientDaoImpl @Inject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
 ): ClientDao {
-    override fun clients(): Flow<List<Client>> = flow {
+    override fun clients(): Flow<List<ClientDocument>> = flow {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             return@flow
@@ -35,7 +35,33 @@ class ClientDaoImpl @Inject constructor(
         emit(clients)
     }
 
-    override fun addClient(client: Client): Flow<Boolean> = flow {
+    override fun clientById(clientId: String): Flow<ClientDocument?> = flow {
+        val firestore = firebaseManager.storeFirestore
+        if (firestore == null) {
+            return@flow
+        }
+
+        val snap = firestore
+            .collection(
+                salesApplication.stringResource(R.string.fs_col_clients)
+                    .format(firebaseManager.currentStore!!.uid)
+            )
+            .document(clientId)
+            .get()
+            .await()
+
+        if (!snap.exists()) {
+            emit(null)
+            return@flow
+        }
+
+        val client = snap.toObject(FSClient::class.java)?.toDocument()
+
+        emit(client)
+        return@flow
+    }
+
+    override fun addClient(client: ClientDocument): Flow<Boolean> = flow {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             return@flow

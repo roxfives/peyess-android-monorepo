@@ -1318,11 +1318,13 @@ private fun ProductsSection(
             minTitleModifier = minimumTitleModifier,
         )
 
-        Spacer(modifier = Modifier.size(subsectionSpacerSize))
+        if (framesEntity.areFramesNew) {
+            Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
-        // TODO: use string resource
-        SubSectionTitle(title = "Armação")
-        FramesCard(framesEntity = framesEntity)
+            // TODO: use string resource
+            SubSectionTitle(title = "Armação")
+            FramesCard(framesEntity = framesEntity)
+        }
     }
 }
 

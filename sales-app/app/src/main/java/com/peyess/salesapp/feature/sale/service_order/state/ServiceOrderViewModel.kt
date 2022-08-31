@@ -178,15 +178,14 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 val treatment = it.treatment
                 val frames = it.frames
 
-                // TODO: Add frames value after converting to double
                 val framesValue = if (frames.areFramesNew) {
-                    0.0
+                    frames.value
                 } else {
                     0.0
                 }
 
                 // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price + frames.value
+                var totalToPay = lens.price + framesValue
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
                     totalToPay += coloring.suggestedPrice

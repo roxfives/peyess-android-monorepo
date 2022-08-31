@@ -12,6 +12,8 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.service_order.ServiceOrderScreen
+import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -29,10 +31,12 @@ fun buildServiceOrderNavGraph(
         ServiceOrderScreen(
             modifier = modifier,
             onAddPayment = {
-                val client = "LZ2lBETol5PLwRCJ1KAK"
+                val isPicking = true
+                val pickScenario = PickScenario.Payment.toName()
+                val paymentId = it
 
                 navHostController
-                    .navigate("${SalesAppScreens.SalePayment.name}/$it/$client")
+                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario?$paymentIdParam=$paymentId")
             },
             onEditPayment = { paymentId, clientId ->
                 val client = clientId.ifBlank { "-" }

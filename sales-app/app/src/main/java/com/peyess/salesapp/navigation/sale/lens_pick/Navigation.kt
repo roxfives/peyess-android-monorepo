@@ -9,6 +9,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.lens_pick.LensSuggestionScreen
+import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition
@@ -43,7 +44,11 @@ fun buildLensSuggestionNavGraph(
                 .padding(SalesAppTheme.dimensions.screen_offset),
             onAddComparison = { navHostController.popBackStack() }
         ) {
-            navHostController.navigate(SalesAppScreens.PickClient.name)
+            val isPicking = true
+            val pickScenario = PickScenario.ServiceOrder.toName()
+
+            navHostController
+                .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
         }
     }
 }

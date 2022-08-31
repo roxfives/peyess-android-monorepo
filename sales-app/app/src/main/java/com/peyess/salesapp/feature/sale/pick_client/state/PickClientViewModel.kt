@@ -8,6 +8,7 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.client.room.toEntity
+import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -34,7 +35,7 @@ class PickClientViewModel @AssistedInject constructor(
             }
     }
 
-    fun pickClient(client: ClientDocument) = withState {
+    private fun pickAllForServiceOrder(client: ClientDocument) = withState {
         saleRepository.activeSO()
             .filterNotNull()
             .take(1)
@@ -43,12 +44,46 @@ class PickClientViewModel @AssistedInject constructor(
                     saleRepository.pickClient(client.toEntity(so.invoke().id, ClientRole.User))
                     saleRepository.pickClient(client.toEntity(so.invoke().id, ClientRole.Responsible))
 
-                    copy(hasPickedClient = true)
+                    copy(hasPickedClient = true, pickedId = client.id)
                 } else {
 
-                    copy(hasPickedClient = false)
+                    copy(hasPickedClient = false, pickedId = client.id)
                 }
             }
+    }
+
+    private fun pickOnlyOne(client: ClientDocument, role: ClientRole) = withState {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .take(1)
+            .execute(Dispatchers.IO) { so ->
+                if (so is Success) {
+                    saleRepository.pickClient(client.toEntity(so.invoke().id, role))
+
+                    copy(hasPickedClient = true, pickedId = client.id)
+                } else {
+
+                    copy(hasPickedClient = false, pickedId = client.id)
+                }
+            }
+    }
+
+    private fun pickIdOnly(client: ClientDocument) = setState {
+        copy(hasPickedClient = true, pickedId = client.id)
+    }
+
+    fun updatePickScenario(scenario: PickScenario) = setState {
+        copy(pickScenario = scenario)
+    }
+
+    fun pickClient(client: ClientDocument) = withState {
+        when (it.pickScenario) {
+            PickScenario.ServiceOrder -> pickAllForServiceOrder(client)
+            PickScenario.Responsible -> pickOnlyOne(client, ClientRole.Responsible)
+            PickScenario.User -> pickOnlyOne(client, ClientRole.User)
+            PickScenario.Witness -> pickOnlyOne(client, ClientRole.Witness)
+            else -> pickIdOnly(client)
+        }
     }
 
     fun clientPicked() = setState {

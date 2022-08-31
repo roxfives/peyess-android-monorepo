@@ -40,6 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -51,10 +53,15 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
+import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.paymentIdParam
+import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
 
 private val buttonHeight = 72.dp
 
@@ -71,13 +78,38 @@ private val endingSpacerWidth = profilePicPadding
 @Composable
 fun PickClientScreen(
     modifier: Modifier = Modifier,
-    onClientPicked: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+
+    onClientPicked: (paymentId: Long, pickedId: String, pickScenario: PickScenario) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: PickClientViewModel = mavericksViewModel()
 
     val clients by viewModel.collectAsState(PickClientState::clientList)
     val isLoading by viewModel.collectAsState(PickClientState::isLoading)
     val hasPickedClient by viewModel.collectAsState(PickClientState::hasPickedClient)
+
+    val pickScenario by viewModel.collectAsState(PickClientState::pickScenario)
+    val pickedId by viewModel.collectAsState(PickClientState::pickedId)
+
+    val scenarioParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(pickScenarioParam)
+
+    val paymentId = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getLong(paymentIdParam)
+
+    LaunchedEffect(scenarioParameter) {
+        val scenario = PickScenario.fromName(scenarioParameter ?: "")
+
+        Timber.i("Using scenario $scenario")
+
+        if (scenario != null) {
+            viewModel.updatePickScenario(scenario)
+        }
+    }
 
     val hasNavigated = remember { mutableStateOf(false) }
     val canNavigate = remember { mutableStateOf(false) }
@@ -88,7 +120,7 @@ fun PickClientScreen(
                 canNavigate.value = false
 
                 viewModel.clientPicked()
-                onClientPicked()
+                onClientPicked(paymentId ?: 0L, pickedId, pickScenario)
             }
         }
     }

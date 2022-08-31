@@ -246,7 +246,7 @@
     <!--  UI Component: Payment Screen  -->
     <string name="payment_still_missing">Ainda falta ser pago:</string>
     <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
-    <string name="payment_cancel">Cancelar pagamento</string>
+    <string name="payment_delete">Excluir pagamento</string>
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -182,10 +183,19 @@ private fun PaymentScreenImpl(
             onPaymentMethodChanged = onPaymentMethodChanged,
         )
 
+        Spacer(modifier = Modifier.weight(1f))
+
         PeyessNextStep(
             startButton = {
-                OutlinedButton(onClick = onCancel) {
-                    Text(text = stringResource(id = R.string.payment_cancel))
+                OutlinedButton(
+                    modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+                    onClick = onCancel,
+                    colors = ButtonDefaults.buttonColors(
+                            backgroundColor = MaterialTheme.colors.error,
+                            disabledBackgroundColor = Color.Gray.copy(alpha = 0.5f),
+                        ),
+                ) {
+                    Text(text = stringResource(id = R.string.payment_delete))
                 }
             },
 

@@ -35,6 +35,9 @@ data class ServiceOrderState(
     val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
 
     val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
+
+    val totalToPayAsync: Async<Double> = Uninitialized,
+    val totalPaidAsync: Async<Double> = Uninitialized,
 ): MavericksState {
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
@@ -115,4 +118,18 @@ data class ServiceOrderState(
     } else {
         emptyList()
     }
+
+    val isTotalPaidLoading = totalPaidAsync is Loading || totalToPayAsync is Loading
+    val totalToPay = if (totalToPayAsync is Success) {
+        totalToPayAsync.invoke()
+    } else {
+        0.0
+    }
+    val totalPaid = if (totalPaidAsync is Success) {
+        totalPaidAsync.invoke()
+    } else {
+        0.0
+    }
+
+    val canAddNewPayment = totalPaid < totalToPay
 }

@@ -1,6 +1,5 @@
 package com.peyess.salesapp.feature.sale.service_order
 
-import androidx.annotation.PluralsRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -36,7 +34,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
-//import com.google.accompanist.placeholder.placeholder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -47,7 +44,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,12 +90,8 @@ private val pictureSizePx = 60
 private val prescriptionPictureSize = 160.dp
 private val prescriptionPictureSizePx = 160
 
-private val paymentPictureSize = 60.dp
-private val paymentPictureSizePx = 60
-
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
-private val spacingBetweenCards = 8.dp
 private val profilePicPadding = 8.dp
 
 private val endingSpacerWidth = profilePicPadding
@@ -120,6 +112,7 @@ fun ServiceOrderScreen(
     onChangeFrames: () -> Unit = {},
     onConfirmMeasure: () -> Unit = {},
     onAddPayment: (paymentId: Long) -> Unit = {},
+    onEditPayment: (paymentId: Long, clientId: String) -> Unit = { _, _ -> },
 
     onGenerateBudget: () -> Unit = {},
     onFinishSale: () -> Unit = {},
@@ -158,6 +151,11 @@ fun ServiceOrderScreen(
     val isPaymentsLoading by viewModel.collectAsState(ServiceOrderState::isPaymentLoading)
     val payments by viewModel.collectAsState(ServiceOrderState::payments)
 
+    val canAddNewPayment by viewModel.collectAsState(ServiceOrderState::canAddNewPayment)
+    val isTotalPaidLoading by viewModel.collectAsState(ServiceOrderState::isTotalPaidLoading)
+    val totalPaid by viewModel.collectAsState(ServiceOrderState::totalPaid)
+    val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
+
     ServiceOrderScreenImpl(
         modifier = modifier,
 
@@ -185,13 +183,20 @@ fun ServiceOrderScreen(
         measureLeft = measureLeft,
         measureRight = measureRight,
 
+
+        canAddNewPayment = canAddNewPayment,
+        isTotalPaidLoading = isTotalPaidLoading,
+        totalPaid = totalPaid,
+        totalToPay = totalToPay,
         isPaymentLoading = isPaymentsLoading,
         payments = payments,
         onAddPayment = {
             viewModel.createPayment {
                 onAddPayment(it)
             }
-        }
+        },
+        onDeletePayment = viewModel::deletePayment,
+        onEditPayment = { onEditPayment(it.id, it.clientId) },
     )
 }
 
@@ -220,9 +225,15 @@ private fun ServiceOrderScreenImpl(
     measureLeft: Measuring = Measuring(),
     measureRight: Measuring = Measuring(),
 
+    canAddNewPayment: Boolean = false,
+    isTotalPaidLoading: Boolean = false,
+    totalPaid: Double = 0.0,
+    totalToPay: Double = 0.0,
     isPaymentLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
     onAddPayment: () -> Unit = {},
+    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
+    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -277,8 +288,16 @@ private fun ServiceOrderScreenImpl(
 
             PaymentSection(
                 isLoading = isPaymentLoading,
+
+                canAddNewPayment = canAddNewPayment,
+                isTotalPaidLoading = isTotalPaidLoading, 
+                totalPaid = totalPaid,
+                totalToPay = totalToPay, 
+
                 payments = payments,
                 onAddPayment = onAddPayment,
+                onDeletePayment = onDeletePayment,
+                onEditPayment = onEditPayment,
             )
         }
     }
@@ -1470,12 +1489,24 @@ private fun FramesCard(
 private fun PaymentSection(
     modifier: Modifier = Modifier,
 
+    canAddNewPayment: Boolean = false,
+    isTotalPaidLoading: Boolean = false,
+    totalPaid: Double = 0.0,
+    totalToPay: Double = 0.0,
+    
     isLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
     onAddPayment: () -> Unit = {},
+    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
+    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
 ) {
+    val paid = NumberFormat.getCurrencyInstance().format(totalPaid)
+    val price = NumberFormat.getCurrencyInstance().format(totalToPay)
+
     Column(
         modifier = modifier.padding(sectionPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_payments))
@@ -1484,7 +1515,7 @@ private fun PaymentSection(
 
             IconButton(
                 onClick = onAddPayment,
-                enabled = !isLoading,
+                enabled = !isLoading && canAddNewPayment,
             ) {
                 Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "")
             }
@@ -1494,6 +1525,29 @@ private fun PaymentSection(
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
         )
+
+        AnimatedVisibility(
+            visible = !isTotalPaidLoading,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    text = "$paid / $price",
+                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+                )
+
+                Divider(
+                    modifier = Modifier.padding(horizontal = 120.dp),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
@@ -1523,6 +1577,8 @@ private fun PaymentSection(
                     PaymentCard(
                         modifier = Modifier.fillMaxWidth(),
                         payment = payment,
+                        onDeletePayment = onDeletePayment,
+                        onEditPayment = onEditPayment,
                     )
                 }
             }
@@ -1534,6 +1590,8 @@ private fun PaymentSection(
 private fun PaymentCard(
     modifier: Modifier = Modifier,
     payment: SalePaymentEntity = SalePaymentEntity(),
+    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
+    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
 ) {
     Row(
         modifier = modifier.padding(vertical = 16.dp),
@@ -1596,6 +1654,8 @@ private fun PaymentCard(
             }
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+
         Text(
             modifier = Modifier.width(120.dp),
             text = pluralResource(
@@ -1612,11 +1672,11 @@ private fun PaymentCard(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { onEditPayment(payment) }) {
             Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
         }
         Spacer(modifier = Modifier.width(4.dp))
-        IconButton(onClick = { /*TODO*/ }) {
+        IconButton(onClick = { onDeletePayment(payment) }) {
             Icon(
                 imageVector = Icons.Filled.Delete,
                 tint = MaterialTheme.colors.error,

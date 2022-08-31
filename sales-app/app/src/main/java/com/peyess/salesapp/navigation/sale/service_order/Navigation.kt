@@ -29,10 +29,16 @@ fun buildServiceOrderNavGraph(
         ServiceOrderScreen(
             modifier = modifier,
             onAddPayment = {
-                val client = "JeeDRjuCw8s2Ulh57wRD"
+                val client = "LZ2lBETol5PLwRCJ1KAK"
 
                 navHostController
                     .navigate("${SalesAppScreens.SalePayment.name}/$it/$client")
+            },
+            onEditPayment = { paymentId, clientId ->
+                val client = clientId.ifBlank { "-" }
+
+                navHostController
+                    .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$client")
             }
         ) {
             navHostController.navigate(SalesAppScreens.ServiceOrder.name)

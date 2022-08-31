@@ -13,6 +13,7 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
@@ -43,6 +45,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadProducts()
         loadFrames()
         loadPayments()
+        loadTotalPaid()
+        loadTotalToPay()
     }
 
     private fun loadClients() = withState {
@@ -136,6 +140,75 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     }
 
+    private fun loadTotalPaid() = withState {
+        saleRepository
+            .payments()
+            .map {
+                var totalPaid = 0.0
+
+                it.forEach { payment ->
+                    totalPaid += payment.value
+                }
+
+                Timber.i("Loaded total paid: $totalPaid")
+                totalPaid
+            }
+            .execute(Dispatchers.IO) {
+                copy(totalPaidAsync = it)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun loadTotalToPay() = withState {
+        saleRepository
+            .pickedProduct()
+            .filterNotNull()
+            .flatMapLatest {
+                combine(
+                    productRepository.lensById(it.lensId).filterNotNull().take(1),
+                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
+                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
+                    saleRepository.currentFramesData(),
+                    ::ProductSet
+                )
+            }
+            .map {
+                val lens = it.lens
+                val coloring = it.coloring
+                val treatment = it.treatment
+                val frames = it.frames
+
+                // TODO: Add frames value after converting to double
+                val framesValue = if (frames.areFramesNew) {
+                    0.0
+                } else {
+                    0.0
+                }
+
+                // TODO: Update coloring and treatment to use price instead of suggested price
+                var totalToPay = lens.price //+ frames.value
+
+                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
+                    totalToPay += coloring.suggestedPrice
+                }
+                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
+                    totalToPay += treatment.suggestedPrice
+                }
+
+                if (coloring.suggestedPrice > 0) {
+                    totalToPay += lens.suggestedPriceAddColoring
+                }
+                if (treatment.suggestedPrice > 0) {
+                    totalToPay += lens.suggestedPriceAddTreatment
+                }
+
+                totalToPay
+            }
+            .execute(Dispatchers.IO) {
+                copy(totalToPayAsync = it)
+            }
+    }
+
     fun createPayment(onAdded: (id: Long) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             var id: Long = 0
@@ -153,6 +226,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
             withContext(Dispatchers.Main) {
                 onAdded(id)
             }
+        }
+    }
+
+    fun deletePayment(payment: SalePaymentEntity) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.deletePayment(payment)
         }
     }
 

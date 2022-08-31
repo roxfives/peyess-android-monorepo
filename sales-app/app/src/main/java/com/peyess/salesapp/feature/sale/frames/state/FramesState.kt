@@ -45,7 +45,7 @@ data class FramesState(
     val areFramesNew = _currentFramesData?.areFramesNew ?: true
     val description = _currentFramesData?.description ?: ""
     val reference = _currentFramesData?.reference ?: ""
-    val value = _currentFramesData?.value ?: ""
+    val value = _currentFramesData?.value ?: 0.0
     val tagCode = _currentFramesData?.tagCode ?: ""
     val framesType = _currentFramesData?.type
 }

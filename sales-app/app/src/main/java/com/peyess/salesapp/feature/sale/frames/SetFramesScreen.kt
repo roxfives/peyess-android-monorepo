@@ -42,6 +42,9 @@ import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
 fun SetFramesScreen(
@@ -107,8 +110,8 @@ private fun SetFramesScreenImpl(
 
     valueHasError: Boolean = false,
     valueErrorMessage: String = "",
-    value: String = "",
-    onValueChange: (value: String) -> Unit = {},
+    value: Double = 0.0,
+    onValueChange: (value: Double) -> Unit = {},
 
     tagCodeHasError: Boolean = false,
     tagCodeErrorMessage: String = "",
@@ -122,6 +125,11 @@ private fun SetFramesScreenImpl(
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val curPriceInput = BigDecimal(value)
+        .setScale(2, RoundingMode.HALF_EVEN)
+        .multiply(BigDecimal(100))
+        .toBigInteger()
 
     Column(
         modifier = modifier,
@@ -202,8 +210,20 @@ private fun SetFramesScreenImpl(
             )
 
             PeyessOutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
+                value = "$curPriceInput",
+                onValueChange = {
+                    val value = try {
+                        BigDecimal(it)
+                            .setScale(2, RoundingMode.DOWN)
+                            .divide(BigDecimal(100))
+                            .toDouble()
+                    } catch (t: Throwable) {
+                        Timber.e(t, "Failed to parse $it")
+                        0.0
+                    }
+
+                    onValueChange(value)
+                },
                 isError = valueHasError,
                 errorMessage = valueErrorMessage,
                 label = { Text(stringResource(id = R.string.frames_value)) },
@@ -264,7 +284,7 @@ fun SetFramesScreenPreview() {
 
             valueHasError = false,
             valueErrorMessage = "",
-            value = "11122",
+            value = 11122.0,
             onValueChange = {},
 
             tagCodeHasError = false,

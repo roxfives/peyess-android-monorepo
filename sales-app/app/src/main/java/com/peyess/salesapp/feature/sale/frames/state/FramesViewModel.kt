@@ -152,7 +152,7 @@ class FramesViewModel @AssistedInject constructor(
         }
     }
 
-    fun onFramesValueChanged(value: String) = withState {
+    fun onFramesValueChanged(value: Double) = withState {
         if (it._currentFramesData != null) {
             saleRepository.updateFramesData(it._currentFramesData.copy(value = value))
         }

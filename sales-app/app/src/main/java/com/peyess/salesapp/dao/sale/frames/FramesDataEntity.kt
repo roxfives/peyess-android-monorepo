@@ -76,7 +76,7 @@ data class FramesEntity(
 
     @ColumnInfo(name = "description") val description: String = "",
     @ColumnInfo(name = "reference") val reference: String = "",
-    @ColumnInfo(name = "value") val value: String = "",
+    @ColumnInfo(name = "value") val value: Double = 0.0,
     @ColumnInfo(name = "tag_code") val tagCode: String = "",
     @ColumnInfo(name = "type") val type: FramesType? = null,
 ) {

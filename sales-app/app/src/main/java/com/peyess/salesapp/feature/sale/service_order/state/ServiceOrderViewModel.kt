@@ -186,7 +186,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 }
 
                 // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price //+ frames.value
+                var totalToPay = lens.price + frames.value
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
                     totalToPay += coloring.suggestedPrice

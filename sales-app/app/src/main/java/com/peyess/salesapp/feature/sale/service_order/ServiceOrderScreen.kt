@@ -1477,7 +1477,7 @@ private fun FramesCard(
 
         Text(
             modifier = minPriceModifier,
-            text = framesEntity.value,
+            text = NumberFormat.getCurrencyInstance().format(framesEntity.value),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1807,7 +1807,7 @@ private fun FramesCardPreview() {
                 description = "Descrição",
                 reference = "Referência",
                 tagCode = "XXXXXX",
-                value = "450.0",
+                value = 450.0,
             )
         )
     }

@@ -54,4 +54,5 @@ interface SaleRepository {
     fun paymentById(paymentId: Long): Flow<SalePaymentEntity?>
     fun addPayment(payment: SalePaymentEntity): Long
     fun updatePayment(payment: SalePaymentEntity)
+    fun deletePayment(payment: SalePaymentEntity)
 }

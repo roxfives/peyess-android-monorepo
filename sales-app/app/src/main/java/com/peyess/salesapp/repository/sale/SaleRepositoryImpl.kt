@@ -256,6 +256,10 @@ class SaleRepositoryImpl @Inject constructor(
         salePaymentDao.update(payment)
     }
 
+    override fun deletePayment(payment: SalePaymentEntity) {
+        salePaymentDao.delete(payment)
+    }
+
     override fun paymentById(paymentId: Long): Flow<SalePaymentEntity?> {
         return salePaymentDao
             .getById(paymentId)

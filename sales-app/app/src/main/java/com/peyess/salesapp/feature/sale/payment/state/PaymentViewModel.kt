@@ -18,9 +18,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PaymentViewModel @AssistedInject constructor(
@@ -168,6 +170,12 @@ class PaymentViewModel @AssistedInject constructor(
         saleRepository.updatePayment(this.payment.copy(methodId = method.id))
 
         copy(activePaymentMethod = method)
+    }
+
+    fun cancelPayment() = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.deletePayment(it.payment)
+        }
     }
 
     // hilt

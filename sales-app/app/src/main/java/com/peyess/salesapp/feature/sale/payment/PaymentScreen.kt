@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -61,6 +62,7 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.feature.sale.payment.state.PaymentState
 import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
+import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -123,6 +125,10 @@ fun PaymentScreen(
         onTotalPaidChanged = viewModel::onTotalPaidChange,
         onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
 
+        onCancel = {
+            viewModel.cancelPayment()
+            onDone()
+        },
         onDone = onDone,
     )
 }
@@ -174,6 +180,17 @@ private fun PaymentScreenImpl(
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
             onPaymentMethodChanged = onPaymentMethodChanged,
+        )
+
+        PeyessNextStep(
+            startButton = {
+                OutlinedButton(onClick = onCancel) {
+                    Text(text = stringResource(id = R.string.payment_cancel))
+                }
+            },
+
+            canGoNext = payment.value > 0.0,
+            onNext = onDone,
         )
     }
 }

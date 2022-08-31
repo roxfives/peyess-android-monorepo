@@ -1,6 +1,7 @@
 package com.peyess.salesapp.dao.sale.payment
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,6 +14,9 @@ interface SalePaymentDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun update(paymentEntity: SalePaymentEntity)
+
+    @Delete
+    fun delete(paymentEntity: SalePaymentEntity)
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE so_id = :soId ")
     fun getBySO(soId: String): Flow<List<SalePaymentEntity>>

@@ -9,9 +9,11 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import timber.log.Timber
 
 data class PaymentState(
     val paymentMethodsAsync: Async<List<PaymentMethod>> = Uninitialized,
+    val activePaymentMethod: PaymentMethod? = null,
 
     val clientAsync: Async<ClientDocument?> = Uninitialized,
 
@@ -25,8 +27,10 @@ data class PaymentState(
 ): MavericksState {
     val arePaymentsLoading = paymentMethodsAsync is Loading
     val paymentMethods = if (paymentMethodsAsync is Success) {
+        Timber.i("Setting payment methods ${paymentMethodsAsync.invoke()}")
         paymentMethodsAsync.invoke()
     } else {
+        Timber.i("Setting empty payment methods")
         emptyList()
     }
 

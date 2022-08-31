@@ -58,7 +58,16 @@ class PaymentViewModel @AssistedInject constructor(
             .payments()
             .execute(Dispatchers.IO) {
                 Timber.i("Loading payment methods $it")
-                copy(paymentMethodsAsync = it)
+                val payments = it.invoke() ?: emptyList()
+
+                if (it is Success) {
+                    copy(
+                        paymentMethodsAsync = it,
+                        activePaymentMethod = if (payments.isNotEmpty()) payments[0] else null
+                    )
+                } else {
+                    copy(paymentMethodsAsync = it)
+                }
             }
     }
 
@@ -145,6 +154,10 @@ class PaymentViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(paymentAsync = it)
             }
+    }
+
+    fun onTotalPaidChange(value: Double) = withState {
+        saleRepository.updatePayment(it.payment.copy(value = value))
     }
 
     // hilt

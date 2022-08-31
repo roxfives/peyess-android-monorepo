@@ -17,17 +17,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -36,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,9 +64,11 @@ import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
+import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
-import java.lang.Double.parseDouble
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 
 private val pictureSize = 220.dp
@@ -112,6 +117,7 @@ fun PaymentScreen(
         paymentMethods = paymentMethods,
 
         payment = payment,
+        onTotalPaidChanged = viewModel::onTotalPaidChange,
 
         onDone = onDone,
     )
@@ -129,6 +135,7 @@ private fun PaymentScreenImpl(
     paymentMethods: List<PaymentMethod> = emptyList(),
 
     payment: SalePaymentEntity = SalePaymentEntity(),
+    onTotalPaidChanged: (value: Double) -> Unit = {},
 
     onDone: () -> Unit = {},
     onCancel: () -> Unit = {},
@@ -158,6 +165,7 @@ private fun PaymentScreenImpl(
             paymentMethods = paymentMethods,
 
             payment = payment,
+            onTotalPaidChanged = onTotalPaidChanged,
         )
     }
 }
@@ -243,7 +251,7 @@ private fun PaymentView(
     modifier: Modifier = Modifier,
 
     arePaymentMethodsLoading: Boolean = false,
-    activePaymentMethod: PaymentMethod = PaymentMethod(),
+    activePaymentMethod: PaymentMethod? = null,
     paymentMethods: List<PaymentMethod> = emptyList(),
 
     payment: SalePaymentEntity = SalePaymentEntity(),
@@ -258,7 +266,7 @@ private fun PaymentView(
     }
 
     AnimatedVisibility(
-        visible = arePaymentMethodsLoading,
+        visible = !arePaymentMethodsLoading,
         enter = scaleIn(),
         exit = scaleOut(),
     ) {
@@ -272,10 +280,16 @@ private fun PaymentView(
                 MinimumWidthState()
             }
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .minimumWidthModifier(
+                        state = minimumWidthState,
+                        density = localDensity,
+                    ),
+            ) {
                 items(paymentMethods.size) {
                     val isActive = remember {
-                        activePaymentMethod.id == paymentMethods[it].id
+                        activePaymentMethod?.id == paymentMethods[it].id
                     }
 
                     Box(
@@ -284,13 +298,17 @@ private fun PaymentView(
                                 state = minimumWidthState,
                                 density = localDensity,
                             )
-                            .padding(horizontal = 64.dp)
+                            .padding(16.dp)
                             .drawBehind {
                                 val strokeWidth = 2.dp.value * density
                                 val y = size.height - strokeWidth / 2
 
                                 drawLine(
-                                    Color.LightGray,
+                                    if (isActive) {
+                                        Color.LightGray
+                                    } else {
+                                        Color.Transparent
+                                    },
                                     Offset(0f, y),
                                     Offset(size.width, y),
                                     strokeWidth,
@@ -298,7 +316,8 @@ private fun PaymentView(
                             },
                     ) {
                         Text(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier
+                                .align(Alignment.Center),
                             text = paymentMethods[it].name,
                             style = MaterialTheme.typography.body1
                                 .copy(
@@ -324,15 +343,22 @@ private fun PaymentView(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun PaymentCard(
     modifier: Modifier = Modifier,
-    paymentMethod: PaymentMethod = PaymentMethod(),
+    paymentMethod: PaymentMethod? = null,
 
     total: Double = 0.0,
     onTotalChanged: (value: Double) -> Unit = {},
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val curPriceInput = BigDecimal(total)
+        .setScale(2, RoundingMode.HALF_EVEN)
+        .multiply(BigDecimal(100))
+        .toBigInteger()
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -345,30 +371,39 @@ private fun PaymentCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = NumberFormat.getCurrencyInstance().format(total),
+        BasicTextField(
+            value = "$curPriceInput",
             onValueChange = {
-                Timber.i("Changing value to $it")
-                Timber.i("Could use value ${parseDouble(it)}")
+                val value = try {
+                    BigDecimal(it)
+                        .setScale(2, RoundingMode.DOWN)
+                        .divide(BigDecimal(100))
+                        .toDouble()
+                } catch (t: Throwable) {
+                    Timber.e(t, "Failed to parse $it")
+                    0.0
+                }
+
+                onTotalChanged(value)
             },
 //            label = { Text(stringResource(id = R.string.frames_value)) },
 //            placeholder = { Text(stringResource(id = R.string.frames_value)) },
-//            visualTransformation = CurrencyVisualTransformation(),
+            visualTransformation = CurrencyVisualTransformation(fixedCursorAtTheEnd = false),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done,
             ),
             textStyle = MaterialTheme.typography.h5
-                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-//            keyboardActions = KeyboardActions(
-//                onNext = { focusManager.moveFocus(focusDirection = FocusDirection.Done) }
-//            ),
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+            keyboardActions = KeyboardActions(
+                onDone = { keyboardController?.hide() },
+            ),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         AnimatedVisibility(
-            visible = paymentMethod.cardFlags.isNotEmpty(),
+            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
             enter = scaleIn(),
             exit = scaleOut(),
         ) {
@@ -376,7 +411,7 @@ private fun PaymentCard(
         }
 
         AnimatedVisibility(
-            visible = paymentMethod.hasDocument,
+            visible = paymentMethod?.hasDocument ?: false,
             enter = scaleIn(),
             exit = scaleOut(),
         ) {
@@ -384,7 +419,7 @@ private fun PaymentCard(
         }
 
         AnimatedVisibility(
-            visible = paymentMethod.hasDocumentPicture,
+            visible = paymentMethod?.hasDocumentPicture ?: false,
             enter = scaleIn(),
             exit = scaleOut(),
         ) {

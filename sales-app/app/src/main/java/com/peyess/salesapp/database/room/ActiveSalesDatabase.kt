@@ -45,7 +45,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         ClientEntity::class,
         SalePaymentEntity::class,
     ],
-    version = 30,
+    version = 32,
 )
 @TypeConverters(
     ConverterLocalDate::class,

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order
 
+import androidx.annotation.PluralsRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +33,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 //import com.google.accompanist.placeholder.placeholder
@@ -44,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +81,7 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEnti
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
+import com.peyess.salesapp.ui.annotated_string.pluralResource
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -88,6 +93,9 @@ private val pictureSizePx = 60
 
 private val prescriptionPictureSize = 160.dp
 private val prescriptionPictureSizePx = 160
+
+private val paymentPictureSize = 60.dp
+private val paymentPictureSizePx = 60
 
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
@@ -1510,7 +1518,110 @@ private fun PaymentSection(
             enter = scaleIn(),
             exit = scaleOut(),
         ) {
-            Text(text = "payments")
+            Column(modifier = Modifier.fillMaxWidth()) {
+                for (payment in payments) {
+                    PaymentCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        payment = payment,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PaymentCard(
+    modifier: Modifier = Modifier,
+    payment: SalePaymentEntity = SalePaymentEntity(),
+) {
+    Row(
+        modifier = modifier.padding(vertical = 16.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AsyncImage(
+            modifier = Modifier
+                .padding(profilePicPadding)
+                .size(pictureSize)
+                // Clip image to be shaped as a circle
+                .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
+                .clip(CircleShape),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(payment.clientPicture)
+                .crossfade(true)
+                .size(width = pictureSizePx, height = pictureSizePx)
+                .build(),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = "",
+            error = painterResource(id = R.drawable.ic_profile_placeholder),
+            fallback = painterResource(id = R.drawable.ic_profile_placeholder),
+            placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
+        )
+
+        Spacer(modifier = Modifier.width(cardSpacerWidth))
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(cardPadding),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(bottom = 4.dp),
+                text = payment.clientName,
+                style = MaterialTheme.typography.body1
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+
+            Row(
+                Modifier.height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxHeight(),
+                    imageVector = Icons.Filled.LocationOn,
+                    contentDescription = "",
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp),
+                    text = payment.clientAddress,
+                )
+            }
+        }
+
+        Text(
+            modifier = Modifier.width(120.dp),
+            text = pluralResource(
+                resId = R.plurals.so_payment_description,
+                quantity = payment.installments,
+                formatArgs = listOf(
+                    NumberFormat.getCurrencyInstance().format(payment.value),
+                    payment.methodName,
+                    payment.installments,
+                ).toTypedArray()
+            ),
+            style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                imageVector = Icons.Filled.Delete,
+                tint = MaterialTheme.colors.error,
+                contentDescription = "",
+            )
         }
     }
 }
@@ -1541,6 +1652,22 @@ private fun NoPaymentsYet(modifier: Modifier = Modifier) {
             text = stringResource(id = R.string.so_no_payments_added_yet),
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PaymentCardPreview() {
+    SalesAppTheme {
+        PaymentCard(
+            modifier = Modifier.fillMaxWidth(),
+            payment = SalePaymentEntity(
+                clientName = "Nome do Ciente",
+                clientAddress = "Mora aqui, mesmo",
+                installments = 2,
+                methodName = "Débito",
+            )
         )
     }
 }

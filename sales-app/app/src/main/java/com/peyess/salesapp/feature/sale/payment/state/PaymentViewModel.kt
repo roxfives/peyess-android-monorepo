@@ -1,11 +1,14 @@
 package com.peyess.salesapp.feature.sale.payment.state
 
+import android.net.Uri
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
+import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -52,6 +55,29 @@ class PaymentViewModel @AssistedInject constructor(
         onEach(PaymentState::totalLeftToPay) {
             if (it <= 0.0) {
                 // TODO: update payment to be at most totalLeftToPay
+            }
+        }
+
+        onEach(PaymentState::paymentAsync, PaymentState::clientAsync) { payment, client ->
+            val pay = payment.invoke()
+            val payer = client.invoke()
+
+            if (
+                payment is Success
+                    && client is Success
+                    && pay != null
+                    && payer != null
+            ) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    saleRepository.updatePayment(
+                        pay.copy(
+                            clientId = payer.id,
+                            clientName = payer.name,
+                            clientAddress = payer.shortAddress,
+                            clientPicture = Uri.parse(payer.picture),
+                        )
+                    )
+                }
             }
         }
     }
@@ -148,6 +174,7 @@ class PaymentViewModel @AssistedInject constructor(
             .clientById(clientId)
             .execute(Dispatchers.IO) {
                 Timber.i("Loading client ($clientId) $it")
+
                 copy(clientAsync = it)
             }
     }
@@ -167,7 +194,12 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
-        saleRepository.updatePayment(this.payment.copy(methodId = method.id))
+        saleRepository.updatePayment(
+            this.payment.copy(
+                methodId = method.id,
+                methodName = method.name,
+            )
+        )
 
         copy(activePaymentMethod = method)
     }

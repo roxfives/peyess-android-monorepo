@@ -21,11 +21,18 @@ data class SalePaymentEntity(
 
     @ColumnInfo(name = "so_id") val soId: String = "",
 
+    // TODO: Normilize data for clients and (maybe) payment method
     @ColumnInfo(name = "client_id") val clientId: String = "",
+    @ColumnInfo(name = "client_name") val clientName: String = "",
+    @ColumnInfo(name = "client_address") val clientAddress: String = "",
+    @ColumnInfo(name = "client_picture") val clientPicture: Uri = Uri.EMPTY,
+
+
     @ColumnInfo(name = "method_id") val methodId: String = "",
+    @ColumnInfo(name = "method_name") val methodName: String = "",
 
     @ColumnInfo(name = "value") val value: Double = 0.0,
-    @ColumnInfo(name = "installments") val installments: Int = 0,
+    @ColumnInfo(name = "installments") val installments: Int = 1,
 
     @ColumnInfo(name = "document") val document: String = "",
     @ColumnInfo(name = "doc_pic") val docPicture: Uri = Uri.EMPTY,

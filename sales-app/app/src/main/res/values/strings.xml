@@ -238,12 +238,15 @@
     <string name="so_btn_measure_confirm">Confirmar</string>
 
     <string name="so_no_payments_added_yet">Ainda não foi adicionado nenhum pagamento</string>
+    <plurals name="so_payment_description">
+        <item quantity="one">Pagamento de %1$s usando %2$s em %3$s vez</item>
+        <item quantity="other">Pagamento de %1$s usando %2$s em %3$s vezes</item>
+    </plurals>
 
     <!--  UI Component: Payment Screen  -->
     <string name="payment_still_missing">Ainda falta ser pago:</string>
     <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
     <string name="payment_cancel">Cancelar pagamento</string>
-
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

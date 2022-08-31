@@ -5,6 +5,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -81,6 +82,7 @@ class PaymentViewModel @AssistedInject constructor(
                     totalPaid += payment.value
                 }
 
+                Timber.i("Loaded total paid: $totalPaid")
                 totalPaid
             }
             .execute(Dispatchers.IO) {
@@ -157,7 +159,15 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     fun onTotalPaidChange(value: Double) = withState {
-        saleRepository.updatePayment(it.payment.copy(value = value))
+        val paid = value.coerceAtMost(it.payment.value + it.totalLeftToPay)
+
+        saleRepository.updatePayment(it.payment.copy(value = paid))
+    }
+
+    fun onPaymentMethodChanged(method: PaymentMethod) = setState {
+        saleRepository.updatePayment(this.payment.copy(methodId = method.id))
+
+        copy(activePaymentMethod = method)
     }
 
     // hilt

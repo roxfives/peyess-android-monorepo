@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,6 +106,7 @@ fun PaymentScreen(
 
     val paymentMethods by viewModel.collectAsState(PaymentState::paymentMethods)
     val arePaymentMethodsLoading by viewModel.collectAsState(PaymentState::arePaymentsLoading)
+    val activePaymentMethod by viewModel.collectAsState(PaymentState::activePaymentMethod)
 
     PaymentScreenImpl(
         modifier = modifier,
@@ -116,8 +118,10 @@ fun PaymentScreen(
         arePaymentMethodsLoading = arePaymentMethodsLoading,
         paymentMethods = paymentMethods,
 
+        activePaymentMethod = activePaymentMethod,
         payment = payment,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
+        onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
 
         onDone = onDone,
     )
@@ -134,8 +138,10 @@ private fun PaymentScreenImpl(
     arePaymentMethodsLoading: Boolean = false,
     paymentMethods: List<PaymentMethod> = emptyList(),
 
+    activePaymentMethod: PaymentMethod? = null,
     payment: SalePaymentEntity = SalePaymentEntity(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
+    onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 
     onDone: () -> Unit = {},
     onCancel: () -> Unit = {},
@@ -154,18 +160,20 @@ private fun PaymentScreenImpl(
         )
 
         Divider(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(16.dp),
             color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
         )
 
         PaymentView(
             modifier = Modifier.fillMaxWidth(),
 
+            activePaymentMethod = activePaymentMethod,
             arePaymentMethodsLoading = arePaymentMethodsLoading,
             paymentMethods = paymentMethods,
 
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
+            onPaymentMethodChanged = onPaymentMethodChanged,
         )
     }
 }
@@ -256,6 +264,7 @@ private fun PaymentView(
 
     payment: SalePaymentEntity = SalePaymentEntity(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
+    onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 ) {
     AnimatedVisibility(
         visible = arePaymentMethodsLoading,
@@ -288,9 +297,7 @@ private fun PaymentView(
                     ),
             ) {
                 items(paymentMethods.size) {
-                    val isActive = remember {
-                        activePaymentMethod?.id == paymentMethods[it].id
-                    }
+                    val isActive = activePaymentMethod?.id == paymentMethods[it].id
 
                     Box(
                         modifier = Modifier
@@ -313,6 +320,9 @@ private fun PaymentView(
                                     Offset(size.width, y),
                                     strokeWidth,
                                 )
+                            }
+                            .clickable {
+                                onPaymentMethodChanged(paymentMethods[it])
                             },
                     ) {
                         Text(

@@ -19,8 +19,9 @@ class CurrencyVisualTransformation(
     private val symbols = DecimalFormat().decimalFormatSymbols
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val thousandsSeparator = symbols.groupingSeparator
-        val decimalSeparator = symbols.decimalSeparator
+        // TODO: localize
+        val thousandsSeparator = '.' // symbols.groupingSeparator
+        val decimalSeparator = ',' //symbols.decimalSeparator
         val zero = symbols.zeroDigit
 
         val inputText = text.text
@@ -45,6 +46,7 @@ class CurrencyVisualTransformation(
             }
         }
 
+        // TODO: localize
         val formattedNumber = "R$ $intPart$decimalSeparator$fractionPart"
 
         val newText = AnnotatedString(

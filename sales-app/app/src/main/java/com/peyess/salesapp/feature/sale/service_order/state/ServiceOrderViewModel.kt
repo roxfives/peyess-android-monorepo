@@ -18,9 +18,13 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -134,7 +138,17 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     fun createPayment(onAdded: (id: Long) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            val id = saleRepository.addPayment(SalePaymentEntity())
+            var id: Long = 0
+
+            saleRepository
+                .activeSO()
+                .filterNotNull()
+                .take(1)
+                .map {
+                    id = saleRepository.addPayment(SalePaymentEntity(soId = it.id))
+                }
+                .flowOn(Dispatchers.IO)
+                .collect()
 
             withContext(Dispatchers.Main) {
                 onAdded(id)

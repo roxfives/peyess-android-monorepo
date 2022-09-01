@@ -20,6 +20,13 @@ enum class SalesAppScreens {
     FramesMeasureAnimation,
     FramesMeasureTakePicture,
     FramesMeasure,
+    AnamnesisFirstStep,
+    AnamnesisSecondStep,
+    AnamnesisThirdStep,
+    AnamnesisFourthStep,
+    AnamnesisFifthStep,
+    AnamnesisSixthStep,
+    AnamnesisSeventhStep,
     LensSuggestion,
     LensComparison,
     PickClient,
@@ -54,6 +61,13 @@ enum class SalesAppScreens {
                 FramesMeasureAnimation.name -> FramesMeasureAnimation
                 FramesMeasureTakePicture.name -> FramesMeasureTakePicture
                 FramesMeasure.name -> FramesMeasure
+                AnamnesisFirstStep.name -> AnamnesisFirstStep
+                AnamnesisSecondStep.name -> AnamnesisSecondStep
+                AnamnesisThirdStep.name -> AnamnesisThirdStep
+                AnamnesisFourthStep.name -> AnamnesisFourthStep
+                AnamnesisFifthStep.name -> AnamnesisFifthStep
+                AnamnesisSixthStep.name -> AnamnesisSixthStep
+                AnamnesisSeventhStep.name -> AnamnesisSeventhStep
                 LensSuggestion.name -> LensSuggestion
                 LensComparison.name -> LensComparison
                 PickClient.name -> PickClient
@@ -92,6 +106,13 @@ enum class SalesAppScreens {
                 FramesMeasureAnimation.name -> "Vamos a sua medição"
                 FramesMeasureTakePicture.name -> "Vamos a sua medição"
                 FramesMeasure.name -> "Vamos a sua medição"
+                AnamnesisFirstStep.name -> "Anamnese"
+                AnamnesisSecondStep.name -> "Anamnese"
+                AnamnesisThirdStep.name -> "Anamnese"
+                AnamnesisFourthStep.name -> "Anamnese"
+                AnamnesisFifthStep.name -> "Anamnese"
+                AnamnesisSixthStep.name -> "Anamnese"
+                AnamnesisSeventhStep.name -> "Anamnese"
                 LensSuggestion.name -> "Sugestões de lentes"
                 LensComparison.name -> "Comparação da lente"
                 PickClient.name -> "Selecione o cadastro do cliente"

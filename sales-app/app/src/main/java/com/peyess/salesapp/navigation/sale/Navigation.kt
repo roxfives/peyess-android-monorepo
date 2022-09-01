@@ -4,6 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.pick_client.buildPickClientNavGraph
+import com.peyess.salesapp.navigation.sale.anamnesis.buildAnamnesisNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavGraph
@@ -25,4 +26,5 @@ fun buildSaleNavGraph(
     buildPickClientNavGraph(modifier, navHostController, builder)
     buildServiceOrderNavGraph(modifier, navHostController, builder)
     buildPaymentNavGraph(modifier, navHostController, builder)
+    buildAnamnesisNavGraph(modifier, navHostController, builder)
 }

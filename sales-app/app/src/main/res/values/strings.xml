@@ -248,6 +248,81 @@
     <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
     <string name="payment_delete">Excluir pagamento</string>
 
+    <!-- UI Component: Anamnesis   -->
+    <string name="anamnesis_first_step_yes">Sim</string>
+    <string name="anamnesis_first_step_no">Não</string>
+    <string name="anamnesis_daily">Diário</string>
+    <string name="anamnesis_work">Trabalho</string>
+    <string name="anamnesis_leisure">Lazer</string>
+    <string name="anamnesis_reading">Leitura</string>
+
+    <string name="total_usage_string">Você utilizou %1$s de %2$s</string>
+
+    <string name="user_profile_first_step_question">É a primeira vez que está usando óculos graduado?</string>
+    <string name="user_profile_second_step_question">Qual será o uso do óculos?</string>
+    <string name="user_profile_third_step_question">A luz do sol lhe incomoda?</string>
+    <string name="user_profile_fourth_step_question">Você sente dores na lombar após o uso de eletrônicos, leitura de livros ou em outro uso da visão de perto?</string>
+    <string name="user_profile_fifth_step_question">Após ou durante a prática de esportes você se sente enjoado (zonzo) com o seu óculos?</string>
+
+    <string name="user_profile_time_to_wake_up">Qual horário você costuma acordar?</string>
+    <string name="user_profile_time_to_sleep">Qual horário você costuma dormir?</string>
+    <string name="wake_up">Acorda</string>
+    <string name="sleep">Dorme</string>
+
+    <string name="user_profile_previous_experience_classification">Por favor, classifique sua experiência com o seu óculos anteior</string>
+
+    <string name="user_profile_sixth_step">Ajuste a sua intensidade de uso:</string>
+    <string name="phone_or_tablet">Celular ou tablet</string>
+    <string name="computer">Computador</string>
+    <string name="tv">Televisão</string>
+    <string name="driving">Dirigindo</string>
+    <string name="sports">Esportes</string>
+    <string name="external_area">Área externa</string>
+    <string name="internal_area">Área interna</string>
+    <string name="construction">Construção</string>
+    <string name="office">Escritório</string>
+    <string name="stay_home">Casa (limpeza)</string>
+    <string name="chemicals">Químicos</string>
+    <string name="agriculture">Agrícola</string>
+    <string name="direction">Direção</string>
+
+    <string name="user_profile_choose_work">Por favor, escolha o tipo de trabalho abaixo</string>
+
+    <string name="prescription_screen_curiosities">Curiosidades</string>
+
+    <string name="pie_chart_label"> </string>
+    <string name="pie_chart_far_label">Longe</string>
+    <string name="pie_chart_near_label">Perto</string>
+    <string name="pie_chart_middle_label">Intermediário</string>
+    <string name="pie_chart_far_label_sports">Esportes</string>
+    <string name="pie_chart_far_label_driving">Dirigir</string>
+    <string name="pie_chart_far_label_external_area">Área externa</string>
+    <string name="pie_chart_near_label_internal_area">Área interna</string>
+    <string name="pie_chart_near_label_reading">Leitura</string>
+    <string name="pie_chart_near_label_cellphone">Celular ou tablet</string>
+    <string name="pie_chart_middle_label_computer">Computador</string>
+    <string name="pie_chart_middle_label_television">Televisão</string>
+    <string name="pie_chart_middle_label_work">Trabalho</string>
+
+    <string name="bar_chart_sun_light_title">Tempo diário de exposição à luz solar</string>
+    <string name="bar_chart_sun_light_driving">Dirigir: </string>
+    <string name="bar_chart_sun_light_sports">Esportes: </string>
+    <string name="bar_chart_sun_light_external_area">Área externa: </string>
+
+    <string name="bar_chart_blue_light_title">Tempo diário de exposição à luz azul</string>
+    <string name="bar_chart_blue_light_cellphone">Celular: </string>
+    <string name="bar_chart_blue_light_television">Televisão: </string>
+    <string name="bar_chart_blue_light_computer">Computador: </string>
+    <string name="bar_chart_blue_light_external_area">Área externa: </string>
+    <string name="bar_chart_blue_light_internal_area">Área interna: </string>
+
+    <string name="bar_chart_artificial_light_title">Tempo diário de exposição à luz artificial</string>
+    <string name="bar_chart_artificial_light_cellphone">Celular: </string>
+    <string name="bar_chart_artificial_light_television">Televisão: </string>
+    <string name="bar_chart_artificial_light_computer">Computador: </string>
+    <string name="bar_chart_artificial_light_external_area">Área externa: </string>
+    <string name="bar_chart_artificial_light_internal_area">Área interna: </string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

@@ -61,7 +61,6 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.name
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
@@ -107,10 +106,15 @@ private val spaceBetweenMeasureValue = 8.dp
 fun ServiceOrderScreen(
     modifier: Modifier = Modifier,
 
-    onChangeClient: (client: ClientEntity) -> Unit = {},
+    onChangeUser: () -> Unit = {},
+    onChangeResponsible: () -> Unit = {},
+    onChangeWitness: () -> Unit = {},
+
     onChangeLens: () -> Unit = {},
     onChangeFrames: () -> Unit = {},
+
     onConfirmMeasure: () -> Unit = {},
+
     onAddPayment: (paymentId: Long) -> Unit = {},
     onEditPayment: (paymentId: Long, clientId: String) -> Unit = { _, _ -> },
 
@@ -161,6 +165,10 @@ fun ServiceOrderScreen(
 
         onFinishSale = {},
 
+        onChangeResponsible = onChangeResponsible,
+        onChangeUser = onChangeUser,
+        onChangeWitness = onChangeWitness,
+
         areUsersLoading = userIsLoading || responsibleIsLoading || witnessIsLoading,
         user = user,
         responsible = responsible,
@@ -182,7 +190,6 @@ fun ServiceOrderScreen(
         isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
         measureLeft = measureLeft,
         measureRight = measureRight,
-
 
         canAddNewPayment = canAddNewPayment,
         isTotalPaidLoading = isTotalPaidLoading,
@@ -210,6 +217,9 @@ private fun ServiceOrderScreenImpl(
     user: ClientEntity = ClientEntity(),
     responsible: ClientEntity = ClientEntity(),
     witness: ClientEntity? = null,
+    onChangeResponsible: () -> Unit = {},
+    onChangeUser: () -> Unit = {},
+    onChangeWitness: () -> Unit = {},
 
     isPrescriptionLoading: Boolean = false,
     prescriptionData: PrescriptionDataEntity,
@@ -251,6 +261,10 @@ private fun ServiceOrderScreenImpl(
         ) {
             ClientSection(
                 isLoading = areUsersLoading,
+
+                onChangeResponsible = onChangeResponsible,
+                onChangeUser = onChangeUser,
+                onChangeWitness = onChangeWitness,
 
                 user = user,
                 responsible = responsible,
@@ -309,6 +323,10 @@ private fun ClientSection(
 
     isLoading: Boolean = false,
 
+    onChangeResponsible: () -> Unit = {},
+    onChangeUser: () -> Unit = {},
+    onChangeWitness: () -> Unit = {},
+
     user: ClientEntity = ClientEntity(),
     responsible: ClientEntity = ClientEntity(),
     witness: ClientEntity? = null,
@@ -327,12 +345,12 @@ private fun ClientSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = { /*TODO*/ },
-                enabled = !isLoading,
-            ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
-            }
+//            IconButton(
+//                onClick = { /*TODO*/ },
+//                enabled = !isLoading,
+//            ) {
+//                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+//            }
         }
 
         Divider(
@@ -347,7 +365,11 @@ private fun ClientSection(
                 title = stringResource(id = R.string.so_subsection_title_user)
             )
 
-            ClientCard(client = user, isLoading = isLoading)
+            ClientCard(
+                client = user,
+                isLoading = isLoading,
+                onEditClient = onChangeUser,
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -355,7 +377,11 @@ private fun ClientSection(
                 title = stringResource(id = R.string.so_subsection_title_responsible)
             )
 
-            ClientCard(client = responsible, isLoading = isLoading)
+            ClientCard(
+                client = responsible,
+                isLoading = isLoading,
+                onEditClient = onChangeResponsible,
+            )
 
             if (witness != null) {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -364,7 +390,11 @@ private fun ClientSection(
                     title = stringResource(id = R.string.so_subsection_title_witness)
                 )
 
-                ClientCard(client = user, isLoading = isLoading)
+                ClientCard(
+                    client = witness,
+                    isLoading = isLoading,
+                    onEditClient = onChangeWitness,
+                )
             }
         }
     }
@@ -415,7 +445,7 @@ private fun ClientCard(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
     client: ClientEntity,
-    onEditClient: (role: ClientRole) -> Unit = {},
+    onEditClient: () -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -492,7 +522,7 @@ private fun ClientCard(
             OutlinedButton(
                 modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
                 enabled = !isLoading,
-                onClick = { onEditClient(client.clientRole) },
+                onClick = onEditClient,
             ) {
                 Text(
                     modifier = Modifier.padding(horizontal = 16.dp),

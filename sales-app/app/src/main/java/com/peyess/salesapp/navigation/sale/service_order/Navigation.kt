@@ -30,6 +30,29 @@ fun buildServiceOrderNavGraph(
     ) {
         ServiceOrderScreen(
             modifier = modifier,
+
+            onChangeUser = {
+                val isPicking = true
+                val pickScenario = PickScenario.User.toName()
+
+                navHostController
+                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+            },
+            onChangeResponsible = {
+                val isPicking = true
+                val pickScenario = PickScenario.Responsible.toName()
+
+                navHostController
+                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+            },
+            onChangeWitness = {
+                val isPicking = true
+                val pickScenario = PickScenario.Witness.toName()
+
+                navHostController
+                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+            },
+
             onAddPayment = {
                 val isPicking = true
                 val pickScenario = PickScenario.Payment.toName()

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,8 +35,6 @@ import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.Fi
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
-import java.math.BigDecimal
 import java.math.RoundingMode
 
 
@@ -125,7 +122,7 @@ private fun FirstTimeScreenImpl(
                     selectedColor = MaterialTheme.colors.primary,
                 ),
             )
-            Text(text = stringResource(id = R.string.anamnesis_first_step_no))
+            Text(text = stringResource(id = R.string.anamnesis_first_step_a_little))
         }
 
         Spacer(modifier = Modifier.height(8.dp))

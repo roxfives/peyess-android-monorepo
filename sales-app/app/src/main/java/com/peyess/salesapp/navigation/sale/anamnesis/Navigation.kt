@@ -13,9 +13,14 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.landing.Landing
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.FirstTimeScreen
 import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.SecondStepScreen
+import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.ThirdStepScreen
 import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
 import com.peyess.salesapp.navigation.sale.anamnesis.first_step_first_time.firstStepEnterTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.first_step_first_time.firstStepExitTransition
+import com.peyess.salesapp.navigation.sale.anamnesis.second_step_target_usage.secondStepEnterTransition
+import com.peyess.salesapp.navigation.sale.anamnesis.second_step_target_usage.secondStepExitTransition
+import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepEnterTransition
+import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -40,8 +45,8 @@ fun buildAnamnesisNavGraph(
 
     builder.composable(
         route = SalesAppScreens.AnamnesisSecondStep.name,
-        enterTransition = firstStepEnterTransition(),
-        exitTransition = firstStepExitTransition()
+        enterTransition = secondStepEnterTransition(),
+        exitTransition = secondStepExitTransition()
     ) {
         val scrollState = rememberScrollState()
 
@@ -51,7 +56,24 @@ fun buildAnamnesisNavGraph(
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.AnamnesisSecondStep.name)
+            navHostController.navigate(SalesAppScreens.AnamnesisThirdStep.name)
+        }
+    }
+
+    builder.composable(
+        route = SalesAppScreens.AnamnesisThirdStep.name,
+        enterTransition = thirdStepEnterTransition(),
+        exitTransition = thirdStepExitTransition()
+    ) {
+        val scrollState = rememberScrollState()
+
+        ThirdStepScreen(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(SalesAppTheme.dimensions.screen_offset)
+        ) {
+            navHostController.navigate(SalesAppScreens.AnamnesisFourthStep.name)
         }
     }
 }

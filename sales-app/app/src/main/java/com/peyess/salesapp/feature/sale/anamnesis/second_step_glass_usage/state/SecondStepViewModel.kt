@@ -15,22 +15,6 @@ class SecondStepViewModel @AssistedInject constructor(
     salesApplication: SalesApplication,
 ): MavericksViewModel<SecondStepState>(initialState) {
 
-    private val optionsMessage = mapOf(
-        Pair(0, salesApplication.stringResource(R.string.anamnesis_daily)),
-        Pair(1, salesApplication.stringResource(R.string.anamnesis_work)),
-        Pair(2, salesApplication.stringResource(R.string.anamnesis_leisure)),
-        Pair(3, salesApplication.stringResource(R.string.anamnesis_reading)),
-    )
-
-    private val workOptionsMessage = mapOf(
-        Pair(0, salesApplication.stringResource(R.string.mike_user_profile_message_work_construction)),
-        Pair(1, salesApplication.stringResource(R.string.mike_user_profile_message_work_office)),
-        Pair(2, salesApplication.stringResource(R.string.mike_user_profile_message_work_housekeeping)),
-        Pair(3, salesApplication.stringResource(R.string.mike_user_profile_message_work_chemicals)),
-        Pair(3, salesApplication.stringResource(R.string.mike_user_profile_message_work_agriculture)),
-        Pair(3, salesApplication.stringResource(R.string.mike_user_profile_message_work_driving)),
-    )
-
     val options = mapOf(
         Pair(0, salesApplication.stringResource(R.string.anamnesis_daily)),
         Pair(1, salesApplication.stringResource(R.string.anamnesis_work)),

@@ -251,6 +251,8 @@
     <!-- UI Component: Anamnesis   -->
     <string name="anamnesis_first_step_yes">Sim</string>
     <string name="anamnesis_first_step_no">Não</string>
+    <string name="anamnesis_first_step_a_little">Um pouco</string>
+
     <string name="anamnesis_daily">Diário</string>
     <string name="anamnesis_work">Trabalho</string>
     <string name="anamnesis_leisure">Lazer</string>

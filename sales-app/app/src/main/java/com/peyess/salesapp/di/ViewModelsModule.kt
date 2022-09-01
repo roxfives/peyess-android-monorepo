@@ -10,6 +10,7 @@ import com.peyess.salesapp.feature.authentication_user.screen.local_password.sta
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
@@ -153,5 +154,12 @@ interface ViewModelsModule {
     @ViewModelKey(SecondStepViewModel::class)
     fun bindSecondStepViewModelFactory(
         factory: SecondStepViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ThirdStepViewModel::class)
+    fun bindThirdStepViewModelFactory(
+        factory: ThirdStepViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

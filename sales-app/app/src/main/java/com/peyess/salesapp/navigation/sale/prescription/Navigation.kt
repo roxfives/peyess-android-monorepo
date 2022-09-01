@@ -7,6 +7,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataScreen
 import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataSymptomsScreen
@@ -20,6 +22,9 @@ import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSym
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
+
+const val isUpdatingParam = "isUpdating"
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildPrescriptionScreenNavGraph(
@@ -36,25 +41,35 @@ fun buildPrescriptionScreenNavGraph(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.SalePrescriptionPicture.name)
+            val isUpdating = false
+
+            navHostController.navigate("${SalesAppScreens.SalePrescriptionPicture.name}/$isUpdating")
         }
     }
 
     builder.composable(
-        route = SalesAppScreens.SalePrescriptionPicture.name,
+        route = "${SalesAppScreens.SalePrescriptionPicture.name}/{$isUpdatingParam}",
+        arguments = listOf(
+            navArgument(isUpdatingParam) { type = NavType.BoolType }
+        ),
         enterTransition = prescriptionScreenEnterTransition(),
         exitTransition = prescriptionScreenExitTransition(),
     ) {
         PrescriptionPictureScreen(
             modifier = modifier
-                .padding(SalesAppTheme.dimensions.screen_offset)
-        ) {
-            navHostController.navigate(SalesAppScreens.SalePrescriptionData.name)
+                .padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
+        ) { isUpdating ->
+            Timber.i("Is updating picture: $isUpdating")
+            navHostController.navigate("${SalesAppScreens.SalePrescriptionData.name}/$isUpdating")
         }
     }
 
     builder.composable(
-        route = SalesAppScreens.SalePrescriptionData.name,
+        route = "${SalesAppScreens.SalePrescriptionData.name}/{$isUpdatingParam}",
+        arguments = listOf(
+            navArgument(isUpdatingParam) { type = NavType.BoolType }
+        ),
         enterTransition = prescriptionDataScreenEnterTransition(),
         exitTransition = prescriptionDataScreenExitTransition(),
     ) {
@@ -64,11 +79,20 @@ fun buildPrescriptionScreenNavGraph(
             modifier = modifier
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
             onShowSymptoms = {
                 navHostController.navigate(SalesAppScreens.SalePrescriptionDataSymptoms.name)
             }
-        ) {
-            navHostController.navigate(SalesAppScreens.FramesLanding.name)
+        ) { isUpdating ->
+            Timber.i("Is updating data: $isUpdating")
+
+            if (isUpdating) {
+                navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
+                    popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+                }
+            } else {
+                navHostController.navigate(SalesAppScreens.FramesLanding.name)
+            }
         }
     }
 

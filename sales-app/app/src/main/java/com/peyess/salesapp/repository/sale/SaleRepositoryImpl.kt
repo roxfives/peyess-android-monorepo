@@ -148,6 +148,7 @@ class SaleRepositoryImpl @Inject constructor(
     override fun currentPrescriptionData(): Flow<PrescriptionDataEntity> {
         return activeSO().filterNotNull().flatMapLatest { so ->
             prescriptionDataDao.getById(so.id).map {
+                Timber.i("Emitting prescription data")
                 it ?: PrescriptionDataEntity(soId = so.id)
             }
         }

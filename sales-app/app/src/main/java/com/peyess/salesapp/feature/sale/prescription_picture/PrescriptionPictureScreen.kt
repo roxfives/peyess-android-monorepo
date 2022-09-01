@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -52,6 +53,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.mvrx.compose.collectAsState
@@ -59,8 +62,10 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureState
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
+import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
@@ -77,8 +82,15 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun PrescriptionPictureScreen(
     modifier: Modifier = Modifier,
-    onNext: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+    onNext: (isUpdating: Boolean) -> Unit = {},
 ) {
+    val isUpdatingParam = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getBoolean(isUpdatingParam)
+        ?: false
+
     val context = LocalContext.current
 
     val viewModel: PrescriptionPictureViewModel = mavericksViewModel()
@@ -144,7 +156,7 @@ fun PrescriptionPictureScreen(
             onSetDate = viewModel::onDatePicked,
             onNext = {
                 if (canGoNext) {
-                    onNext()
+                    onNext(isUpdatingParam)
                 }
             },
         )

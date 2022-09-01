@@ -49,6 +49,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadTotalToPay()
     }
 
+
+
     private fun loadClients() = withState {
         saleRepository.clientPicked(ClientRole.User).execute(Dispatchers.IO) {
             copy(userClientAsync = it)

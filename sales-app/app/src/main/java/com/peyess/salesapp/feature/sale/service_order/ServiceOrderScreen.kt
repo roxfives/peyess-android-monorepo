@@ -110,6 +110,8 @@ fun ServiceOrderScreen(
     onChangeResponsible: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
 
+    onEditPrescription: () -> Unit = {},
+
     onChangeLens: () -> Unit = {},
     onChangeFrames: () -> Unit = {},
 
@@ -177,6 +179,7 @@ fun ServiceOrderScreen(
         isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
         prescriptionData = prescriptionData,
         prescriptionPicture = prescriptionPicture,
+        onEditPrescription = onEditPrescription,
 
         isProductLoading = isLensLoading
                 || isColoringLoading
@@ -222,8 +225,9 @@ private fun ServiceOrderScreenImpl(
     onChangeWitness: () -> Unit = {},
 
     isPrescriptionLoading: Boolean = false,
-    prescriptionData: PrescriptionDataEntity,
-    prescriptionPicture: PrescriptionPictureEntity,
+    prescriptionData: PrescriptionDataEntity = PrescriptionDataEntity(),
+    prescriptionPicture: PrescriptionPictureEntity = PrescriptionPictureEntity(),
+    onEditPrescription: () -> Unit = {},
 
     isProductLoading: Boolean = false,
     lensEntity: LocalLensEntity = LocalLensEntity(),
@@ -275,6 +279,9 @@ private fun ServiceOrderScreenImpl(
 
             PrescriptionSection(
                 isLoading = isPrescriptionLoading,
+
+                onEdit = onEditPrescription,
+
                 prescriptionData = prescriptionData,
                 prescriptionPicture = prescriptionPicture,
             )
@@ -540,6 +547,8 @@ private fun PrescriptionSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 
+    onEdit: () -> Unit = {},
+
     prescriptionPicture: PrescriptionPictureEntity = PrescriptionPictureEntity(),
     prescriptionData: PrescriptionDataEntity = PrescriptionDataEntity(),
 ) {
@@ -559,7 +568,7 @@ private fun PrescriptionSection(
             Spacer(modifier = Modifier.weight(1f))
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onEdit,
                 enabled = !isLoading,
             ) {
                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
@@ -709,7 +718,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = stringResource(id = R.string.prism_axis),
+                    text = stringResource(id = R.string.degree_axis),
                     style = MaterialTheme.typography.body1
                         .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
                 )
@@ -925,10 +934,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (
-                        prescriptionData.hasPrism
-                        && prescriptionData.prismPositionRight == PrismPosition.Axis
-                    ) {
+                    text = if (prescriptionData.hasPrism) {
                         PrismPosition.toName(prescriptionData.prismPositionRight)
                     } else {
                         // TODO: use string resource
@@ -942,7 +948,10 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasPrism) {
+                    text = if (
+                        prescriptionData.hasPrism
+                        && prescriptionData.prismPositionRight == PrismPosition.Axis
+                    ) {
                         "%.2fº".format(prescriptionData.prismAxisRight)
                     } else {
                         // TODO: use string resource

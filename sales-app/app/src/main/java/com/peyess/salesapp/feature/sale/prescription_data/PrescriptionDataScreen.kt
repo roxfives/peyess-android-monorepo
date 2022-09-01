@@ -54,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -62,6 +64,7 @@ import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionData
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.feature.sale.prescription_data.state.minAddition
 import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismDegree
+import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -81,9 +84,16 @@ internal val betweenSectionSpacer = 32.dp
 @Composable
 fun PrescriptionDataScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController = rememberNavController(),
     onShowSymptoms: () -> Unit = {},
-    onNext: () -> Unit = {},
+    onNext: (isUpdating: Boolean) -> Unit = {},
 ) {
+    val isUpdatingParam = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getBoolean(isUpdatingParam)
+        ?: false
+
     val viewModel: PrescriptionDataViewModel = mavericksViewModel()
 
     val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
@@ -120,7 +130,7 @@ fun PrescriptionDataScreen(
     } else {
         PrescriptionScreenDataImpl(
             modifier = modifier,
-            onNext = onNext,
+            onNext = { onNext(isUpdatingParam) },
             onShowSymptoms = onShowSymptoms,
 
             isMikeLoading = isMikeLoading,

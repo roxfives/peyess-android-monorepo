@@ -17,6 +17,7 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import timber.log.Timber
 
 data class ServiceOrderState(
     val userClientAsync: Async<ClientEntity?> = Uninitialized,

@@ -53,6 +53,13 @@ fun buildServiceOrderNavGraph(
                     .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
             },
 
+            onEditPrescription = {
+                val isUpdating = true
+
+                navHostController
+                    .navigate("${SalesAppScreens.SalePrescriptionPicture}/$isUpdating")
+            },
+
             onAddPayment = {
                 val isPicking = true
                 val pickScenario = PickScenario.Payment.toName()

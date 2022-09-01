@@ -323,6 +323,26 @@
     <string name="bar_chart_artificial_light_external_area">Área externa: </string>
     <string name="bar_chart_artificial_light_internal_area">Área interna: </string>
 
+    <string name="mike_user_profile_message_daily">Huummmm&#8230; Lentes com campos mais abertos e tratamentos são necessários já que passará a maior parte do dia com o óculos!</string>
+    <string name="mike_user_profile_message_leisure">Legal&#8230; Existem lentes especializadas para cada tipo lazer! Nos conte um pouco mais adiante para personalizarmos a lente de acordo com a sua necessidade!</string>
+    <string name="mike_user_profile_message_reading">Fantástico, também adoro ler! Para isso temos duas opções: uma são óculos especializados para campo de perto, e outra são óculos especializados para visão intermediária, o que permitirá um bom balanceamento visão até uma distância de 2 metros.</string>
+    <string name="mike_user_profile_message_work_construction">Legal! Para quem trabalha em construção o mais indicado são óculos sem tratamentos e com índices maiores! Assim você terá lentes resistentes e leves que ajudarão na proteção de seus olhos!</string>
+    <string name="mike_user_profile_message_work_office">Legal! Para quem trabalha em escritórios são indicadas lentes com auxílios para visão de perto e tratamentos que lhe protejam da luz azul e artificiais. Afinal o maior problema aqui é o uso continuo da visão de perto e aparelhos eletrônicos.</string>
+    <string name="mike_user_profile_message_work_housekeeping">Huummmm&#8230; No seu caso lhe indicarei Lentes sem Tratamentos e Material Orma já que faz uso de produtos químicos! Aconselho também armações fechadas em acetato, pois essas serão mais resistentes e lhe ajudarão no dia a dia.</string>
+    <string name="mike_user_profile_message_work_chemicals">Huummmm&#8230; No seu caso lhe indicarei Lentes sem Tratamentos e Material Orma já que faz uso de produtos químicos! Aconselho também armações fechadas em acetato, pois essas serão mais resistentes e lhe ajudarão no dia a dia.</string>
+    <string name="mike_user_profile_message_work_agriculture">Legal&#8230; Já que trabalha no setor agrícola lhe indicarei lentes sem tratamentos e com índices maiores! Aconselho também armações fechadas em acetato, pois essas são mais resistentes e fecharão o pacote completo para proteger seus olhos no dia a dia.</string>
+    <string name="mike_user_profile_message_work_driving">Esse é um trabalho fantástico que literalmente movimenta o país! Hoje já temos lentes especializadas para quem trabalha como motorista ou passa boa parte do dia dirigindo, essas Lentes não vão só adicionar segurança ao seu trabalho e também trará conforto para o seu dia a dia.</string>
+
+    <string name="mike_user_profile_message_light_yes">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Mas como você provavelmente sofre de uma hipersensibilidade é altamente aconselhável o uso de lentes fotossensíveis para uma proteção total de seus olhos.</string>
+    <string name="mike_user_profile_message_light_no">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Não se esqueça de sempre usar protetor solar e bons óculos de sol já que nossos olhos são muito sensíveis!</string>
+    <string name="mike_user_profile_message_light_alittle">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Entretanto é comum sentir um incomodo nos olhos ao ser exposto a ele e o melhor a fazer é se proteger com lentes fotossensíveis para uma proteção total de seus olhos.</string>
+
+    <string name="mike_user_profile_message_pain_yes_simple">Procure sempre ajustar o objeto de leitura de uma forma que não incline sua cabeça, a má postura pode gerar dor na coluna, dor de cabeça e dores no corpo.</string>
+    <string name="mike_user_profile_message_pain_yes_multi">Procure sempre ajustar o objeto de leitura de uma forma que não incline sua cabeça e use a parte inferior da lente para enxergar o objeto. A má postura pode gerar dor na coluna, dor de cabeça e dores no corpo.</string>
+
+    <string name="mike_user_profile_message_sport_nauseating_yes_simple">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes FreeForm para amenizar essa sensação.</string>
+    <string name="mike_user_profile_message_sport_nauseating_yes_multi">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes específicas para práticas de esportes. \n\n Obs.: Lentes Multifocais normalmente trazem um certo desconforto na visão de perto.</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

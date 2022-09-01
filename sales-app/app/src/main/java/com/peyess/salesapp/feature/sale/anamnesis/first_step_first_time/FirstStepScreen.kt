@@ -61,7 +61,9 @@ fun FirstTimeScreen(
 
         firstTime = firstTime,
         usageScore = score,
-        showUsageScore = showUsageScore
+        showUsageScore = showUsageScore,
+
+        onNext = onNext,
     )
 }
 

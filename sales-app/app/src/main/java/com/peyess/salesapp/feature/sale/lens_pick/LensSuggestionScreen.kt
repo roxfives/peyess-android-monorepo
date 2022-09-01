@@ -242,6 +242,8 @@ private fun LensSuggestionScreenImpl(
 
     onPickLens: (lensId: String) -> Unit = {},
     isAddingSuggestion: Boolean = false,
+
+    onShowSearchScreen: () -> Unit = {},
 ) {
     val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
 
@@ -293,7 +295,10 @@ private fun LensSuggestionScreenImpl(
         TierSuggestion(
             modifier = modifier,
             lenses = lensSuggestion,
-            onShowSearchScreen = { showSearchScreen.value = true },
+            onShowSearchScreen = {
+                showSearchScreen.value = true
+                onShowSearchScreen()
+            },
             onPickLens = onPickLens,
         )
 

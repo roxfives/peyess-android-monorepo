@@ -47,7 +47,9 @@ class LensPickViewModel @AssistedInject constructor(
         loadLensSuppliers()
 
         // TODO: load lenses on update click
-        lenses = productRepository.filteredLenses(lensFilter = LensFilter())
+        lenses = productRepository
+            .filteredLenses(lensFilter = LensFilter())
+            .flowOn(Dispatchers.IO)
 
         onEach(LensPickState::filter) {
             lenses = productRepository.filteredLenses(lensFilter = it)
@@ -71,19 +73,6 @@ class LensPickViewModel @AssistedInject constructor(
 
         onEach(LensPickState::descriptionLensFilterId) {
             setState { copy(filter = filter.copy(descriptionId = it)) }
-        }
-
-        onEach(LensPickState::groupsList) { groupList ->
-            val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
-
-            if (groupList is Success) {
-                for (group in groupList.invoke()) {
-                    lensesByGroup.add(bestLensForGroup(group.id))
-                }
-            }
-
-            suggestionList = combine(lensesByGroup) { it.asList() }
-                .flowOn(Dispatchers.IO)
         }
 
         onEach(LensPickState::familyLensFilterId) { familyId ->
@@ -118,18 +107,26 @@ class LensPickViewModel @AssistedInject constructor(
                 )
             }
 
-            withState { state ->
-                if (supplierId.isNotEmpty()) {
-                    productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
-                        copy(materialFilter = materials)
-                    }
+            if (supplierId.isNotEmpty()) {
+                productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
+                    copy(materialFilter = materials)
+                }
 
-                    productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
-                        Timber.i("Got families: $families")
-                        copy(familyFilter = families)
-                    }
+                productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
+                    copy(familyFilter = families)
                 }
             }
+        }
+
+        onAsync(LensPickState::groupsList) { groupList ->
+            val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
+
+            for (group in groupList) {
+                lensesByGroup.add(bestLensForGroup(group.id))
+            }
+
+            suggestionList = combine(lensesByGroup) { it.asList() }
+                .flowOn(Dispatchers.IO)
         }
     }
 

@@ -107,14 +107,6 @@ class LensComparisonViewModel @AssistedInject constructor(
                                         "pickedTreatment: $pickedTreatment \n")
                             }
 
-                            Timber.i("Loaded comparison " +
-                                    "originalLens: $originalLens " +
-                                    "originalColoring: $originalColoring " +
-                                    "originalTreatment: $originalTreatment " +
-                                    "pickedLens: $pickedLens " +
-                                    "pickedColoring: $pickedColoring " +
-                                    "pickedTreatment: $pickedTreatment ")
-
                             IndividualComparison(
                                 id = comparison.id,
                                 soId = so.id,
@@ -154,28 +146,35 @@ class LensComparisonViewModel @AssistedInject constructor(
     }
 
     fun techsForComparison(lensComparison: IndividualComparison): Flow<List<FilterLensTechEntity>> {
-        return productRepository.techsForLens(
-            lensComparison.lensComparison.pickedLens.supplierId,
-            lensComparison.lensComparison.pickedLens.brandId,
-            lensComparison.lensComparison.pickedLens.designId,)
+        return productRepository
+            .techsForLens(
+                lensComparison.lensComparison.pickedLens.supplierId,
+                lensComparison.lensComparison.pickedLens.brandId,
+                lensComparison.lensComparison.pickedLens.designId,
+            )
+            .flowOn(Dispatchers.IO)
     }
 
     fun materialForComparison(lensComparison: IndividualComparison): Flow<List<FilterLensMaterialEntity>> {
-        return productRepository.materialsForLens(
-            lensComparison.lensComparison.pickedLens.supplierId,
-            lensComparison.lensComparison.pickedLens.brandId,
-            lensComparison.lensComparison.pickedLens.designId,
-        )
+        return productRepository
+            .materialsForLens(
+                lensComparison.lensComparison.pickedLens.supplierId,
+                lensComparison.lensComparison.pickedLens.brandId,
+                lensComparison.lensComparison.pickedLens.designId,
+            )
+            .flowOn(Dispatchers.IO)
     }
 
     fun treatmentsFor(lensComparison: IndividualComparison): Flow<List<LocalTreatmentEntity>> {
         return productRepository
             .treatmentsForLens(lensComparison.lensComparison.pickedLens.id)
+            .flowOn(Dispatchers.IO)
     }
 
     fun coloringsFor(lensComparison: IndividualComparison): Flow<List<LocalColoringEntity>> {
         return productRepository
             .coloringsForLens(lensComparison.lensComparison.pickedLens.id)
+            .flowOn(Dispatchers.IO)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -227,14 +226,6 @@ class LensComparisonViewModel @AssistedInject constructor(
                 materialId = materialId,
                 techId = techId
             ).flatMapLatest {
-                Timber.i("Found lens id: ${it?.id}")
-
-                Timber.i("Looked with $supplierId")
-                Timber.i("Looked with $brandId")
-                Timber.i("Looked with $designId")
-                Timber.i("Looked with $materialId")
-                Timber.i("Looked with $techId")
-
                 combine(
                     productRepository.treatmentsForLens(it?.id ?: ""),
                     productRepository.coloringsForLens(it?.id ?: ""),

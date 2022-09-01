@@ -49,8 +49,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadTotalToPay()
     }
 
-
-
     private fun loadClients() = withState {
         saleRepository.clientPicked(ClientRole.User).execute(Dispatchers.IO) {
             copy(userClientAsync = it)
@@ -233,6 +231,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
     fun deletePayment(payment: SalePaymentEntity) = withState {
         viewModelScope.launch(Dispatchers.IO) {
             saleRepository.deletePayment(payment)
+        }
+    }
+
+    fun onEditProducts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.clearProductComparison()
         }
     }
 

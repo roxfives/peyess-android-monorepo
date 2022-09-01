@@ -43,6 +43,7 @@ interface SaleRepository {
     fun comparisons(): Flow<List<LensComparisonEntity>>
     fun removeComparison(id: Int)
     fun updateSaleComparison(comparison: LensComparisonEntity)
+    suspend fun clearProductComparison()
 
     fun pickProduct(productPicked: ProductPickedEntity)
     fun pickedProduct(): Flow<ProductPickedEntity?>

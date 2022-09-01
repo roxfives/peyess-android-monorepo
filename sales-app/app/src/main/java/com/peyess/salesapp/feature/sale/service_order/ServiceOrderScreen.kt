@@ -112,8 +112,7 @@ fun ServiceOrderScreen(
 
     onEditPrescription: () -> Unit = {},
 
-    onChangeLens: () -> Unit = {},
-    onChangeFrames: () -> Unit = {},
+    onEditProducts: () -> Unit = {},
 
     onConfirmMeasure: () -> Unit = {},
 
@@ -189,6 +188,10 @@ fun ServiceOrderScreen(
         coloringEntity = coloringEntity,
         treatmentEntity = treatmentEntity,
         framesEntity = framesEntity,
+        onEditProducts = {
+            viewModel.onEditProducts()
+            onEditProducts()
+        },
 
         isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
         measureLeft = measureLeft,
@@ -234,6 +237,7 @@ private fun ServiceOrderScreenImpl(
     coloringEntity: LocalColoringEntity = LocalColoringEntity(),
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
     framesEntity: FramesEntity = FramesEntity(),
+    onEditProducts: () -> Unit = {},
 
     isMeasureLoading: Boolean = false,
     measureLeft: Measuring = Measuring(),
@@ -298,6 +302,8 @@ private fun ServiceOrderScreenImpl(
 
             ProductsSection(
                 isLoading = isProductLoading,
+
+                onEditProducts = onEditProducts,
 
                 lensEntity = lensEntity,
                 coloringEntity = coloringEntity,
@@ -1272,6 +1278,8 @@ private fun ProductsSection(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 
+    onEditProducts: () -> Unit = {},
+
     lensEntity: LocalLensEntity = LocalLensEntity(),
     coloringEntity: LocalColoringEntity = LocalColoringEntity(),
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
@@ -1299,7 +1307,7 @@ private fun ProductsSection(
             Spacer(modifier = Modifier.weight(1f))
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = onEditProducts,
                 enabled = !isLoading,
             ) {
                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "")

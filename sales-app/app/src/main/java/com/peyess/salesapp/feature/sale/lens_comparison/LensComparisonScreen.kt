@@ -44,6 +44,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -58,6 +60,7 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonState
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
+import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -78,9 +81,16 @@ val buttonHeight = 120.dp
 @Composable
 fun LensComparisonScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController = rememberNavController(),
     onAddComparison: () -> Unit = {},
-    onLensPicked: () -> Unit = {},
+    onLensPicked: (isEditing: Boolean) -> Unit = {},
 ) {
+    val isEditingParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getBoolean(isEditingParam)
+        ?: false
+
     val viewModel: LensComparisonViewModel = mavericksViewModel()
 
     val comparisons by viewModel.comparisons().collectAsState(emptyList())
@@ -96,7 +106,7 @@ fun LensComparisonScreen(
                 canNavigate.value = false
 
                 viewModel.lensPicked()
-                onLensPicked()
+                onLensPicked(isEditingParameter)
             }
         }
     }
@@ -405,10 +415,7 @@ private fun LensComparisonCard(
                             minimumHeightState,
                             density,
                         )
-                        .minimumWidthModifier(
-                            minimumWidthState,
-                            density
-                        ),
+                        .minimumWidthModifier(minimumWidthState, density),
                     name =  lensComparison.pickedLens.material,
                     dialogState = materialDialogState,
                 )

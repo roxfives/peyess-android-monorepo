@@ -18,6 +18,9 @@ interface LensComparisonDao {
     @Query("DELETE FROM ${LensComparisonEntity.tableName} WHERE id = :comparisonId")
     fun deleteById(comparisonId: Int)
 
+    @Query("DELETE FROM ${LensComparisonEntity.tableName} WHERE so_id = :soId")
+    fun deleteAllFromSO(soId: String)
+
     @Insert(onConflict = REPLACE)
     fun add(lensComparisonEntity: LensComparisonEntity)
 

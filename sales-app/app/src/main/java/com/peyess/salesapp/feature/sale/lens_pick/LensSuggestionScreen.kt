@@ -58,6 +58,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -82,6 +84,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.model.products.LensGroup
+import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -98,8 +101,15 @@ import timber.log.Timber
 @Composable
 fun LensSuggestionScreen(
     modifier: Modifier = Modifier,
-    onLensPicked: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+    onLensPicked: (isEditingParam: Boolean) -> Unit = {},
 ) {
+    val isEditingParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getBoolean(isEditingParam)
+        ?: false
+
     val viewModel: LensPickViewModel = mavericksViewModel()
 
     val lazyLenses = viewModel.filteredLenses().collectAsLazyPagingItems()
@@ -148,7 +158,7 @@ fun LensSuggestionScreen(
                 canNavigate.value = false
 
                 viewModel.lensPicked()
-                onLensPicked()
+                onLensPicked(isEditingParameter)
             }
         }
     }

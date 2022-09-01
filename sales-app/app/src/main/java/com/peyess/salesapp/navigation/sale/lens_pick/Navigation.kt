@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
@@ -16,6 +18,8 @@ import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEn
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
+const val isEditingParam = "isEditing"
+
 @OptIn(ExperimentalAnimationApi::class)
 fun buildLensSuggestionNavGraph(
     modifier: Modifier = Modifier,
@@ -23,32 +27,46 @@ fun buildLensSuggestionNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = SalesAppScreens.LensSuggestion.name,
+        route = "${SalesAppScreens.LensSuggestion.name}/{$isEditingParam}",
+        arguments = listOf(
+            navArgument(isEditingParam) { type = NavType.BoolType }
+        ),
         enterTransition = lensSuggestionEnterTransition(),
         exitTransition = lensSuggestionExitTransition()
     ) {
         LensSuggestionScreen(
             modifier = modifier,
+            navHostController = navHostController,
         ) {
-            navHostController.navigate(SalesAppScreens.LensComparison.name)
+            navHostController.navigate("${SalesAppScreens.LensComparison.name}/$it")
         }
     }
 
     builder.composable(
-        route = SalesAppScreens.LensComparison.name,
-        enterTransition = lensComparisonEnterTransition(),
+        route = "${SalesAppScreens.LensComparison.name}/{$isEditingParam}",
+        arguments = listOf(
+            navArgument(isEditingParam) { type = NavType.BoolType }
+        ),enterTransition = lensComparisonEnterTransition(),
         exitTransition = lensComparisonExitTransition()
     ) {
         LensComparisonScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
             onAddComparison = { navHostController.popBackStack() }
-        ) {
+        ) { isEditing ->
+
             val isPicking = true
             val pickScenario = PickScenario.ServiceOrder.toName()
 
-            navHostController
-                .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+            if (isEditing) {
+                navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
+                    popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+                }
+            } else {
+                navHostController
+                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+            }
         }
     }
 }

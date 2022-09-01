@@ -36,10 +36,12 @@ fun buildFramesNavGraph(
                     "right"
                 }
 
-                navHostController.navigate("${SalesAppScreens.FramesMeasureAnimation.name}/${eyeParam}")
+                navHostController.navigate("${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParam")
             }
         ) {
-            navHostController.navigate(SalesAppScreens.LensSuggestion.name)
+            val isEditing= false
+
+            navHostController.navigate("${SalesAppScreens.LensSuggestion.name}/$isEditing")
         }
     }
 

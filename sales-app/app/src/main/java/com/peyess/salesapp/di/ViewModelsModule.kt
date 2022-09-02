@@ -12,6 +12,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthS
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
@@ -177,5 +178,12 @@ interface ViewModelsModule {
     @ViewModelKey(FifthStepViewModel::class)
     fun bindFifthStepViewModelFactory(
         factory: FifthStepViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SixthStepViewModel::class)
+    fun bindSixthStepViewModelFactory(
+        factory: SixthStepViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

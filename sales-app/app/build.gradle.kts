@@ -12,6 +12,7 @@ hilt {
 dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.paging:paging-common-ktx:3.1.1")
+
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
@@ -136,4 +137,8 @@ dependencies {
 
     // Decent dialogs
     implementation("io.github.vanpra.compose-material-dialogs:datetime:$materialDialogs")
+
+    // Chard library (thanks Google)
+    // TODO: add version to project gradle
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

@@ -1407,7 +1407,7 @@ private fun LensCard(
 
         Text(
             modifier = minPriceModifier,
-            text = "R$ %.2f".format(lensEntity.price),
+            text = "R$ %.2f".format(lensEntity.price / 2f),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1447,7 +1447,7 @@ private fun ColoringCard(
         // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(coloringEntity.suggestedPrice),
+            text = NumberFormat.getCurrencyInstance().format(coloringEntity.suggestedPrice / 2f),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1487,7 +1487,7 @@ private fun TreatmentCard(
         // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.suggestedPrice),
+            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.suggestedPrice / 2f),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )

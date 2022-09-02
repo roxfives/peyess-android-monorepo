@@ -135,8 +135,8 @@
     <string name="ib_message_greater_then_8">Armações um pouco mais curvadas (Evite Nylon)</string>
 
     <string name="own_frames">Aro próprio</string>
-    <string name="new_frames">Aro novo</string>
-    <string name="frames_title_optical_curvature">O ideal para você</string>
+    <string name="new_frames">Novo aro</string>
+    <string name="frames_title_optical_curvature">Perfis de armações indicadas</string>
     <string name="measure_screen_ib">Base Ideal</string>
     <string name="frames_curvature">Curva do aro</string>
     <string name="measure_left_eye">Medir O.E.</string>
@@ -203,7 +203,7 @@
     <string name="btn_select_client">Selecionar</string>
 
     <!--  UI Component: Service Order  -->
-    <string name="so_section_title_clients">Cliente</string>
+    <string name="so_section_title_clients">Clientes</string>
     <string name="so_subsection_title_user">Usuário</string>
     <string name="so_subsection_title_responsible">Responsável</string>
     <string name="so_subsection_title_witness">Testemunha</string>

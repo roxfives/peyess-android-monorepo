@@ -24,7 +24,7 @@ fun buildHomeNavGraph(
         Home(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
         ) {
-            navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name)
+            navHostController.navigate(SalesAppScreens.SaleWelcome.name)
         }
     }
 }

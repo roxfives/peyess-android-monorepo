@@ -153,7 +153,9 @@ fun buildAnamnesisNavGraph(
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            navHostController.navigate(SalesAppScreens.AnamnesisSixthStep.name)
+            val isEditing = false
+
+            navHostController.navigate("${SalesAppScreens.LensSuggestion.name}/$isEditing")
         }
     }
 }

@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
@@ -46,10 +47,12 @@ fun Home(
     modifier: Modifier = Modifier,
     onStartNewSale: () -> Unit = {},
 ) {
-    val viewModel: MainViewModel = mavericksViewModel()
+    val viewModel: MainViewModel = mavericksActivityViewModel()
 
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
     val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
+
+    val isUpdatingProducts by viewModel.collectAsState(MainAppState::isUpdatingProducts)
 
     val hasStartedNewSale = remember {
         mutableStateOf(false)
@@ -71,6 +74,7 @@ fun Home(
     } else {
         SaleList(
             modifier = modifier,
+            isUpdatingProducts = isUpdatingProducts,
             onStartNewSale = {
                 viewModel.startNewSale()
             },
@@ -81,6 +85,7 @@ fun Home(
 @Composable
 fun SaleList(
     modifier: Modifier = Modifier,
+    isUpdatingProducts: Boolean = true,
     onStartNewSale: () -> Unit = {},
 ) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
@@ -91,6 +96,7 @@ fun SaleList(
                     .fillMaxWidth()
                     .height(buttonHeight),
                 shape = MaterialTheme.shapes.large,
+                enabled = !isUpdatingProducts,
                 onClick = onStartNewSale,
             ) {
                 Row(

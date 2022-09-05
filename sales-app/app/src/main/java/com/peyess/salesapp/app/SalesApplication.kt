@@ -37,8 +37,6 @@ class SalesApplication: Application(), Configuration.Provider {
             .setWorkerFactory(workerFactory)
             .build()
 
-
-
     fun stringResource(id: Int): String {
         return this.getString(id)
     }

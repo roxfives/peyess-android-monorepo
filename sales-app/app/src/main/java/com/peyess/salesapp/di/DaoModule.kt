@@ -47,6 +47,7 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
+import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.Module
 import dagger.Provides
@@ -298,5 +299,14 @@ object DaoModule {
     @Provides
     fun provideSalePaymentDao(saleDatabase: ActiveSalesDatabase): SalePaymentDao {
         return saleDatabase.salePaymentsDao()
+    }
+
+
+
+
+    @Singleton
+    @Provides
+    fun provideGambetaDao(productsDatabase: ProductsDatabase): GambetaDao {
+        return productsDatabase.gambetaDao()
     }
 }

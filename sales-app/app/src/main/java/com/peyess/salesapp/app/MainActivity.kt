@@ -53,6 +53,8 @@ class MainActivity: ComponentActivity() {
                     else -> {
                         navHostController.backQueue.clear()
                         navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
+
+                        createWorker()
                     }
                 }
             }
@@ -63,20 +65,24 @@ class MainActivity: ComponentActivity() {
         }
 
         hideSystemNavigationBar()
-
-        val uploadWorkRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<UpdateProductsWorker>()
-                .build()
-
-//        WorkManager
-//            .getInstance(this)
-//            .enqueue(uploadWorkRequest)
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         // TODO: Control timeout for auto-blocking due to inactivity here
 
         return super.onTouchEvent(event)
+    }
+
+    private fun createWorker() {
+        Timber.i("Creating worker")
+
+        val uploadWorkRequest: WorkRequest =
+            OneTimeWorkRequestBuilder<UpdateProductsWorker>()
+                .build()
+
+        WorkManager
+            .getInstance(this)
+            .enqueue(uploadWorkRequest)
     }
 
     @Suppress("DEPRECATION")

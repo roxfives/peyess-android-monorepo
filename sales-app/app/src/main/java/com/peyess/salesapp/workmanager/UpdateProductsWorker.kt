@@ -28,10 +28,14 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.database.room.ProductsDatabase
+import com.peyess.salesapp.database.room.gambeta.GambetaDao
+import com.peyess.salesapp.database.room.gambeta.GambetaEntity
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -42,6 +46,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     val productsDatabase: ProductsDatabase,
     val salesApplication: SalesApplication,
+    val gambetaDao: GambetaDao,
     val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
     private fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
@@ -291,6 +296,17 @@ class UpdateProductsWorker @AssistedInject constructor(
             .format(storeId)
 
         withContext(Dispatchers.IO) {
+            var gambetaEntity = GambetaEntity(0, false, true)
+            gambetaDao.getGambeta(0).take(1).collect {
+                gambetaEntity = it ?: GambetaEntity(0, false, true)
+            }
+
+            if (gambetaEntity.hasUpdated) {
+                return@withContext Result.success()
+            } else {
+                gambetaDao.add(gambetaEntity)
+            }
+
             Timber.i("Starting products update with path $lensPath")
 
             val initQuery = firestore
@@ -333,6 +349,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             Timber.i("Downloaded total of $totalDownloaded")
         }
 
+        gambetaDao.add(GambetaEntity(0, true, false))
         return Result.success()
     }
 

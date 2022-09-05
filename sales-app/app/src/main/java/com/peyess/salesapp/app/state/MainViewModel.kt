@@ -6,6 +6,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -19,6 +20,7 @@ class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
     val authenticationRepository: AuthenticationRepository,
     val saleRepository: SaleRepository,
+    val gambetaDao: GambetaDao,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
@@ -26,6 +28,12 @@ class MainViewModel @AssistedInject constructor(
             copy(
                 createNewSale = Success(false),
             )
+        }
+
+        withState {
+            gambetaDao.getGambeta(0).execute {
+                copy(isUpdatingProductsAsync = it)
+            }
         }
 
         authenticationRepository.storeAuthState.setOnEach {

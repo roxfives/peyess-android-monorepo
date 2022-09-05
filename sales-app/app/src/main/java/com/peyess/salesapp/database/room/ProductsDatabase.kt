@@ -50,6 +50,8 @@ import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDa
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.database.room.gambeta.GambetaDao
+import com.peyess.salesapp.database.room.gambeta.GambetaEntity
 
 @Database(
     entities = [
@@ -85,8 +87,10 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
         FilterLensSupplierEntity::class,
         FilterLensTechEntity::class,
         FilterLensTypeEntity::class,
+
+        GambetaEntity::class,
     ],
-    version = 43,
+    version = 44,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao
@@ -120,4 +124,6 @@ abstract class ProductsDatabase: RoomDatabase() {
     abstract fun filterLensSupplierDao(): FilterLensSupplierDao
     abstract fun filterLensTypeDao(): FilterLensTypeDao
     abstract fun filterLensTechDao(): FilterLensTechDao
+
+    abstract fun gambetaDao(): GambetaDao
 }

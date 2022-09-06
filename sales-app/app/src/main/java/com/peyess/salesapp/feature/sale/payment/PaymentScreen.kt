@@ -439,29 +439,29 @@ private fun PaymentCard(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        AnimatedVisibility(
-            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            Text(text = "Card flags")
-        }
-
-        AnimatedVisibility(
-            visible = paymentMethod?.hasDocument ?: false,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            Text(text = "Document input")
-        }
-
-        AnimatedVisibility(
-            visible = paymentMethod?.hasDocumentPicture ?: false,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            Text(text = "Add document picture")
-        }
+//        AnimatedVisibility(
+//            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
+//            enter = scaleIn(),
+//            exit = scaleOut(),
+//        ) {
+//            Text(text = "Card flags")
+//        }
+//
+//        AnimatedVisibility(
+//            visible = paymentMethod?.hasDocument ?: false,
+//            enter = scaleIn(),
+//            exit = scaleOut(),
+//        ) {
+//            Text(text = "Document input")
+//        }
+//
+//        AnimatedVisibility(
+//            visible = paymentMethod?.hasDocumentPicture ?: false,
+//            enter = scaleIn(),
+//            exit = scaleOut(),
+//        ) {
+//            Text(text = "Add document picture")
+//        }
     }
 }
 

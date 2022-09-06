@@ -39,6 +39,10 @@ class SecondStepViewModel @AssistedInject constructor(
         copy(workSelected = selected)
     }
 
+    fun resetState() = setState {
+        SecondStepState()
+    }
+
     // hilt
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<SecondStepViewModel, SecondStepState> {

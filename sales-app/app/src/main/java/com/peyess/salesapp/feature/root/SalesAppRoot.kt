@@ -30,14 +30,18 @@ fun SalesAppRoot(
     val scaffoldState = rememberScaffoldState()
 
     val actions = object: BottomNavBarActions {
-        override val onHomeSelected: () -> Unit
-            get() = {}
-        override val onPeopleSelected: () -> Unit
-            get() = {}
-        override val onFramesSelected: () -> Unit
-            get() = {}
-        override val onRealMeasureSelected: () -> Unit
-            get() = {}
+        override val onHomeSelected = {
+//            navHostController.backQueue.clear()
+            navHostController.navigate(SalesAppScreens.Home.name)
+        }
+        override val onPeopleSelected = {
+//            navHostController.backQueue.clear()
+            navHostController.navigate(SalesAppScreens.Clients.name)
+        }
+        override val onSaleSelected = {
+//            navHostController.backQueue.clear()
+            navHostController.navigate(SalesAppScreens.SaleScreen.name)
+        }
 
     }
 

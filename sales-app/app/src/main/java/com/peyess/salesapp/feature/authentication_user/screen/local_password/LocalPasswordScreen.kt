@@ -50,7 +50,6 @@ import com.peyess.salesapp.feature.authentication_user.screen.local_password.sta
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
 
 @Composable
 fun LocalPasswordScreen(
@@ -72,7 +71,7 @@ fun LocalPasswordScreen(
             if (!hasNavigated.value) {
                 hasNavigated.value = true
 
-                navHostController.navigate(SalesAppScreens.Home.name) {
+                navHostController.navigate(SalesAppScreens.SaleScreen.name) {
                     popUpTo(SalesAppScreens.LocalPasscode.name) {
                         inclusive = true
                     }

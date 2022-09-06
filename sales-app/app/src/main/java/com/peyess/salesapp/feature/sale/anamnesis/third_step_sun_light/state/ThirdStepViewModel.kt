@@ -6,6 +6,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,6 +24,10 @@ class ThirdStepViewModel @AssistedInject constructor(
 
     fun onOptionSelected(selected: Int) = setState {
         copy(selected = selected)
+    }
+
+    fun resetState() = setState {
+        ThirdStepState()
     }
 
     // hilt

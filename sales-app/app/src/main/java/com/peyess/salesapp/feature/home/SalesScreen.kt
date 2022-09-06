@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,27 +25,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
 
 private val buttonHeight = 72.dp
 
 @Composable
-fun Home(
+fun SalesScreen(
     modifier: Modifier = Modifier,
     onStartNewSale: () -> Unit = {},
 ) {
+    val firstStepViewModel: FirstTimeViewModel = mavericksActivityViewModel()
+    val secondStepViewModel: SecondStepViewModel = mavericksActivityViewModel()
+    val thirdStepViewModel: ThirdStepViewModel = mavericksActivityViewModel()
+    val fourthStepViewModel: FourthStepViewModel = mavericksActivityViewModel()
+    val fifthStepViewModel: FifthStepViewModel = mavericksActivityViewModel()
+    val sixthStepViewModel: SixthStepViewModel = mavericksActivityViewModel()
+
+
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
@@ -66,6 +74,13 @@ fun Home(
 
             hasStartedNewSale.value = true
             viewModel.newSaleStarted()
+
+            firstStepViewModel.resetState()
+            secondStepViewModel.resetState()
+            thirdStepViewModel.resetState()
+            fourthStepViewModel.resetState()
+            fifthStepViewModel.resetState()
+            sixthStepViewModel.resetState()
         }
     }
 
@@ -129,5 +144,5 @@ fun SaleList(
 @Preview
 @Composable
 private fun HomePreview() {
-    Home()
+    SalesScreen()
 }

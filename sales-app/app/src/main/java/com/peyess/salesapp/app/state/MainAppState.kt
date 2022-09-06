@@ -5,7 +5,9 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.database.room.gambeta.GambetaEntity
+import com.peyess.salesapp.navigation.pick_client.PickScenario
 
 sealed class AppAuthenticationState {
     object Unauthenticated: AppAuthenticationState()
@@ -19,6 +21,15 @@ data class MainAppState(
     val createNewSale: Async<Boolean> = Success(false),
 
     val isUpdatingProductsAsync: Async<GambetaEntity?> = Uninitialized,
+
+
+    // Client screen
+    val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
+
+    val hasPickedClient: Boolean = false,
+
+    val pickScenario: PickScenario = PickScenario.ServiceOrder,
+    val pickedId: String = "",
 ): MavericksState {
     val isCreatingNewSale = createNewSale is Loading
 
@@ -27,4 +38,9 @@ data class MainAppState(
     } else {
         true
     }
+
+    // Client screen
+    val clientList = clientListAsync.invoke() ?: emptyList()
+
+    val areClientsLoading = clientListAsync is Loading || clientListAsync is Uninitialized
 }

@@ -81,8 +81,13 @@ fun showNavigateBack(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return !(screen == SalesAppScreens.UserListAuthentication
-            || screen == SalesAppScreens.Home
+    return !(
+        screen == SalesAppScreens.UserListAuthentication
+            || screen == SalesAppScreens.SaleScreen
             || screen == SalesAppScreens.FramesMeasureTakePicture
-            || screen == SalesAppScreens.FramesMeasure)
+            || screen == SalesAppScreens.FramesMeasure
+            || screen == SalesAppScreens.Home
+            || screen == SalesAppScreens.Clients
+            || screen == SalesAppScreens.Landing
+    )
 }

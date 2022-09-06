@@ -4,6 +4,8 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepState
+import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -31,6 +33,10 @@ class SixthStepViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    fun resetState() = setState {
+        SixthStepState()
     }
 
     fun onReadingChanged(value: Float) = setState {

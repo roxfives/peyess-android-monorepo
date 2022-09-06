@@ -25,6 +25,10 @@ class FifthStepViewModel @AssistedInject constructor(
         copy(selected = selected)
     }
 
+    fun resetState() = setState {
+        FifthStepState()
+    }
+
     // hilt
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<FifthStepViewModel, FifthStepState> {

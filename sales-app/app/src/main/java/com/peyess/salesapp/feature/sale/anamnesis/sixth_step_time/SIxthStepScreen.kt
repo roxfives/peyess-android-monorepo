@@ -179,6 +179,7 @@ private fun SixthStepScreenImpl(
         title("Selecione o horário em que costuma dormir")
 
         timepicker(
+            title = "",
             initialTime =  LocalTime
                 .of(timeGoToBed.toInt() / 60, timeGoToBed.toInt() % 60),
             is24HourClock = true,
@@ -200,6 +201,7 @@ private fun SixthStepScreenImpl(
         title("Selecione o horário em que costuma acordar")
 
         timepicker(
+            title = "",
             initialTime = LocalTime
                 .of(timeWakeUp.toInt() / 60, timeWakeUp.toInt() % 60),
             is24HourClock = true,

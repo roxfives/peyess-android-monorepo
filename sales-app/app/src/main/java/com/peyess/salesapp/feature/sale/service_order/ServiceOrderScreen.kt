@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -164,7 +165,10 @@ fun ServiceOrderScreen(
     ServiceOrderScreenImpl(
         modifier = modifier,
 
-        onFinishSale = {},
+        onFinishSale = {
+            viewModel.generateSale()
+            onFinishSale()
+        },
 
         onChangeResponsible = onChangeResponsible,
         onChangeUser = onChangeUser,
@@ -326,6 +330,19 @@ private fun ServiceOrderScreenImpl(
                 onDeletePayment = onDeletePayment,
                 onEditPayment = onEditPayment,
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(onClick = onFinishSale) {
+                    // TODO: use string resource
+                    Text(text = "Gerar O.S.")
+                }
+            }
         }
     }
 }
@@ -1067,12 +1084,12 @@ private fun MeasuresSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = { /*TODO*/ },
-                enabled = !isLoading,
-            ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
-            }
+//            IconButton(
+//                onClick = { /*TODO*/ },
+//                enabled = !isLoading,
+//            ) {
+//                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+//            }
         }
 
         Divider(

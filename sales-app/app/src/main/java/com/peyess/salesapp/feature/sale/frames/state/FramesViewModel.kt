@@ -13,11 +13,14 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
 import com.peyess.salesapp.dao.sale.prescription_data.prevalentIdealBase
+import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
+import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 
@@ -25,6 +28,7 @@ class FramesViewModel @AssistedInject constructor(
     @Assisted initialState: FramesState,
     private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
+    private val authenticationRepository: AuthenticationRepository,
 ): MavericksViewModel<FramesState>(initialState) {
 
     init {
@@ -106,6 +110,30 @@ class FramesViewModel @AssistedInject constructor(
                 )
             }
         }
+
+        onAsync(FramesState::idealBaseMessage) {
+            loadLandingMikeMessage(it.lowercase())
+        }
+    }
+
+    private fun loadLandingMikeMessage(framesMessage: String) = withState {
+        combine(
+            saleRepository.activeSO().filterNotNull().map { it.clientName },
+            authenticationRepository.currentUser().filterNotNull().map { it.name },
+        ) { client, collaborator ->
+            MikeMessageResult(client, collaborator)
+        }.execute(Dispatchers.IO) {
+            if (it is Success) {
+                val result = it.invoke()
+                val message = salesApplication
+                    .stringResource(R.string.mike_frames_landing_screen_message)
+                    .format(result.clientName, framesMessage, result.collaboratorName)
+
+                copy(landingMikeMessage = message)
+            } else {
+                copy()
+            }
+        }
     }
 
     private fun loadPrescriptionData() = withState {
@@ -177,6 +205,11 @@ class FramesViewModel @AssistedInject constructor(
             saleRepository.updateFramesData(it._currentFramesData.copy(areFramesNew = areNew))
         }
     }
+
+    private data class MikeMessageResult(
+        val clientName: String = "",
+        val collaboratorName: String = "",
+    )
 
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<FramesViewModel, FramesState> {

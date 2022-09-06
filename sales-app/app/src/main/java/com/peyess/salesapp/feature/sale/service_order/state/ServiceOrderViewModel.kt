@@ -1,5 +1,9 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
+import androidx.work.workDataOf
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -7,13 +11,19 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.utils.products.ProductSet
+import com.peyess.salesapp.workmanager.UpdateProductsWorker
+import com.peyess.salesapp.workmanager.sale.GenerateServiceOrderWorker
+import com.peyess.salesapp.workmanager.sale.saleIdKey
+import com.peyess.salesapp.workmanager.sale.soIdKey
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -27,6 +37,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -35,6 +46,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
     val saleRepository: SaleRepository,
     val productRepository: ProductRepository,
+    val salesApplication: SalesApplication,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
     init {
@@ -205,6 +217,37 @@ class ServiceOrderViewModel @AssistedInject constructor(
             }
             .execute(Dispatchers.IO) {
                 copy(totalToPayAsync = it)
+            }
+    }
+
+    private fun createSOWorker(soId: String, saleId: String) {
+        Timber.i("Creating worker")
+
+        val workerData = workDataOf(
+            soIdKey to soId,
+            saleIdKey to saleId,
+        )
+
+        val uploadWorkRequest: WorkRequest =
+            OneTimeWorkRequestBuilder<GenerateServiceOrderWorker>()
+                .setInputData(workerData)
+                .build()
+
+        WorkManager
+            .getInstance(salesApplication)
+            .enqueue(uploadWorkRequest)
+    }
+
+    fun generateSale() {
+        viewModelScope
+            .launch(Dispatchers.IO) {
+                saleRepository
+                    .activeSO()
+                    .filterNotNull()
+                    .take(1)
+                    .collect {
+                        createSOWorker(it.id, it.saleId)
+                    }
             }
     }
 

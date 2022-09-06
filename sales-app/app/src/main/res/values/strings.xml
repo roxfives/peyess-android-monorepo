@@ -129,6 +129,8 @@
     <string name="presbyopia">Presbiopia</string>
 
     <!-- UI Component: Frames data   -->
+    <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
+
     <string name="ib_message_less_than_3_5">Armações mais planas possiveis (Evite Nylon)</string>
     <string name="ib_message_between_3_5_and_5">Armações mais planas</string>
     <string name="ib_message_between_5_and_8">Armações pouco curvadas</string>
@@ -249,6 +251,8 @@
     <string name="payment_delete">Excluir pagamento</string>
 
     <!-- UI Component: Anamnesis   -->
+    <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>
+
     <string name="anamnesis_first_step_yes">Sim</string>
     <string name="anamnesis_first_step_no">Não</string>
     <string name="anamnesis_first_step_a_little">Um pouco</string>
@@ -355,6 +359,8 @@
     <string name="fs_col_description">lenses_designs</string>
     <string name="fs_col_clients">optical_stores/%1$s/local_optical_client</string>
     <string name="fs_col_payments">optical_stores/%1$s/local_optical_payment_method</string>
+    <string name="fs_col_so">optical_stores/%1$s/local_optical_so</string>
+
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

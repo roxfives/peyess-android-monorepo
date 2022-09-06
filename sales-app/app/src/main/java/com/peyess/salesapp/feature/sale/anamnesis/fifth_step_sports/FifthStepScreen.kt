@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepState
@@ -43,7 +44,7 @@ fun FifthStepScreen(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
 ) {
-    val viewModel: FifthStepViewModel = mavericksViewModel()
+    val viewModel: FifthStepViewModel = mavericksActivityViewModel()
 
     val options = viewModel.options
 

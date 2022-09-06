@@ -6,6 +6,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,12 +30,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeState
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.math.RoundingMode
 
 
@@ -43,12 +48,14 @@ fun FirstTimeScreen(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
 ) {
-    val viewModel: FirstTimeViewModel = mavericksViewModel()
+    val viewModel: FirstTimeViewModel = mavericksActivityViewModel()
 
     val firstTime by viewModel.collectAsState(FirstTimeState::isFirstTime)
 
     val score by viewModel.collectAsState(FirstTimeState::usageScore)
     val showUsageScore by viewModel.collectAsState(FirstTimeState::showUsageScore)
+
+    val mikeMessage by viewModel.collectAsState(FirstTimeState::mikeMessage)
 
     FirstTimeScreenImpl(
         modifier = modifier,
@@ -59,6 +66,8 @@ fun FirstTimeScreen(
         firstTime = firstTime,
         usageScore = score,
         showUsageScore = showUsageScore,
+
+        mikeMessage = mikeMessage,
 
         onNext = onNext,
     )
@@ -76,8 +85,26 @@ private fun FirstTimeScreenImpl(
     showUsageScore: Boolean = false,
     usageScore: Float = 0f,
 
+    mikeMessage: String = "",
+
     onNext: () -> Unit = {},
 ) {
+    val dialogState = rememberMaterialDialogState(true)
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            // TODO: Use string resource
+            positiveButton("Vamos lá!")
+        }
+    ) {
+        MikeBubbleRight(
+            modifier = Modifier
+                .height(360.dp)
+                .padding(16.dp),
+            text = mikeMessage,
+        )
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,

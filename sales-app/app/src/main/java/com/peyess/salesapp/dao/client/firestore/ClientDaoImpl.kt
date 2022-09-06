@@ -26,6 +26,11 @@ class ClientDaoImpl @Inject constructor(
             )
             .orderBy(salesApplication.stringResource(R.string.fs_field_clients_name))
             .get()
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    Timber.e(it.exception)
+                }
+            }
             .await()
 
         val clients = snaps.mapNotNull {

@@ -10,6 +10,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,19 +53,19 @@ fun BottomBar(
 
             IconButton(
                 onClick = {
-                    actions.onPeopleSelected()
+                    actions.onSaleSelected()
                 },
                 modifier = Modifier.weight(1f, true),
 
                 ) {
                 val tint by animateColorAsState(
-                    if (currentScreen == SalesAppScreens.People)
+                    if (currentScreen == SalesAppScreens.SaleScreen)
                         MaterialTheme.colors.onPrimary
                     else
                         MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
                 )
 
-                Icon(Icons.Filled.Person, tint = tint, contentDescription = "")
+                Icon(Icons.Filled.LocalOffer, tint = tint, contentDescription = "")
             }
 
             IconButton(
@@ -72,7 +73,7 @@ fun BottomBar(
                 modifier = Modifier.weight(1f, true),
             ) {
                 val tint by animateColorAsState(
-                    if (currentScreen == SalesAppScreens.People)
+                    if (currentScreen == SalesAppScreens.Clients)
                         MaterialTheme.colors.onPrimary
                     else
                         MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
@@ -91,5 +92,7 @@ fun shouldShowBottomBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return false//screen == SalesAppScreens.Home
+    return screen == SalesAppScreens.Home
+            || screen == SalesAppScreens.SaleScreen
+            || screen == SalesAppScreens.Clients
 }

@@ -75,7 +75,9 @@ fun buildServiceOrderNavGraph(
                     .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$client")
             }
         ) {
-            navHostController.navigate(SalesAppScreens.ServiceOrder.name)
+            navHostController.navigate(SalesAppScreens.Home.name) {
+                popUpTo(SalesAppScreens.Home.name) { inclusive = true}
+            }
         }
     }
 }

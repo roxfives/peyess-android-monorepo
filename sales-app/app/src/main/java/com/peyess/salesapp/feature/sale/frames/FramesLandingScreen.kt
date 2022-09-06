@@ -3,6 +3,7 @@ package com.peyess.salesapp.feature.sale.frames
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +36,10 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames.state.FramesState
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 @Composable
 fun FramesLandingScreen(
@@ -50,6 +54,8 @@ fun FramesLandingScreen(
     val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessage)
     val idealCurvatureAnimationId by viewModel.collectAsState(FramesState::idealBaseAnimationResource)
 
+    val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)
+
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -63,6 +69,9 @@ fun FramesLandingScreen(
         },
         onAddMeasure = onAddMeasure,
         onAddPantocospic = onAddPantoscopic,
+
+        mikeMessage = landingMikeMessage,
+
         onNext = onNext,
     )
 }
@@ -78,8 +87,26 @@ private fun FramesLandingScreenImpl(
     onAddMeasure: (eye: Eye) -> Unit = {},
     onAddPantocospic: (eye: Eye) -> Unit = {},
 
+    mikeMessage: String = "",
+
     onNext: () -> Unit = {},
 ) {
+    val dialogState = rememberMaterialDialogState(true)
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            // TODO: Use string resource
+            positiveButton("Vamos lá!")
+        }
+    ) {
+        MikeBubbleRight(
+            modifier = Modifier
+                .height(360.dp)
+                .padding(16.dp),
+            text = mikeMessage,
+        )
+    }
+
     Column(modifier = modifier) {
         FramesInput(
             onSetOwnFrames = {onAddFrames(false)},

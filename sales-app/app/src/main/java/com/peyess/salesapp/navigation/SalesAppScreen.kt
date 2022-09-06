@@ -4,7 +4,9 @@ import java.lang.IllegalArgumentException
 
 enum class SalesAppScreens {
     Landing,
+    SaleScreen,
     Home,
+    Clients,
     AddMeasure,
     StoreAuthentication,
     UserListAuthentication,
@@ -73,7 +75,9 @@ enum class SalesAppScreens {
                 PickClient.name -> PickClient
                 ServiceOrder.name -> ServiceOrder
                 SalePayment.name -> SalePayment
+                SaleScreen.name -> SaleScreen
                 Home.name -> Home
+                Clients.name -> Clients
                 AddMeasure.name -> AddMeasure
                 People.name -> People
                 AddPerson.name -> AddPerson
@@ -91,7 +95,9 @@ enum class SalesAppScreens {
 
         fun title(route: String?): String =
             when (route?.substringBefore("/")?.substringBefore("?")) {
-                Home.name -> "Vendas"
+                SaleScreen.name -> "Suas vendas"
+                Home.name -> "Boas vindas!"
+                Clients.name -> "Seus clientes"
                 AddMeasure.name -> "Adicionar medida"
                 People.name -> "Pessoas"
                 UserAuth.name -> "Entrar na loja"

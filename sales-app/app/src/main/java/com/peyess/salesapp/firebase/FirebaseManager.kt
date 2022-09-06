@@ -53,9 +53,9 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
 //            Firebase.firestore(app).useEmulator("10.0.2.2", 8080)
 //            Firebase.storage(app).useEmulator("10.0.2.2", 9199)
 
-            Firebase.auth(app).useEmulator("localhost", 9099)
-            Firebase.firestore(app).useEmulator("localhost", 8080)
-            Firebase.storage(app).useEmulator("localhost", 9199)
+//            Firebase.auth(app).useEmulator("localhost", 9099)
+//            Firebase.firestore(app).useEmulator("localhost", 8080)
+//            Firebase.storage(app).useEmulator("localhost", 9199)
         } else {
             Timber.i("Connecting to real server")
         }
@@ -63,17 +63,17 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
 
     private fun firebaseOptions(): FirebaseOptions {
         // TODO: Add string based on build
-        return FirebaseOptions.Builder()
-            .setProjectId("qa-peyess-store-diniz-brasil")
-            .setApplicationId("1:108515371906:android:d54553ddefd6029c48bd9b")
-            .setApiKey("AIzaSyD-ojx10VsEL0TFJ0Bkymf8hYfPB25bIWg")
-            .build()
-
 //        return FirebaseOptions.Builder()
-//            .setProjectId("backoffice-1103b")
-//            .setApplicationId("1:127552510976:android:406f53dbd9ff12d0268ce5")
-//            .setApiKey("AIzaSyBDEuhwVbQk9Mb5hModtPAmfkr9i8k0LlQ")
+//            .setProjectId("qa-peyess-store-diniz-brasil")
+//            .setApplicationId("1:108515371906:android:d54553ddefd6029c48bd9b")
+//            .setApiKey("AIzaSyD-ojx10VsEL0TFJ0Bkymf8hYfPB25bIWg")
 //            .build()
+
+        return FirebaseOptions.Builder()
+            .setProjectId("backoffice-1103b")
+            .setApplicationId("1:127552510976:android:406f53dbd9ff12d0268ce5")
+            .setApiKey("AIzaSyBDEuhwVbQk9Mb5hModtPAmfkr9i8k0LlQ")
+            .build()
     }
 
     private fun initializeFirebaseForStore() {

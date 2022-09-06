@@ -15,7 +15,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 fun homeEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
         when (SalesAppScreens.fromRoute(initialState.destination.route)) {
-            SalesAppScreens.Home ->
+            SalesAppScreens.SaleScreen ->
                 fadeIn()
             SalesAppScreens.AddMeasure,
             SalesAppScreens.AddAngle,

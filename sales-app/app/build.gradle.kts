@@ -10,8 +10,6 @@ hilt {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.6.1")
-    implementation("androidx.paging:paging-common-ktx:3.1.1")
 
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
@@ -44,7 +42,10 @@ dependencies {
     implementation(project(":logging"))
     implementation(project(":authentication"))
 
-    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.paging:paging-common-ktx:3.1.1")
+
+    implementation("androidx.appcompat:appcompat:1.5.0")
     implementation("androidx.core:core-ktx:1.8.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
 

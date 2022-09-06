@@ -127,6 +127,7 @@ class ProductRepositoryImpl @Inject constructor(
         mesureLeft: Measuring,
         measureRight: Measuring,
     ): Boolean {
+        // TODO: get from lensType conversion
         var fits = activeSO.isLensTypeMono && lens.type.lowercase() == "monofocal"
                 || !activeSO.isLensTypeMono && lens.type.lowercase() != "monofocal"
 
@@ -192,8 +193,8 @@ class ProductRepositoryImpl @Inject constructor(
         }
 
         if (fits && disp.sumRule) {
-            fits = prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft >= disp.minSph
-                    && prescriptionData.sphericalRight + prescriptionData.cylindricalRight >= disp.minSph
+            fits = prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft - disp.maxCyl >= disp.minSph
+                    && prescriptionData.sphericalRight + prescriptionData.cylindricalRight - disp.maxCyl >= disp.minSph
         }
 
         return fits

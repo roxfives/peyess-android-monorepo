@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.frames.state
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity

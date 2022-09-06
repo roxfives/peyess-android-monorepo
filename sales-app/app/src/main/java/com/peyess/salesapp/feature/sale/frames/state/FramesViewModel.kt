@@ -13,7 +13,6 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
 import com.peyess.salesapp.dao.sale.prescription_data.prevalentIdealBase
-import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -23,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.take
 
 class FramesViewModel @AssistedInject constructor(
     @Assisted initialState: FramesState,
@@ -34,7 +34,7 @@ class FramesViewModel @AssistedInject constructor(
     init {
         loadCurrentFramesData()
         loadPrescriptionData()
-        loadMikeMessage()
+        loadMikeMessages()
 
         onEach(
             FramesState::currentPrescriptionData,
@@ -56,6 +56,10 @@ class FramesViewModel @AssistedInject constructor(
                     )
                 }
             }
+        }
+
+        onAsync(FramesState::idealBaseMessage) {
+            loadLandingMikeMessage(it)
         }
 
         onEach(FramesState::currentPrescriptionData) {
@@ -110,19 +114,15 @@ class FramesViewModel @AssistedInject constructor(
                 )
             }
         }
-
-        onAsync(FramesState::idealBaseMessage) {
-            loadLandingMikeMessage(it.lowercase())
-        }
     }
 
     private fun loadLandingMikeMessage(framesMessage: String) = withState {
         combine(
             saleRepository.activeSO().filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().filterNotNull().map { it.name },
+            authenticationRepository.currentUser().map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)
-        }.execute(Dispatchers.IO) {
+        }.take(1).execute(Dispatchers.IO) {
             if (it is Success) {
                 val result = it.invoke()
                 val message = salesApplication
@@ -144,7 +144,12 @@ class FramesViewModel @AssistedInject constructor(
             }
     }
 
-    private fun loadMikeMessage() = withState {
+    private fun loadMikeMessages() = withState {
+        val ibMessage = it.idealBaseMessage.invoke()
+        if (ibMessage != null) {
+            loadLandingMikeMessage(ibMessage.lowercase())
+        }
+
         saleRepository
             .activeSO()
             .filterNotNull()

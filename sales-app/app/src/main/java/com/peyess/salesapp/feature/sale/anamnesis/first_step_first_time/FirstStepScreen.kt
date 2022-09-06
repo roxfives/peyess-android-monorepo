@@ -149,7 +149,7 @@ private fun FirstTimeScreenImpl(
                     selectedColor = MaterialTheme.colors.primary,
                 ),
             )
-            Text(text = stringResource(id = R.string.anamnesis_first_step_a_little))
+            Text(text = stringResource(id = R.string.anamnesis_first_step_no))
         }
 
         Spacer(modifier = Modifier.height(8.dp))

@@ -47,6 +47,7 @@ fun MikeBubbleRight(
 @Composable
 private fun Mike(modifier: Modifier = Modifier) {
     Image(
+        modifier = modifier.height(IntrinsicSize.Min),
         painter = painterResource(id = R.drawable.ic_mike_upper_body),
         contentDescription = "",
     )

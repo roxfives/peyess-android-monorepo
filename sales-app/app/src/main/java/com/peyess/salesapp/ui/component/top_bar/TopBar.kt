@@ -71,7 +71,9 @@ fun shouldShowTopBarFor(
     return !(screen == SalesAppScreens.UserListAuthentication
             || screen == SalesAppScreens.StoreAuthentication
             || screen == SalesAppScreens.FramesMeasureTakePicture
-            || screen == SalesAppScreens.FramesMeasure)
+            || screen == SalesAppScreens.FramesMeasure
+            || screen == SalesAppScreens.Landing
+        )
 }
 
 fun showNavigateBack(

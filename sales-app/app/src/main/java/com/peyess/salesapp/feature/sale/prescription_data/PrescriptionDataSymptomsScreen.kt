@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.prescription_data
 
+import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -25,10 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -90,6 +98,10 @@ private fun PrescriptionDataSymptomsScreenImpl(
     hasAstigmatism: Boolean = true,
     hasPresbyopia: Boolean = true,
 ) {
+    val showingAnimations = remember {
+        mutableStateOf(false)
+    }
+    
     val showingCuriosities = remember {
         mutableStateOf(false)
     }
@@ -100,7 +112,7 @@ private fun PrescriptionDataSymptomsScreenImpl(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         AnimatedVisibility(
-            visible = !showingCuriosities.value,
+            visible = !showingCuriosities.value && !showingAnimations.value,
             enter = scaleIn(),
             exit = scaleOut(),
         ) {
@@ -112,6 +124,19 @@ private fun PrescriptionDataSymptomsScreenImpl(
             )
 
             Spacer(modifier = Modifier.weight(1f))
+        }
+
+        AnimatedVisibility(
+            visible = showingAnimations.value,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            SymptomsAndCuriositiesAnimation(
+                hasHypermetropia = hasHypermetropia,
+                hasMyopia = hasMyopia,
+                hasAstigmatism = hasAstigmatism,
+                hasPresbyopia = hasPresbyopia,
+            )
         }
 
         AnimatedVisibility(
@@ -138,7 +163,20 @@ private fun PrescriptionDataSymptomsScreenImpl(
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            if (showingCuriosities.value) {
+            if (showingAnimations.value) {
+                Box(modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target)) {
+                    Button(
+                        modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+                        onClick = {
+                            showingAnimations.value = false
+                            showingCuriosities.value = true
+                        }
+                    ) {
+                        // TODO: use string resource
+                        Text(text = "Mostrar mais detalhes")
+                    }
+                }
+            } else if (showingCuriosities.value) {
                 Box(modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target)) {
                     Button(
                         modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
@@ -154,12 +192,75 @@ private fun PrescriptionDataSymptomsScreenImpl(
                 Box(modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target)) {
                     Button(
                         modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
-                        onClick = { showingCuriosities.value = true },
+                        onClick = { showingAnimations.value = true },
                     ) {
                         Text(text = stringResource(id = R.string.dialog_curiosities_show_me_button))
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SymptomsAndCuriositiesAnimation(
+    modifier: Modifier = Modifier,
+
+    hasHypermetropia: Boolean = true,
+    hasMyopia: Boolean = true,
+    hasAstigmatism: Boolean = true,
+    hasPresbyopia: Boolean = true,
+) {
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+        // TODO: use string resource
+        if (hasMyopia) {
+            SymptomsAndCuriositiesAnimation(
+                title = stringResource(id = R.string.myopia),
+                animationId = R.raw.lottie_prescription_myopia
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
+        }
+
+        if (hasAstigmatism) {
+            SymptomsAndCuriositiesAnimation(
+                title = stringResource(id = R.string.astigmatism),
+                animationId = R.raw.lottie_prescription_astigmatism
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
+        }
+
+        if (hasPresbyopia) {
+            SymptomsAndCuriositiesAnimation(
+                title = stringResource(id = R.string.presbyopia),
+                animationId = R.raw.lottie_prescription_presbyopia
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
+        }
+
+        if (hasHypermetropia) {
+            SymptomsAndCuriositiesAnimation(
+                title = stringResource(id = R.string.hypermetropia),
+                animationId = R.raw.lottie_prescription_hypermetropia
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
         }
     }
 }
@@ -266,6 +367,40 @@ private fun SymptomsAndCuriositiesContent(
         Text(
             text = curiosities,
             style = MaterialTheme.typography.body1.copy(textIndent = TextIndent(18.sp, 18.sp)),
+        )
+    }
+}
+
+@Composable
+private fun SymptomsAndCuriositiesAnimation(
+    modifier: Modifier = Modifier,
+
+    title: String = "",
+    @RawRes animationId: Int = 0,
+) {
+    val composition by rememberLottieComposition(
+        spec = LottieCompositionSpec.RawRes(animationId) 
+    )
+    
+    Column(
+        modifier = modifier.padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = title,
+            style = MaterialTheme.typography.h5
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start)
+        )
+
+        LottieAnimation(
+            modifier = Modifier
+                .height(256.dp)
+                .width(256.dp),
+            composition = composition,
+            iterations = 1,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
         )
     }
 }

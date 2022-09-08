@@ -19,6 +19,7 @@ fun PeyessNextStep(
     modifier: Modifier = Modifier,
     startButton: @Composable () -> Unit = {},
 
+    nextTitle: String = stringResource(id = R.string.go_next_default),
     isLoadingConstraints: Boolean = false,
     canGoNext: Boolean = true,
     onNext: () -> Unit = {},
@@ -44,7 +45,7 @@ fun PeyessNextStep(
                 enabled = canGoNext,
                 onClick = onNext,
             ) {
-                Text(text = stringResource(id = R.string.go_next_default))
+                Text(text = nextTitle)
             }
         }
     }

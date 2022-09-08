@@ -9,6 +9,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.authentication.buildStoreAuthNavGraph
 import com.peyess.salesapp.navigation.authentication_user.buildUserAuthNavGraph
+import com.peyess.salesapp.navigation.demonstration.buildDemonstrationNavGraph
 import com.peyess.salesapp.navigation.home.buildHomeNavGraph
 import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
 import com.peyess.salesapp.navigation.sale.buildSaleNavGraph
@@ -46,5 +47,7 @@ fun SalesAppNavHost(
         )
 
         buildSaleNavGraph(modifier, navHostController, this)
+
+        buildDemonstrationNavGraph(modifier, navHostController, this)
     }
 }

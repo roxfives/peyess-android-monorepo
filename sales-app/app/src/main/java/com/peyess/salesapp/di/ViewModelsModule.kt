@@ -8,6 +8,7 @@ import com.peyess.salesapp.feature.authentication_store.state.AuthenticationView
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.local_password.state.LocalPasswordViewModel
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
+import com.peyess.salesapp.feature.demonstration.state.DemonstrationViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -185,5 +186,12 @@ interface ViewModelsModule {
     @ViewModelKey(SixthStepViewModel::class)
     fun bindSixthStepViewModelFactory(
         factory: SixthStepViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DemonstrationViewModel::class)
+    fun bindDemonstrationViewModelFactory(
+        factory: DemonstrationViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

@@ -78,6 +78,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.annotated_string.pluralResource
+import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -333,16 +334,11 @@ private fun ServiceOrderScreenImpl(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(onClick = onFinishSale) {
-                    // TODO: use string resource
-                    Text(text = "Gerar O.S.")
-                }
-            }
+            // TODO: use string resource
+            PeyessNextStep(
+                nextTitle = "Gerar O.S.",
+                onNext = onFinishSale,
+            )
         }
     }
 }

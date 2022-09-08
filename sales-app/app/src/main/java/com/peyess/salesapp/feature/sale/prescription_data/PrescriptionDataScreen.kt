@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.prescription_data
 
+import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -56,6 +57,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -97,8 +103,10 @@ fun PrescriptionDataScreen(
     val viewModel: PrescriptionDataViewModel = mavericksViewModel()
 
     val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
-    val isMikeLoading by viewModel.collectAsState(PrescriptionDataState::isMikeLoading)
-    val mikeMessageTop by viewModel.collectAsState(PrescriptionDataState::mikeMessageTop)
+//    val isMikeLoading by viewModel.collectAsState(PrescriptionDataState::isMikeLoading)
+//    val mikeMessageTop by viewModel.collectAsState(PrescriptionDataState::mikeMessageTop)
+    val isAnimationLoading by viewModel.collectAsState(PrescriptionDataState::isAnimationLoading)
+    val animationId by viewModel.collectAsState(PrescriptionDataState::animationId)
 
     val sphericalLeft by viewModel.collectAsState(PrescriptionDataState::sphericalLeft)
     val sphericalRight by viewModel.collectAsState(PrescriptionDataState::sphericalRight)
@@ -133,8 +141,8 @@ fun PrescriptionDataScreen(
             onNext = { onNext(isUpdatingParam) },
             onShowSymptoms = onShowSymptoms,
 
-            isMikeLoading = isMikeLoading,
-            mikeMessageTop = mikeMessageTop.invoke() ?: "",
+            isAnimationLoading = isAnimationLoading,
+            animationId = animationId.invoke() ?: R.raw.lottie_lens_far,
 
             hasAddition = hasAddition,
             hasPrism = hasPrism,
@@ -209,8 +217,8 @@ private fun PrescriptionScreenDataImpl(
     onNext: () -> Unit = {},
     onShowSymptoms: () -> Unit = {},
 
-    isMikeLoading: Boolean = false,
-    mikeMessageTop: String = stringResource(id = R.string.mike_message_default),
+    isAnimationLoading: Boolean = false,
+    @RawRes animationId: Int = R.raw.lottie_lens_far,
 
     hasAxisRight: Boolean = false,
     hasAxisLeft: Boolean = false,
@@ -276,20 +284,27 @@ private fun PrescriptionScreenDataImpl(
     prismAxisPositionRight: PrismPosition = PrismPosition.None,
     onPrismAxisRightPicked: (position: PrismPosition) -> Unit = {},
 ) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(animationId)
+    )
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Spacer(modifier = Modifier.height(sectionTitleSpacer))
-        if (isMikeLoading) {
+        if (isAnimationLoading) {
             CircularProgressIndicator()
         } else {
-            MikeBubbleRight(
+            LottieAnimation(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(150.dp),
-                text = mikeMessageTop,
+                    .height(240.dp)
+                    .width(240.dp),
+                composition = composition,
+                iterations = 1,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
             )
         }
         Spacer(modifier = Modifier.height(betweenSectionSpacer))

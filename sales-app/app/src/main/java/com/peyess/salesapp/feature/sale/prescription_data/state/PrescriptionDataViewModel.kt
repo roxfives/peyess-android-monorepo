@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.prescription_data.state
 
+import androidx.annotation.RawRes
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -52,7 +53,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 
     init {
         loadHasAddition()
-        loadMikeMessage()
+        loadAnimation()
         loadInitPrescriptionData()
         loadClientName()
         loadLensTypeCategory()
@@ -91,14 +92,14 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             }
     }
 
-    private fun loadMikeMessage() = withState {
+    private fun loadAnimation() = withState {
         saleRepository.activeSO()
             .filterNotNull()
             .map {
-                mikeMessageFor(it.lensTypeCategoryName)
+                animationFor(it.lensTypeCategoryName)
             }
             .execute(Dispatchers.IO) {
-                copy(mikeMessageTop = it)
+                copy(animationId = it)
             }
     }
 
@@ -109,12 +110,12 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             .execute { copy(clientName = it) }
     }
 
-    private fun mikeMessageFor(categoryName: LensTypeCategoryName?): String {
+    private fun animationFor(categoryName: LensTypeCategoryName?): Int {
         return when (categoryName) {
-            LensTypeCategoryName.Far -> salesApplication.stringResource(R.string.mike_message_far)
-            LensTypeCategoryName.Multi -> salesApplication.stringResource(R.string.mike_message_multi)
-            LensTypeCategoryName.Near -> salesApplication.stringResource(R.string.mike_message_near)
-            null -> salesApplication.stringResource(R.string.mike_message_default)
+            LensTypeCategoryName.Far -> R.raw.lottie_lens_far
+            LensTypeCategoryName.Multi -> R.raw.lottie_lens_multi
+            LensTypeCategoryName.Near -> R.raw.lottie_lens_near
+            null -> R.raw.lottie_lens_far
         }
     }
 

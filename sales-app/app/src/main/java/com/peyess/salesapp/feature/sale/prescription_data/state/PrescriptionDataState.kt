@@ -15,11 +15,12 @@ data class PrescriptionDataState(
     val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
     val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
-    val mikeMessageTop: Async<String> = Uninitialized,
+    val animationId: Async<Int> = Uninitialized,
 ): MavericksState {
     internal val _currentPrescriptionData = currentPrescriptionData.invoke()
     val isLoading = currentPrescriptionData is Success && _currentPrescriptionData == null
-    val isMikeLoading = mikeMessageTop is Loading
+
+    val isAnimationLoading = animationId is Loading
 
     val hasAddition = hasAdditionAsync is Success && hasAdditionAsync.invoke()
     val hasPrism = _currentPrescriptionData?.hasPrism ?: false

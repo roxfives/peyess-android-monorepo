@@ -724,20 +724,6 @@ private fun LensSuggestionList(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        title = if (selectedLensGroup.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_group)
-                        } else {
-                            selectedLensGroup
-                        },
-                        onClick = { groupsDialogState.show() }
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
 
                     FilterButton(
                         modifier = Modifier
@@ -751,15 +737,9 @@ private fun LensSuggestionList(
                         },
                         onClick = { typesDialogState.show() },
                     )
-                }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
                     FilterButton(
                         modifier = Modifier
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
@@ -771,22 +751,6 @@ private fun LensSuggestionList(
                             selectedLensSupplier
                         },
                         onClick = { suppliersDialogState.show() },
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        enabled = isMaterialLensFilterEnabled,
-                        title = if (selectedLensMaterial.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_material)
-                        } else {
-                            selectedLensMaterial
-                        },
-                        onClick = { materialsDialogState.show() },
                     )
                 }
 
@@ -825,6 +789,44 @@ private fun LensSuggestionList(
                             selectedLensDescription
                         },
                         onClick = { descriptionsDialogState.show() },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        enabled = isMaterialLensFilterEnabled,
+                        title = if (selectedLensMaterial.isEmpty()) {
+                            stringResource(id = R.string.lens_suggestion_filter_material)
+                        } else {
+                            selectedLensMaterial
+                        },
+                        onClick = { materialsDialogState.show() },
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+
+                    FilterButton(
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = if (selectedLensGroup.isEmpty()) {
+                            stringResource(id = R.string.lens_suggestion_filter_group)
+                        } else {
+                            selectedLensGroup
+                        },
+                        onClick = { groupsDialogState.show() }
                     )
                 }
             }

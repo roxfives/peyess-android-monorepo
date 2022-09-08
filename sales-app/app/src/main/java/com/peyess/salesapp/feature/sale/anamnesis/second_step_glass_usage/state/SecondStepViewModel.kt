@@ -29,6 +29,8 @@ class SecondStepViewModel @AssistedInject constructor(
         Pair(3, salesApplication.stringResource(R.string.chemicals)),
         Pair(4, salesApplication.stringResource(R.string.agriculture)),
         Pair(5, salesApplication.stringResource(R.string.driving)),
+        // TODO: use string resource
+        Pair(6, "Outro"),
     )
 
     fun onOptionSelected(selected: Int) = setState {

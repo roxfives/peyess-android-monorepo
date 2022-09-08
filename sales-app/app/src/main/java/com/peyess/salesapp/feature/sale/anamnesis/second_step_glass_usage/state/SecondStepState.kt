@@ -26,10 +26,10 @@ data class SecondStepState(
     @PersistState val workSelected: Int? = null,
 ): MavericksState {
     val showWorkList = selected == 1
-    val showMike = (selected != null && selected != 1) || workSelected != null
+    val showMike = (selected != null && selected != 1) || (workSelected != null && workSelected != 6)
 
     @StringRes val mikeMessageId = if (selected == 1) {
-        workMessageMapping.getOrDefault(workSelected ?: 6, R.string.mike_message_default)
+        workMessageMapping.getOrDefault(workSelected ?: 7, R.string.mike_message_default)
     } else {
         mikeMessageMapping.getOrDefault(selected ?: 4, R.string.mike_message_default)
     }

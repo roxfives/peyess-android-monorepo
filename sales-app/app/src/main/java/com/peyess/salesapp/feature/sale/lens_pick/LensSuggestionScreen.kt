@@ -685,7 +685,7 @@ private fun LensSuggestionList(
     selectedLensDescription: String = "",
     descriptionsDialogState: MaterialDialogState = rememberMaterialDialogState(),
 ) {
-    val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Concealed)
+    val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Revealed)
 
     val headerHeight = 60.dp
 

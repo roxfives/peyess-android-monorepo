@@ -10,8 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.LocalSee
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +50,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -290,6 +299,9 @@ private fun LensComparisonCard(
         onPickColoring = onPickColoring,
     )
 
+    val animationDialogState = rememberMaterialDialogState()
+    AnimationDialog(animationDialogState)
+
     Column(
         modifier = modifier.shadow(elevation = 1.dp),
         verticalArrangement = Arrangement.Top,
@@ -322,39 +334,9 @@ private fun LensComparisonCard(
                 text = "${lensComparison.originalLens.supplier} " +
                         "${lensComparison.originalLens.brand} " +
                         "${lensComparison.originalLens.design}",
-                style = MaterialTheme.typography.caption
+                style = MaterialTheme.typography.body1
                     .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             )
-
-//            Spacer(modifier = Modifier.weight(1f))
-//
-//            Text(
-//                modifier = Modifier.weight(2f),
-//                text = lensComparison.originalLens.supplier,
-//                style = MaterialTheme.typography.caption
-//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-//            )
-//
-//            Spacer(modifier = Modifier.weight(1f))
-//
-//            Text(
-//                modifier = Modifier.weight(2f),
-//                text = lensComparison.originalLens.brand,
-//                style = MaterialTheme.typography.caption
-//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-//            )
-//
-//            Spacer(modifier = Modifier.weight(1f))
-//
-//
-//            Text(
-//                modifier = Modifier.weight(2f),
-//                text = lensComparison.originalLens.design,
-//                style = MaterialTheme.typography.caption
-//                    .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-//            )
-//
-//            Spacer(modifier = Modifier.weight(1f))
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -364,15 +346,31 @@ private fun LensComparisonCard(
         )
         Spacer(modifier = Modifier.height(12.dp))
 
-        AnimatedVisibility(
-            visible = individualComparison.finalPriceDifference != 0.0,
-            enter = scaleIn(),
-            exit = scaleOut(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(individualComparison.animationId)
+            )
+
+            LottieAnimation(
+                modifier = Modifier
+                    .height(64.dp)
+                    .width(SalesAppTheme.dimensions.minimum_touch_target)
+                    .clickable { animationDialogState.show() },
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            AnimatedVisibility(
+                visible = individualComparison.finalPriceDifference != 0.0,
+                enter = scaleIn(),
+                exit = scaleOut(),
             ) {
                 PriceDifference(
                     isPriceBad = individualComparison.isPriceBad,
@@ -382,6 +380,7 @@ private fun LensComparisonCard(
         }
 
         Spacer(modifier = Modifier.height(12.dp))
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -444,10 +443,7 @@ private fun LensComparisonCard(
                             minimumHeightState,
                             density,
                         )
-                        .minimumWidthModifier(
-                            minimumWidthState,
-                            density
-                        ),
+                        .minimumWidthModifier(minimumWidthState, density),
                     name = treatmentName,
                     dialogState = treatmentDialogState,
                 )
@@ -460,10 +456,7 @@ private fun LensComparisonCard(
                             minimumHeightState,
                             density,
                         )
-                        .minimumWidthModifier(
-                            minimumWidthState,
-                            density
-                        ),
+                        .minimumWidthModifier(minimumWidthState, density),
                     name = coloringName,
                     dialogState = coloringDialogState,
                 )
@@ -738,5 +731,35 @@ private fun PickColoringDialog(
 
             dialogState.hide()
         }
+    }
+}
+
+@Composable
+private fun AnimationDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+) {
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            // TODO: Use string resource
+            positiveButton("Ok")
+        },
+    ) {
+        title(
+            text = "Pontos de espessura da lente",
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold),
+        )
+
+        val composition by rememberLottieComposition(
+             LottieCompositionSpec.RawRes(R.raw.lottie_comparison_thickness)
+        )
+
+        LottieAnimation(
+            modifier = Modifier.fillMaxSize(),
+            composition = composition,
+            iterations = 1,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
     }
 }

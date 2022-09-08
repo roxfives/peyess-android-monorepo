@@ -27,8 +27,8 @@ fun buildDemonstrationNavGraph(
 
         DemonstrationScreen(
             modifier = modifier
-                .padding(SalesAppTheme.dimensions.grid_2)
-                .verticalScroll(scrollState),
+                .verticalScroll(scrollState)
+                .padding(SalesAppTheme.dimensions.grid_2),
             onDone = {
                 navHostController.popBackStack()
             }

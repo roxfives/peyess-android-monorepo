@@ -3,9 +3,9 @@ package com.peyess.salesapp.feature.sale.frames
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -123,8 +123,8 @@ private fun FramesLandingScreenImpl(
             message = idealCurvatureMessage,
             animationId = idealCurvatureAnimationId,
         )
-        Spacer(modifier = Modifier.height(32.dp))
 
+        Spacer(modifier = Modifier.height(32.dp))
         Divider(
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
@@ -136,6 +136,61 @@ private fun FramesLandingScreenImpl(
             onMeasureRight = {onAddMeasure(Eye.Right)},
         )
 
+        val materialDialogState = rememberMaterialDialogState()
+        MaterialDialog(
+            dialogState = materialDialogState,
+            buttons = {
+                positiveButton("OK")
+            }
+        ) {
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.lottie_coming_soon)
+            )
+
+            LottieAnimation(
+                modifier = Modifier
+                    .fillMaxSize(),
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+        Divider(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { materialDialogState.show() },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val composition by rememberLottieComposition(
+                spec = LottieCompositionSpec.RawRes(R.raw.lottie_frames_landing_pantoscopic)
+            )
+            
+            // TODO: Use string resource
+            Text(text = "Ângulo Pantoscópico")
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LottieAnimation(
+                modifier = Modifier
+                    .height(240.dp)
+                    .width(240.dp),
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(32.dp))
         Spacer(modifier = Modifier.weight(1f))
         PeyessNextStep(
             onNext = onNext

@@ -361,7 +361,7 @@ private fun LensComparisonCard(
                     .width(SalesAppTheme.dimensions.minimum_touch_target)
                     .clickable { animationDialogState.show() },
                 composition = composition,
-                iterations = LottieConstants.IterateForever,
+                iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
             )
 

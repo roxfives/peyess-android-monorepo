@@ -111,10 +111,10 @@ private fun MultiList(modifier: Modifier = Modifier) {
         LottieCompositionSpec.RawRes(R.raw.lottie_demonstration_multi_category_1)
     )
     val compositionCategory2 by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.lottie_demonstration_multi_category_2)
+        LottieCompositionSpec.RawRes(R.raw.lottie_demonstration_multi_category_3)
     )
     val compositionCategory3 by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.lottie_demonstration_multi_category_3)
+        LottieCompositionSpec.RawRes(R.raw.lottie_demonstration_multi_category_2)
     )
 
     // TODO: use string resource
@@ -185,7 +185,7 @@ private fun MultiList(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            text = "Tradicinal",
+            text = "Tradicional",
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold),

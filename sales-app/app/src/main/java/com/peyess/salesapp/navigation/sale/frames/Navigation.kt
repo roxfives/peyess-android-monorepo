@@ -2,6 +2,8 @@ package com.peyess.salesapp.navigation.sale.frames
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -25,8 +27,11 @@ fun buildFramesNavGraph(
         enterTransition = framesEnterTransition(),
         exitTransition = framesExitTransition()
     ) {
+        val scrollState = rememberScrollState()
+
         FramesLandingScreen(
             modifier = modifier
+                .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset),
             onAddFrames = { navHostController.navigate(SalesAppScreens.SetFramesData.name) },
             onAddMeasure = {

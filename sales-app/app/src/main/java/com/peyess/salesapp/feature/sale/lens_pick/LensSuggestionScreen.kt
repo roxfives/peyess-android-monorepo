@@ -788,7 +788,10 @@ private fun LensSuggestionList(
                         } else {
                             selectedLensDescription
                         },
-                        onClick = { descriptionsDialogState.show() },
+                        onClick = {
+                            Timber.i("Showing description dialog")
+                            descriptionsDialogState.show()
+                        },
                     )
                 }
 

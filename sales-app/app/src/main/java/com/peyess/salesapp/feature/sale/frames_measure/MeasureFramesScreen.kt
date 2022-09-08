@@ -3,6 +3,7 @@ package com.peyess.salesapp.feature.sale.frames_measure
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
@@ -25,6 +26,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -106,50 +108,89 @@ fun MeasureFramesScreen(
     val zoomHelperState by viewModel.collectAsState(FramesMeasureState::zoomHelperState)
     val isInvalidCheckMiddle by viewModel.collectAsState(FramesMeasureState::isCheckMiddleInvalid)
 
+    val isMeasuringDone by viewModel.collectAsState(FramesMeasureState::isMeasuringDone)
+
     Timber.i("Uri available is $imagePicture")
-    MeasureFramesScreenImpl(
-        modifier = modifier,
+    if (isMeasuringDone) {
+        MeasuringDone(
+            onTimeout = onDone
+        )
+    } else {
+        MeasureFramesScreenImpl(
+            modifier = modifier,
 
-        eye = eye.value,
-        imageUri = imagePicture,
+            eye = eye.value,
+            imageUri = imagePicture,
 
-        measuringParameters = measuringParameter,
-        animationState = animationState,
+            measuringParameters = measuringParameter,
+            animationState = animationState,
 
-        onBackFromCheckMiddle = viewModel::onBackFromCheckMiddle,
-        isCheckMiddleInvalid = isInvalidCheckMiddle,
+            onBackFromCheckMiddle = viewModel::onBackFromCheckMiddle,
+            isCheckMiddleInvalid = isInvalidCheckMiddle,
 
-        onStart = viewModel::onNextState,
-        onNext = viewModel::onNextState,
-        onPrevious = viewModel::onPreviousState,
-        onConfirm = {
-            viewModel.onFinishMeasure()
-            onDone()
-        },
-        onCancel = {
-            viewModel.onCancelMeasure()
-            // TODO: move to navigation function
-            navHostController.navigate(
-                "${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParameter"
-            ) {
-                popUpTo("${SalesAppScreens.FramesMeasure.name}/{eye}") {
-                    inclusive = true
+            onStart = viewModel::onNextState,
+            onNext = viewModel::onNextState,
+            onPrevious = viewModel::onPreviousState,
+            onConfirm = {
+                viewModel.onFinishMeasure()
+            },
+            onCancel = {
+                viewModel.onCancelMeasure()
+                // TODO: move to navigation function
+                navHostController.navigate(
+                    "${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParameter"
+                ) {
+                    popUpTo("${SalesAppScreens.FramesMeasure.name}/{eye}") {
+                        inclusive = true
+                    }
                 }
-            }
-        },
+            },
 
-        onMoveUp = viewModel::onMoveUp,
-        onMoveDown = viewModel::onMoveDown,
-        onMoveLeft = viewModel::onMoveLeft,
-        onMoveRight = viewModel::onMoveRight,
-        onRotateLeft = viewModel::onRotateLeft,
-        onRotateRight = viewModel::onRotateRight,
-        onExpand = viewModel::onExpand,
-        onShrink = viewModel::onShrink,
+            onMoveUp = viewModel::onMoveUp,
+            onMoveDown = viewModel::onMoveDown,
+            onMoveLeft = viewModel::onMoveLeft,
+            onMoveRight = viewModel::onMoveRight,
+            onRotateLeft = viewModel::onRotateLeft,
+            onRotateRight = viewModel::onRotateRight,
+            onExpand = viewModel::onExpand,
+            onShrink = viewModel::onShrink,
 
-        helperZoomState = zoomHelperState,
-        onHelperClick = viewModel::onMeasuringHelperClicked,
+            helperZoomState = zoomHelperState,
+            onHelperClick = viewModel::onMeasuringHelperClicked,
+        )
+    }
+}
+
+@Composable
+fun MeasuringDone(modifier: Modifier = Modifier, onTimeout: () -> Unit = {}) {
+    val animationStart = remember { mutableStateOf(false) }
+    val progress by animateFloatAsState(
+        targetValue = if (!animationStart.value) 0f else 1f,
+        animationSpec = tween(2000)
+    ) {
+        onTimeout()
+    }
+
+    LaunchedEffect(true) {
+        animationStart.value = true
+    }
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_measuring_complete)
     )
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colors.background,
+    ) {
+        LottieAnimation(
+            modifier = modifier
+                .padding(164.dp)
+                .fillMaxSize(),
+            composition = composition,
+            progress = { progress },
+        )
+    }
 }
 
 @Composable
@@ -456,10 +497,8 @@ private fun MeasureFramesScreenImpl(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
                             .size(width = 60.dp, height = 60.dp)
-                            .holdable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { onMoveRight() }
-                            ),
+                            .holdable(interactionSource = remember { MutableInteractionSource() },
+                                onClick = { onMoveRight() }),
                         shape = CircleShape,
                         onClick = {},
                     ) {
@@ -483,10 +522,8 @@ private fun MeasureFramesScreenImpl(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
                             .size(width = 60.dp, height = 60.dp)
-                            .holdable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { onMoveUp() }
-                            ),
+                            .holdable(interactionSource = remember { MutableInteractionSource() },
+                                onClick = { onMoveUp() }),
                         shape = CircleShape,
                         onClick = {},
                     ) {

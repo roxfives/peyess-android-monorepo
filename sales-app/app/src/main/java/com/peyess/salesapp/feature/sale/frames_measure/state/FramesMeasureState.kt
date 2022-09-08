@@ -106,7 +106,10 @@ data class FramesMeasureState(
 
     val currentSpeed: Double = slow,
     val firstTouch: Long = 0L,
-    ): MavericksState {
+
+    val isMeasuringDone: Boolean = false,
+): MavericksState {
+
     private val tiltFreeThresholdLeftEye = 0.0 // tilt left
     private val tiltBlockedThresholdLeftEye = -7.0 // -tilt right
 

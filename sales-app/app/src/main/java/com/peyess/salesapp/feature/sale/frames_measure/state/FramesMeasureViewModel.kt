@@ -330,6 +330,8 @@ class FramesMeasureViewModel @AssistedInject constructor(
 
             isCheckMiddleInvalid = false,
             measuringParameters = parameters,
+
+            isMeasuringDone = true,
         )
     }
 

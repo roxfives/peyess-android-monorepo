@@ -166,7 +166,7 @@ private fun MultiList(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            text = "Promocional",
+            text = "Tradicinal",
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.subtitle1
                 .copy(fontWeight = FontWeight.Bold),

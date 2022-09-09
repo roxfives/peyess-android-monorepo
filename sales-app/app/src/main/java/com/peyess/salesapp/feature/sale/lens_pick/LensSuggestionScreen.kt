@@ -621,10 +621,10 @@ private fun PickDescriptionDialog(
     descriptions: Async<List<LensDescription>> = Uninitialized,
     onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
 ) {
-    val familiesList: List<LensDescription>
+    val descriptionsList: List<LensDescription>
 
     if (descriptions is Success) {
-        familiesList = descriptions.invoke()
+        descriptionsList = descriptions.invoke()
 
         MaterialDialog(
             dialogState = dialogState,
@@ -633,7 +633,7 @@ private fun PickDescriptionDialog(
             },
         ) {
             val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
-            val options = noneOption + familiesList.map { it.name }
+            val options = noneOption + descriptionsList.map { it.name }
 
             // TODO: use string resource
             title("Selecione a descrição")
@@ -644,7 +644,7 @@ private fun PickDescriptionDialog(
                 if (item == noneOption[0]) {
                     onPickDescription("", "")
                 } else {
-                    onPickDescription(familiesList[index - 1].id, familiesList[index - 1].name)
+                    onPickDescription(descriptionsList[index - 1].id, descriptionsList[index - 1].name)
                 }
 
                 dialogState.hide()
@@ -652,6 +652,7 @@ private fun PickDescriptionDialog(
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

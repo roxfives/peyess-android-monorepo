@@ -632,7 +632,11 @@ private fun PrescriptionSection(
                 )
             }
 
-            Row(modifier = Modifier.weight(2f)) {
+            Row(
+                modifier = Modifier.weight(2f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,

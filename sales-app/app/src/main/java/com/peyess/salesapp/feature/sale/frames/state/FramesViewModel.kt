@@ -34,6 +34,7 @@ class FramesViewModel @AssistedInject constructor(
     init {
         loadCurrentFramesData()
         loadPrescriptionData()
+        loadPositioningData()
         loadMikeMessages()
 
         onEach(
@@ -141,6 +142,20 @@ class FramesViewModel @AssistedInject constructor(
             .currentPrescriptionData()
             .execute(Dispatchers.IO) {
                 copy(currentPrescriptionData = it)
+            }
+    }
+
+    private fun loadPositioningData() = withState {
+        saleRepository
+            .currentPositioning(Eye.Left)
+            .execute(Dispatchers.IO) {
+                copy(positioningDataLeft = it)
+            }
+
+        saleRepository
+            .currentPositioning(Eye.Right)
+            .execute(Dispatchers.IO) {
+                copy(positioningDataRight = it)
             }
     }
 

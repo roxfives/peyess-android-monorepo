@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.sale.frames
 
+import android.net.Uri
+import androidx.annotation.RawRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -21,9 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +32,7 @@ import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -45,6 +45,8 @@ import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+
+private val measureButtonHeight = 240.dp
 
 @Composable
 fun FramesLandingScreen(
@@ -64,6 +66,9 @@ fun FramesLandingScreen(
     val frames by viewModel.collectAsState(FramesState::_currentFramesData)
     val hasSetFrames by viewModel.collectAsState(FramesState::hasSetFrames)
 
+    val pictureUriLeftEye by viewModel.collectAsState(FramesState::pictureUriLeftEye)
+    val pictureUriRightEye by viewModel.collectAsState(FramesState::pictureUriRightEye)
+
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -81,6 +86,9 @@ fun FramesLandingScreen(
         onAddPantocospic = onAddPantoscopic,
 
         mikeMessage = landingMikeMessage,
+
+        pictureUriLeftEye = pictureUriLeftEye,
+        pictureUriRightEye = pictureUriRightEye,
 
         onNext = onNext,
     )
@@ -100,6 +108,9 @@ private fun FramesLandingScreenImpl(
     onAddPantocospic: (eye: Eye) -> Unit = {},
 
     mikeMessage: String = "",
+
+    pictureUriLeftEye: Uri = Uri.EMPTY,
+    pictureUriRightEye: Uri = Uri.EMPTY,
 
     onNext: () -> Unit = {},
 ) {
@@ -146,6 +157,9 @@ private fun FramesLandingScreenImpl(
         Spacer(modifier = Modifier.height(32.dp))
 
         FramesMeasure(
+            hasMeasuredLeft = pictureUriLeftEye != Uri.EMPTY,
+            hasMeasuredRight = pictureUriRightEye != Uri.EMPTY,
+
             onMeasureLeft = {onAddMeasure(Eye.Left)},
             onMeasureRight = {onAddMeasure(Eye.Right)},
         )
@@ -323,6 +337,10 @@ private fun FramesRecommendation(
 @Composable
 private fun FramesMeasure(
     modifier: Modifier = Modifier,
+
+    hasMeasuredLeft: Boolean = false,
+    hasMeasuredRight: Boolean = false,
+
     onMeasureLeft: () -> Unit = {},
     onMeasureRight: () -> Unit = {},
 ) {
@@ -333,18 +351,26 @@ private fun FramesMeasure(
     ) {
         FramesMeasureButton(
             modifier = Modifier
+                .height(measureButtonHeight)
                 .weight(1f)
                 .clickable { onMeasureRight() },
+
+            hasMeasured = hasMeasuredRight,
+
             title = stringResource(id = R.string.measure_right_eye),
-            iconId = R.drawable.ic_measure_right_eye,
+            animationId = R.raw.lottie_frames_landing_right_eye,
         )
 
         FramesMeasureButton(
             modifier = Modifier
+                .height(measureButtonHeight)
                 .weight(1f)
                 .clickable { onMeasureLeft() },
+
+            hasMeasured = hasMeasuredLeft,
+
             title = stringResource(id = R.string.measure_left_eye),
-            iconId = R.drawable.ic_measure_left_eye,
+            animationId = R.raw.lottie_frames_landing_left_eye,
         )
     }
 }
@@ -353,22 +379,35 @@ private fun FramesMeasure(
 private fun FramesMeasureButton(
     modifier: Modifier = Modifier,
     title: String = "",
-    iconId: Int = 0,
+    hasMeasured: Boolean = false,
+    @RawRes animationId: Int = 0,
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
+        val composition by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(animationId)
+        )
+
         Text(text = title)
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Icon(
-            painter = painterResource(id = iconId),
-            contentDescription = title,
-            tint = MaterialTheme.colors.primary,
+        LottieAnimation(
+//            modifier = Modifier
+//                .height(animationHeight)
+//                .width(animationWidth),
+            composition = composition,
+            iterations = if (hasMeasured) 1 else LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
         )
+//        Icon(
+//            painter = painterResource(id = animationId),
+//            contentDescription = title,
+//            tint = MaterialTheme.colors.primary,
+//        )
     }
 }
 

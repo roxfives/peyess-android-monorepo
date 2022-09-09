@@ -1,10 +1,13 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
+import android.net.Uri
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.PersistState
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 
 sealed class Eye {
@@ -35,6 +38,9 @@ data class FramesState(
     val currentPrescriptionData: Async<PrescriptionDataEntity> = Uninitialized,
     val currentFramesData: Async<FramesEntity> = Uninitialized,
 
+    val positioningDataLeft: Async<PositioningEntity> = Uninitialized,
+    val positioningDataRight: Async<PositioningEntity> = Uninitialized,
+
     val idealBaseMessage: Async<String> = Uninitialized,
     val idealBaseAnimationResource: Async<Int> = Uninitialized,
 
@@ -52,4 +58,15 @@ data class FramesState(
     val value = _currentFramesData?.value ?: 0.0
     val tagCode = _currentFramesData?.tagCode ?: ""
     val framesType = _currentFramesData?.type
+
+    val pictureUriLeftEye = if (positioningDataLeft is Success) {
+        positioningDataLeft.invoke().picture
+    } else {
+        Uri.EMPTY
+    }
+    val pictureUriRightEye = if (positioningDataRight is Success) {
+        positioningDataRight.invoke().picture
+    } else {
+        Uri.EMPTY
+    }
 }

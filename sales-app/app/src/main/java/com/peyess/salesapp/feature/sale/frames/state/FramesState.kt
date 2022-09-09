@@ -42,6 +42,7 @@ data class FramesState(
     val mikeMessage: String = "",
 
     val landingMikeMessage: String = "",
+    val hasSetFrames: Boolean = false
 ): MavericksState {
     val _currentFramesData: FramesEntity? = currentFramesData.invoke()
 

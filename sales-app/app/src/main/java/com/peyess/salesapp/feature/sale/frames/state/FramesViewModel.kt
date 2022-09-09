@@ -208,6 +208,8 @@ class FramesViewModel @AssistedInject constructor(
     fun onFramesNewChanged(areNew: Boolean) = withState {
         if (it._currentFramesData != null) {
             saleRepository.updateFramesData(it._currentFramesData.copy(areFramesNew = areNew))
+
+            setState { copy(hasSetFrames = true) }
         }
     }
 

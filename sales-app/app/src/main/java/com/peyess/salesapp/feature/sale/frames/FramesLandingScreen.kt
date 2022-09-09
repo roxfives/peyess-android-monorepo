@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.sale.frames
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
@@ -32,6 +36,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames.state.FramesState
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
@@ -56,6 +61,9 @@ fun FramesLandingScreen(
 
     val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)
 
+    val frames by viewModel.collectAsState(FramesState::_currentFramesData)
+    val hasSetFrames by viewModel.collectAsState(FramesState::hasSetFrames)
+
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -63,6 +71,8 @@ fun FramesLandingScreen(
         idealCurvatureAnimationId = idealCurvatureAnimationId.invoke()
             ?: R.raw.lottie_frames_curvature_4,
 
+        hasSetFrames = hasSetFrames,
+        frames = frames,
         onAddFrames = {
             viewModel.onFramesNewChanged(it)
             onAddFrames()
@@ -83,6 +93,8 @@ private fun FramesLandingScreenImpl(
     idealCurvatureMessage: String = "",
     idealCurvatureAnimationId: Int = R.raw.lottie_frames_curvature_4,
 
+    hasSetFrames: Boolean = false,
+    frames: FramesEntity? = null,
     onAddFrames: (isNew: Boolean) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
     onAddPantocospic: (eye: Eye) -> Unit = {},
@@ -109,6 +121,8 @@ private fun FramesLandingScreenImpl(
 
     Column(modifier = modifier) {
         FramesInput(
+            hasSetFrames = hasSetFrames,
+            currentFrames = frames,
             onSetOwnFrames = {onAddFrames(false)},
             onSetNewFrames = {onAddFrames(true)},
         )
@@ -202,6 +216,8 @@ private fun FramesLandingScreenImpl(
 @Composable
 private fun FramesInput(
     modifier: Modifier = Modifier,
+    hasSetFrames: Boolean = false,
+    currentFrames: FramesEntity? = null,
     onSetOwnFrames: () -> Unit = {},
     onSetNewFrames: () -> Unit = {},
 ) {
@@ -212,27 +228,57 @@ private fun FramesInput(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
+        var newFramesButtonModifier = Modifier
+            .height(SalesAppTheme.dimensions.minimum_touch_target)
+            .weight(1f)
+        if (hasSetFrames && currentFrames?.areFramesNew == true) {
+            newFramesButtonModifier = newFramesButtonModifier
+                .border(
+                    border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary)
+                )
+        }
+
+        var newFramesButtonTextStyle = MaterialTheme.typography.body1
+        if (hasSetFrames && currentFrames?.areFramesNew == true) {
+            newFramesButtonTextStyle = newFramesButtonTextStyle
+                .copy(textDecoration = TextDecoration.Underline)
+        }
+
+        var ownFramesButtonModifier = Modifier
+            .height(SalesAppTheme.dimensions.minimum_touch_target)
+            .weight(1f)
+        if (hasSetFrames && currentFrames?.areFramesNew == false) {
+            ownFramesButtonModifier = ownFramesButtonModifier
+                .border(
+                    border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary)
+                )
+        }
+
+        var ownFramesButtonTextStyle = MaterialTheme.typography.body1
+        if (hasSetFrames && currentFrames?.areFramesNew == false) {
+            ownFramesButtonTextStyle = ownFramesButtonTextStyle
+                .copy(textDecoration = TextDecoration.Underline)
+        }
+
         OutlinedButton(
-            modifier = Modifier
-                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                .weight(1f),
+            modifier = ownFramesButtonModifier,
             onClick = { onSetOwnFrames() },
         ) {
             Text(
-                text = stringResource(id = R.string.own_frames)
+                text = stringResource(id = R.string.own_frames),
+                style = ownFramesButtonTextStyle,
             )
         }
 
         Spacer(modifier = Modifier.width(8.dp))
 
         OutlinedButton(
-            modifier = Modifier
-                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                .weight(1f),
+            modifier = newFramesButtonModifier,
             onClick = { onSetNewFrames() },
         ) {
             Text(
                 text = stringResource(id = R.string.new_frames),
+                style = newFramesButtonTextStyle,
             )
         }
     }

@@ -16,9 +16,11 @@ data class PrescriptionDataState(
     val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
     val animationId: Async<Int> = Uninitialized,
+    val generalMessage: Async<String> = Uninitialized,
 ): MavericksState {
     internal val _currentPrescriptionData = currentPrescriptionData.invoke()
     val isLoading = currentPrescriptionData is Success && _currentPrescriptionData == null
+    val isMessageLoading = generalMessage is Loading
 
     val isAnimationLoading = animationId is Loading
 

@@ -54,6 +54,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     init {
         loadHasAddition()
         loadAnimation()
+        loadMessage()
         loadInitPrescriptionData()
         loadClientName()
         loadLensTypeCategory()
@@ -70,6 +71,26 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 
         onEach {
             mikeMessageAmetropie()
+        }
+    }
+
+    private fun loadMessage() = withState {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .map {
+                messageFor(it.lensTypeCategoryName)
+            }
+            .execute(Dispatchers.IO) {
+                copy(generalMessage = it)
+            }
+    }
+
+    private fun messageFor(categoryName: LensTypeCategoryName?): String {
+        return when (categoryName) {
+            LensTypeCategoryName.Far -> salesApplication.stringResource(R.string.mike_message_far)
+            LensTypeCategoryName.Multi -> salesApplication.stringResource(R.string.mike_message_multi)
+            LensTypeCategoryName.Near -> salesApplication.stringResource(R.string.mike_message_near)
+            null -> salesApplication.stringResource(R.string.mike_message_default)
         }
     }
 

@@ -103,8 +103,8 @@ fun PrescriptionDataScreen(
     val viewModel: PrescriptionDataViewModel = mavericksViewModel()
 
     val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
-//    val isMikeLoading by viewModel.collectAsState(PrescriptionDataState::isMikeLoading)
-//    val mikeMessageTop by viewModel.collectAsState(PrescriptionDataState::mikeMessageTop)
+    val isMessageLoading by viewModel.collectAsState(PrescriptionDataState::isMessageLoading)
+    val generalMessage by viewModel.collectAsState(PrescriptionDataState::generalMessage)
     val isAnimationLoading by viewModel.collectAsState(PrescriptionDataState::isAnimationLoading)
     val animationId by viewModel.collectAsState(PrescriptionDataState::animationId)
 
@@ -140,6 +140,9 @@ fun PrescriptionDataScreen(
             modifier = modifier,
             onNext = { onNext(isUpdatingParam) },
             onShowSymptoms = onShowSymptoms,
+
+            isMessageLoading = isMessageLoading,
+            generalMessage = generalMessage.invoke() ?: "",
 
             isAnimationLoading = isAnimationLoading,
             animationId = animationId.invoke() ?: R.raw.lottie_lens_far,
@@ -216,6 +219,9 @@ private fun PrescriptionScreenDataImpl(
     modifier: Modifier = Modifier,
     onNext: () -> Unit = {},
     onShowSymptoms: () -> Unit = {},
+
+    isMessageLoading: Boolean = false,
+    generalMessage: String = stringResource(id = R.string.empty_string),
 
     isAnimationLoading: Boolean = false,
     @RawRes animationId: Int = R.raw.lottie_lens_far,
@@ -295,7 +301,7 @@ private fun PrescriptionScreenDataImpl(
     ) {
 
         Spacer(modifier = Modifier.height(sectionTitleSpacer))
-        if (isAnimationLoading) {
+        if (isAnimationLoading || isMessageLoading) {
             CircularProgressIndicator()
         } else {
             LottieAnimation(
@@ -305,6 +311,12 @@ private fun PrescriptionScreenDataImpl(
                 composition = composition,
                 iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+
+            Text(
+                text = generalMessage,
+                style = MaterialTheme.typography.body1
+                    .copy(fontWeight = FontWeight.Bold)
             )
         }
         Spacer(modifier = Modifier.height(betweenSectionSpacer))

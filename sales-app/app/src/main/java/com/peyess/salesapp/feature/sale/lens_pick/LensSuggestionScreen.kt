@@ -98,6 +98,8 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 
+private val frontLayerheight = 360.dp
+
 @Composable
 fun LensSuggestionScreen(
     modifier: Modifier = Modifier,
@@ -915,9 +917,17 @@ private fun LensSuggestionList(
 
                             loadState.refresh is LoadState.Loading -> {
                                 item {
-                                    PeyessProgressIndicatorInfinite(
-                                        modifier = Modifier.fillParentMaxSize()
-                                    )
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Top
+                                    ) {
+                                        PeyessProgressIndicatorInfinite(
+                                            modifier = Modifier
+                                                .padding(vertical = 16.dp)
+                                                .height(frontLayerheight)
+                                        )
+                                    }
                                 }
                             }
 
@@ -953,7 +963,7 @@ private fun LensSuggestionList(
             }
         },
         peekHeight = 40.dp,
-        headerHeight = 360.dp,
+        headerHeight = frontLayerheight,
         gesturesEnabled = true,
     )
 }

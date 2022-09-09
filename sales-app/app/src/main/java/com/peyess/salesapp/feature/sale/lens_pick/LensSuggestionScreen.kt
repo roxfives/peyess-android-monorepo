@@ -1387,36 +1387,41 @@ private fun LensSuggestionCard(
 
                 Text(
                     text = lens.supplier,
-                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     text = lens.observation,
-                    style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center),
+                    style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
                 )
 
                 if (lens.explanations.size > 0) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         text = lens.explanations[0],
-                        style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center),
+                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
                     )
                 }
 
                 if (lens.explanations.size > 1) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         text = lens.explanations[1],
-                        style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center),
+                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
                     )
                 }
 
                 if (lens.explanations.size > 2) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
+                        modifier = Modifier.padding(horizontal = 4.dp),
                         text = lens.explanations[2],
-                        style = MaterialTheme.typography.caption.copy(textAlign = TextAlign.Center),
+                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
                     )
                 }
 

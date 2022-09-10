@@ -98,7 +98,6 @@ fun GraphsScreen(
     )
 }
 
-@OptIn(ExperimentalGraphicsApi::class)
 @Composable
 private fun GraphsScreenImpl(
     modifier: Modifier = Modifier,
@@ -650,8 +649,11 @@ fun BarChartView(
             barChart.isHighlightPerDragEnabled = false
             barChart.isHighlightPerTapEnabled = false
 
+            val exposure = 100f * totalUsage
+            val nonExposed = 100f * (1f - totalUsage)
+
             val entries = mutableListOf(
-                BarEntry(0f, floatArrayOf(100f * totalUsage, 100f * (1f - totalUsage)))
+                BarEntry(0f, floatArrayOf(exposure, nonExposed))
             )
 
             val dataSet = BarDataSet(entries, "")
@@ -665,7 +667,13 @@ fun BarChartView(
             barData.setValueFormatter(object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
                     val df = DecimalFormat("##.##")
-                    return df.format(value.toDouble()) + "%"
+                    val identifier = if (value.toFloat() == exposure) {
+                        "de exposição"
+                    } else {
+                        "sem exposição"
+                    }
+
+                    return df.format(value.toDouble()) + "% $identifier"
                 }
             })
 

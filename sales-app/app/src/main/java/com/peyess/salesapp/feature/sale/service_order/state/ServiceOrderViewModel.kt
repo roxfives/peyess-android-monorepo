@@ -238,16 +238,19 @@ class ServiceOrderViewModel @AssistedInject constructor(
             .enqueue(uploadWorkRequest)
     }
 
-    fun generateSale() {
-        viewModelScope
-            .launch(Dispatchers.IO) {
-                saleRepository
-                    .activeSO()
-                    .filterNotNull()
-                    .take(1)
-                    .collect {
-                        createSOWorker(it.id, it.saleId)
-                    }
+    fun generateSale() = withState {
+        saleRepository
+            .activeSO()
+            .filterNotNull()
+            .take(1)
+            .execute(Dispatchers.IO) {
+                if (it is Success) {
+                    createSOWorker(it.invoke().id, it.invoke().saleId)
+
+                    copy(isSaleDone = true)
+                } else {
+                    copy(isSaleDone = false)
+                }
             }
     }
 

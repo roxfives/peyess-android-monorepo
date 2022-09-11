@@ -2,6 +2,8 @@ package com.peyess.salesapp.feature.sale.service_order
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.border
@@ -36,7 +38,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -163,59 +167,94 @@ fun ServiceOrderScreen(
     val totalPaid by viewModel.collectAsState(ServiceOrderState::totalPaid)
     val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
 
-    ServiceOrderScreenImpl(
-        modifier = modifier,
+    val isSaleDone by viewModel.collectAsState(ServiceOrderState::isSaleDone)
 
-        onFinishSale = {
-            viewModel.generateSale()
-            onFinishSale()
-        },
+    if (isSaleDone) {
+        SaleDone(modifier = Modifier.fillMaxSize(), onTimeout = onFinishSale)
+    } else {
+        ServiceOrderScreenImpl(
+            modifier = modifier,
 
-        onChangeResponsible = onChangeResponsible,
-        onChangeUser = onChangeUser,
-        onChangeWitness = onChangeWitness,
+            onFinishSale = viewModel::generateSale,
 
-        areUsersLoading = userIsLoading || responsibleIsLoading || witnessIsLoading,
-        user = user,
-        responsible = responsible,
-        witness = witness,
+            onChangeResponsible = onChangeResponsible,
+            onChangeUser = onChangeUser,
+            onChangeWitness = onChangeWitness,
 
-        isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
-        prescriptionData = prescriptionData,
-        prescriptionPicture = prescriptionPicture,
-        onEditPrescription = onEditPrescription,
+            areUsersLoading = userIsLoading || responsibleIsLoading || witnessIsLoading,
+            user = user,
+            responsible = responsible,
+            witness = witness,
 
-        isProductLoading = isLensLoading
-                || isColoringLoading
-                || isTreatmentLoading
-                || isFramesLoading,
-        lensEntity = lensEntity,
-        coloringEntity = coloringEntity,
-        treatmentEntity = treatmentEntity,
-        framesEntity = framesEntity,
-        onEditProducts = {
-            viewModel.onEditProducts()
-            onEditProducts()
-        },
+            isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
+            prescriptionData = prescriptionData,
+            prescriptionPicture = prescriptionPicture,
+            onEditPrescription = onEditPrescription,
 
-        isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
-        measureLeft = measureLeft,
-        measureRight = measureRight,
+            isProductLoading = isLensLoading
+                    || isColoringLoading
+                    || isTreatmentLoading
+                    || isFramesLoading,
+            lensEntity = lensEntity,
+            coloringEntity = coloringEntity,
+            treatmentEntity = treatmentEntity,
+            framesEntity = framesEntity,
+            onEditProducts = {
+                viewModel.onEditProducts()
+                onEditProducts()
+            },
 
-        canAddNewPayment = canAddNewPayment,
-        isTotalPaidLoading = isTotalPaidLoading,
-        totalPaid = totalPaid,
-        totalToPay = totalToPay,
-        isPaymentLoading = isPaymentsLoading,
-        payments = payments,
-        onAddPayment = {
-            viewModel.createPayment {
-                onAddPayment(it)
-            }
-        },
-        onDeletePayment = viewModel::deletePayment,
-        onEditPayment = { onEditPayment(it.id, it.clientId) },
+            isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
+            measureLeft = measureLeft,
+            measureRight = measureRight,
+
+            canAddNewPayment = canAddNewPayment,
+            isTotalPaidLoading = isTotalPaidLoading,
+            totalPaid = totalPaid,
+            totalToPay = totalToPay,
+            isPaymentLoading = isPaymentsLoading,
+            payments = payments,
+            onAddPayment = {
+                viewModel.createPayment {
+                    onAddPayment(it)
+                }
+            },
+            onDeletePayment = viewModel::deletePayment,
+            onEditPayment = { onEditPayment(it.id, it.clientId) },
+        )
+    }
+}
+
+@Composable
+fun SaleDone(modifier: Modifier = Modifier, onTimeout: () -> Unit = {}) {
+    val animationStart = remember { mutableStateOf(false) }
+    val progress by animateFloatAsState(
+        targetValue = if (!animationStart.value) 0f else 1f,
+        animationSpec = tween(4000)
+    ) {
+        onTimeout()
+    }
+
+    LaunchedEffect(true) {
+        animationStart.value = true
+    }
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_so_successful)
     )
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colors.background,
+    ) {
+        LottieAnimation(
+            modifier = modifier
+                .padding(164.dp)
+                .fillMaxSize(),
+            composition = composition,
+            progress = { progress },
+        )
+    }
 }
 
 @Composable

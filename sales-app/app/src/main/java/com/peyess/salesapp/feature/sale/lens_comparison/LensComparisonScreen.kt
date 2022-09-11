@@ -772,14 +772,14 @@ private fun AnimationDialog(
         Column(modifier = Modifier.fillMaxSize()) {
             LottieAnimation(
                 modifier = Modifier.weight(1f),
-                composition = compositionSideways,
+                composition = composition,
                 iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
             )
 
             LottieAnimation(
                 modifier = Modifier.weight(1f),
-                composition = composition,
+                composition = compositionSideways,
                 iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
             )

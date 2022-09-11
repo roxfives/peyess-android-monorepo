@@ -220,21 +220,54 @@ private fun SymptomsAndCuriositiesAnimation(
 
         // TODO: use string resource
         if (hasMyopia) {
-            SymptomsAndCuriositiesAnimation(
-                title = stringResource(id = R.string.myopia),
-                animationId = R.raw.lottie_prescription_myopia
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SymptomsAndCuriositiesAnimation(
+                    modifier = Modifier.weight(1.2f),
+                    title = stringResource(id = R.string.myopia),
+                    animationId = R.raw.lottie_prescription_myopia
+                )
+                
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .weight(1.8f),
+                    text = stringResource(id = R.string.myopia_info),
+                    style = MaterialTheme.typography.body1
+                        .copy(textAlign = TextAlign.Center)
+                )
+            }
             Divider(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
                 color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
             )
         }
 
         if (hasAstigmatism) {
-            SymptomsAndCuriositiesAnimation(
-                title = stringResource(id = R.string.astigmatism),
-                animationId = R.raw.lottie_prescription_astigmatism
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SymptomsAndCuriositiesAnimation(
+                    modifier = Modifier.weight(1.2f),
+                    title = stringResource(id = R.string.astigmatism),
+                    animationId = R.raw.lottie_prescription_astigmatism
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .weight(1.8f),
+                    text = stringResource(id = R.string.astigmatism_info),
+                    style = MaterialTheme.typography.body1
+                        .copy(textAlign = TextAlign.Center)
+                )
+            }
             Divider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
@@ -242,10 +275,27 @@ private fun SymptomsAndCuriositiesAnimation(
         }
 
         if (hasPresbyopia) {
-            SymptomsAndCuriositiesAnimation(
-                title = stringResource(id = R.string.presbyopia),
-                animationId = R.raw.lottie_prescription_presbyopia
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SymptomsAndCuriositiesAnimation(
+                    modifier = Modifier.weight(1.2f),
+                    title = stringResource(id = R.string.presbyopia),
+                    animationId = R.raw.lottie_prescription_presbyopia,
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .weight(1.8f),
+                    text = stringResource(id = R.string.presbyopia_info),
+                    style = MaterialTheme.typography.body1
+                        .copy(textAlign = TextAlign.Center)
+                )
+            }
+
             Divider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
@@ -253,10 +303,26 @@ private fun SymptomsAndCuriositiesAnimation(
         }
 
         if (hasHypermetropia) {
-            SymptomsAndCuriositiesAnimation(
-                title = stringResource(id = R.string.hypermetropia),
-                animationId = R.raw.lottie_prescription_hypermetropia
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                SymptomsAndCuriositiesAnimation(
+                    modifier = Modifier.weight(1.2f),
+                    title = stringResource(id = R.string.hypermetropia),
+                    animationId = R.raw.lottie_prescription_hypermetropia
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .weight(1.8f),
+                    text = stringResource(id = R.string.hypermetropia_info),
+                    style = MaterialTheme.typography.body1
+                        .copy(textAlign = TextAlign.Center)
+                )
+            }
             Divider(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 color = MaterialTheme.colors.primary.copy(alpha = 0.3f),

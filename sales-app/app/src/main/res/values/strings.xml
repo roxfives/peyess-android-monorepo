@@ -128,6 +128,11 @@
     <string name="astigmatism">Astigmatismo</string>
     <string name="presbyopia">Presbiopia</string>
 
+    <string name="hypermetropia_info">A hipermetropia é quando os raios luminosos formam o foco da imagem depois da retina, resultando em visão borrada para perto e cansaço visual</string>
+    <string name="myopia_info">A miopia é quando os raios luminosos formam o foco da imagem antes da retina. Como resultado, a visão míope fica embaçada para enxergar de longe</string>
+    <string name="astigmatism_info">Astigmatismo é uma imperfeição na curvatura do olho. Um sintoma comum é a visão turva, pela formação da imagem em eixos diferenciados, causado certa distorção</string>
+    <string name="presbyopia_info">A presbiopia “vista cansada”, deve-se a perda da capacidade dos olhos de focarem para perto e ocorre normalmente após os 40 anos de idade</string>
+
     <!-- UI Component: Frames data   -->
     <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
 

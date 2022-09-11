@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.isActive
@@ -93,12 +94,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             lPrismDegree = prescriptionDataEntity!!.prismDegreeLeft,
             lPrismPos = PrismPosition.toName(prescriptionDataEntity!!.prismPositionLeft),
 
-            rIpd = prescriptionDataEntity!!.cylindricalRight,
-            rCylinder = prescriptionDataEntity!!.sphericalRight,
-            rSpheric = prescriptionDataEntity!!.axisRight,
-            rAxisDegree = prescriptionDataEntity!!.additionRight,
-            rAddition = prescriptionDataEntity!!.prismAxisRight,
-            rPrismAxis = prescriptionDataEntity!!.prismDegreeRight,
+            rCylinder = prescriptionDataEntity!!.cylindricalRight,
+            rSpheric = prescriptionDataEntity!!.sphericalRight,
+            rAxisDegree = prescriptionDataEntity!!.axisRight,
+            rAddition = prescriptionDataEntity!!.additionRight,
+            rPrismAxis = prescriptionDataEntity!!.prismAxisRight,
             rPrismDegree = prescriptionDataEntity!!.prismDegreeRight,
             rPrismPos = PrismPosition.toName(prescriptionDataEntity!!.prismPositionRight),
         )
@@ -153,6 +153,7 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
     private suspend fun addClientData(so: FSServiceOrder): FSServiceOrder {
         var user: ClientDocument? = null
         var responsible: ClientDocument? = null
+        var witness: ClientDocument? = null
 
         salesDatabase
             .clientPickedDao()
@@ -168,6 +169,19 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             .take(1)
             .collect { responsible = it }
 
+        salesDatabase
+            .clientPickedDao()
+            .getClientForSO(ClientRole.Witness, so.id)
+            .flatMapLatest {
+                if (it != null) {
+                    clientDao.clientById(it.id)
+                } else {
+                    flowOf(null)
+                }
+            }
+            .take(1)
+            .collect { witness = it }
+
         if (user == null || responsible == null) {
             return so
         }
@@ -182,6 +196,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             responsibleName = responsible!!.name,
             responsiblePicture = responsible!!.picture,
             responsibleUid = responsible!!.id,
+
+            witnessDocument = witness?.document ?: "",
+            witnessName = witness?.name ?: "",
+            witnessPicture = witness?.picture ?: "",
+            witnessUid = witness?.id ?: "",
         )
     }
 
@@ -309,11 +328,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             }
 
             serviceOrder = runBlocking {
-                addProductsData(serviceOrder)
+                addPrescriptionData(serviceOrder)
             }
 
             serviceOrder = runBlocking {
-                addPrescriptionData(serviceOrder)
+                addProductsData(serviceOrder)
             }
 
             serviceOrder = runBlocking {

@@ -31,7 +31,10 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun SalesAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun SalesAppTheme(
+    darkTheme: Boolean = false, // isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
     val configuration = LocalConfiguration.current
 
     val dimensions = if (configuration.screenWidthDp <= 360) smallDimensions else sw360Dimensions

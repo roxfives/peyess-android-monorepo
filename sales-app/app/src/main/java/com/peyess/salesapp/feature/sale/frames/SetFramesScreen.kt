@@ -55,6 +55,8 @@ fun SetFramesScreen(
 
     val areFramesNew by viewModel.collectAsState(FramesState::areFramesNew)
 
+    val info by viewModel.collectAsState(FramesState::info)
+
     val description by viewModel.collectAsState(FramesState::description)
     val reference by viewModel.collectAsState(FramesState::reference)
     val value by viewModel.collectAsState(FramesState::value)
@@ -69,6 +71,9 @@ fun SetFramesScreen(
         onDone = onDone,
 
         areFramesNew = areFramesNew,
+
+        info = info,
+        onInfoChange = viewModel::onFramesInfoChanged,
 
         description = description,
         onDescriptionChange = viewModel::onFramesDescriptionChanged,
@@ -97,6 +102,11 @@ private fun SetFramesScreenImpl(
 
     areFramesNew: Boolean = true,
     canSetFrames: Boolean = true,
+
+    infoHasError: Boolean = false,
+    infoErrorMessage: String = "",
+    info: String = "",
+    onInfoChange: (value: String) -> Unit = {},
 
     descriptionHasError: Boolean = false,
     descriptionErrorMessage: String = "",
@@ -169,14 +179,39 @@ private fun SetFramesScreenImpl(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
         if (areFramesNew) {
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = R.string.frames_data),
                 style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            Text(
+                text = stringResource(id = R.string.own_frames_data),
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
 
+        if (!areFramesNew) {
+            PeyessOutlinedTextField(
+                value = description,
+                onValueChange =  onDescriptionChange,
+                isError = descriptionHasError,
+                errorMessage = descriptionErrorMessage,
+                label = { Text(stringResource(id = R.string.frames_info)) },
+                placeholder = { Text(stringResource(id = R.string.frames_info)) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Characters,
+                    imeAction = ImeAction.Next,
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(focusDirection = FocusDirection.Down) }
+                ),
+            )
+        }
+
+        if (areFramesNew) {
             PeyessOutlinedTextField(
                 value = description,
                 onValueChange =  onDescriptionChange,

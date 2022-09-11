@@ -79,6 +79,8 @@ data class FramesEntity(
     @ColumnInfo(name = "value") val value: Double = 0.0,
     @ColumnInfo(name = "tag_code") val tagCode: String = "",
     @ColumnInfo(name = "type") val type: FramesType? = null,
+
+    @ColumnInfo(name = "info") val framesInfo: String = "",
 ) {
     companion object {
         const val tableName = "frames_data"

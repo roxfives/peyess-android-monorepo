@@ -188,6 +188,12 @@ class FramesViewModel @AssistedInject constructor(
             }
     }
 
+    fun onFramesInfoChanged(value: String) = withState {
+        if (it._currentFramesData != null) {
+            saleRepository.updateFramesData(it._currentFramesData.copy(framesInfo = value))
+        }
+    }
+
     fun onFramesDescriptionChanged(value: String) = withState {
         if (it._currentFramesData != null) {
             saleRepository.updateFramesData(it._currentFramesData.copy(description = value))

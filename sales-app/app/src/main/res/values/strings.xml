@@ -145,10 +145,12 @@
     <string name="measure_right_eye">Medir O.D.</string>
 
     <string name="frames_description">Grife</string>
+    <string name="frames_info">Informações sobre o aro próprio</string>
     <string name="frames_reference">Referência</string>
     <string name="frames_value">Valor</string>
     <string name="frames_tag_code">Código da etiqueta</string>
     <string name="frames_type">Selecione o tipo da armação abaixo</string>
+    <string name="own_frames_data">Digite a descrição da sua armação</string>
     <string name="frames_data">Digite os demais dados das armação escolhida</string>
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
 

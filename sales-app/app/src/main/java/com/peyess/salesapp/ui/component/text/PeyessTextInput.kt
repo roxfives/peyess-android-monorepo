@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 @Composable
 fun PeyessOutlinedTextField(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     value: String,
     onValueChange: (String) -> Unit = {},
     isError: Boolean,
@@ -29,6 +30,7 @@ fun PeyessOutlinedTextField(
     Column(modifier = modifier) {
         OutlinedTextField(
             modifier = modifier,
+            enabled = enabled,
             value = value,
             onValueChange = onValueChange,
             label = label,

@@ -25,6 +25,7 @@ data class PrescriptionPictureEntity(
     @ColumnInfo(name = "picture_uri") val pictureUri: Uri = Uri.EMPTY,
     @ColumnInfo(name = "professional_name") val professionalName: String = "",
     @ColumnInfo(name = "professional_id") val professionalId: String = "",
+    @ColumnInfo(name = "is_copy") val isCopy: Boolean = false,
     @ColumnInfo(name = "local_date") val prescriptionDate: LocalDate = LocalDate.now(),
 ) {
     companion object {

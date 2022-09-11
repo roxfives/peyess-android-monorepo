@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -39,6 +40,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -116,6 +118,8 @@ fun PrescriptionPictureScreen(
         )
     }
 
+    val isCopy by viewModel.collectAsState(PrescriptionPictureState::isCopy)
+
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     val cameraLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture(),
@@ -133,12 +137,16 @@ fun PrescriptionPictureScreen(
     }
 
     if (!isLoading) {
-        PrescriptionPictureImpl(modifier = modifier,
+        PrescriptionPictureImpl(
+            modifier = modifier,
 
             canGoNext = canGoNext,
 
             picture = picture,
             date = date,
+
+            isCopy = isCopy,
+            onCopyChanged = viewModel::onCopyChanged,
 
             professionalId = professionalId,
             professionalName = professionalName,
@@ -176,6 +184,9 @@ private fun PrescriptionPictureImpl(
 
     canGoNext: Boolean = true,
 
+    isCopy: Boolean = false,
+    onCopyChanged: (isCopy: Boolean) -> Unit = {},
+
     picture: Uri = Uri.EMPTY,
     date: LocalDate = LocalDate.now(),
 
@@ -208,6 +219,23 @@ private fun PrescriptionPictureImpl(
                 picture = picture,
                 takePicture = takePicture,
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                Checkbox(
+                    checked = isCopy,
+                    onCheckedChange = onCopyChanged,
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // TODO: use string resource
+                Text(text = "Usar resultado do lensômetro")
+            }
         }
 
         Divider(
@@ -219,6 +247,7 @@ private fun PrescriptionPictureImpl(
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .weight(1f),
+            enabled = !isCopy,
             currDate = date,
             onSetDate = onSetDate,
         )
@@ -232,6 +261,8 @@ private fun PrescriptionPictureImpl(
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .weight(2f),
+
+            enabled = !isCopy,
 
             professionalName = professionalName,
             onProfessionalNameChanged = onProfessionalNameChanged,
@@ -291,6 +322,7 @@ fun PrescriptionPicture(
 @Composable
 fun DatePicker(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     currDate: LocalDate = LocalDate.now(),
     onSetDate: (date: LocalDate) -> Unit = {},
 ) {
@@ -310,21 +342,35 @@ fun DatePicker(
             modifier = Modifier
                 .border(
                     width = 1.dp,
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+                    color = if (enabled) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    },
                     shape = RoundedCornerShape(8.dp),
                 )
                 .padding(2.dp)
-                .clickable { dialogState.show() },
+                .clickable(enabled = enabled) { dialogState.show() },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(modifier = Modifier.size(16.dp))
 
-            Text(text = currDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+            Text(
+                text = currDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                color = if (enabled) {
+                    MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }
+            )
 
             Spacer(modifier = Modifier.size(16.dp))
 
-            IconButton(onClick = { dialogState.show() }) {
+            IconButton(
+                enabled = enabled,
+                onClick = { dialogState.show() }
+            ) {
                 Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
             }
         }
@@ -351,6 +397,8 @@ fun DatePicker(
 private fun ProfessionalData(
     modifier: Modifier = Modifier,
 
+    enabled: Boolean = false,
+
     professionalId: String = "",
     professionalName: String = "",
 
@@ -367,6 +415,7 @@ private fun ProfessionalData(
     ) {
         PeyessOutlinedTextField(value = professionalId,
             onValueChange = onProfessionalIdChanged,
+            enabled = enabled,
             isError = false,
             errorMessage = "",
             label = { Text(text = stringResource(id = R.string.label_professional_id)) },
@@ -382,6 +431,7 @@ private fun ProfessionalData(
 
         PeyessOutlinedTextField(value = professionalName,
             onValueChange = onProfessionalNameChanged,
+            enabled = enabled,
             isError = false,
             errorMessage = "",
             label = { Text(text = stringResource(id = R.string.label_professional_name)) },

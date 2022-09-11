@@ -604,6 +604,7 @@ private fun PrescriptionSection(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 AsyncImage(
@@ -632,63 +633,73 @@ private fun PrescriptionSection(
                 )
             }
 
-            Row(
-                modifier = Modifier.weight(2f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+            if (prescriptionPicture.isCopy) {
+                // TOOD: use string resource
+                Text(
+                    modifier = Modifier.weight(2f),
+                    text = "Cópia a partir do lensômetro",
+                    style = MaterialTheme.typography.h6
+                        .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
+                )
+            } else {
+                Row(
+                    modifier = Modifier.weight(2f),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = stringResource(id = R.string.so_prescription_emission),
-                        style = MaterialTheme.typography.body1
-                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = stringResource(id = R.string.so_prescription_emission),
+                            style = MaterialTheme.typography.body1
+                                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                        )
 
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = stringResource(id = R.string.so_prescription_name),
-                        style = MaterialTheme.typography.body1
-                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
-                    )
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = stringResource(id = R.string.so_prescription_name),
+                            style = MaterialTheme.typography.body1
+                                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                        )
 
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = stringResource(id = R.string.so_prescription_id),
-                        style = MaterialTheme.typography.body1
-                            .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
-                    )
-                }
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = stringResource(id = R.string.so_prescription_id),
+                            style = MaterialTheme.typography.body1
+                                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.End),
+                        )
+                    }
 
-                Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = prescriptionPicture.prescriptionDate.toString(),
-                        style = MaterialTheme.typography.body1
-                            .copy(textAlign = TextAlign.Start),
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = prescriptionPicture.prescriptionDate.toString(),
+                            style = MaterialTheme.typography.body1
+                                .copy(textAlign = TextAlign.Start),
+                        )
 
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = prescriptionPicture.professionalName,
-                        style = MaterialTheme.typography.body1
-                            .copy(textAlign = TextAlign.Start),
-                    )
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = prescriptionPicture.professionalName,
+                            style = MaterialTheme.typography.body1
+                                .copy(textAlign = TextAlign.Start),
+                        )
 
-                    Text(
-                        modifier = Modifier.width(IntrinsicSize.Max),
-                        text = prescriptionPicture.professionalId,
-                        style = MaterialTheme.typography.body1
-                            .copy(textAlign = TextAlign.Start),
-                    )
+                        Text(
+                            modifier = Modifier.width(IntrinsicSize.Max),
+                            text = prescriptionPicture.professionalId,
+                            style = MaterialTheme.typography.body1
+                                .copy(textAlign = TextAlign.Start),
+                        )
+                    }
                 }
             }
         }

@@ -42,7 +42,6 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
         )
     }
 
-
     fun onPictureTaken(uri: Uri?) = setState {
         val prescriptionPicture = this.currentPrescription.invoke()
 
@@ -53,6 +52,18 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
         }
 
         copy(pictureUri = uri ?: this.pictureUri)
+    }
+
+    fun onCopyChanged(isCopy: Boolean) = setState {
+        val prescriptionPicture = this.currentPrescription.invoke()
+
+        if (prescriptionPicture != null) {
+            saleRepository.updatePrescriptionPicture(
+                prescriptionPicture.copy(isCopy = isCopy)
+            )
+        }
+
+        copy(isCopy = isCopy)
     }
 
     fun onDatePicked(date: LocalDate) = setState {

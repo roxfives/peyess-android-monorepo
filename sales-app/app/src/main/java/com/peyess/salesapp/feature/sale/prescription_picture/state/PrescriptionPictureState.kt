@@ -12,16 +12,23 @@ import java.time.LocalDate
 data class PrescriptionPictureState(
     val currentPrescription: Async<PrescriptionPictureEntity> = Uninitialized,
 
+    @PersistState val isCopy: Boolean = false,
+
     @PersistState val pictureUri: Uri = Uri.EMPTY,
     @PersistState val prescriptionDate: LocalDate = LocalDate.now(),
 
     @PersistState val professionalId: String = "",
     @PersistState val professionalName: String = "",
 ): MavericksState {
-    val isLoading = currentPrescription is Loading
-
-    val canGoNext = prescriptionDate.isBefore(LocalDate.now().plusDays(1))
+    private val canGoNextWithoutCopy = prescriptionDate.isBefore(LocalDate.now().plusDays(1))
             && pictureUri != Uri.EMPTY
             && professionalId.isNotEmpty()
             && professionalName.isNotEmpty()
+            && !isCopy
+
+    private val canGoNextWithCopy = pictureUri != Uri.EMPTY && isCopy
+
+    val canGoNext = canGoNextWithCopy || canGoNextWithoutCopy
+
+    val isLoading = currentPrescription is Loading
 }

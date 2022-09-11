@@ -87,6 +87,8 @@ import kotlin.math.abs
 
 val buttonHeight = 120.dp
 
+private val thicknessAnimationHeight = 128.dp
+
 @Composable
 fun LensComparisonScreen(
     modifier: Modifier = Modifier,
@@ -357,8 +359,9 @@ private fun LensComparisonCard(
 
             LottieAnimation(
                 modifier = Modifier
-                    .height(64.dp)
-                    .width(SalesAppTheme.dimensions.minimum_touch_target)
+                    .height(thicknessAnimationHeight)
+                    .weight(1f)
+//                    .width(SalesAppTheme.dimensions.minimum_touch_target)
                     .clickable { animationDialogState.show() },
                 composition = composition,
                 iterations = 1,
@@ -368,14 +371,17 @@ private fun LensComparisonCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             AnimatedVisibility(
+                modifier = Modifier.weight(1f),
                 visible = individualComparison.finalPriceDifference != 0.0,
                 enter = scaleIn(),
                 exit = scaleOut(),
             ) {
-                PriceDifference(
-                    isPriceBad = individualComparison.isPriceBad,
-                    priceDiff = individualComparison.finalPriceDifference,
-                )
+                Column {
+                    PriceDifference(
+                        isPriceBad = individualComparison.isPriceBad,
+                        priceDiff = individualComparison.finalPriceDifference,
+                    )
+                }
             }
         }
 

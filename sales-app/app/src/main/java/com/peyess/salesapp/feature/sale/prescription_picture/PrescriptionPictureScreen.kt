@@ -234,7 +234,7 @@ private fun PrescriptionPictureImpl(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 // TODO: use string resource
-                Text(text = "Usar resultado do lensômetro")
+                Text(text = "Usar cópia do lensômetro")
             }
         }
 

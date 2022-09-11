@@ -6,6 +6,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.peyess.salesapp.R
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
@@ -58,6 +60,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class ProductRepositoryImpl @Inject constructor(
+    private val salesApplication: SalesApplication,
     private val localLensesDao: LocalLensDao,
     private val treatmentDao: LocalTreatmentDao,
     private val coloringDao: LocalColoringDao,
@@ -72,6 +75,34 @@ class ProductRepositoryImpl @Inject constructor(
     private val lensDescriptionDao: LensDescriptionDao,
     private val saleRepository: SaleRepository,
 ): ProductRepository {
+
+    private data class LensSupported(
+        val isSupported: Boolean = true,
+        val reasonNotSupported: String = "",
+    )
+
+    private fun <T1, T2, T3, T4, T5, T6, R> combine(
+        flow: Flow<T1>,
+        flow2: Flow<T2>,
+        flow3: Flow<T3>,
+        flow4: Flow<T4>,
+        flow5: Flow<T5>,
+        flow6: Flow<T6>,
+        transform: suspend (T1, T2, T3, T4, T5, T6) -> R
+    ): Flow<R> = combine(
+        combine(flow, flow2, flow3, ::Triple),
+        combine(flow4, flow5, flow6, ::Triple)
+    ) { t1, t2 ->
+        transform(
+            t1.first,
+            t1.second,
+            t1.third,
+            t2.first,
+            t2.second,
+            t2.third
+        )
+    }
+
     private fun buildQuery(lensFilter: LensFilter): SimpleSQLiteQuery {
         var queryString = "SELECT * FROM ${LocalLensEntity.tableName} "
         val queryConditions = mutableListOf<String>()
@@ -126,10 +157,25 @@ class ProductRepositoryImpl @Inject constructor(
         disp: LocalLensDispEntity,
         mesureLeft: Measuring,
         measureRight: Measuring,
-    ): Boolean {
+    ): LensSupported {
         // TODO: get from lensType conversion
-        var fits = activeSO.isLensTypeMono && lens.type.lowercase() == "monofocal"
-                || !activeSO.isLensTypeMono && lens.type.lowercase() != "monofocal"
+        var fits = (activeSO.isLensTypeMono && lens.type.lowercase() == "monofocal")
+                || (!activeSO.isLensTypeMono && lens.type.lowercase() != "monofocal")
+        if (!fits) {
+            return if (lens.type.lowercase() == "monofocal") {
+                LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_required_mono),
+                )
+            } else {
+                LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_required_multi),
+                )
+            }
+        }
 
         val maxDiam = max(
             mesureLeft.diameter,
@@ -176,49 +222,100 @@ class ProductRepositoryImpl @Inject constructor(
 
         Timber.i("disp: $disp")
 
-        fits = fits
-                && maxCyl <= disp.maxCyl
-                && minCyl >= disp.minCyl
-                && maxSph <= disp.maxSph
-                && minSph >= disp.minSph
-                && maxDiam <= disp.diam
+        fits = maxCyl <= disp.maxCyl
+        if (!fits) {
+            return LensSupported(
+                isSupported = false,
+                reasonNotSupported = salesApplication
+                    .stringResource(R.string.lens_incompatible_reason_cylindrical_too_big),
+            )
+        }
+
+        fits = minCyl >= disp.minCyl
+        if (!fits) {
+            return LensSupported(
+                isSupported = false,
+                reasonNotSupported = salesApplication
+                    .stringResource(R.string.lens_incompatible_reason_cylindrical_too_small),
+            )
+        }
+
+        fits = maxSph <= disp.maxSph
+        if (!fits) {
+            return LensSupported(
+                isSupported = false,
+                reasonNotSupported = salesApplication
+                    .stringResource(R.string.lens_incompatible_reason_spherical_too_big),
+            )
+        }
+
+        fits = minSph >= disp.minSph
+        if (!fits) {
+            return LensSupported(
+                isSupported = false,
+                reasonNotSupported = salesApplication
+                    .stringResource(R.string.lens_incompatible_reason_spherical_too_small),
+            )
+        }
+
+        fits = maxDiam <= disp.diam
+        if (!fits) {
+            return LensSupported(
+                isSupported = false,
+                reasonNotSupported = salesApplication
+                    .stringResource(R.string.lens_incompatible_reason_diameter_too_big),
+            )
+        }
 
         if (fits && prescriptionData.hasPrism) {
             fits = maxPrism <= disp.prism
+
+            if (!fits) {
+                return LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_prism_not_supported),
+                )
+            }
         }
 
         if (fits && prescriptionData.hasAddition) {
             fits = maxAddition <= disp.maxAdd
-                    && minAddition >= disp.minAdd
+            if (!fits) {
+                return LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_addition_too_big),
+                )
+            }
+
+            fits = minAddition >= disp.minAdd
+            if (!fits) {
+                return LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_addition_too_small),
+                )
+            }
         }
 
         if (fits && disp.sumRule) {
             fits = prescriptionData.sphericalLeft + prescriptionData.cylindricalLeft - disp.maxCyl >= disp.minSph
                     && prescriptionData.sphericalRight + prescriptionData.cylindricalRight - disp.maxCyl >= disp.minSph
+
+            if (!fits) {
+                return LensSupported(
+                    isSupported = false,
+                    reasonNotSupported = salesApplication
+                        .stringResource(R.string.lens_incompatible_reason_sum_rule_failed),
+                )
+            }
         }
 
-        return fits
-    }
-
-    private fun <T1, T2, T3, T4, T5, T6, R> combine(
-        flow: Flow<T1>,
-        flow2: Flow<T2>,
-        flow3: Flow<T3>,
-        flow4: Flow<T4>,
-        flow5: Flow<T5>,
-        flow6: Flow<T6>,
-        transform: suspend (T1, T2, T3, T4, T5, T6) -> R
-    ): Flow<R> = combine(
-        combine(flow, flow2, flow3, ::Triple),
-        combine(flow4, flow5, flow6, ::Triple)
-    ) { t1, t2 ->
-        transform(
-            t1.first,
-            t1.second,
-            t1.third,
-            t2.first,
-            t2.second,
-            t2.third
+        return LensSupported(
+            isSupported = true,
+            reasonNotSupported = salesApplication
+                .stringResource(R.string.lens_incompatible_reason_compatible)
         )
     }
 
@@ -250,10 +347,19 @@ class ProductRepositoryImpl @Inject constructor(
                         val measureLeft = posLeft.toMeasuring()
                         val measureRight = postRight.toMeasuring()
 
+                        val reasonNotSupported = mutableListOf<String>()
+
+                        var lensSupported: LensSupported
                         val supportedDisps = mutableStateListOf<LocalLensDispEntity>()
                         for (disp in lensDisp) {
-                            if (isLensSupported(lens, so,prescriptionData, disp, measureLeft, measureRight)) {
+                            lensSupported = isLensSupported(
+                                lens, so, prescriptionData, disp, measureLeft, measureRight,
+                            )
+
+                            if (lensSupported.isSupported) {
                                 supportedDisps.add(disp)
+                            } else {
+                                reasonNotSupported.add(lensSupported.reasonNotSupported)
                             }
                         }
 
@@ -263,7 +369,7 @@ class ProductRepositoryImpl @Inject constructor(
                         }
 
                         Timber.i("Updating lens ${lens.id} using exp $exp from $expList")
-                        lensSuggestionModel = lens.toSuggestionModel(exp)
+                        lensSuggestionModel = lens.toSuggestionModel(exp, reasonNotSupported)
                             .copy(
                                 supportedDisponibilitites = supportedDisps,
                                 needsCheck = needsCheck,
@@ -294,10 +400,19 @@ class ProductRepositoryImpl @Inject constructor(
                 val measureLeft = posLeft.toMeasuring()
                 val measureRight = postRight.toMeasuring()
 
+                val reasonNotSupported = mutableListOf<String>()
+
+                var lensSupported: LensSupported
                 val supportedDisps = mutableStateListOf<LocalLensDispEntity>()
                 for (disp in lensDisp) {
-                    if (isLensSupported(lens, so,prescriptionData, disp, measureLeft, measureRight)) {
+                    lensSupported = isLensSupported(
+                        lens, so,prescriptionData, disp, measureLeft, measureRight,
+                    )
+
+                    if (lensSupported.isSupported) {
                         supportedDisps.add(disp)
+                    } else {
+                        reasonNotSupported.add(lensSupported.reasonNotSupported)
                     }
                 }
 
@@ -307,7 +422,7 @@ class ProductRepositoryImpl @Inject constructor(
                 }
 
                 Timber.i("Updating lens ${lens.id} using exp $exp from $expList")
-                lensSuggestionModel = lens.toSuggestionModel(exp)
+                lensSuggestionModel = lens.toSuggestionModel(exp, reasonNotSupported)
                     .copy(
                         supportedDisponibilitites = supportedDisps,
                         needsCheck = needsCheck,

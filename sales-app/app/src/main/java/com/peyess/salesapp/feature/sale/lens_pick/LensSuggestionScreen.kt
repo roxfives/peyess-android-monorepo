@@ -1204,6 +1204,23 @@ private fun LensCard(
                     }
                 }
 
+                if (
+                    lens.supportedDisponibilitites.isEmpty()
+                    && lens.reasonsNotAvailable.isNotEmpty()
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = lens.reasonsNotAvailable[0],
+                            color = MaterialTheme.colors.error
+                        )
+                    }
+                }
             }
         }
     )

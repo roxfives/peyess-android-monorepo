@@ -92,7 +92,9 @@ data class LensSuggestionModel(
     val isEnabled: Boolean = false,
     val reasonDisabled: String = "",
 
-    val explanations: List<String> = listOf(),
+    val explanations: List<String> = emptyList(),
+
+    val reasonsNotAvailable: List<String> = emptyList(),
 )
 
 fun LensSuggestionModel.name(): String {
@@ -100,7 +102,8 @@ fun LensSuggestionModel.name(): String {
 }
 
 fun LocalLensEntity.toSuggestionModel(
-    exp: List<String>
+    exp: List<String>,
+    reasonsNotAvailable: List<String>,
 ): LensSuggestionModel {
     return LensSuggestionModel(
         id = id,
@@ -189,5 +192,6 @@ fun LocalLensEntity.toSuggestionModel(
         reasonDisabled = reasonDisabled,
 
         explanations = exp,
+        reasonsNotAvailable = reasonsNotAvailable,
     )
 }

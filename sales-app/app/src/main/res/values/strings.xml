@@ -193,6 +193,21 @@
     <string name="lens_suggestion_filter_none_found">Infelizmente não encontramos nenhuma lente compatível com as restrições do cliente</string>
     <string name="lens_suggestion_filter_title">Filtre e encontre mais lentes</string>
 
+    <string name="lens_incompatible_reason_compatible">A lente é compatível com as exigências do cliente</string>
+    <string name="lens_incompatible_reason_required_mono">A lente é monofocal, mas o cliente precisa de uma multifocal</string>
+    <string name="lens_incompatible_reason_required_multi">A lente é multifocal, mas o cliente precisa de uma monofocal</string>
+    <string name="lens_incompatible_reason_diameter_too_big">O diametro do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_spherical_too_big">O grau esférico do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_spherical_too_small">O grau esférico do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical_too_big">O grau cilíndrico do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical_too_small">O grau cilíndrico do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_prism_too_big">O grau do prisma do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_prism_not_supported">Essa lente não suporta prisma</string>
+    <string name="lens_incompatible_reason_addition_too_big">A adição do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_addition_too_small">A adição do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_sum_rule_failed">A disponibilidade da lente não é compatível com o do cliente</string>
+    <string name="lens_incompatible_reason_unknown">Essa lente não é compatível com o cliente</string>
+
     <!--  UI Component: Lens Comparison  -->
     <string name="lens_comparison_add_another">Adicionar nova lente para comparação</string>
 

@@ -122,6 +122,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideProductsRepository(
+        salesApplication: SalesApplication,
         localLensDao: LocalLensDao,
         localTreatmentDao: LocalTreatmentDao,
         localColoringDao: LocalColoringDao,
@@ -137,6 +138,7 @@ object RepositoryModule {
         saleRepository: SaleRepository,
     ): ProductRepository {
         return ProductRepositoryImpl(
+            salesApplication,
             localLensDao,
             localTreatmentDao,
             localColoringDao,

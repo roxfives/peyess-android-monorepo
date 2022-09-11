@@ -1445,11 +1445,13 @@ private fun LensSuggestionCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     modifier = Modifier
-                        .height(SalesAppTheme.dimensions.minimum_touch_target)
-                        .width(120.dp),
+                        .height(SalesAppTheme.dimensions.minimum_touch_target),
                     onClick = { onPickLens(lens.id) },
                 ) {
-                    Text(text = stringResource(id = R.string.lens_suggestion_select).uppercase())
+                    Text(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

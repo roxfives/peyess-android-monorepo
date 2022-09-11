@@ -60,6 +60,6 @@ fun bigAnimationFromCategory(categoryName: String): Int {
     ) {
         R.raw.lottie_comparison_big_myopia_60
     } else {
-        R.raw.lottie_comparison_myopia_base
+        R.raw.lottie_comparison_big_myopia_base
     }
 }

@@ -302,7 +302,10 @@ private fun LensComparisonCard(
     )
 
     val animationDialogState = rememberMaterialDialogState()
-    AnimationDialog(animationDialogState)
+    AnimationDialog(
+        dialogState = animationDialogState,
+        individualComparison = individualComparison,
+    )
 
     Column(
         modifier = modifier.shadow(elevation = 1.dp),
@@ -743,6 +746,7 @@ private fun PickColoringDialog(
 @Composable
 private fun AnimationDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    individualComparison: IndividualComparison,
 ) {
     MaterialDialog(
         dialogState = dialogState,
@@ -757,15 +761,28 @@ private fun AnimationDialog(
                 .copy(fontWeight = FontWeight.Bold),
         )
 
-        val composition by rememberLottieComposition(
-             LottieCompositionSpec.RawRes(R.raw.lottie_comparison_thickness)
+        val compositionSideways by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(individualComparison.bigAnimationId)
         )
 
-        LottieAnimation(
-            modifier = Modifier.fillMaxSize(),
-            composition = composition,
-            iterations = 1,
-            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_comparison_thickness)
         )
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            LottieAnimation(
+                modifier = Modifier.weight(1f),
+                composition = compositionSideways,
+                iterations = 1,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+
+            LottieAnimation(
+                modifier = Modifier.weight(1f),
+                composition = composition,
+                iterations = 1,
+                clipSpec = LottieClipSpec.Progress(0f, 1f),
+            )
+        }
     }
 }

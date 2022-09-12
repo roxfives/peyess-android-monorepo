@@ -662,7 +662,7 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .padding(8.dp),
-                text = "Transition Cinza",
+                text = "Fotossensível Cinza",
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.h6
                     .copy(fontWeight = FontWeight.Bold),
@@ -701,7 +701,7 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .padding(8.dp),
-                text = "Transition Marrom",
+                text = "Fotossensível Marrom",
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.h6
                     .copy(fontWeight = FontWeight.Bold),
@@ -740,7 +740,7 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             Text(
                 modifier = Modifier
                     .padding(8.dp),
-                text = "Transition Verde",
+                text = "Fotossensível Verde",
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.h6
                     .copy(fontWeight = FontWeight.Bold),

@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.internal.toImmutableList
 import timber.log.Timber
 
@@ -46,13 +48,12 @@ class LensPickViewModel @AssistedInject constructor(
         loadLensTypes()
         loadLensSuppliers()
 
-        // TODO: load lenses on update click
-        lenses = productRepository
-            .filteredLenses(lensFilter = LensFilter())
-            .flowOn(Dispatchers.IO)
-
-        onEach(LensPickState::filter) {
-            lenses = productRepository.filteredLenses(lensFilter = it)
+        onEach(LensPickState::filter) { filter ->
+            withState { state ->
+                if (state.hasLoadedAllBasicFilters) {
+                    lenses = productRepository.filteredLenses(lensFilter = filter)
+                }
+            }
         }
 
         onEach(LensPickState::groupLensFilterId) {
@@ -119,14 +120,15 @@ class LensPickViewModel @AssistedInject constructor(
         }
 
         onAsync(LensPickState::groupsList) { groupList ->
-            val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
+            viewModelScope.launch(Dispatchers.IO) {
+                val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
 
-            for (group in groupList) {
-                lensesByGroup.add(bestLensForGroup(group.id))
+                for (group in groupList) {
+                    lensesByGroup.add(bestLensForGroup(group.id))
+                }
+
+                suggestionList = combine(lensesByGroup) { it.asList() }
             }
-
-            suggestionList = combine(lensesByGroup) { it.asList() }
-                .flowOn(Dispatchers.IO)
         }
     }
 

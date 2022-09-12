@@ -51,4 +51,8 @@ data class LensPickState(
     val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
     val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()
     val isMaterialLensFilterEnabled = supplierLensFilter.isNotEmpty()
+
+    val hasLoadedAllBasicFilters = groupsFilter is Success
+            && typesFilter is Success
+            && supplierFilter is Success
 }

@@ -50,7 +50,14 @@ class UpdateProductsWorker @AssistedInject constructor(
     val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
     private fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
-        val lenses = docs.mapNotNull { it.toObject(FSLocalLens::class.java) }
+        val lenses = docs.mapNotNull {
+            try {
+                it.toObject(FSLocalLens::class.java)
+            } catch (err: Throwable) {
+                Timber.e(err, "Failed for lens ${it.id}")
+                null
+            }
+        }.filterNotNull()
 
         Timber.i("Found ${lenses.size} lenses")
 

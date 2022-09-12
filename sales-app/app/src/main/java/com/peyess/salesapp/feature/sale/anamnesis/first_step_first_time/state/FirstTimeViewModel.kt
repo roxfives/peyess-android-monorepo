@@ -37,8 +37,12 @@ class FirstTimeViewModel @AssistedInject constructor(
 
     private fun loadMikeMessage() = withState {
         combine(
-            saleRepository.activeSO().filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().filterNotNull().map { it.name },
+            saleRepository.activeSO().retryWhen { _, attempt ->
+                attempt < 10
+            }.filterNotNull().map { it.clientName },
+            authenticationRepository.currentUser().retryWhen { _, attempt ->
+                attempt < 10
+            }.filterNotNull().map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)
         }.execute(Dispatchers.IO) {

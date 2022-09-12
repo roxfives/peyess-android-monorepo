@@ -122,9 +122,11 @@ class FramesViewModel @AssistedInject constructor(
     private fun loadLandingMikeMessage(framesMessage: String) = withState {
         Timber.i("Loading mike message")
         combine(
-            saleRepository.activeSO().filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().retryWhen { cause, attempt ->
-                cause is IllegalStateException && attempt < 10
+            saleRepository.activeSO().retryWhen { _, attempt ->
+                attempt < 10
+            }.filterNotNull().map { it.clientName },
+            authenticationRepository.currentUser().retryWhen { _, attempt ->
+                attempt < 10
             }.map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)

@@ -203,7 +203,7 @@ private fun FramesLandingScreenImpl(
             )
             
             // TODO: Use string resource
-            Text(text = "Ângulo Pantoscópico")
+            Text(text = "Ângulo Pantoscópico e Dist. Vértice")
 
             Spacer(modifier = Modifier.height(8.dp))
 

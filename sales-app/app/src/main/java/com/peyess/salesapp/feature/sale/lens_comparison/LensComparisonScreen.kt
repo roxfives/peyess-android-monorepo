@@ -28,6 +28,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocalSee
 import androidx.compose.material.icons.filled.Visibility
@@ -745,6 +746,7 @@ private fun PickColoringDialog(
 
 @Composable
 private fun AnimationDialog(
+    modifier: Modifier = Modifier,
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
     individualComparison: IndividualComparison,
 ) {
@@ -755,12 +757,6 @@ private fun AnimationDialog(
             positiveButton("Ok")
         },
     ) {
-        title(
-            text = "Pontos de espessura da lente",
-            style = MaterialTheme.typography.h6
-                .copy(fontWeight = FontWeight.Bold),
-        )
-
         val compositionSideways by rememberLottieComposition(
             LottieCompositionSpec.RawRes(individualComparison.bigAnimationId)
         )
@@ -769,13 +765,54 @@ private fun AnimationDialog(
             LottieCompositionSpec.RawRes(R.raw.lottie_comparison_thickness)
         )
 
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    // TODO: use string resource
+                    text = "Pontos de espessura da lente",
+                    style = MaterialTheme.typography.h6
+                        .copy(fontWeight = FontWeight.Bold),
+                )
+
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+                )
+
+                IconButton(onClick = { /* TODO: add info */ }) {
+                    Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+                }
+            }
+
             LottieAnimation(
                 modifier = Modifier.weight(1f),
                 composition = composition,
                 iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
             )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Divider(
+                    modifier = Modifier.weight(1f),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+                )
+
+                IconButton(onClick = { /* TODO: add info */ }) {
+                    Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+                }
+            }
 
             LottieAnimation(
                 modifier = Modifier.weight(1f),

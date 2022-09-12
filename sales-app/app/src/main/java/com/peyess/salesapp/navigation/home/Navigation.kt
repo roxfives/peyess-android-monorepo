@@ -30,8 +30,8 @@ fun buildHomeNavGraph(
 
     builder.composable(
         route = SalesAppScreens.SaleScreen.name,
-        enterTransition = homeEnterTransition(),
-        exitTransition = homeExitTransition()
+        enterTransition = saleEnterTransition(),
+        exitTransition = saleExitTransition()
     ) {
         SalesScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
@@ -41,8 +41,8 @@ fun buildHomeNavGraph(
     }
     builder.composable(
         route = SalesAppScreens.Clients.name,
-        enterTransition = homeEnterTransition(),
-        exitTransition = homeExitTransition()
+        enterTransition = clientsEnterTransition(),
+        exitTransition = clientsExitTransition()
     ) {
         ClientScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),

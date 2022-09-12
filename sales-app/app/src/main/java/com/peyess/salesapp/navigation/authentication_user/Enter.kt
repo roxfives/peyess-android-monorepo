@@ -3,31 +3,51 @@ package com.peyess.salesapp.navigation.authentication_user
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
 fun userListEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-    scaleIn()
+    when (SalesAppScreens.fromRoute(initialState.destination.route)) {
+        SalesAppScreens.UserAuth,
+        SalesAppScreens.LocalPasscode ->
+            slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(transitionDuration),
+            )
+        else ->
+            scaleIn()
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun userAuthEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-    scaleIn()
+    when (SalesAppScreens.fromRoute(initialState.destination.route)) {
+        SalesAppScreens.LocalPasscode ->
+            slideInHorizontally(
+                initialOffsetX = { -it },
+                animationSpec = tween(transitionDuration),
+            )
+        else ->
+            slideInHorizontally(
+                initialOffsetX = { it },
+                animationSpec = tween(transitionDuration),
+            )
+    }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun localPasscodeEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-
-    when (SalesAppScreens.fromRoute(targetState.destination.route)) {
-        SalesAppScreens.UserAuth ->
-            slideInHorizontally { -it }
-        else ->
-            scaleIn()
-    }
+    slideInHorizontally(
+        initialOffsetX = { it },
+        animationSpec = tween(transitionDuration),
+    )
 }

@@ -25,6 +25,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Details
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -112,7 +113,6 @@ fun UserAuthScreenComposable(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserGrid(
     modifier: Modifier = Modifier,
@@ -212,6 +212,23 @@ private fun Header(
                 Text(
                     text = store.city,
                     style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colors.onPrimary,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    imageVector = Icons.Filled.Details,
+                    tint = MaterialTheme.colors.onPrimary,
+                    contentDescription = "",
+                )
+
+                Text(
+                    text = store.type,
+                    style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onPrimary,
                 )
             }

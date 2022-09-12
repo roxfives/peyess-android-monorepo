@@ -32,7 +32,6 @@ import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -58,7 +57,7 @@ fun FramesLandingScreen(
 ) {
     val viewModel: FramesViewModel = mavericksViewModel()
 
-    val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessage)
+    val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessageAsync)
     val idealCurvatureAnimationId by viewModel.collectAsState(FramesState::idealBaseAnimationResource)
 
     val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)

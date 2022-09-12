@@ -22,7 +22,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
+import timber.log.Timber
 
 class FramesViewModel @AssistedInject constructor(
     @Assisted initialState: FramesState,
@@ -59,7 +61,7 @@ class FramesViewModel @AssistedInject constructor(
             }
         }
 
-        onAsync(FramesState::idealBaseMessage) {
+        onEach(FramesState::idealBaseMessage) {
             loadLandingMikeMessage(it)
         }
 
@@ -110,7 +112,7 @@ class FramesViewModel @AssistedInject constructor(
 
             setState {
                 copy(
-                    idealBaseMessage = idealBaseMessage,
+                    idealBaseMessageAsync = idealBaseMessage,
                     idealBaseAnimationResource = idealBaseAnimation,
                 )
             }
@@ -118,12 +120,17 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     private fun loadLandingMikeMessage(framesMessage: String) = withState {
+        Timber.i("Loading mike message")
         combine(
             saleRepository.activeSO().filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().map { it.name },
+            authenticationRepository.currentUser().retryWhen { cause, attempt ->
+                cause is IllegalStateException && attempt < 10
+            }.map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)
         }.take(1).execute(Dispatchers.IO) {
+            Timber.i("The message result: $it")
+
             if (it is Success) {
                 val result = it.invoke()
                 val message = salesApplication
@@ -160,7 +167,7 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     private fun loadMikeMessages() = withState {
-        val ibMessage = it.idealBaseMessage.invoke()
+        val ibMessage = it.idealBaseMessageAsync.invoke()
         if (ibMessage != null) {
             loadLandingMikeMessage(ibMessage.lowercase())
         }

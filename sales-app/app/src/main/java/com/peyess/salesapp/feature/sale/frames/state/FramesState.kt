@@ -41,7 +41,7 @@ data class FramesState(
     val positioningDataLeft: Async<PositioningEntity> = Uninitialized,
     val positioningDataRight: Async<PositioningEntity> = Uninitialized,
 
-    val idealBaseMessage: Async<String> = Uninitialized,
+    val idealBaseMessageAsync: Async<String> = Uninitialized,
     val idealBaseAnimationResource: Async<Int> = Uninitialized,
 
     val showMike: Boolean = false,
@@ -51,6 +51,8 @@ data class FramesState(
     val hasSetFrames: Boolean = false
 ): MavericksState {
     val _currentFramesData: FramesEntity? = currentFramesData.invoke()
+
+    val idealBaseMessage = idealBaseMessageAsync.invoke() ?: ""
 
     val areFramesNew = _currentFramesData?.areFramesNew ?: true
     val description = _currentFramesData?.description ?: ""

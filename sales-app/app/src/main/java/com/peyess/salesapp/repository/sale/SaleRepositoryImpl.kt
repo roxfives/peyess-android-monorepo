@@ -10,8 +10,6 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.payment_methods.PaymentMethod
-import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
 import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
@@ -40,15 +38,16 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
+
+private val currentSOThreshold = 10
 
 class SaleRepositoryImpl @Inject constructor(
     val salesApplication: SalesApplication,
@@ -135,6 +134,8 @@ class SaleRepositoryImpl @Inject constructor(
                 } else {
                     error("Could not find sale id")
                 }
+            }.retryWhen { cause, attempt ->
+                cause is IllegalStateException && attempt < currentSOThreshold
             }
     }
 

@@ -27,9 +27,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
+
+private const val currentUserThreshold = 10
 
 class AuthenticationRepositoryImpl @Inject constructor(
     val salesApplication: SalesApplication,
@@ -190,6 +193,9 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 }
 
                 collaboratorsDao.user(uid = it)
+                // TODO: find why it returns null
+            }.retryWhen { cause, attempt ->
+                cause is IllegalStateException && attempt < currentUserThreshold
             }
     }
 

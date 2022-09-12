@@ -284,6 +284,7 @@ private fun SymptomsAndCuriositiesAnimation(
                     modifier = Modifier.weight(1.2f),
                     title = stringResource(id = R.string.presbyopia),
                     animationId = R.raw.lottie_prescription_presbyopia,
+                    iterations = 10,
                 )
 
                 Text(
@@ -442,6 +443,7 @@ private fun SymptomsAndCuriositiesAnimation(
     modifier: Modifier = Modifier,
 
     title: String = "",
+    iterations: Int = 1,
     @RawRes animationId: Int = 0,
 ) {
     val composition by rememberLottieComposition(
@@ -465,7 +467,7 @@ private fun SymptomsAndCuriositiesAnimation(
                 .height(256.dp)
                 .width(256.dp),
             composition = composition,
-            iterations = 1,
+            iterations = iterations,
             clipSpec = LottieClipSpec.Progress(0f, 1f),
         )
     }

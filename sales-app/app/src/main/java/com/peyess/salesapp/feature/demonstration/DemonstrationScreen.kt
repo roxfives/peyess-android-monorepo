@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -208,6 +210,15 @@ private fun MultiList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategory0.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -237,6 +248,15 @@ private fun MultiList(modifier: Modifier = Modifier) {
 
             IconButton(onClick = { animationStartCategory1.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
+            }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
         }
 
@@ -270,6 +290,15 @@ private fun MultiList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategory2.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -299,6 +328,15 @@ private fun MultiList(modifier: Modifier = Modifier) {
 
             IconButton(onClick = { animationStartCategory3.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
+            }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
         }
 
@@ -414,6 +452,15 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategoryFat.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -443,6 +490,15 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
 
             IconButton(onClick = { animationStartCategoryWater.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
+            }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
         }
 
@@ -474,6 +530,15 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategoryDamage.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -503,6 +568,15 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
 
             IconButton(onClick = { animationStartCategoryClear.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
+            }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
         }
 
@@ -599,6 +673,15 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategoryGray.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -629,6 +712,15 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             IconButton(onClick = { animationStartCategoryBrown.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
             }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
         }
 
         LottieAnimation(
@@ -658,6 +750,15 @@ private fun PhotoList(modifier: Modifier = Modifier) {
 
             IconButton(onClick = { animationStartCategoryGreen.value = true }) {
                 Icon(imageVector = Icons.Filled.PlayCircle, contentDescription = "")
+            }
+
+            Divider(
+                modifier = Modifier.weight(1f),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
+            )
+
+            IconButton(onClick = { /* TODO: show more information about it */ }) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
         }
 

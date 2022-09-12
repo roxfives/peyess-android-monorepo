@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.demonstration
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -129,7 +130,10 @@ private fun MultiList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategory0.value = false
     }
@@ -141,7 +145,10 @@ private fun MultiList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategory1.value = false
     }
@@ -153,7 +160,10 @@ private fun MultiList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategory2.value = false
     }
@@ -165,7 +175,10 @@ private fun MultiList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategory3.value = false
     }
@@ -323,7 +336,10 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryFat.value = false
     }
@@ -335,7 +351,10 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryWater.value = false
     }
@@ -347,7 +366,10 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryDamage.value = false
     }
@@ -359,7 +381,10 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryClear.value = false
     }
@@ -511,7 +536,10 @@ private fun PhotoList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryGray.value = false
     }
@@ -523,7 +551,10 @@ private fun PhotoList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryBrown.value = false
     }
@@ -535,7 +566,10 @@ private fun PhotoList(modifier: Modifier = Modifier) {
         } else {
             animationProgressStart
         },
-        animationSpec = tween(animationDuration)
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            easing = LinearEasing,
+        )
     ) {
         animationStartCategoryGreen.value = false
     }

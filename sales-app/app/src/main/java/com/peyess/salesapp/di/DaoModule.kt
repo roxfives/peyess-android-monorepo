@@ -9,6 +9,8 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
+import com.peyess.salesapp.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.dao.service_order.ServiceOrderDaoImpl
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
 import com.peyess.salesapp.dao.payment_methods.PaymentMethodDaoImpl
@@ -74,6 +76,15 @@ object DaoModule {
         application: SalesApplication,
     ): OpticalStoreDao {
         return OpticalStoreDaoImpl(firebaseManager, application)
+    }
+
+    @Singleton
+    @Provides
+    fun provideServiceOrderDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): ServiceOrderDao {
+        return ServiceOrderDaoImpl(application, firebaseManager)
     }
 
     @Singleton

@@ -28,3 +28,13 @@ data class FSProductsSold(
     @PropertyName("misc")
     val misc: List<FSSoldProductDescription> = emptyList(),
 )
+
+fun FSProductsSold.toDocument(): ProductsSoldDocument {
+    return ProductsSoldDocument(
+        lenses = lenses.mapValues { entry -> entry.value.toDocument() },
+        colorings = colorings.mapValues { entry -> entry.value.toDocument() },
+        treatments = treatments.mapValues { entry -> entry.value.toDocument() },
+        frames = frames.toDocument(),
+        misc = misc.map { entry -> entry.toDocument() },
+    )
+}

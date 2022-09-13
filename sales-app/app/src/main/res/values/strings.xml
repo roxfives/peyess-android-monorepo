@@ -52,6 +52,7 @@
 
     <!--    UI Component: Sales -->
     <string name="go_next_default">Próximo</string>
+    <string name="so_card_message">Ordem de Serviço no valor de %1$s emitida no dia %2$s com responsável %3$s</string>
 
     <!-- UI Component: Welcome   -->
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
@@ -392,6 +393,8 @@
     <string name="fs_field_clients_name">name</string>
     <string name="fs_field_payments_priority">priority</string>
     <string name="fs_field_payments_is_enabled">is_enabled</string>
+    <string name="fs_field_so_created">created</string>
+
 
 
     <string name="fs_field_lenses_group_priority">priority</string>

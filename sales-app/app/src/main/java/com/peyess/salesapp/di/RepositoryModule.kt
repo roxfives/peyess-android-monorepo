@@ -28,6 +28,7 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
+import com.peyess.salesapp.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -40,6 +41,8 @@ import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.products.ProductRepositoryImpl
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.SaleRepositoryImpl
+import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.repository.service_order.ServiceOrderRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -73,6 +76,14 @@ object RepositoryModule {
         clientDao: ClientDao
     ): ClientRepository {
         return ClientRepositoryImpl(clientDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideServiceOrderRepository(
+        serviceOrderDao: ServiceOrderDao,
+    ): ServiceOrderRepository {
+        return ServiceOrderRepositoryImpl(serviceOrderDao)
     }
 
     @Provides

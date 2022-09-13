@@ -29,3 +29,13 @@ data class FSSoldProductDescription(
     @PropertyName("discount")
     val discount: FSDiscountDescription = FSDiscountDescription(),
 )
+
+fun FSSoldProductDescription.toDocument(): SoldProductDescriptionDocument {
+    return SoldProductDescriptionDocument(
+        id = id,
+        units = units,
+        nameDisplay = nameDisplay,
+        price = price,
+        discount = discount,
+    )
+}

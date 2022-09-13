@@ -10,6 +10,7 @@ import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.clients.ClientRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -22,11 +23,13 @@ class MainViewModel @AssistedInject constructor(
     val authenticationRepository: AuthenticationRepository,
     val saleRepository: SaleRepository,
     private val clientRepository: ClientRepository,
+    private val serviceOrderRepository: ServiceOrderRepository,
     val gambetaDao: GambetaDao,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
         loadClients()
+        loadServiceOrders()
 
         setState {
             copy(
@@ -58,6 +61,15 @@ class MainViewModel @AssistedInject constructor(
             .execute {
                 copy(clientListAsync = it)
             }
+    }
+
+    private fun loadServiceOrders() = withState {
+        serviceOrderRepository
+            .serviceOrders()
+            .execute(Dispatchers.IO) {
+                copy(serviceOrderListAsync = it)
+            }
+
     }
 
     fun startNewSale() = withState {

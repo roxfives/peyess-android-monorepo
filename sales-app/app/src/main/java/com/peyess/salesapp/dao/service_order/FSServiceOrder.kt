@@ -2,6 +2,8 @@ package com.peyess.salesapp.dao.service_order
 
 import androidx.annotation.Keep
 import com.google.firebase.firestore.PropertyName
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.Date
 
 @Keep
@@ -332,3 +334,114 @@ data class FSServiceOrder(
     @PropertyName("total")
     val total:  Double = 0.0,
 )
+
+fun FSServiceOrder.toDocument(): ServiceOrderDocument {
+    return ServiceOrderDocument(
+        id = id,
+
+        hid = hid,
+        directorUid = directorUid,
+        storeId = storeId,
+
+        picture = picture,
+
+        salespersonUid = salespersonUid,
+
+        clientContactType = clientContactType,
+        clientContactInfo = clientContactInfo,
+        clientDocument = clientDocument,
+        clientName = clientName,
+        clientPicture = clientPicture,
+        clientUid = clientUid,
+
+        responsibleContactType = responsibleContactType,
+        responsibleContactInfo = responsibleContactInfo,
+        responsibleDocument = responsibleDocument,
+        responsibleName = responsibleName,
+        responsiblePicture = responsiblePicture,
+        responsibleUid = responsibleUid,
+
+        hasWitness = hasWitness,
+        witnessContactType = witnessContactType,
+        witnessContactInfo = witnessContactInfo,
+        witnessDocument = witnessDocument,
+        witnessName = witnessName,
+        witnessPicture = witnessPicture,
+        witnessUid = witnessUid,
+
+        // Lifecycle data
+        state = state,
+
+        rectified = rectified,
+
+        areThereIssues = areThereIssues,
+        issueDescription = issueDescription,
+
+        // Sales data
+        samePurchaseSo = samePurchaseSo,
+
+        // Payment data
+        payerUids = payerUids,
+
+        products = products.toDocument(),
+
+        // Denormilized prescription data
+        prescriptionId = prescriptionId,
+        lCylinder = lCylinder,
+        lSpheric = lSpheric,
+        lAxisDegree = lAxisDegree,
+        lAddition = lAddition,
+        lPrismAxis = lPrismAxis,
+        lPrismDegree = lPrismDegree,
+        lPrismPos = lPrismPos,
+
+
+        rCylinder = rCylinder,
+        rSpheric = rSpheric,
+        rAxisDegree = rAxisDegree,
+        rAddition = rAddition,
+        rPrismAxis = rPrismAxis,
+        rPrismDegree = rPrismDegree,
+        rPrismPos = rPrismPos,
+
+        // Denormilized measuring data
+        lIpd = lIpd,
+
+        lMeasuringId = lMeasuringId,
+        rMeasuringId = rMeasuringId,
+
+        lBridge = lBridge,
+        lDiameter = lDiameter,
+        lHe = lHe,
+        lHorizontalBridgeHoop = lHorizontalBridgeHoop,
+        lHorizontalHoop = lHorizontalHoop,
+        lVerticalHoop = lVerticalHoop,
+
+        rIpd = rIpd,
+
+        rBridge = rBridge,
+        rDiameter = rDiameter,
+        rHe = rHe,
+        rHorizontalBridgeHoop = rHorizontalBridgeHoop,
+        rHorizontalHoop = rHorizontalHoop,
+        rVerticalHoop = rVerticalHoop,
+
+        soldBy = soldBy,
+        measureConfirmedBy = measureConfirmedBy,
+        discountAllowedBy = discountAllowedBy,
+
+        created = created.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate(),
+        createdBy = createdBy,
+        createAllowedBy = createAllowedBy,
+
+        updated = updated.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate(),
+        updatedBy = updatedBy,
+        updateAllowedBy = updateAllowedBy,
+
+        total = total,
+    )
+}

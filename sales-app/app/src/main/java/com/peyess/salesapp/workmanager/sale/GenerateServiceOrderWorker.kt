@@ -344,6 +344,8 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             }
 
             runBlocking {
+                Timber.i("Adding service order $soId to fb at $soPath")
+
                 firestore
                     .collection(soPath)
                     .document(soId ?: "")

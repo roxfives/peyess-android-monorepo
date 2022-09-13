@@ -61,10 +61,6 @@ class FramesViewModel @AssistedInject constructor(
             }
         }
 
-        onEach(FramesState::idealBaseMessage) {
-            loadLandingMikeMessage(it)
-        }
-
         onEach(FramesState::currentPrescriptionData) {
             val messageId: Int
             val animationId: Int
@@ -87,6 +83,8 @@ class FramesViewModel @AssistedInject constructor(
                         R.string.ib_message_greater_then_8
                     }
 
+                    // TODO: Refactor this out of here
+                    loadLandingMikeMessage(salesApplication.stringResource(id = messageId).lowercase())
                     Success(salesApplication.stringResource(messageId))
                 }
             }
@@ -169,10 +167,10 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     private fun loadMikeMessages() = withState {
-        val ibMessage = it.idealBaseMessageAsync.invoke()
-        if (ibMessage != null) {
-            loadLandingMikeMessage(ibMessage.lowercase())
-        }
+//        val ibMessage = it.idealBaseMessageAsync.invoke()
+//        if (ibMessage != null) {
+//            loadLandingMikeMessage(ibMessage.lowercase())
+//        }
 
         saleRepository
             .activeSO()

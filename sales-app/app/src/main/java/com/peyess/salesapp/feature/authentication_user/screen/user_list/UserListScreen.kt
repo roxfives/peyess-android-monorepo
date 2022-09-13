@@ -26,6 +26,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -221,7 +222,7 @@ private fun Header(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    imageVector = Icons.Filled.Details,
+                    imageVector = Icons.Filled.Info,
                     tint = MaterialTheme.colors.onPrimary,
                     contentDescription = "",
                 )

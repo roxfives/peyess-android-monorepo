@@ -36,6 +36,11 @@ fun saleEnterTransition(transitionDuration: Int = 500):
                 initialOffsetX = { it },
                 animationSpec = tween(transitionDuration),
             )
+        SalesAppScreens.SaleWelcome ->
+            slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(transitionDuration),
+            )
         else ->
             slideInHorizontally(
                 initialOffsetX = { -it },

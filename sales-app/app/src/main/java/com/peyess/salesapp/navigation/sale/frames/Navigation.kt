@@ -14,6 +14,8 @@ import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
 import com.peyess.salesapp.feature.sale.frames.SetFramesScreen
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
+import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTransition
+import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -54,8 +56,8 @@ fun buildFramesNavGraph(
 
     builder.composable(
         route = SalesAppScreens.SetFramesData.name,
-        enterTransition = framesEnterTransition(),
-        exitTransition = framesExitTransition()
+        enterTransition = setFramesEnterTransition(),
+        exitTransition = setFramesExitTransition()
     ) {
         SetFramesScreen(
             modifier = modifier

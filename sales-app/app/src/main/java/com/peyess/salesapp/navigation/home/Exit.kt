@@ -36,7 +36,7 @@ fun saleExitTransition(transitionDuration: Int = 500):
             )
         else ->
             slideOutVertically (
-                targetOffsetY = { it },
+                targetOffsetY = { -it },
                 animationSpec = tween(transitionDuration),
             )
     }

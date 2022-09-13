@@ -14,5 +14,8 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun setFramesEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-        scaleIn()
+        slideInVertically (
+                initialOffsetY = { it },
+                animationSpec = tween(transitionDuration),
+        )
 }

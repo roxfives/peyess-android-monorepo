@@ -13,5 +13,14 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun seventhStepExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
-        scaleOut()
+        when (SalesAppScreens.fromRoute(targetState.destination.route)) {
+                SalesAppScreens.LensSuggestion -> slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(transitionDuration),
+                )
+                else -> slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(transitionDuration),
+                )
+        }
 }

@@ -13,5 +13,8 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun setFramesExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
-        scaleOut()
+        slideOutVertically (
+                targetOffsetY = { -it },
+                animationSpec = tween(transitionDuration),
+        )
 }

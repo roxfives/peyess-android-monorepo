@@ -14,5 +14,16 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun prescriptionLensTypeScreenEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-        scaleIn()
+        when (SalesAppScreens.fromRoute(initialState.destination.route)) {
+                SalesAppScreens.SaleWelcome ->
+                        slideInHorizontally(
+                                initialOffsetX = { it },
+                                animationSpec = tween(transitionDuration),
+                        )
+                else ->
+                        slideInHorizontally(
+                                initialOffsetX = { -it },
+                                animationSpec = tween(transitionDuration),
+                        )
+        }
 }

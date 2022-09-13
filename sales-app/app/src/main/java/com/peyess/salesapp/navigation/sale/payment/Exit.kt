@@ -13,5 +13,8 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun paymentExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
-        scaleOut()
+        slideOutHorizontally(
+                targetOffsetX = { it },
+                animationSpec = tween(transitionDuration),
+        )
 }

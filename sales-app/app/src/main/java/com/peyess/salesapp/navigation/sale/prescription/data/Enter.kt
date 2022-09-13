@@ -14,11 +14,30 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 @OptIn(ExperimentalAnimationApi::class)
 fun prescriptionDataScreenEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-        scaleIn()
+        when (SalesAppScreens.fromRoute(initialState.destination.route)) {
+                SalesAppScreens.SalePrescriptionPicture ->
+                        slideInHorizontally(
+                                initialOffsetX = { it },
+                                animationSpec = tween(transitionDuration),
+                        )
+                SalesAppScreens.SalePrescriptionDataSymptoms ->
+                        slideInVertically(
+                                initialOffsetY = { it },
+                                animationSpec = tween(transitionDuration),
+                        )
+                else ->
+                        slideInHorizontally(
+                                initialOffsetX = { -it },
+                                animationSpec = tween(transitionDuration),
+                        )
+        }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun prescriptionDataSymptomsScreenEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
-        scaleIn()
+        slideInVertically (
+                initialOffsetY = { it },
+                animationSpec = tween(transitionDuration),
+        )
 }

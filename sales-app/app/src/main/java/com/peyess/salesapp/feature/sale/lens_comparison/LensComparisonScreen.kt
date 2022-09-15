@@ -335,37 +335,41 @@ private fun LensComparisonCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Icon(
-                imageVector = if (lensComparison.pickedLens.hasFilterUv) {
-                    Icons.Filled.WbTwilight
-                } else {
-                    Icons.Filled.WbSunny
-                },
-                tint = if (lensComparison.pickedLens.hasFilterUv) {
-                    withFilterColor
-                } else {
-                    noFilterColor
-                },
-                contentDescription = "",
-            )
+            if (lensComparison.pickedLens.hasFilterBlue) {
+                Icon(
+                    imageVector = if (lensComparison.pickedLens.hasFilterUv) {
+                        Icons.Filled.WbTwilight
+                    } else {
+                        Icons.Filled.WbSunny
+                    },
+                    tint = if (lensComparison.pickedLens.hasFilterUv) {
+                        withFilterColor
+                    } else {
+                        noFilterColor
+                    },
+                    contentDescription = "",
+                )
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+            }
 
-            Icon(
-                imageVector = if (lensComparison.pickedLens.hasFilterBlue) {
-                    Icons.Filled.FlashlightOn
-                } else {
-                    Icons.Filled.FlashlightOff
-                },
-                tint = if (lensComparison.pickedLens.hasFilterBlue) {
-                    withFilterColor
-                } else {
-                    noFilterColor
-                },
-                contentDescription = "",
-            )
+            if (lensComparison.pickedLens.hasFilterUv) {
+                Icon(
+                    imageVector = if (lensComparison.pickedLens.hasFilterBlue) {
+                        Icons.Filled.FlashlightOn
+                    } else {
+                        Icons.Filled.FlashlightOff
+                    },
+                    tint = if (lensComparison.pickedLens.hasFilterBlue) {
+                        withFilterColor
+                    } else {
+                        noFilterColor
+                    },
+                    contentDescription = "",
+                )
 
-            Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+            }
         }
 
         Row(

@@ -1384,12 +1384,13 @@ private fun LensCard(
                         } else {
                             Icons.Filled.WbSunny
                         },
-                        tint = if (lens.supportedDisponibilitites.isEmpty()) {
+                        tint = if (
+                            lens.supportedDisponibilitites.isEmpty()
+                            || !lens.hasFilterUv
+                        ) {
                             Color.Gray
-                        } else if (lens.hasFilterUv) {
-                            withFilterColor
                         } else {
-                            noFilterColor
+                            withFilterColor
                         },
                         contentDescription = "",
                     )
@@ -1402,12 +1403,13 @@ private fun LensCard(
                         } else {
                             Icons.Filled.FlashlightOff
                         },
-                        tint = if (lens.supportedDisponibilitites.isEmpty()) {
+                        tint = if (
+                            lens.supportedDisponibilitites.isEmpty()
+                            || !lens.hasFilterBlue
+                        ) {
                             Color.Gray
-                        } else if (lens.hasFilterBlue) {
-                            withFilterColor
                         } else {
-                            noFilterColor
+                            withFilterColor
                         },
                         contentDescription = "",
                     )
@@ -1640,90 +1642,94 @@ private fun LensSuggestionCard(
                     style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
                 )
 
-                Divider(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 12.dp)
-                        .fillMaxWidth(1f),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = if (lens.hasFilterUv) {
-                            Icons.Filled.WbTwilight
-                        } else {
-                            Icons.Filled.WbSunny
-                        },
-                        tint = if (lens.hasFilterUv) {
-                            withFilterColor
-                        } else {
-                            noFilterColor
-                        },
-                        contentDescription = "",
+                if (lens.hasFilterUv) {
+                    Divider(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                            .fillMaxWidth(1f),
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = if (lens.hasFilterUv) {
+                                Icons.Filled.WbTwilight
+                            } else {
+                                Icons.Filled.WbSunny
+                            },
+                            tint = if (lens.hasFilterUv) {
+                                withFilterColor
+                            } else {
+                                noFilterColor
+                            },
+                            contentDescription = "",
+                        )
 
-                    Text(
-                        text = if (lens.hasFilterUv) {
-                            "Com filtro ultravioleta"
-                        } else {
-                            "Sem filtro ultravioleta"
-                        },
-                        color = if (lens.hasFilterUv) {
-                            withFilterColor
-                        } else {
-                            noFilterColor
-                        },
-                        style = MaterialTheme.typography.body1
-                            .copy(textAlign = TextAlign.Center),
-                    )
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = if (lens.hasFilterUv) {
+                                "Com filtro ultravioleta"
+                            } else {
+                                "Sem filtro ultravioleta"
+                            },
+                            color = if (lens.hasFilterUv) {
+                                withFilterColor
+                            } else {
+                                noFilterColor
+                            },
+                            style = MaterialTheme.typography.body1
+                                .copy(textAlign = TextAlign.Center),
+                        )
+                    }
                 }
 
-                Divider(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 12.dp)
-                        .fillMaxWidth(1f),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = if (lens.hasFilterBlue) {
-                            Icons.Filled.FlashlightOff
-                        } else {
-                            Icons.Filled.FlashlightOn
-                        },
-                        tint = if (lens.hasFilterBlue) {
-                            withFilterColor
-                        } else {
-                            noFilterColor
-                        },
-                        contentDescription = "",
+                if (lens.hasFilterBlue) {
+                    Divider(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp, horizontal = 12.dp)
+                            .fillMaxWidth(1f),
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = if (lens.hasFilterBlue) {
+                                Icons.Filled.FlashlightOff
+                            } else {
+                                Icons.Filled.FlashlightOn
+                            },
+                            tint = if (lens.hasFilterBlue) {
+                                withFilterColor
+                            } else {
+                                noFilterColor
+                            },
+                            contentDescription = "",
+                        )
 
-                    Text(
-                        text = if (lens.hasFilterBlue) {
-                            "Com filtro para luz azul"
-                        } else {
-                            "Sem filtro para luz azul"
-                        },
-                        color = if (lens.hasFilterBlue) {
-                            withFilterColor
-                        } else {
-                            noFilterColor
-                        },
-                        style = MaterialTheme.typography.body1
-                            .copy(textAlign = TextAlign.Center),
-                    )
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = if (lens.hasFilterBlue) {
+                                "Com filtro para luz azul"
+                            } else {
+                                "Sem filtro para luz azul"
+                            },
+                            color = if (lens.hasFilterBlue) {
+                                withFilterColor
+                            } else {
+                                noFilterColor
+                            },
+                            style = MaterialTheme.typography.body1
+                                .copy(textAlign = TextAlign.Center),
+                        )
+                    }
                 }
 
                 Divider(

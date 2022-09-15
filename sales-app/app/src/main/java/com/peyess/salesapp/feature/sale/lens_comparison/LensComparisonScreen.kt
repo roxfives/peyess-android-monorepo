@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_comparison
 
+import android.icu.text.NumberFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -10,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,8 +30,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.LocalSee
-import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -54,7 +52,6 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -413,7 +410,9 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    name = lensComparison.pickedLens.tech,
+                    content = lensComparison.pickedLens.tech,
+                    // TODO: use string resource
+                    subtitle = "Tecnologia",
                     dialogState = techDialogState,
                 )
 
@@ -425,7 +424,9 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    name =  lensComparison.pickedLens.material,
+                    content =  lensComparison.pickedLens.material,
+                    // TODO: use string resource
+                    subtitle = "Material",
                     dialogState = materialDialogState,
                 )
             }
@@ -454,7 +455,9 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    name = treatmentName,
+                    content = treatmentName,
+                    // TODO: use string resource
+                    subtitle = "Tratamento",
                     dialogState = treatmentDialogState,
                 )
 
@@ -467,7 +470,9 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    name = coloringName,
+                    content = coloringName,
+                    // TODO: use string resource
+                    subtitle = "Coloração",
                     dialogState = coloringDialogState,
                 )
             }
@@ -481,10 +486,10 @@ private fun LensComparisonCard(
                     .background(color = MaterialTheme.colors.primary.copy(alpha = 0.3f))
                     .clickable { onSelectComparison() },
             ) {
-                Text(
+                PriceTag(
                     modifier = Modifier.align(Alignment.Center),
-                    // TODO: localize price symbol
-                    text = "R$ %.2f".format(individualComparison.finalPrice),
+                    pricePerMonth = NumberFormat.getCurrencyInstance()
+                        .format(individualComparison.finalPrice / 10f)
                 )
 
                 Icon(
@@ -500,28 +505,37 @@ private fun LensComparisonCard(
 @Composable
 private fun FeatureSelection(
     modifier: Modifier = Modifier,
-    name: String = "",
+    content: String = "",
+    subtitle: String = "",
     enabled: Boolean = true,
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    onClick: () -> Unit = {},
 ) {
-    OutlinedButton(
-        modifier = modifier
-            .height(SalesAppTheme.dimensions.minimum_touch_target),
-        border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        OutlinedButton(
+            modifier = modifier
+                .height(SalesAppTheme.dimensions.minimum_touch_target),
+            border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary),
 //        colors = ButtonDefaults
 //            .buttonColors(
 //                backgroundColor = MaterialTheme.colors.primary,
 //                disabledBackgroundColor = Color.Gray.copy(alpha = 0.5f),
 //            ),
-        enabled = enabled,
-        onClick = { dialogState.show() },
-    ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.button
-                .copy(textAlign = TextAlign.Center),
-        )
+            enabled = enabled,
+            onClick = { dialogState.show() },
+        ) {
+            Text(
+                text = content,
+                style = MaterialTheme.typography.button
+                    .copy(textAlign = TextAlign.Center),
+            )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(text = subtitle, style = MaterialTheme.typography.caption)
     }
 }
 
@@ -554,8 +568,27 @@ private fun PriceDifference(
     } else {
         ""
     }
-    priceTag += "R$ %.2f".format(abs(priceDiff / installments))
+    priceTag += NumberFormat.getCurrencyInstance()
+        .format(abs(priceDiff / installments))
 
+    PriceTag(
+        modifier = modifier,
+        style = style,
+        color = color,
+        pricePerMonth = priceTag,
+        installments = installments,
+    )
+}
+
+@Preview
+@Composable
+private fun PriceTag(
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.h6,
+    color: Color = MaterialTheme.colors.primary,
+    pricePerMonth: String = "",
+    installments: Double = 10.0,
+) {
     Box(modifier = modifier) {
         Text(
             modifier = Modifier
@@ -565,7 +598,7 @@ private fun PriceDifference(
                 )
                 .align(Alignment.Center),
             // TODO: localize price symbol
-            text = priceTag,
+            text = pricePerMonth,
             style = MaterialTheme.typography.body1,
             color = color,
         )
@@ -583,7 +616,7 @@ private fun PriceDifference(
 @Composable
 private fun FeatureSelectionPreview() {
     SalesAppTheme {
-        FeatureSelection(name = "Tratamentos")
+        FeatureSelection(content = "X-ray vision", subtitle = "Tratamento")
     }
 }
 

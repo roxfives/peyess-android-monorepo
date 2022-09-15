@@ -81,12 +81,17 @@ class LensPickViewModel @AssistedInject constructor(
             setState { copy(filter = filter.copy(descriptionId = it)) }
         }
 
+        onEach(LensPickState::hasFilterUv) {
+            setState { copy(filter = filter.copy(hasFilterUv = it)) }
+        }
+
+        onEach(LensPickState::hasFilterBlue) {
+            setState { copy(filter = filter.copy(hasFilterBlue = it)) }
+        }
+
         onEach(LensPickState::familyLensFilterId) { familyId ->
             withState {
-                Timber.i("Getting descriptions")
-
                 productRepository.lensDescription(familyId).execute(Dispatchers.IO) { descriptions ->
-                    Timber.i("Got descriptions $descriptions")
                     copy(descriptionFilter = descriptions)
                 }
             }
@@ -226,6 +231,15 @@ class LensPickViewModel @AssistedInject constructor(
             descriptionLensFilter = descriptionName,
         )
     }
+
+    fun onFilterUvChanged(isSelected: Boolean) = setState {
+        copy(hasFilterUv = isSelected)
+    }
+
+    fun onFilterBlueChanged(isSelected: Boolean) = setState {
+        copy(hasFilterBlue = isSelected)
+    }
+
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun onPickLens(lensId: String) = withState {

@@ -47,6 +47,9 @@ data class LensPickState(
     val familyFilter: Async<List<FilterLensFamilyEntity>> = Uninitialized,
     val descriptionFilter: Async<List<LensDescription>> = Uninitialized,
 
+    val hasFilterUv: Boolean = false,
+    val hasFilterBlue: Boolean = false,
+
     val groupsList: Async<List<LensGroup>> = Uninitialized,
 
     val hasAddedToSuggestion: Boolean = false,

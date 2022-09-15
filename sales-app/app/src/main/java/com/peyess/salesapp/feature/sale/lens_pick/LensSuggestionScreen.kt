@@ -92,6 +92,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.model.products.LensGroup
 import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
 import com.peyess.salesapp.ui.component.card.ExpandableCard
+import com.peyess.salesapp.ui.component.chip.PeyessContentChip
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
@@ -154,6 +155,9 @@ fun LensSuggestionScreen(
     val lensDescription by viewModel.collectAsState(LensPickState::descriptionFilter)
     val lensDescriptionFilter by viewModel.collectAsState(LensPickState::descriptionLensFilter)
 
+    val hasFilterUv by viewModel.collectAsState(LensPickState::hasFilterUv)
+    val hasFilterBlue by viewModel.collectAsState(LensPickState::hasFilterBlue)
+
     val lensSuggestions by viewModel.suggestions().collectAsState(listOf())
 
     val isAddingSuggestion by viewModel.collectAsState(LensPickState::isAddingToSuggestion)
@@ -187,6 +191,11 @@ fun LensSuggestionScreen(
         isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
         isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
         isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
+
+        hasFilterUv = hasFilterUv,
+        onFilterUvChanged = viewModel::onFilterUvChanged,
+        hasFilterBlue = hasFilterBlue,
+        onFilterBlueChanged = viewModel::onFilterBlueChanged,
 
         selectedLensGroup = lensGroupsFilter,
         lensGroups = lensGroups,
@@ -234,6 +243,11 @@ private fun LensSuggestionScreenImpl(
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,
     isMaterialLensFilterEnabled: Boolean = false,
+
+    hasFilterUv: Boolean = false,
+    onFilterUvChanged: (Boolean) -> Unit = {},
+    hasFilterBlue: Boolean = false,
+    onFilterBlueChanged: (Boolean) -> Unit = {},
 
     selectedLensGroup: String = "",
     lensGroups: Async<List<LensGroup>> = Uninitialized,
@@ -345,6 +359,11 @@ private fun LensSuggestionScreenImpl(
                 isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
                 isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
                 isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
+
+                hasFilterUv = hasFilterUv,
+                onFilterUvChanged = onFilterUvChanged,
+                hasFilterBlue = hasFilterBlue,
+                onFilterBlueChanged = onFilterBlueChanged,
 
                 selectedLensGroup = selectedLensGroup,
                 groupsDialogState = groupDialogState,
@@ -739,6 +758,11 @@ private fun LensSuggestionList(
     isDescriptionLensFilterEnabled: Boolean = false,
     isMaterialLensFilterEnabled: Boolean = false,
 
+    hasFilterUv: Boolean = false,
+    onFilterUvChanged: (Boolean) -> Unit = {},
+    hasFilterBlue: Boolean = false,
+    onFilterBlueChanged: (Boolean) -> Unit = {},
+
     selectedLensGroup: String = "",
     groupsDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
@@ -945,6 +969,64 @@ private fun LensSuggestionList(
 //                        },
 //                        onClick = { groupsDialogState.show() }
 //                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    PeyessContentChip(
+                        isSelected = hasFilterUv,
+                        onSelectionChanged = onFilterUvChanged,
+                        content = {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Filled.WbSunny,
+                                    contentDescription = "",
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(text = "Filtro para ultravioleta")
+                            }
+                        },
+
+                        toggleOnBackgroundColor = MaterialTheme.colors.background,
+                        toggleOnBorderColor = MaterialTheme.colors.background,
+                        toggleOnTextColor = MaterialTheme.colors.onBackground,
+                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    PeyessContentChip(
+                        isSelected = hasFilterBlue,
+                        onSelectionChanged = onFilterBlueChanged,
+                        content = {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Filled.FlashlightOn,
+                                    contentDescription = "",
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(text = "Filtro para luz azul")
+                            }
+                        },
+
+                        toggleOnBackgroundColor = MaterialTheme.colors.background,
+                        toggleOnBorderColor = MaterialTheme.colors.background,
+                        toggleOnTextColor = MaterialTheme.colors.onBackground,
+                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                    )
                 }
             }
         },
@@ -1798,6 +1880,8 @@ private fun LensCardPreview() {
                     "Alta tecnologia aliada a uma Visão mais nítida",
                 ),
 
+                isEnabled = true,
+                isLocalEnabled = true,
                 hasFilterBlue = true,
                 hasFilterUv = true,
             ),

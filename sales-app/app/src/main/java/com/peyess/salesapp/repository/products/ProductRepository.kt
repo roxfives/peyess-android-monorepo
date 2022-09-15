@@ -24,6 +24,9 @@ data class LensFilter(
     val materialId: String = "",
     val familyId: String = "",
     val descriptionId: String = "",
+
+    val hasFilterUv: Boolean = false,
+    val hasFilterBlue: Boolean = false,
 )
 
 interface ProductRepository {

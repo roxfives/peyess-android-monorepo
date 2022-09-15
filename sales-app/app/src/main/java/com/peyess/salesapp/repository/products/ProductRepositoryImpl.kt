@@ -138,6 +138,14 @@ class ProductRepositoryImpl @Inject constructor(
             queryConditions.add(" design_id = \'${lensFilter.descriptionId}\' ")
         }
 
+        if (lensFilter.hasFilterUv) {
+            queryConditions.add(" has_filter_uv = true ")
+        }
+
+        if (lensFilter.hasFilterBlue) {
+            queryConditions.add(" has_filter_blue = true ")
+        }
+
         var conditions = if (queryConditions.size > 0) {
             " WHERE ${queryConditions[0]} "
         } else {

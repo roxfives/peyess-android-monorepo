@@ -70,6 +70,12 @@ data class LocalLensEntity(
     @ColumnInfo(name = "has_addition")
     val hasAddition: Boolean = false,
 
+    @ColumnInfo(name = "has_filter_blue")
+    val hasFilterBlue: Boolean = false,
+
+    @ColumnInfo(name = "has_filter_uv")
+    val hasFilterUv: Boolean = false,
+
     @ColumnInfo(name = "is_coloring_treatment_mutex")
     val isColoringTreatmentMutex: Boolean = false,
 

@@ -18,7 +18,6 @@ import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 )
 data class FilterLensSpecialtyEntity(
     @PrimaryKey val id: String = "",
-    @ColumnInfo(name = "lens_id") val lensId: String = "",
     @ColumnInfo(name = "name") val name: String = "",
 ) {
     companion object {

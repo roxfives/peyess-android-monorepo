@@ -403,7 +403,6 @@ fun FSLocalLens.toFilterLensMaterial(): FilterLensMaterialEntity {
 fun FSLocalLens.toFilterLensSpecialty(): FilterLensSpecialtyEntity {
     return FilterLensSpecialtyEntity(
         id = specialtyId,
-        lensId = id,
         name = specialty,
     )
 }

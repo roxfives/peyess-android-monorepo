@@ -222,6 +222,20 @@
     <string name="dialog_select_coloring">Selecione a coloração</string>
     <string name="dialog_select_treatment">Selecione a tratamento</string>
 
+    <!-- UI Component: Demonstration   -->
+    <string name="demonstration_multi_category_0">Alto Desempenho</string>
+    <string name="demonstration_multi_category_1">Melhor Escolha</string>
+    <string name="demonstration_multi_category_2">Melhor Custo</string>
+    <string name="demonstration_multi_category_3">Tradicional"</string>
+    <string name="demonstration_treatment_fat">Gordura"</string>
+    <string name="demonstration_treatment_water">Água"</string>
+    <string name="demonstration_treatment_damaged">Riscos"</string>
+    <string name="demonstration_treatment_clear">Nítido"</string>
+    <string name="demonstration_transition_gray">Fotossensível Cinza</string>
+    <string name="demonstration_transition_brown">Fotossensível Marrom</string>
+    <string name="demonstration_transition_green">Fotossensível Verde</string>
+
+
     <!--  UI Component: PickClient  -->
     <string name="no_clients_yet">Ainda não há clientes cadastrados</string>
     <string name="btn_add_new_client">Adicionar cliente</string>

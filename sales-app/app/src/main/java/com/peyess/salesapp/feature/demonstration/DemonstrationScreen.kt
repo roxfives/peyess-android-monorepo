@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -115,7 +116,6 @@ fun DemonstrationScreenImpl(
 
 @Composable
 private fun MultiList(modifier: Modifier = Modifier) {
-    // TODO: use string resource
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -123,25 +123,25 @@ private fun MultiList(modifier: Modifier = Modifier) {
     ) {
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Alto Desempenho",
+            title = stringResource(id = R.string.demonstration_multi_category_0),
             animationId = R.raw.lottie_demonstration_multi_category_0,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Melhor Escolha",
+            title = stringResource(id = R.string.demonstration_multi_category_1),
             animationId = R.raw.lottie_demonstration_multi_category_1,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Melhor Custo x Benefício",
+            title = stringResource(id = R.string.demonstration_multi_category_2),
             animationId = R.raw.lottie_demonstration_multi_category_2,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Tradicional",
+            title = stringResource(id = R.string.demonstration_multi_category_3),
             animationId = R.raw.lottie_demonstration_multi_category_3,
         )
     }
@@ -149,7 +149,6 @@ private fun MultiList(modifier: Modifier = Modifier) {
 
 @Composable
 private fun TreatmentsList(modifier: Modifier = Modifier) {
-    // TODO: use string resource
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -157,25 +156,25 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
     ) {
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Gordura",
+            title = stringResource(id = R.string.demonstration_treatment_fat),
             animationId = R.raw.lottie_demonstration_treatment_fat,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Água",
+            title = stringResource(id = R.string.demonstration_treatment_water),
             animationId = R.raw.lottie_demonstration_treatment_water,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Riscos",
+            title = stringResource(id = R.string.demonstration_treatment_damaged),
             animationId = R.raw.lottie_demonstration_treatment_damaged,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Nítido",
+            title = stringResource(id = R.string.demonstration_treatment_clear),
             animationId = R.raw.lottie_demonstration_treatment_clear,
         )
     }
@@ -183,7 +182,6 @@ private fun TreatmentsList(modifier: Modifier = Modifier) {
 
 @Composable
 private fun PhotoList(modifier: Modifier = Modifier) {
-    // TODO: use string resource
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -191,19 +189,19 @@ private fun PhotoList(modifier: Modifier = Modifier) {
     ) {
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Fotossensível Cinza",
+            title = stringResource(id = R.string.demonstration_transition_gray),
             animationId = R.raw.lottie_demonstration_transition_gray,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Fotossensível Marrom",
+            title = stringResource(id = R.string.demonstration_transition_brown),
             animationId = R.raw.lottie_demonstration_transition_brown,
         )
 
         LensAnimation(
             modifier = Modifier.fillMaxWidth(),
-            title = "Fotossensível Verde",
+            title = stringResource(id = R.string.demonstration_transition_green),
             animationId = R.raw.lottie_demonstration_transition_green,
         )
     }

@@ -47,6 +47,10 @@ data class LensSuggestionModel(
 
     val hasAddition: Boolean = false,
 
+    val hasFilterUv: Boolean = false,
+
+    val hasFilterBlue: Boolean = false,
+
     val isColoringTreatmentMutex: Boolean = false,
 
     val isColoringDiscounted: Boolean = false,
@@ -145,6 +149,9 @@ fun LocalLensEntity.toSuggestionModel(
         materialObservation = materialObservation,
 
         hasAddition = hasAddition,
+
+        hasFilterBlue = hasFilterBlue,
+        hasFilterUv = hasFilterUv,
 
         isColoringTreatmentMutex = isColoringTreatmentMutex,
 

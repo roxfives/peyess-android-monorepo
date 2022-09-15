@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_pick
 
+import android.icu.text.NumberFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -37,9 +38,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SentimentDissatisfied
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -99,6 +104,10 @@ import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 
 private val frontLayerheight = 360.dp
+
+
+private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
+private val withFilterColor = Color.hsv(79f, 1f, 0.77f)
 
 @Composable
 fun LensSuggestionScreen(
@@ -1027,37 +1036,44 @@ private fun LensCard(
         ),
 
         visibleContent = {
-            Row(
+            Column(
                 modifier = Modifier
                     .height(60.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                LensCircle(
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
-                        if (lens.needsCheck) {
-                            Color.Yellow
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LensCircle(
+                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            if (lens.needsCheck) {
+                                Color.Yellow
+                            } else {
+                                Color.Green
+                            }
                         } else {
-                            Color.Green
+                            Color.Gray
                         }
-                    } else {
-                        Color.Gray
-                    }
-                )
+                    )
 
-                Spacer(modifier = Modifier.width(32.dp))
+                    Spacer(modifier = Modifier.width(32.dp))
 
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = lens.name(),
-                    style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray
-                    }
-                )
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = lens.name(),
+                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            Color.Gray
+                        }
+                    )
+                }
             }
         },
 
@@ -1161,6 +1177,58 @@ private fun LensCard(
                     )
                 }
 
+                Spacer(modifier = Modifier.height(24.dp))
+                Divider(
+                    modifier = Modifier.padding(horizontal = 120.dp),
+                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
+                    } else {
+                        Color.Gray
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = if (lens.hasFilterUv) {
+                            Icons.Filled.WbTwilight
+                        } else {
+                            Icons.Filled.WbSunny
+                        },
+                        tint = if (lens.supportedDisponibilitites.isEmpty()) {
+                            Color.Gray
+                        } else if (lens.hasFilterUv) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Icon(
+                        imageVector = if (lens.hasFilterBlue) {
+                            Icons.Filled.FlashlightOn
+                        } else {
+                            Icons.Filled.FlashlightOff
+                        },
+                        tint = if (lens.supportedDisponibilitites.isEmpty()) {
+                            Color.Gray
+                        } else if (lens.hasFilterBlue) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        contentDescription = "",
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
@@ -1244,7 +1312,7 @@ private fun LensPrice(
                 )
                 .align(Alignment.Center),
             // TODO: localize price symbol
-            text = "R$ %.2f".format(price / installments),
+            text = NumberFormat.getCurrencyInstance().format(price / installments),
             style = MaterialTheme.typography.h6,
             color = color,
         )
@@ -1326,7 +1394,9 @@ private fun LensSuggestionCard(
     ) {
         if (lens != null) {
             Column(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -1385,6 +1455,92 @@ private fun LensSuggestionCard(
                     text = lens.material,
                     style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
                 )
+
+                Divider(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 12.dp)
+                        .fillMaxWidth(1f),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = if (lens.hasFilterUv) {
+                            Icons.Filled.WbTwilight
+                        } else {
+                            Icons.Filled.WbSunny
+                        },
+                        tint = if (lens.hasFilterUv) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = if (lens.hasFilterUv) {
+                            "Com filtro ultravioleta"
+                        } else {
+                            "Sem filtro ultravioleta"
+                        },
+                        color = if (lens.hasFilterUv) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        style = MaterialTheme.typography.body1
+                            .copy(textAlign = TextAlign.Center),
+                    )
+                }
+
+                Divider(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp, horizontal = 12.dp)
+                        .fillMaxWidth(1f),
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = if (lens.hasFilterBlue) {
+                            Icons.Filled.FlashlightOff
+                        } else {
+                            Icons.Filled.FlashlightOn
+                        },
+                        tint = if (lens.hasFilterBlue) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = if (lens.hasFilterBlue) {
+                            "Com filtro para luz azul"
+                        } else {
+                            "Sem filtro para luz azul"
+                        },
+                        color = if (lens.hasFilterBlue) {
+                            withFilterColor
+                        } else {
+                            noFilterColor
+                        },
+                        style = MaterialTheme.typography.body1
+                            .copy(textAlign = TextAlign.Center),
+                    )
+                }
 
                 Divider(
                     modifier = Modifier
@@ -1538,7 +1694,10 @@ private fun LensCardPreview() {
                     "Evitam o aumento da tensão ocular",
                     "Proteção premium contra os raios UV acima de 400nm",
                     "Alta tecnologia aliada a uma Visão mais nítida",
-                )
+                ),
+
+                hasFilterBlue = true,
+                hasFilterUv = true,
             ),
         )
     }

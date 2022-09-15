@@ -28,8 +28,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.FlashlightOff
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,6 +86,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
 import kotlin.math.abs
+
+private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
+private val withFilterColor = Color.hsv(79f, 1f, 0.77f)
 
 val buttonHeight = 120.dp
 
@@ -325,6 +332,40 @@ private fun LensComparisonCard(
                     contentDescription = ""
                 )
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Icon(
+                imageVector = if (lensComparison.pickedLens.hasFilterUv) {
+                    Icons.Filled.WbTwilight
+                } else {
+                    Icons.Filled.WbSunny
+                },
+                tint = if (lensComparison.pickedLens.hasFilterUv) {
+                    withFilterColor
+                } else {
+                    noFilterColor
+                },
+                contentDescription = "",
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
+                imageVector = if (lensComparison.pickedLens.hasFilterBlue) {
+                    Icons.Filled.FlashlightOn
+                } else {
+                    Icons.Filled.FlashlightOff
+                },
+                tint = if (lensComparison.pickedLens.hasFilterBlue) {
+                    withFilterColor
+                } else {
+                    noFilterColor
+                },
+                contentDescription = "",
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
         }
 
         Row(

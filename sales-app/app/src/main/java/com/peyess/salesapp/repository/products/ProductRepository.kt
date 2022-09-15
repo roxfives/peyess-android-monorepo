@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 
 data class LensFilter(
     val groupId: String = "",
+    val specialtyId: String = "",
     val lensTypeId: String = "",
     val supplierId: String = "",
     val materialId: String = "",
@@ -28,6 +30,7 @@ interface ProductRepository {
     fun filteredLenses(lensFilter: LensFilter): Flow<PagingData<LensSuggestionModel>>
 
     fun lensGroups(): Flow<List<LensGroup>>
+    fun lensSpecialties(): Flow<List<FilterLensSpecialtyEntity>>
     fun lensTypes(): Flow<List<FilterLensTypeEntity>>
     fun lensSuppliers(): Flow<List<FilterLensSupplierEntity>>
     fun lensMaterial(supplierId: String): Flow<List<FilterLensMaterialEntity>>

@@ -15,7 +15,9 @@ import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
@@ -67,6 +69,7 @@ class ProductRepositoryImpl @Inject constructor(
     private val localLensDispDao: LocalLensDispDao,
     private val localProductExpDao: LocalProductExpDao,
     private val lensGroupDao: LensGroupDao,
+    private val lensSpecialtiesDao: FilterLensSpecialtyDao,
     private val lensTypeDao: FilterLensTypeDao,
     private val lensSupplierDao: FilterLensSupplierDao,
     private val lensMaterialDao: FilterLensMaterialDao,
@@ -107,9 +110,12 @@ class ProductRepositoryImpl @Inject constructor(
         var queryString = "SELECT * FROM ${LocalLensEntity.tableName} "
         val queryConditions = mutableListOf<String>()
 
-
         if (lensFilter.groupId.isNotEmpty()) {
             queryConditions.add(" group_id = \'${lensFilter.groupId}\' ")
+        }
+
+        if (lensFilter.specialtyId.isNotEmpty()) {
+            queryConditions.add(" specialty_id = \'${lensFilter.specialtyId}\' ")
         }
 
         if (lensFilter.lensTypeId.isNotEmpty()) {
@@ -441,6 +447,10 @@ class ProductRepositoryImpl @Inject constructor(
 
     override fun lensGroups(): Flow<List<LensGroup>> {
         return lensGroupDao.groups()
+    }
+
+    override fun lensSpecialties(): Flow<List<FilterLensSpecialtyEntity>> {
+        return lensSpecialtiesDao.getAll()
     }
 
     override fun lensTypes(): Flow<List<FilterLensTypeEntity>> {

@@ -45,6 +45,7 @@ class LensPickViewModel @AssistedInject constructor(
 
     init {
         loadLensGroups()
+        loadLensSpecialties()
         loadLensTypes()
         loadLensSuppliers()
 
@@ -58,6 +59,10 @@ class LensPickViewModel @AssistedInject constructor(
 
         onEach(LensPickState::groupLensFilterId) {
             setState { copy(filter = filter.copy(groupId = it)) }
+        }
+
+        onEach(LensPickState::specialtyLensFilterId) {
+            setState { copy(filter = filter.copy(specialtyId = it)) }
         }
 
         onEach(LensPickState::typeLensFilterId) {
@@ -141,6 +146,12 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadLensSpecialties() = withState {
+        productRepository.lensSpecialties().execute(Dispatchers.IO) {
+            copy(specialtyFilter = it)
+        }
+    }
+
     private fun loadLensTypes() = withState {
         productRepository.lensTypes().execute(Dispatchers.IO) {
             copy(typesFilter = it)
@@ -171,6 +182,13 @@ class LensPickViewModel @AssistedInject constructor(
         copy(
             groupLensFilterId = groupId,
             groupLensFilter = groupName,
+        )
+    }
+
+    fun onPickSpecialty(specialtyId: String, specialtyName: String) = setState {
+        copy(
+            specialtyLensFilterId = specialtyId,
+            specialtyLensFilter = specialtyName,
         )
     }
 

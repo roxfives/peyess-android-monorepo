@@ -34,7 +34,6 @@ import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -155,7 +154,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         try {
             val specialtyFilter = lens.toFilterLensSpecialty()
 
-            productsDatabase.filterLensSpecialtyEntity().add(specialtyFilter)
+            productsDatabase.filterLensSpecialtyDao().add(specialtyFilter)
         } catch (e: SQLiteConstraintException) {
             // Just ignore this error, collisions will happen
         } catch (e: Throwable) {

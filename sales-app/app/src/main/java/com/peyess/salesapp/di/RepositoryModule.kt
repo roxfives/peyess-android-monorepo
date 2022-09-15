@@ -13,6 +13,7 @@ import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescripti
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
@@ -140,6 +141,7 @@ object RepositoryModule {
         lensDispDao: LocalLensDispDao,
         lensProductExpDao: LocalProductExpDao,
         lensGroupDao: LensGroupDao,
+        lensSpecialtyDao: FilterLensSpecialtyDao,
         filterLensTypeDao: FilterLensTypeDao,
         lensSupplierDao: FilterLensSupplierDao,
         lensMaterialDao: FilterLensMaterialDao,
@@ -156,6 +158,7 @@ object RepositoryModule {
             lensDispDao,
             lensProductExpDao,
             lensGroupDao,
+            lensSpecialtyDao,
             filterLensTypeDao,
             lensSupplierDao,
             lensMaterialDao,

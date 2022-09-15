@@ -90,7 +90,7 @@ import com.peyess.salesapp.database.room.gambeta.GambetaEntity
 
         GambetaEntity::class,
     ],
-    version = 45,
+    version = 46,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao
@@ -120,7 +120,7 @@ abstract class ProductsDatabase: RoomDatabase() {
     abstract fun filterLensFamilyDao(): FilterLensFamilyDao
     abstract fun filterLensGroupEntity(): FilterLensGroupDao
     abstract fun filterLensMaterialDao(): FilterLensMaterialDao
-    abstract fun filterLensSpecialtyEntity(): FilterLensSpecialtyDao
+    abstract fun filterLensSpecialtyDao(): FilterLensSpecialtyDao
     abstract fun filterLensSupplierDao(): FilterLensSupplierDao
     abstract fun filterLensTypeDao(): FilterLensTypeDao
     abstract fun filterLensTechDao(): FilterLensTechDao

@@ -22,6 +22,7 @@ import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
 import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDaoImpl
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
+import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
@@ -238,6 +239,12 @@ object DaoModule {
     @Provides
     fun provideFilterSupplierLensDao(productsDatabase: ProductsDatabase): FilterLensSupplierDao {
         return productsDatabase.filterLensSupplierDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLensSpecialtyDao(productsDatabase: ProductsDatabase): FilterLensSpecialtyDao {
+        return productsDatabase.filterLensSpecialtyDao()
     }
 
     @Singleton

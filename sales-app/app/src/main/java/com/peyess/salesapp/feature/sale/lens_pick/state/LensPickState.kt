@@ -9,6 +9,7 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
+import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
@@ -23,6 +24,7 @@ data class LensPickState(
     val filter: LensFilter = LensFilter(),
 
     val groupLensFilter: String = "",
+    val specialtyLensFilter: String = "",
     val typeLensFilter: String = "",
     val supplierLensFilter: String = "",
     val materialLensFilter: String = "",
@@ -30,6 +32,7 @@ data class LensPickState(
     val descriptionLensFilter: String = "",
 
     val groupLensFilterId: String = "",
+    val specialtyLensFilterId: String = "",
     val typeLensFilterId: String = "",
     val supplierLensFilterId: String = "",
     val materialLensFilterId: String = "",
@@ -37,6 +40,7 @@ data class LensPickState(
     val descriptionLensFilterId: String = "",
 
     val groupsFilter: Async<List<LensGroup>> = Uninitialized,
+    val specialtyFilter: Async<List<FilterLensSpecialtyEntity>> = Uninitialized,
     val typesFilter: Async<List<FilterLensTypeEntity>> = Uninitialized,
     val supplierFilter: Async<List<FilterLensSupplierEntity>> = Uninitialized,
     val materialFilter: Async<List<FilterLensMaterialEntity>> = Uninitialized,
@@ -55,4 +59,5 @@ data class LensPickState(
     val hasLoadedAllBasicFilters = groupsFilter is Success
             && typesFilter is Success
             && supplierFilter is Success
+            && specialtyFilter is Success
 }

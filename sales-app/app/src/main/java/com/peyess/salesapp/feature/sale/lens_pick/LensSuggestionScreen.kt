@@ -840,6 +840,84 @@ private fun LensSuggestionList(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     FilterButton(
+                            modifier = Modifier
+                                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                                .width(240.dp)
+                                .padding(horizontal = 16.dp),
+                    title = if (selectedLensSupplier.isEmpty()) {
+                        stringResource(id = R.string.lens_suggestion_filter_supplier)
+                    } else {
+                        selectedLensSupplier
+                    },
+                    onClick = { suppliersDialogState.show() },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                            modifier = Modifier
+                                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                                .width(240.dp)
+                                .padding(horizontal = 16.dp),
+                    enabled = isFamilyLensFilterEnabled,
+                    title = if (selectedLensFamily.isEmpty()) {
+                        stringResource(id = R.string.lens_suggestion_filter_family)
+                    } else {
+                        selectedLensFamily
+                    },
+                    onClick = { familiesDialogState.show() },
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    FilterButton(
+                            modifier = Modifier
+                                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                                .width(240.dp)
+                                .padding(horizontal = 16.dp),
+                    enabled = isDescriptionLensFilterEnabled,
+                    title = if (selectedLensDescription.isEmpty()) {
+                        stringResource(id = R.string.lens_suggestion_filter_description)
+                    } else {
+                        selectedLensDescription
+                    },
+                    onClick = {
+                        Timber.i("Showing description dialog")
+                        descriptionsDialogState.show()
+                    },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FilterButton(
+                            modifier = Modifier
+                                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                                .width(240.dp)
+                                .padding(horizontal = 16.dp),
+                    enabled = isMaterialLensFilterEnabled,
+                    title = if (selectedLensMaterial.isEmpty()) {
+                        stringResource(id = R.string.lens_suggestion_filter_material)
+                    } else {
+                        selectedLensMaterial
+                    },
+                    onClick = { materialsDialogState.show() },
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    FilterButton(
                         modifier = Modifier
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
@@ -848,84 +926,6 @@ private fun LensSuggestionList(
                             stringResource(id = R.string.lens_suggestion_filter_specialty)
                         },
                         onClick = { specialtiesDialogState.show() },
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        title = if (selectedLensSupplier.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_supplier)
-                        } else {
-                            selectedLensSupplier
-                        },
-                        onClick = { suppliersDialogState.show() },
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        enabled = isFamilyLensFilterEnabled,
-                        title = if (selectedLensFamily.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_family)
-                        } else {
-                            selectedLensFamily
-                        },
-                        onClick = { familiesDialogState.show() },
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        enabled = isDescriptionLensFilterEnabled,
-                        title = if (selectedLensDescription.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_description)
-                        } else {
-                            selectedLensDescription
-                        },
-                        onClick = {
-                            Timber.i("Showing description dialog")
-                            descriptionsDialogState.show()
-                        },
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    FilterButton(
-                        modifier = Modifier
-                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-                            .width(240.dp)
-                            .padding(horizontal = 16.dp),
-                        enabled = isMaterialLensFilterEnabled,
-                        title = if (selectedLensMaterial.isEmpty()) {
-                            stringResource(id = R.string.lens_suggestion_filter_material)
-                        } else {
-                            selectedLensMaterial
-                        },
-                        onClick = { materialsDialogState.show() },
                     )
                 }
 
@@ -1480,46 +1480,6 @@ private fun LensCard(
     )
 }
 
-@Preview
-@Composable
-private fun LensPrice(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.primary,
-    style: TextStyle = MaterialTheme.typography.h6,
-    price: Double = 2500.0,
-    installments: Double = 10.0,
-) {
-    Box(modifier = modifier) {
-        Text(
-            modifier = Modifier
-                .padding(
-                    horizontal = 28.dp,
-                    vertical = 12.dp,
-                )
-                .align(Alignment.Center),
-            // TODO: localize price symbol
-            text = NumberFormat.getCurrencyInstance().format(price / installments),
-            style = MaterialTheme.typography.h6,
-            color = color,
-        )
-
-        Text(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            text = "$installments X",
-            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-            color = color,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun ErrorItemPreview() {
-    SalesAppTheme {
-        ErrorItem()
-    }
-}
-
 @Composable
 private fun LensCircle(
     modifier: Modifier = Modifier,
@@ -1892,5 +1852,45 @@ private fun LensCardPreview() {
                 hasFilterUv = true,
             ),
         )
+    }
+}
+
+@Preview
+@Composable
+private fun LensPrice(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
+    style: TextStyle = MaterialTheme.typography.h6,
+    price: Double = 2500.0,
+    installments: Double = 10.0,
+) {
+    Box(modifier = modifier) {
+        Text(
+            modifier = Modifier
+                .padding(
+                    horizontal = 28.dp,
+                    vertical = 12.dp,
+                )
+                .align(Alignment.Center),
+            // TODO: localize price symbol
+            text = NumberFormat.getCurrencyInstance().format(price / installments),
+            style = MaterialTheme.typography.h6,
+            color = color,
+        )
+
+        Text(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            text = "$installments X",
+            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+            color = color,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorItemPreview() {
+    SalesAppTheme {
+        ErrorItem()
     }
 }

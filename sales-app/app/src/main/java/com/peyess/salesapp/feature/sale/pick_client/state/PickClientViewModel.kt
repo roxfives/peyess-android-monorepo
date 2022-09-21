@@ -9,7 +9,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.client.room.toEntity
 import com.peyess.salesapp.navigation.pick_client.PickScenario
-import com.peyess.salesapp.repository.clients.ClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

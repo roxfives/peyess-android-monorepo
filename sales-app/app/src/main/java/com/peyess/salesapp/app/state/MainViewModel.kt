@@ -8,7 +8,7 @@ import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.repository.clients.ClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import dagger.assisted.Assisted

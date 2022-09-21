@@ -17,7 +17,7 @@ data class ClientEntity(
     @ColumnInfo(name = "role")
     val clientRole: ClientRole = ClientRole.User,
 
-    @ColumnInfo(name = "nameDisplay")
+    @ColumnInfo(name = "name_display")
     val nameDisplay: String = "",
 
     @ColumnInfo(name = "name")
@@ -35,7 +35,7 @@ data class ClientEntity(
     @ColumnInfo(name = "picture")
     val picture: String = "",
 
-    @ColumnInfo(name = "shortAddress")
+    @ColumnInfo(name = "short_address")
     val shortAddress: String = "",
 ) {
     companion object {

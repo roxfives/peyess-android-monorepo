@@ -50,6 +50,9 @@
     <!-- UI Component: Home   -->
     <string name="btn_make_new_sale">Fazer nova venda</string>
 
+    <string name="btn_client_action_add_client">Adicionar cliente</string>
+    <string name="btn_client_action_search_client">Procurar cliente usando nome ou CPF</string>
+
     <!--    UI Component: Sales -->
     <string name="go_next_default">Próximo</string>
     <string name="so_card_message">Ordem de Serviço no valor de %1$s emitida no dia %2$s com responsável %3$s</string>
@@ -65,7 +68,7 @@
     <!-- UI Component: PrescriptionPicture   -->
     <string name="dialog_select_date_title">Data de emissão da receita</string>
     <string name="dialog_select_date_ok">Selecionar</string>
-    <string name="dialog_select_date_cancel">Cancear</string>
+    <string name="dialog_select_date_cancel">Cancelar</string>
     <string name="label_professional_id">CRM/CRO do profissional</string>
     <string name="label_professional_name">Nome do profissional</string>
     <string name="txt_prescription_date">Data de emissão da receita</string>
@@ -387,6 +390,24 @@
     <string name="mike_user_profile_message_sport_nauseating_yes_simple">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes FreeForm para amenizar essa sensação.</string>
     <string name="mike_user_profile_message_sport_nauseating_yes_multi">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes específicas para práticas de esportes. \n\n Obs.: Lentes Multifocais normalmente trazem um certo desconforto na visão de perto.</string>
 
+    <!--  UI Component: Create client  -->
+    <string name="create_client_error_name_blank">Nome do cliente não pode ser vazio</string>
+    <string name="create_client_error_name_incomplete">Nome do cliente deve ser completo</string>
+
+    <string name="create_client_error_name_display_blank">Campo não opcional</string>
+
+    <string name="create_client_error_cpf_blank">Campo não opcional</string>
+    <string name="create_client_error_cpf_invalid">CPF inválido</string>
+
+    <string name="create_client_birthday_input">Data de nascimento</string>
+    <string name="create_client_error_birthday_invalid">Data de nascimento inválida</string>
+
+    <string name="create_client_name_input">Nome</string>
+    <string name="create_client_name_display_input">Como gostaria que te chamássemos</string>
+    <string name="create_client_document_input">Número do CPF</string>
+
+
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>
@@ -409,8 +430,6 @@
     <string name="fs_field_payments_priority">priority</string>
     <string name="fs_field_payments_is_enabled">is_enabled</string>
     <string name="fs_field_so_created">created</string>
-
-
 
     <string name="fs_field_lenses_group_priority">priority</string>
 </resources>

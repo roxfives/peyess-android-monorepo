@@ -3,7 +3,6 @@ package com.peyess.salesapp.feature.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -17,14 +16,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -54,8 +55,10 @@ import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 // TODO: Refactor this component to remove duplicated code (PickClientScreen)
+private val clientSearchSpacer = 16.dp
+private val clientSearchRoundedCornerShape = 32.dp
 
-private val buttonHeight = 72.dp
+private val lazyColumnHeaderBottomSpacer = 16.dp
 
 private val pictureSize = 90.dp
 private val pictureSizePx = 90
@@ -65,11 +68,12 @@ private val cardSpacerWidth = 2.dp
 private val spacingBetweenCards = 8.dp
 private val profilePicPadding = 8.dp
 
-private val endingSpacerWidth = profilePicPadding
-
 @Composable
 fun ClientScreen(
     modifier: Modifier = Modifier,
+
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
 ) {
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
@@ -84,7 +88,11 @@ fun ClientScreen(
 
             ClientScreenImpl(
                 modifier = modifier,
+
                 clients = clients,
+
+                onCreateNewClient = onCreateNewClient,
+                onSearchClient = onSearchClient,
             )
         }
     }
@@ -93,7 +101,11 @@ fun ClientScreen(
 @Composable
 private fun ClientScreenImpl(
     modifier: Modifier = Modifier,
+
     clients: List<ClientDocument> = emptyList(),
+
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
 ) {
     if (clients.isEmpty()) {
         NoClientsYet(modifier = modifier)
@@ -102,42 +114,16 @@ private fun ClientScreenImpl(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
         ) {
-//            item {
-//                OutlinedButton(
-//                    modifier = Modifier
-//                        .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-//                        .fillMaxWidth()
-//                        .height(buttonHeight),
-//                    shape = MaterialTheme.shapes.large,
-//                    onClick = {},
-//                ) {
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Start,
-//                        verticalAlignment = Alignment.CenterVertically,
-//                    ) {
-//                        Box(
-//                            modifier = Modifier
-//                                .height(buttonHeight)
-//                                .width(buttonHeight)
-//                                .padding(horizontal = SalesAppTheme.dimensions.grid_1)
-//                                .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-//                        ) {
-//                            Icon(
-//                                modifier = Modifier.align(Alignment.Center),
-//                                imageVector = Icons.Filled.PersonAdd,
-//                                tint = MaterialTheme.colors.onPrimary,
-//                                contentDescription = "",
-//                            )
-//                        }
-//
-//                        Text(
-//                            text = stringResource(id = R.string.btn_add_new_client),
-//                            style = MaterialTheme.typography.body1,
-//                        )
-//                    }
-//                }
-//            }
+            item {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ClientActions(
+                        onCreateNewClient = onCreateNewClient,
+                        onSearchClient = onSearchClient,
+                    )
+
+                    Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
+                }
+            }
 
             items(clients.size) {
                 val client = clients[it]
@@ -214,7 +200,7 @@ private fun ClientCard(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+//        Spacer(modifier = Modifier.weight(1f))
 
 //        Button(
 //            modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
@@ -254,5 +240,73 @@ private fun NoClientsYet(
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold),
         )
+    }
+}
+
+@Composable
+fun ClientActions(
+    modifier: Modifier = Modifier,
+
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedButton(
+            modifier = Modifier
+                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                .weight(1f),
+            shape = RoundedCornerShape(clientSearchRoundedCornerShape),
+            onClick = onSearchClient,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(imageVector = Icons.Filled.Search, contentDescription = "")
+
+                Spacer(modifier = Modifier.width(clientSearchSpacer))
+
+                Text(text = stringResource(id = R.string.btn_client_action_search_client))
+            }
+        }
+
+        Spacer(modifier = Modifier.width(clientSearchSpacer))
+
+        IconButton(
+            modifier = Modifier
+                .background(
+                    shape = CircleShape,
+                    color = MaterialTheme.colors.primary,
+                )
+//                .border(
+//                    border = BorderStroke(
+//                        width = clientAddButtonBorderWidth,
+//                        color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+//                    ),
+//                    shape = CircleShape,
+//                )
+                .size(SalesAppTheme.dimensions.minimum_touch_target),
+            onClick = onCreateNewClient,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PersonAdd,
+                tint = MaterialTheme.colors.onPrimary,
+                contentDescription = "",
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun ClientActionsPreview(
+    modifier: Modifier = Modifier,
+) {
+    SalesAppTheme {
+        ClientActions()
     }
 }

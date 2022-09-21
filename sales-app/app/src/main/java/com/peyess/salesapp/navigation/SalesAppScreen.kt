@@ -8,10 +8,12 @@ enum class SalesAppScreens {
     Home,
     Clients,
     AddMeasure,
+
     StoreAuthentication,
     UserListAuthentication,
     UserAuth,
     LocalPasscode,
+
     SaleWelcome,
     SalePrescriptionLensType,
     SalePrescriptionPicture,
@@ -36,6 +38,10 @@ enum class SalesAppScreens {
     SalePayment,
     Demonstration,
 
+    CreateNewClientBasicInfo,
+    CreateNewClientAddress,
+    CreateNewClientContact,
+
     People,
     AddPerson,
     Frames,
@@ -50,10 +56,12 @@ enum class SalesAppScreens {
         fun fromRoute(route: String?): SalesAppScreens =
             when (route?.substringBefore("/")?.substringBefore("?")) {
                 Landing.name -> Landing
+
                 StoreAuthentication.name -> StoreAuthentication
                 UserListAuthentication.name -> UserListAuthentication
                 UserAuth.name -> UserAuth
                 LocalPasscode.name -> LocalPasscode
+
                 SaleWelcome.name -> SaleWelcome
                 SalePrescriptionLensType.name -> SalePrescriptionLensType
                 SalePrescriptionPicture.name -> SalePrescriptionPicture
@@ -77,6 +85,11 @@ enum class SalesAppScreens {
                 ServiceOrder.name -> ServiceOrder
                 SalePayment.name -> SalePayment
                 Demonstration.name -> Demonstration
+
+                CreateNewClientBasicInfo.name -> CreateNewClientBasicInfo
+                CreateNewClientAddress.name -> CreateNewClientAddress
+                CreateNewClientContact.name -> CreateNewClientContact
+
                 SaleScreen.name -> SaleScreen
                 Home.name -> Home
                 Clients.name -> Clients
@@ -127,6 +140,11 @@ enum class SalesAppScreens {
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
                 SalePayment.name -> "Pagamento"
                 Demonstration.name -> "Demonstração"
+
+                CreateNewClientBasicInfo.name -> "Criar novo cliente"
+                CreateNewClientAddress.name -> "Criar novo cliente"
+                CreateNewClientContact.name -> "Criar novo cliente"
+
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"
                 AddFrames.name -> "Adicionar armação"

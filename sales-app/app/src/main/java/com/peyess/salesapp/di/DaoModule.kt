@@ -7,6 +7,7 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDaoImpl
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
+import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
 import com.peyess.salesapp.dao.service_order.ServiceOrderDao
@@ -49,6 +50,7 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
+import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -317,6 +319,14 @@ object DaoModule {
     @Provides
     fun provideSalePaymentDao(saleDatabase: ActiveSalesDatabase): SalePaymentDao {
         return saleDatabase.salePaymentsDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCacheCreateClientDao(
+        cacheCreateClientDatabase: CacheCreateClientDatabase,
+    ): CacheCreateClientDao {
+        return cacheCreateClientDatabase.cacheCreateClientDao()
     }
 
 

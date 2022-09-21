@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
+import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactoryImpl
@@ -32,10 +33,10 @@ object AppModule {
     @Singleton
     fun provideActiveSalesDatabase(@ApplicationContext context: Context): ActiveSalesDatabase {
         return Room.databaseBuilder(
-            context,
-            ActiveSalesDatabase::class.java,
-            "active_sales.db",
-        )
+                context,
+                ActiveSalesDatabase::class.java,
+                "active_sales.db",
+            )
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -44,10 +45,24 @@ object AppModule {
     @Singleton
     fun provideProductsDatabase(@ApplicationContext context: Context): ProductsDatabase {
         return Room.databaseBuilder(
-            context,
-            ProductsDatabase::class.java,
-            "products.db",
-        )
+                context,
+                ProductsDatabase::class.java,
+                "products.db",
+            )
+            .fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCacheCreateClientDatabase(
+        @ApplicationContext context: Context,
+    ): CacheCreateClientDatabase {
+        return Room.databaseBuilder(
+                context,
+                CacheCreateClientDatabase::class.java,
+                "cache_create_client.db",
+            )
             .fallbackToDestructiveMigration()
             .build()
     }

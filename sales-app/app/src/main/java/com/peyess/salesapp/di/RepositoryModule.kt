@@ -30,12 +30,13 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
-import com.peyess.salesapp.repository.clients.ClientRepository
-import com.peyess.salesapp.repository.clients.ClientRepositoryImpl
+import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepositoryImpl
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -74,9 +75,17 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideClientRepository(
-        clientDao: ClientDao
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
+        cacheCreateClientDao: CacheCreateClientDao,
+        clientDao: ClientDao,
     ): ClientRepository {
-        return ClientRepositoryImpl(clientDao)
+        return ClientRepositoryImpl(
+            salesApplication,
+            firebaseManager,
+            cacheCreateClientDao,
+            clientDao,
+        )
     }
 
     @Provides

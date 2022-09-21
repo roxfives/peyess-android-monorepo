@@ -113,7 +113,7 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
     }
 
     fun storeSignOut() {
-        firebaseUsers.forEach { _, app ->
+        firebaseUsers.forEach { (_, app) ->
             Firebase.auth(app).signOut()
         }
 

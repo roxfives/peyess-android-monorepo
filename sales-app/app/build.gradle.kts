@@ -3,6 +3,7 @@ plugins {
     id("kotlin-kapt") // Hilt dependency (migrate to KSP as soon as it's supported)
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
+    id("kotlinx-serialization")
 }
 
 hilt {
@@ -81,7 +82,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-paging:$roomVersion")
     // To use Kotlin Symbol Processing (KSP)
-//    ksp("androidx.room:room-compiler:$room_version")
+    //    ksp("androidx.room:room-compiler:$room_version")
 
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
@@ -130,6 +131,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+
+    // Ktor
+    implementation("io.ktor:ktor-client-android:1.5.0")
+    implementation("io.ktor:ktor-client-serialization:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("io.ktor:ktor-client-logging-jvm:1.5.0")
 
     // Misc libs ----------------------------------------------------------------------------------
 

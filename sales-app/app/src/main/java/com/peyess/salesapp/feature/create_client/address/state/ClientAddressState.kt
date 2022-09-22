@@ -41,7 +41,7 @@ data class ClientAddressState(
     val client = _clientAsync.invoke() ?: ClientModel()
 
     val isAddressLoading = addressLookup is Loading
-    val addressLookUpFailed = addressLookup is Fail
+    val addressNotFound = addressLookup is Fail
     val isAddressEnabled = addressLookup !is Uninitialized && addressLookup !is Loading
 
     private val _zipCodeErrorId = validateZipCodeError(zipCode)

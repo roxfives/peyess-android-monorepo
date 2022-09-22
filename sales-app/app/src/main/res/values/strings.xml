@@ -419,6 +419,7 @@
 
     <string name="create_client_type_address">Por favor, digite o CEP que vamos procurar o endereço</string>
     <string name="create_client_loading_address">Por favor, aguarde enquanto procuramos o seu endereço</string>
+    <string name="create_client_address_not_found">Infelizmente não encontramos o endereço com esse CEP :(</string>
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

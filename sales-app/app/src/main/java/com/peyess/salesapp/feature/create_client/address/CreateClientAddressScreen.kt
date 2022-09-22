@@ -7,13 +7,18 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +56,8 @@ import com.peyess.salesapp.ui.text_transformation.UserZipCodeVisualTransformatio
 
 private val defaultSpacerSize = 32.dp
 
+private val warningSpacerSize = 8.dp
+
 private val animationSpacerHeight = 16.dp
 private val animationSize = 124.dp
 
@@ -75,6 +82,7 @@ fun CreateClientAddressScreen(
 
     val isAddressLoading by viewModel.collectAsState(ClientAddressState::isAddressLoading)
     val isAddressEnabled by viewModel.collectAsState(ClientAddressState::isAddressEnabled)
+    val addressNotFound by viewModel.collectAsState(ClientAddressState::addressNotFound)
 
     val zipCodeErrorId by viewModel.collectAsState(ClientAddressState::zipCodeErrorId)
     val zipCodeHasError by viewModel.collectAsState(ClientAddressState::zipCodeHasError)
@@ -101,6 +109,7 @@ fun CreateClientAddressScreen(
 
         isAddressLoading = isAddressLoading,
         isAddressEnabled = isAddressEnabled,
+        addressNotFound = addressNotFound,
 
         zipCode = zipCode,
         onZipCodeChanged = viewModel::onZipCodeChanged,
@@ -158,6 +167,7 @@ private fun CreateClientAddressScreenImpl(
 
     isAddressLoading: Boolean = false,
     isAddressEnabled: Boolean = false,
+    addressNotFound: Boolean = false,
 
     zipCode: String = "",
     onZipCodeChanged: (String) -> Unit = {},
@@ -271,10 +281,27 @@ private fun CreateClientAddressScreenImpl(
 
         Spacer(modifier = Modifier.height(animationSpacerHeight))
 
-        Text(
-            text = stringResource(id = instructionsId),
-            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
-        )
+        if (addressNotFound) {
+            Row {
+                Icon(
+                    imageVector = Icons.Filled.Warning,
+                    tint = MaterialTheme.colors.error,
+                    contentDescription = "",
+                )
+
+                Spacer(modifier = Modifier.width(warningSpacerSize))
+
+                Text(
+                    text = stringResource(id = R.string.create_client_address_not_found),
+                    style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+                )
+            }
+        } else {
+            Text(
+                text = stringResource(id = instructionsId),
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+            )
+        }
 
         Spacer(modifier = Modifier.height(defaultSpacerSize))
 

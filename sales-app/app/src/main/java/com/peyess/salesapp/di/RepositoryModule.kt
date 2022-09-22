@@ -30,7 +30,10 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
+import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
+import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -176,5 +179,13 @@ object RepositoryModule {
             lensDescriptionDao,
             saleRepository,
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideAddressLookupRepository(
+        addressLookupDao: AddressLookupDao,
+    ): AddressLookupRepository {
+        return AddressLookupRepositoryImpl(addressLookupDao)
     }
 }

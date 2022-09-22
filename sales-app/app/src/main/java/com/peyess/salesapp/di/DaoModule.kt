@@ -49,6 +49,8 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
+import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
+import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
@@ -329,7 +331,11 @@ object DaoModule {
         return cacheCreateClientDatabase.cacheCreateClientDao()
     }
 
-
+    @Singleton
+    @Provides
+    fun provideAddressLookupDao(): AddressLookupDao {
+        return AddressLookupDaoImpl()
+    }
 
 
     @Singleton

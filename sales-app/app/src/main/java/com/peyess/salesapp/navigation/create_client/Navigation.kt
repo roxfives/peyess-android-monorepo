@@ -9,9 +9,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
+import com.peyess.salesapp.feature.create_client.address.CreateClientAddressScreen
 import com.peyess.salesapp.feature.create_client.basic_info.BasicInfoScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
+import com.peyess.salesapp.navigation.create_client.address.clientAddressEnterTransition
+import com.peyess.salesapp.navigation.create_client.address.clientAddressExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val isPickingParam = "isPicking"
@@ -38,6 +41,21 @@ fun buildCreateClientNavGraph(
         exitTransition = createClientExitTransition()
     ) {
         BasicInfoScreen(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(SalesAppTheme.dimensions.grid_2),
+            onDone = {
+                 navHostController.navigate(SalesAppScreens.CreateNewClientAddress.name)
+            },
+        )
+    }
+
+    builder.composable(
+        route = SalesAppScreens.CreateNewClientAddress.name,
+        enterTransition = clientAddressEnterTransition(),
+        exitTransition = clientAddressExitTransition()
+    ) {
+        CreateClientAddressScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),

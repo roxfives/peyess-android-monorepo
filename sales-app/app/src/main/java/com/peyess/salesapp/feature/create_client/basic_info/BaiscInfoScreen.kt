@@ -178,6 +178,7 @@ private fun BasicInfoScreenImpl(
 
     @StringRes documentErrorId: Int = R.string.empty_string,
     documentHasError: Boolean = false,
+
     isInputValid: Boolean = false,
 
     onDone: () -> Unit = {},

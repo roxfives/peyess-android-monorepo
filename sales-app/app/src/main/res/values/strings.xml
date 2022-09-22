@@ -3,6 +3,9 @@
     <string name="error_msg_default">Algo inesperado aconteceu, por favor tente novamente</string>
     <string name="empty_string" />
 
+    <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
+
+
     <!-- UI Component: Password  -->
     <string name="password_input">Digite a sua senha</string>
     <string name="show_password">Mostrar senha</string>
@@ -406,7 +409,16 @@
     <string name="create_client_name_display_input">Como gostaria que te chamássemos</string>
     <string name="create_client_document_input">Número do CPF</string>
 
+    <string name="create_client_zip_code_input">CEP</string>
+    <string name="create_client_street_input">Rua</string>
+    <string name="create_client_house_number_input">Número residencial</string>
+    <string name="create_client_complement_input">Complemento</string>
+    <string name="create_client_neighbourhood_input">Bairro</string>
+    <string name="create_client_city_input">Cidade</string>
+    <string name="create_client_state_input">Estado</string>
 
+    <string name="create_client_type_address">Por favor, digite o CEP que vamos procurar o endereço</string>
+    <string name="create_client_loading_address">Por favor, aguarde enquanto procuramos o seu endereço</string>
 
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>

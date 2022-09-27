@@ -5,11 +5,14 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.address_lookup.AddressModel
+import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private const val maxZipCodeLength = 8
 
@@ -64,6 +67,12 @@ class ClientAddressViewModel @AssistedInject constructor(
         )
     }
 
+    private fun updateClient(client: ClientModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            clientRepository.updateLocalClient(client)
+        }
+    }
+
     fun onZipCodeChanged(value: String) = setState {
         val zipCode = if (value.length <= maxZipCodeLength) {
             value
@@ -76,30 +85,51 @@ class ClientAddressViewModel @AssistedInject constructor(
             findAddressByZipCode()
         }
 
+        val update = client.copy(zipCode = zipCode)
+        updateClient(update)
+
         copy(zipCode = zipCode)
     }
 
     fun onStreetChanged(value: String) = setState {
+        val update = client.copy(street = value)
+        updateClient(update)
+
         copy(street = value)
     }
 
     fun onHouseNumberChanged(value: String) = setState {
+        val update = client.copy(houseNumber = value)
+        updateClient(update)
+
         copy(houseNumber = value)
     }
 
     fun onComplementChanged(value: String) = setState {
+        val update = client.copy(complement = value)
+        updateClient(update)
+
         copy(complement = value)
     }
 
     fun onNeighbourhoodChanged(value: String) = setState {
+        val update = client.copy(neighborhood = value)
+        updateClient(update)
+
         copy(neighborhood = value)
     }
 
     fun onCityChanged(value: String) = setState {
+        val update = client.copy(city = value)
+        updateClient(update)
+
         copy(city = value)
     }
 
     fun onStateChanged(value: String) = setState {
+        val update = client.copy(state = value)
+        updateClient(update)
+
         copy(state = value)
     }
 

@@ -6,10 +6,13 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -27,6 +30,13 @@ class BasicInfoViewModel @AssistedInject constructor(
         suspend { clientRepository.createNewLocalClient() }
     }
 
+
+    private fun updateClient(client: ClientModel) {
+        viewModelScope.launch(Dispatchers.IO) {
+            clientRepository.updateLocalClient(client)
+        }
+    }
+
     private fun loadOrCreateClient() = withState {
         clientRepository
             .latestLocalClientCreated()
@@ -39,26 +49,34 @@ class BasicInfoViewModel @AssistedInject constructor(
             }
     }
 
-    fun onPictureChanged(picture: Uri) = withState {
-        val client = it.client.copy(picture = picture)
+    fun onPictureChanged(picture: Uri) = setState {
+        val client = client.copy(picture = picture)
+        updateClient(client)
 
-        suspend {
-            clientRepository.updateLocalClient(client)
-        }.execute { copy(picture = picture) }
+        copy(picture = picture)
     }
 
     fun onNameChanged(value: String) = setState {
+        val client = client.copy(name = value)
+        updateClient(client)
+
         copy(name = value)
     }
 
     fun onNameDisplayChanged(value: String) = setState {
+        val client = client.copy(nameDisplay = value)
+        updateClient(client)
+
         copy(nameDisplay = value)
     }
 
     fun onBirthdayChanged(value: LocalDate) = setState {
-        copy(
-            birthday = value.atStartOfDay(ZoneId.systemDefault())
-        )
+        val day = value.atStartOfDay(ZoneId.systemDefault())
+
+        val client = client.copy(birthday = day)
+        updateClient(client)
+
+        copy(birthday = day)
     }
 
     fun onDocumentChanged(value: String) = setState {
@@ -67,6 +85,9 @@ class BasicInfoViewModel @AssistedInject constructor(
         } else {
             value.substring(0 until maxDocumentLength)
         }
+
+        val client = client.copy(document = document)
+        updateClient(client)
 
         copy(document = document)
     }

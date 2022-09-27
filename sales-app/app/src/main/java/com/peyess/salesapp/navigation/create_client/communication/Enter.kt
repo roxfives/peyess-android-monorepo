@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.create_client.basic_info
+package com.peyess.salesapp.navigation.create_client.communication
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
@@ -12,7 +12,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun createClientEnterTransition(transitionDuration: Int = 500):
+fun createClientCommunicationEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
         when (SalesAppScreens.fromRoute(initialState.destination.route)) {
                 SalesAppScreens.LensComparison,

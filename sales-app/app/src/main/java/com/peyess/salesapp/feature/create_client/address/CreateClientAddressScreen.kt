@@ -157,6 +157,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
+        onDone = onDone,
     )
 }
 

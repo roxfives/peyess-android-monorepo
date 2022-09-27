@@ -10,6 +10,7 @@ import com.peyess.salesapp.feature.authentication_user.screen.local_password.sta
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressViewModel
 import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoViewModel
+import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.feature.demonstration.state.DemonstrationViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -209,5 +210,12 @@ interface ViewModelsModule {
     @ViewModelKey(ClientAddressViewModel::class)
     fun bindClientAddressViewModelFactory(
         factory: ClientAddressViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CommunicationViewModel::class)
+    fun bindCommunicationViewModelFactory(
+        factory: CommunicationViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

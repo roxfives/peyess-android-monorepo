@@ -421,6 +421,22 @@
     <string name="create_client_loading_address">Por favor, aguarde enquanto procuramos o seu endereço</string>
     <string name="create_client_address_not_found">Infelizmente não encontramos o endereço com esse CEP :(</string>
 
+    <string name="create_client_communication_title">Por favor, insira as suas informações de contato</string>
+    <string name="create_client_communication_same_phone_and_whatsapp">Esse número de celular possui Whatsapp</string>
+    <string name="create_client_communication_phone_exists">Possuo número de telefone fixo</string>
+
+    <string name="create_client_email_input">E-mail</string>
+    <string name="create_client_cellphone_input">Celular</string>
+    <string name="create_client_whatsapp_input">Whatsapp</string>
+    <string name="create_client_phone_input">Telefone fixo</string>
+
+    <string name="create_client_error_email_empty">E-mail está vazio</string>
+    <string name="create_client_error_email_invalid">E-mail inválido</string>
+    <string name="create_client_error_cellphone_empty">Celular está vazio</string>
+    <string name="create_client_error_cellphone_invalid">Número inválido</string>
+    <string name="create_client_error_whatsapp_invalid">Número inválido</string>
+    <!--    <string name="create_client_error_phone_empty">Telefone está vazio</string>-->
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

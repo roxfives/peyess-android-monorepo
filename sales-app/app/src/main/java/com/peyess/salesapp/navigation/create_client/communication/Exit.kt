@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.create_client.basic_info
+package com.peyess.salesapp.navigation.create_client.communication
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition
@@ -11,7 +11,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun createClientExitTransition(transitionDuration: Int = 500):
+fun createClientCommunicationExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
         when (SalesAppScreens.fromRoute(targetState.destination.route)) {
                 SalesAppScreens.ServiceOrder,

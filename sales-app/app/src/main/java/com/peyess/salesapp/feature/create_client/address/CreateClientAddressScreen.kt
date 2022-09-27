@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -326,6 +327,7 @@ private fun CreateClientAddressScreenImpl(
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
                 capitalization = KeyboardCapitalization.Words,
+                keyboardType = KeyboardType.Number,
             ),
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) },

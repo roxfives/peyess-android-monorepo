@@ -56,7 +56,7 @@ class UpdateProductsWorker @AssistedInject constructor(
                 Timber.e(err, "Failed for lens ${it.id}")
                 null
             }
-        }.filterNotNull()
+        }
 
         Timber.i("Found ${lenses.size} lenses")
 
@@ -315,8 +315,11 @@ class UpdateProductsWorker @AssistedInject constructor(
 
             Timber.i("Starting products update with path $lensPath")
 
+            // TODO: use string resource
+            // TODO: update enabled to is_local_enabled
             val initQuery = firestore
                 .collection(lensPath)
+                .whereEqualTo("is_enabled", true)
                 .orderBy("priority")
                 .limit(1)
                 .get()
@@ -334,8 +337,11 @@ class UpdateProductsWorker @AssistedInject constructor(
             var totalDownloaded = 0
             do {
                 Timber.i("Starting page download")
+                // TODO: use string resource
+                // TODO: update enabled to is_local_enabled
                 snaps = firestore
                     .collection(lensPath)
+                    .whereEqualTo("is_enabled", true)
                     .orderBy("priority")
                     .startAfter(currSnapshot)
                     .limit(pageLimit)

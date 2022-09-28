@@ -241,6 +241,7 @@
     <string name="demonstration_transition_gray">Fotossensível Cinza</string>
     <string name="demonstration_transition_brown">Fotossensível Marrom</string>
     <string name="demonstration_transition_green">Fotossensível Verde</string>
+    <string name="demonstration_misc_simple">Monofocais - Tradicional vs Digital</string>
 
 
     <!--  UI Component: PickClient  -->

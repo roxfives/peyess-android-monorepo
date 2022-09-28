@@ -103,6 +103,7 @@ fun DemonstrationScreenImpl(
             DemonstrationShown.Multi -> MultiList()
             DemonstrationShown.Treatments -> TreatmentsList()
             DemonstrationShown.Photo -> PhotoList()
+            DemonstrationShown.Misc -> MiscList()
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -203,6 +204,21 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth(),
             title = stringResource(id = R.string.demonstration_transition_green),
             animationId = R.raw.lottie_demonstration_transition_green,
+        )
+    }
+}
+
+@Composable
+private fun MiscList(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        LensAnimation(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(id = R.string.demonstration_misc_simple),
+            animationId = R.raw.lottie_demonstration_misc_simple,
         )
     }
 }

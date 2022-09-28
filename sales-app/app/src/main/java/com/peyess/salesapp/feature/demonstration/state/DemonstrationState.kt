@@ -6,6 +6,7 @@ sealed class DemonstrationShown {
     object Multi: DemonstrationShown()
     object Treatments: DemonstrationShown()
     object Photo: DemonstrationShown()
+    object Misc: DemonstrationShown()
 
     fun name(): String {
         return nameOf(this)
@@ -17,6 +18,7 @@ sealed class DemonstrationShown {
                 Multi,
                 Treatments,
                 Photo,
+                Misc
             )
         }
 
@@ -26,6 +28,7 @@ sealed class DemonstrationShown {
                 Multi -> "Multifocais"
                 Treatments -> "Tratamentos"
                 Photo -> "Fotossensíveis"
+                Misc -> "Outros"
             }
         }
 
@@ -33,6 +36,7 @@ sealed class DemonstrationShown {
             return when (name) {
                 "Multifocais" -> Multi
                 "Tratamentos" -> Treatments
+                "Outros" -> Misc
                 else -> Photo
             }
         }

@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.data.model.client.Sex
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 import java.util.Date
 
 @Entity(
@@ -18,27 +19,40 @@ data class CacheCreateClientEntity(
 
     @ColumnInfo(name = "name")
     val name: String = "",
-
     @ColumnInfo(name = "name_display")
     val nameDisplay: String = "",
-
     @ColumnInfo(name = "picture")
     val picture: Uri = Uri.EMPTY,
-
     @ColumnInfo(name = "birthday")
     val birthday: OffsetDateTime = OffsetDateTime.now(),
-
     @ColumnInfo(name = "document")
     val document: String = "",
-
     @ColumnInfo(name = "sex")
     val sex: Sex = Sex.Other,
 
+    @ColumnInfo(name = "zip_code")
+    val zipCode: String = "",
+    @ColumnInfo(name = "street")
+    val street: String = "",
+    @ColumnInfo(name = "house_number")
+    val houseNumber: String = "",
+    @ColumnInfo(name = "complement")
+    val complement: String = "",
+    @ColumnInfo(name = "neighborhood")
+    val neighborhood: String = "",
+    @ColumnInfo(name = "city")
+    val city: String = "",
+    @ColumnInfo(name = "state")
+    val state: String = "",
+
     @ColumnInfo(name = "email")
     val email: String = "",
-
-    @ColumnInfo(name = "short_address")
-    val shortAddress: String = "",
+    @ColumnInfo(name = "phone")
+    val phone: String = "",
+    @ColumnInfo(name = "cellphone")
+    val cellphone: String = "",
+    @ColumnInfo(name = "whatsapp")
+    val whatsapp: String = "",
 ) {
     companion object {
         const val tableName = "cache_create_client"

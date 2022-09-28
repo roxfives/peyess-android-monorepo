@@ -13,7 +13,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
     entities = [
         CacheCreateClientEntity::class
     ],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(ConverterSex::class, ConverterUri::class, ConverterOffsetDateTime::class)
 abstract class CacheCreateClientDatabase: RoomDatabase() {

@@ -241,6 +241,7 @@
     <string name="demonstration_transition_gray">Fotossensível Cinza</string>
     <string name="demonstration_transition_brown">Fotossensível Marrom</string>
     <string name="demonstration_transition_green">Fotossensível Verde</string>
+    <string name="demonstration_mono_blue">Proteção luz azul</string>
     <string name="demonstration_mono_simple">Monofocais - Tradicional vs Digital</string>
 
 
@@ -255,6 +256,7 @@
     <string name="demonstration_transition_gray_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
     <string name="demonstration_transition_brown_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
     <string name="demonstration_transition_green_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
+    <string name="demonstration_mono_blue_info_content">As lentes com proteção contra a luz azul possuem um filtro especial que garante conforto visual mesmo quando em ambientes com porção elevada de luz azul. Oferecendo assim uma redução significativa no cansaço e incômodo devido à exposição à luz emitida por lâmpadas de LED, televisores, smartphones e telas de computador.</string>
     <string name="demonstration_mono_simple_info_content">As lentes tradicionais oferecem alta qualidade visual atrelada a um ótimo custo benefício, sendo uma boa opção de entrada no mundo das lentes. Enquanto isso as lentes digitais disponibilizam o que tem de melhor e mais avançado em tecnologia ao seu usuário, oferecendo lentes mais finas, mais planas, mais leves, com melhor nitidez, campos de visão mais amplos, menor distorção periférica e tudo isso resulta no melhor conforto visual.</string>
 
     <string name="demonstration_treatment_damaged_info_obs">\u2731 Resistência a riscos não oferece garantia contra riscos, apenas torna a lente menos suscetível a sua deterioração no dia a dia.</string>

@@ -20,4 +20,7 @@ interface CacheCreateClientDao {
 
     @Query("SELECT * FROM ${CacheCreateClientEntity.tableName} WHERE id = :id")
     fun getById(id: String): Flow<CacheCreateClientEntity?>
+
+    @Query("SELECT * FROM ${CacheCreateClientEntity.tableName} WHERE id = :id")
+    fun find(id: String): CacheCreateClientEntity?
 }

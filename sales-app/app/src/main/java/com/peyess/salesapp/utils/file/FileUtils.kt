@@ -2,10 +2,12 @@ package com.peyess.salesapp.utils.file
 
 import android.content.Context
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.os.Environment
 import timber.log.Timber
 import java.io.File
-import java.util.Date
+import java.util.*
+
 
 fun createPrescriptionFile(context: Context): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
@@ -23,6 +25,19 @@ fun createPrescriptionFile(context: Context): File {
         ".jpg",
         storageDir,
     )
+}
+
+fun deleteFile(uri: Uri) {
+    val file = uri.path?.let { File(it) }
+
+    if (file != null && file.exists()) {
+        if (file.delete()) {
+            Timber.i("File deleted: ${uri.path}")
+        } else {
+            Timber.i("Failed to delete file: ${uri.path}")
+        }
+    }
+
 }
 
 //fun createMeasureFile(context: Context, prefix: String): File {

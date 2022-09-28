@@ -189,17 +189,17 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
         return so.copy(
             clientDocument = user!!.document,
             clientName = user!!.name,
-            clientPicture = user!!.picture,
+            clientPicture = user!!.picture.toString(),
             clientUid = user!!.id,
 
             responsibleDocument = responsible!!.document,
             responsibleName = responsible!!.name,
-            responsiblePicture = responsible!!.picture,
+            responsiblePicture = responsible!!.picture.toString(),
             responsibleUid = responsible!!.id,
 
             witnessDocument = witness?.document ?: "",
             witnessName = witness?.name ?: "",
-            witnessPicture = witness?.picture ?: "",
+            witnessPicture = (witness?.picture ?: "").toString(),
             witnessUid = witness?.id ?: "",
         )
     }

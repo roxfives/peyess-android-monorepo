@@ -24,6 +24,8 @@ data class CommunicationState(
 //    val whatsapp: String = "",
 //    val phone: String = "",
 
+    val uploadClientAsync: Async<Unit> = Uninitialized,
+
     @PersistState val detectEmailError: Boolean = false,
     @PersistState val detectCellphoneError: Boolean = false,
     @PersistState val detectWhatsappError: Boolean = false,
@@ -31,6 +33,9 @@ data class CommunicationState(
 ): MavericksState {
     private val _detectWhatsappError: Boolean = detectWhatsappError && phoneHasWhatsApp
     private val _detectPhoneError: Boolean = detectPhoneError && hasPhoneContact
+
+    val isUploadingClient = uploadClientAsync is Loading
+    val uploadSuccessful = uploadClientAsync is Success
 
     val isClientLoading = _clientAsync is Loading
             || (_clientAsync is Success && _clientAsync.invoke() == null)

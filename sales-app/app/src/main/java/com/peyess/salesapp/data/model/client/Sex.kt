@@ -18,10 +18,10 @@ sealed class Sex {
 
         fun toName(position: Sex?): String {
             return when(position) {
-                is None -> "None"
-                is Male -> "Male"
-                is Female -> "Female"
-                else -> "Other"
+                is None -> "none"
+                is Male -> "male"
+                is Female -> "female"
+                else -> "other"
             }
         }
 

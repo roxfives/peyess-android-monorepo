@@ -447,10 +447,12 @@
     <string name="fs_col_lenses_groups">lenses_default_groups</string>
     <string name="fs_col_family">lenses_designs</string>
     <string name="fs_col_description">lenses_designs</string>
-    <string name="fs_col_clients">optical_stores/%1$s/local_optical_client</string>
+    <string name="fs_col_clients">clients</string>
     <string name="fs_col_payments">optical_stores/%1$s/local_optical_payment_method</string>
     <string name="fs_col_so">optical_stores/%1$s/local_optical_so</string>
 
+    <!--  Firestore documents  -->
+    <string name="fs_doc_client">clients/%1$s</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
@@ -463,4 +465,7 @@
     <string name="fs_field_so_created">created</string>
 
     <string name="fs_field_lenses_group_priority">priority</string>
+
+    <!-- Storage file paths -->
+    <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>
 </resources>

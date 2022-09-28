@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.create_client.communication.state
 
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
@@ -12,6 +13,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private const val maxPhoneLength = 10
 private const val maxCellphoneLength = 11
@@ -109,6 +111,18 @@ class CommunicationViewModel @AssistedInject constructor(
     fun onDetectPhoneError() = setState {
         copy(detectPhoneError = true)
     }
+
+    fun createClient() = withState {
+        suspend {
+            clientRepository.uploadClient(it.client)
+            clientRepository.clearCreateClientCache(it.client.id)
+        }.execute(Dispatchers.IO) {
+            Timber.i("Upload client: $it")
+            copy(uploadClientAsync = it)
+        }
+    }
+
+
 
     // hilt
     @AssistedFactory

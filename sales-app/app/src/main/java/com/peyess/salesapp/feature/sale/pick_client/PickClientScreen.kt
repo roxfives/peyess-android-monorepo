@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.pick_client
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -320,7 +321,7 @@ private fun ClientCardPreview() {
             client = ClientDocument(
                 name = "João Ferreira",
                 shortAddress = "Guarulhos, SP",
-                picture = "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+                picture = Uri.parse("https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
             )
         )
     }

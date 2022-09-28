@@ -82,12 +82,14 @@ object RepositoryModule {
         firebaseManager: FirebaseManager,
         cacheCreateClientDao: CacheCreateClientDao,
         clientDao: ClientDao,
+        authenticationRepository: AuthenticationRepository,
     ): ClientRepository {
         return ClientRepositoryImpl(
             salesApplication,
             firebaseManager,
             cacheCreateClientDao,
             clientDao,
+            authenticationRepository,
         )
     }
 

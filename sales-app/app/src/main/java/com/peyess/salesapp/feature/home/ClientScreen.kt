@@ -108,7 +108,12 @@ private fun ClientScreenImpl(
     onSearchClient: () -> Unit = {},
 ) {
     if (clients.isEmpty()) {
-        NoClientsYet(modifier = modifier)
+        NoClientsYet(
+            modifier = modifier,
+
+            onCreateNewClient = onCreateNewClient,
+            onSearchClient = onSearchClient,
+        )
     } else {
         LazyColumn(
             modifier = modifier,
@@ -219,6 +224,10 @@ private fun ClientCard(
 @Composable
 private fun NoClientsYet(
     modifier: Modifier = Modifier,
+
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
+
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -227,6 +236,12 @@ private fun NoClientsYet(
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results))
+
+        ClientActions(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onCreateNewClient = onCreateNewClient,
+            onSearchClient = onSearchClient,
+        )
 
         LottieAnimation(
             modifier = modifier.padding(36.dp),

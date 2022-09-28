@@ -1,5 +1,6 @@
 package com.peyess.salesapp.dao.client.room
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
@@ -33,7 +34,7 @@ data class ClientEntity(
     val document: String = "",
 
     @ColumnInfo(name = "picture")
-    val picture: String = "",
+    val picture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "short_address")
     val shortAddress: String = "",

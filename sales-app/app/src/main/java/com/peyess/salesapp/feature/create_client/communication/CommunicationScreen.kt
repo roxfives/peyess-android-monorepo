@@ -40,6 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieClipSpec
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
@@ -85,6 +90,15 @@ fun CreateClientCommunicationScreen(
         Timber.i("Using scenario $scenario")
     }
 
+    val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
+    val uploadSuccessful by viewModel.collectAsState(CommunicationState::uploadSuccessful)
+
+    LaunchedEffect(uploadSuccessful) {
+        if (uploadSuccessful) {
+            onDone(scenario)
+        }
+    }
+
     val email by viewModel.collectAsState(CommunicationState::email)
     val cellphone by viewModel.collectAsState(CommunicationState::cellphone)
     val whatsapp by viewModel.collectAsState(CommunicationState::whatsapp)
@@ -109,6 +123,8 @@ fun CreateClientCommunicationScreen(
 
     CommunicationScreenImpl(
         modifier = modifier,
+
+        isUploadingClient = isUploadingClient,
 
         phoneHasWhatsApp = phoneHasWhatsApp,
         onPhoneHasWhatsAppChanged = viewModel::onPhoneHasWhatsappChanged,
@@ -145,7 +161,7 @@ fun CreateClientCommunicationScreen(
         phoneHasError = phoneHasError,
 
         isInputValid = isInputValid,
-        onDone = { onDone(scenario) },
+        onDone = viewModel::createClient,
     )
 }
 
@@ -154,10 +170,12 @@ fun CreateClientCommunicationScreen(
 private fun CommunicationScreenImpl(
     modifier: Modifier = Modifier,
 
-    phoneHasWhatsApp : Boolean = true,
+    isUploadingClient: Boolean = true,
+
+    phoneHasWhatsApp: Boolean = true,
     onPhoneHasWhatsAppChanged: (Boolean) -> Unit = {},
 
-    hasPhoneContact : Boolean = false,
+    hasPhoneContact: Boolean = false,
     onHasPhoneChanged: (Boolean) -> Unit = {},
 
     email: String = "",
@@ -203,97 +221,75 @@ private fun CommunicationScreenImpl(
     var whatsappReceivedFocus by remember { mutableStateOf(false) }
     var phoneReceivedFocus by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Spacer(modifier = Modifier.height(defaultSpacerSize))
-
-        Text(
-            text = stringResource(id = R.string.create_client_communication_title),
-            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+    if (isUploadingClient) {
+        val composition by rememberLottieComposition(
+            spec = LottieCompositionSpec.RawRes(R.raw.lottie_loading)
         )
 
-        Spacer(modifier = Modifier.height(defaultSpacerSize))
-
-        PeyessOutlinedTextField(
-            modifier = Modifier
-                .minimumWidthModifier(state = inputMinWidthState, density = density)
-                .onFocusChanged {
-                    emailReceivedFocus = emailReceivedFocus || it.hasFocus
-
-                    if (emailReceivedFocus && !it.hasFocus) {
-                        onDetectEmailError()
-                    }
-                },
-            value = email,
-            onValueChange = onEmailChanged,
-            isError = emailHasError,
-            errorMessage = stringResource(id = emailErrorId),
-            label = { Text(text = stringResource(id = R.string.create_client_email_input)) },
-            placeholder = { Text(text = stringResource(id = R.string.create_client_email_input)) },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Next,
-                keyboardType = KeyboardType.Email,
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) },
-            ),
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f)
         )
-
-        PeyessOutlinedTextField(
-            modifier = Modifier
-                .minimumWidthModifier(state = inputMinWidthState, density = density)
-                .onFocusChanged {
-                    cellphoneReceivedFocus = cellphoneReceivedFocus || it.hasFocus
-
-                    if (cellphoneReceivedFocus && !it.hasFocus) {
-                        onDetectCellphoneError()
-                    }
-                },
-            value = cellphone,
-            onValueChange = onCellphoneChanged,
-            isError = cellphoneHasError,
-            errorMessage = stringResource(id = cellphoneErrorId),
-            label = { Text(text = stringResource(id = R.string.create_client_cellphone_input)) },
-            placeholder = { Text(text = stringResource(id = R.string.create_client_cellphone_input)) },
-            visualTransformation = CellphoneNumberVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                imeAction = if (phoneHasWhatsApp && !hasPhoneContact) ImeAction.Done else ImeAction.Next,
-                capitalization = KeyboardCapitalization.Words,
-                keyboardType = KeyboardType.Phone,
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Down) },
-                onDone = { keyboardController?.hide() }
-            ),
-        )
-
-        AnimatedVisibility(
-            visible = !phoneHasWhatsApp,
-            enter = scaleIn(),
-            exit = scaleOut(),
+    } else {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
         ) {
+            Spacer(modifier = Modifier.height(defaultSpacerSize))
+
+            Text(
+                text = stringResource(id = R.string.create_client_communication_title),
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+            )
+
+            Spacer(modifier = Modifier.height(defaultSpacerSize))
+
             PeyessOutlinedTextField(
                 modifier = Modifier
                     .minimumWidthModifier(state = inputMinWidthState, density = density)
                     .onFocusChanged {
-                        whatsappReceivedFocus = whatsappReceivedFocus || it.hasFocus
+                        emailReceivedFocus = emailReceivedFocus || it.hasFocus
 
-                        if (whatsappReceivedFocus && !it.hasFocus) {
-                            onDetectWhatsappError()
+                        if (emailReceivedFocus && !it.hasFocus) {
+                            onDetectEmailError()
                         }
                     },
-                value = whatsapp,
-                onValueChange = onWhatsappChanged,
-                isError = whatsappHasError,
-                errorMessage = stringResource(id = whatsappErrorId),
-                label = { Text(text = stringResource(id = R.string.create_client_whatsapp_input)) },
-                placeholder = { Text(text = stringResource(id = R.string.create_client_whatsapp_input)) },
+                value = email,
+                onValueChange = onEmailChanged,
+                isError = emailHasError,
+                errorMessage = stringResource(id = emailErrorId),
+                label = { Text(text = stringResource(id = R.string.create_client_email_input)) },
+                placeholder = { Text(text = stringResource(id = R.string.create_client_email_input)) },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email,
+                ),
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                ),
+            )
+
+            PeyessOutlinedTextField(
+                modifier = Modifier
+                    .minimumWidthModifier(state = inputMinWidthState, density = density)
+                    .onFocusChanged {
+                        cellphoneReceivedFocus = cellphoneReceivedFocus || it.hasFocus
+
+                        if (cellphoneReceivedFocus && !it.hasFocus) {
+                            onDetectCellphoneError()
+                        }
+                    },
+                value = cellphone,
+                onValueChange = onCellphoneChanged,
+                isError = cellphoneHasError,
+                errorMessage = stringResource(id = cellphoneErrorId),
+                label = { Text(text = stringResource(id = R.string.create_client_cellphone_input)) },
+                placeholder = { Text(text = stringResource(id = R.string.create_client_cellphone_input)) },
                 visualTransformation = CellphoneNumberVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
-                    imeAction = if (hasPhoneContact) ImeAction.Next else ImeAction.Done,
+                    imeAction = if (phoneHasWhatsApp && !hasPhoneContact) ImeAction.Done else ImeAction.Next,
                     capitalization = KeyboardCapitalization.Words,
                     keyboardType = KeyboardType.Phone,
                 ),
@@ -302,84 +298,118 @@ private fun CommunicationScreenImpl(
                     onDone = { keyboardController?.hide() }
                 ),
             )
-        }
 
-        AnimatedVisibility(
-            visible = hasPhoneContact,
-            enter = scaleIn(),
-            exit = scaleOut(),
-        ) {
-            PeyessOutlinedTextField(
-                modifier = Modifier
-                    .minimumWidthModifier(state = inputMinWidthState, density = density)
-                    .onFocusChanged {
-                        phoneReceivedFocus = phoneReceivedFocus || it.hasFocus
+            AnimatedVisibility(
+                visible = !phoneHasWhatsApp,
+                enter = scaleIn(),
+                exit = scaleOut(),
+            ) {
+                PeyessOutlinedTextField(
+                    modifier = Modifier
+                        .minimumWidthModifier(state = inputMinWidthState, density = density)
+                        .onFocusChanged {
+                            whatsappReceivedFocus = whatsappReceivedFocus || it.hasFocus
 
-                        if (phoneReceivedFocus && !it.hasFocus) {
-                            onDetectPhoneError()
-                        }
-                    },
-                value = phone,
-                onValueChange = onPhoneChanged,
-                isError = phoneHasError,
-                errorMessage = stringResource(id = phoneErrorId),
-                label = { Text(text = stringResource(id = R.string.create_client_phone_input)) },
-                placeholder = { Text(text = stringResource(id = R.string.create_client_phone_input)) },
-                visualTransformation = PhoneNumberVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
-                    capitalization = KeyboardCapitalization.Words,
-                    keyboardType = KeyboardType.Phone,
+                            if (whatsappReceivedFocus && !it.hasFocus) {
+                                onDetectWhatsappError()
+                            }
+                        },
+                    value = whatsapp,
+                    onValueChange = onWhatsappChanged,
+                    isError = whatsappHasError,
+                    errorMessage = stringResource(id = whatsappErrorId),
+                    label = { Text(text = stringResource(id = R.string.create_client_whatsapp_input)) },
+                    placeholder = { Text(text = stringResource(id = R.string.create_client_whatsapp_input)) },
+                    visualTransformation = CellphoneNumberVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = if (hasPhoneContact) ImeAction.Next else ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Words,
+                        keyboardType = KeyboardType.Phone,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) },
+                        onDone = { keyboardController?.hide() }
+                    ),
+                )
+            }
+
+            AnimatedVisibility(
+                visible = hasPhoneContact,
+                enter = scaleIn(),
+                exit = scaleOut(),
+            ) {
+                PeyessOutlinedTextField(
+                    modifier = Modifier
+                        .minimumWidthModifier(state = inputMinWidthState, density = density)
+                        .onFocusChanged {
+                            phoneReceivedFocus = phoneReceivedFocus || it.hasFocus
+
+                            if (phoneReceivedFocus && !it.hasFocus) {
+                                onDetectPhoneError()
+                            }
+                        },
+                    value = phone,
+                    onValueChange = onPhoneChanged,
+                    isError = phoneHasError,
+                    errorMessage = stringResource(id = phoneErrorId),
+                    label = { Text(text = stringResource(id = R.string.create_client_phone_input)) },
+                    placeholder = { Text(text = stringResource(id = R.string.create_client_phone_input)) },
+                    visualTransformation = PhoneNumberVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        capitalization = KeyboardCapitalization.Words,
+                        keyboardType = KeyboardType.Phone,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboardController?.hide() },
+                    ),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(checkboxSpacerHeight))
+
+            Row(
+                modifier = Modifier.minimumWidthModifier(
+                    state = checkboxMinWidthState,
+                    density = density,
                 ),
-                keyboardActions = KeyboardActions(
-                    onDone = { keyboardController?.hide() },
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = phoneHasWhatsApp,
+                    onCheckedChange = onPhoneHasWhatsAppChanged,
+                )
+
+                Spacer(modifier = Modifier.width(checkboxSpacerWidth))
+
+                Text(text = stringResource(id = R.string.create_client_communication_same_phone_and_whatsapp))
+            }
+
+            Row(
+                modifier = Modifier.minimumWidthModifier(
+                    state = checkboxMinWidthState,
+                    density = density,
                 ),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = hasPhoneContact,
+                    onCheckedChange = onHasPhoneChanged,
+                )
+
+                Spacer(modifier = Modifier.width(checkboxSpacerWidth))
+
+                Text(text = stringResource(id = R.string.create_client_communication_phone_exists))
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            PeyessNextStep(
+                canGoNext = isInputValid,
+                onNext = onDone,
             )
         }
-
-        Spacer(modifier = Modifier.height(checkboxSpacerHeight))
-
-        Row(
-            modifier = Modifier.minimumWidthModifier(
-                state = checkboxMinWidthState,
-                density = density,
-            ),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Checkbox(
-                checked = phoneHasWhatsApp,
-                onCheckedChange = onPhoneHasWhatsAppChanged,
-            )
-
-            Spacer(modifier = Modifier.width(checkboxSpacerWidth))
-
-            Text(text = stringResource(id = R.string.create_client_communication_same_phone_and_whatsapp))
-        }
-
-        Row(
-            modifier = Modifier.minimumWidthModifier(
-                state = checkboxMinWidthState,
-                density = density,
-            ),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Checkbox(
-                checked = hasPhoneContact,
-                onCheckedChange = onHasPhoneChanged,
-            )
-
-            Spacer(modifier = Modifier.width(checkboxSpacerWidth))
-
-            Text(text = stringResource(id = R.string.create_client_communication_phone_exists))
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        PeyessNextStep(
-            canGoNext = isInputValid,
-            onNext = onDone,
-        )
     }
 }

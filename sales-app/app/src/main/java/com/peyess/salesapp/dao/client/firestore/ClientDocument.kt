@@ -1,5 +1,7 @@
 package com.peyess.salesapp.dao.client.firestore
 
+import android.net.Uri
+
 data class ClientDocument(
     val id: String = "",
     val nameDisplay: String = "",
@@ -7,12 +9,12 @@ data class ClientDocument(
     val sex: String = "",
     val email: String = "",
     val document: String = "",
-    val picture: String = "",
+    val picture: Uri = Uri.EMPTY,
     val shortAddress: String = "",
     val accountStatus: UserAccountStatus = UserAccountStatus.Activated,
 )
 
-fun FSClient.toDocument(): ClientDocument {
+fun FSClient.toDocument(id: String): ClientDocument {
     return ClientDocument(
         id = id,
         nameDisplay = nameDisplay,
@@ -20,8 +22,7 @@ fun FSClient.toDocument(): ClientDocument {
         sex = sex,
         email = email,
         document = document,
-        picture = picture,
-        shortAddress = shortAddress,
-        accountStatus = UserAccountStatus.fromName(accountStatus) ?: UserAccountStatus.Deactivated,
+        picture = Uri.parse(picture),
+        shortAddress = street,
     )
 }

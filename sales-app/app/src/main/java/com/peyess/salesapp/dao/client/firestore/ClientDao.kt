@@ -7,5 +7,5 @@ interface ClientDao {
 
     fun clientById(clientId: String): Flow<ClientDocument?>
 
-    fun addClient(client: ClientDocument): Flow<Boolean>
+    suspend fun addClient(clientId: String, client: FSClient)
 }

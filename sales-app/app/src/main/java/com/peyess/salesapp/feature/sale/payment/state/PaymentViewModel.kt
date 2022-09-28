@@ -71,7 +71,7 @@ class PaymentViewModel @AssistedInject constructor(
                             clientId = payer.id,
                             clientName = payer.name,
                             clientAddress = payer.shortAddress,
-                            clientPicture = Uri.parse(payer.picture),
+                            clientPicture = payer.picture,
                         )
                     )
                 }

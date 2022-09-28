@@ -7,6 +7,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.client.Sex
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -77,6 +78,13 @@ class BasicInfoViewModel @AssistedInject constructor(
         updateClient(client)
 
         copy(birthday = day)
+    }
+
+    fun onSexChanged(value: Sex) = setState {
+        val client = client.copy(sex = value)
+        updateClient(client)
+
+        copy(sex = value)
     }
 
     fun onDocumentChanged(value: String) = setState {

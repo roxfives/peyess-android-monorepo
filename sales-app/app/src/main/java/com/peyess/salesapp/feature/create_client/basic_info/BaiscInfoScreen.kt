@@ -11,20 +11,24 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -44,6 +49,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -58,9 +64,12 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
+import com.peyess.salesapp.data.model.client.Sex
 import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoState
 import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.feature.create_client.basic_info.utils.createClientFile
+import com.peyess.salesapp.feature.create_client.basic_info.utils.fromReadableSexName
+import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexName
 import com.peyess.salesapp.ui.component.date.PeyessDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -68,8 +77,15 @@ import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.UserDocumentVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.listItems
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
+import timber.log.Timber
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 private const val pictureSize = 256
 
@@ -91,6 +107,7 @@ fun BasicInfoScreen(
     val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplay)
     val birthday by viewModel.collectAsState(BasicInfoState::birthday)
     val document by viewModel.collectAsState(BasicInfoState::document)
+    val sex by viewModel.collectAsState(BasicInfoState::sex)
 
     val nameErrorId by viewModel.collectAsState(BasicInfoState::nameErrorId)
     val nameHasError by viewModel.collectAsState(BasicInfoState::nameHasError)
@@ -122,6 +139,9 @@ fun BasicInfoScreen(
 
         birthday = birthday,
         onBirthdayChanged = viewModel::onBirthdayChanged,
+
+        sex = sex,
+        onSexChanged = viewModel::onSexChanged,
 
         document = document,
         onDocumentChanged = viewModel::onDocumentChanged,
@@ -163,6 +183,9 @@ private fun BasicInfoScreenImpl(
     birthday: ZonedDateTime = ZonedDateTime.now(),
     onBirthdayChanged: (LocalDate) -> Unit = {},
 
+    sex: Sex = Sex.None,
+    onSexChanged: (Sex) -> Unit = {},
+
     document: String = "",
     onDocumentChanged: (String) -> Unit = {},
     onDetectDocumentError: () -> Unit = {},
@@ -187,11 +210,21 @@ private fun BasicInfoScreenImpl(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val minWidthState = remember { MinimumWidthState() }
+    val minWidthInputState = remember { MinimumWidthState() }
+    val minWidthSelectableState = remember { MinimumWidthState() }
 
     var nameReceivedFocus by remember { mutableStateOf(false) }
     var nameDisplayReceivedFocus by remember { mutableStateOf(false) }
     var documentReceivedFocus by remember { mutableStateOf(false) }
+
+    val pickSexDialogState = rememberMaterialDialogState()
+    PickSexDialog(
+        sexes = Sex.options,
+        dialogState = pickSexDialogState,
+        onSexSelected = {
+            onSexChanged(it)
+        },
+    )
 
     Column(
         modifier = modifier,
@@ -207,7 +240,7 @@ private fun BasicInfoScreenImpl(
 
         PeyessOutlinedTextField(
             modifier = Modifier
-                .minimumWidthModifier(state = minWidthState, density = density)
+                .minimumWidthModifier(state = minWidthInputState, density = density)
                 .onFocusChanged {
                     nameReceivedFocus = nameReceivedFocus || it.hasFocus
 
@@ -232,7 +265,7 @@ private fun BasicInfoScreenImpl(
 
         PeyessOutlinedTextField(
             modifier = Modifier
-                .minimumWidthModifier(state = minWidthState, density = density)
+                .minimumWidthModifier(state = minWidthInputState, density = density)
                 .onFocusChanged {
                     nameDisplayReceivedFocus = nameDisplayReceivedFocus || it.hasFocus
 
@@ -264,7 +297,7 @@ private fun BasicInfoScreenImpl(
 
         PeyessOutlinedTextField(
             modifier = Modifier
-                .minimumWidthModifier(state = minWidthState, density = density)
+                .minimumWidthModifier(state = minWidthInputState, density = density)
                 .onFocusChanged {
                     documentReceivedFocus = documentReceivedFocus || it.hasFocus
 
@@ -290,7 +323,26 @@ private fun BasicInfoScreenImpl(
 
         Spacer(modifier = Modifier.height(defaultSpacerSize))
 
+
+        SexPicker(
+            modifier = Modifier
+                .minimumWidthModifier(
+                    state = minWidthSelectableState,
+                    density = density,
+                )
+                .clickable { pickSexDialogState.show() },
+            dialogState = pickSexDialogState,
+            title = stringResource(id = R.string.create_client_sex_input),
+            sex = sex,
+        )
+
+        Spacer(modifier = Modifier.height(defaultSpacerSize))
+
         PeyessDatePicker(
+            modifier = Modifier.minimumWidthModifier(
+                state = minWidthSelectableState,
+                density = density,
+            ),
             title = stringResource(id = R.string.create_client_birthday_input),
             currDate = birthday.toLocalDate(),
             onSetDate = onBirthdayChanged,
@@ -390,6 +442,100 @@ private fun ProfilePicture(
         }
     }
 }
+
+@Composable
+private fun PickSexDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    sexes: List<Sex?> = emptyList(),
+    onSexSelected: (name: Sex) -> Unit = {},
+) {
+    val sexesList = sexes
+        .filterNotNull()
+        .filter { it != Sex.None }
+        .map {
+            Timber.i("Mapping $it")
+            readableSexName(it)
+        }
+
+    Timber.i("Available sexes are: $sexesList")
+
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        // TODO: use string resource
+        title("Selecione uma das opções abaixo")
+
+        listItems(
+            list = sexesList
+        ) { _, item ->
+            onSexSelected(fromReadableSexName(item))
+            dialogState.hide()
+        }
+    }
+}
+
+@Composable
+private fun SexPicker(
+    modifier: Modifier = Modifier,
+    title: String = "",
+    enabled: Boolean = true,
+    sex: Sex = Sex.None,
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+        )
+
+        Spacer(modifier = Modifier.size(8.dp))
+
+        Row(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = if (enabled) {
+                        MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .padding(2.dp)
+                .clickable(enabled = enabled) { dialogState.show() },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(modifier = Modifier.size(16.dp))
+
+            Text(
+                text = readableSexName(sex),
+                color = if (enabled) {
+                    MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }
+            )
+
+            Spacer(modifier = Modifier.size(16.dp))
+
+            IconButton(
+                enabled = enabled,
+                onClick = { dialogState.show() }
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            }
+        }
+    }
+}
+
 
 @Preview
 @Composable

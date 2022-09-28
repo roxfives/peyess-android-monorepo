@@ -9,6 +9,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.client.Sex
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateBirthDate
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateDocument
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateName
@@ -21,9 +22,9 @@ data class BasicInfoState(
     val picture: Uri = Uri.EMPTY,
     val name: String = "",
     val nameDisplay: String = "",
-
     val birthday: ZonedDateTime = ZonedDateTime.now(),
     val document: String = "",
+    val sex: Sex = Sex.None,
 
     @PersistState val detectNameError: Boolean = false,
     @PersistState val detectNameDisplayError: Boolean = false,

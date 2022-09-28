@@ -52,7 +52,7 @@ class UserZipCodeVisualTransformation: VisualTransformation {
                 offset + 1
             }
 
-            return offsetValue.coerceAtMost(maxLength + 1)
+            return offsetValue.coerceAtMost(maxLength + 2)
         }
 
         override fun transformedToOriginal(offset: Int): Int {

@@ -28,7 +28,6 @@ class CommunicationViewModel @AssistedInject constructor(
     private fun loadClient() = withState {
         clientRepository
             .latestLocalClientCreated()
-            .take(1)
             .execute {
                 copy(_clientAsync = it)
             }
@@ -40,60 +39,54 @@ class CommunicationViewModel @AssistedInject constructor(
         }
     }
 
-    fun onEmailChanged(email: String) = setState {
-        val update = client.copy(email = email)
+    fun onEmailChanged(email: String) = withState {
+        val update = it.client.copy(email = email)
         updateClient(update)
-
-        copy(email = email)
     }
 
-    fun onCellphoneChanged(cellphone: String) = setState {
+    fun onCellphoneChanged(cellphone: String) = withState {
         val cellphoneNumber = if (cellphone.length <= maxCellphoneLength) {
             cellphone
         } else {
             cellphone.substring(0 until maxCellphoneLength)
         }
 
-        val whatsappUpdate = if (phoneHasWhatsApp) cellphoneNumber else whatsapp
+        val whatsappUpdate = if (it.phoneHasWhatsApp) cellphoneNumber else it.whatsapp
 
-        val update = client.copy(cellphone = cellphoneNumber, whatsapp = whatsappUpdate)
+        val update = it.client.copy(cellphone = cellphoneNumber, whatsapp = whatsappUpdate)
         updateClient(update)
-
-        copy(cellphone = cellphoneNumber, whatsapp = whatsappUpdate)
     }
 
-    fun onWhatsappChanged(whatsapp: String) = setState {
+    fun onWhatsappChanged(whatsapp: String) = withState {
         val phoneNumber = if (whatsapp.length <= maxCellphoneLength) {
             whatsapp
         } else {
             whatsapp.substring(0 until maxCellphoneLength)
         }
 
-        val update = client.copy(whatsapp = phoneNumber)
+        val update = it.client.copy(whatsapp = phoneNumber)
         updateClient(update)
-
-        copy(whatsapp = phoneNumber)
     }
 
-    fun onPhoneChanged(phone: String) = setState {
+    fun onPhoneChanged(phone: String) = withState {
         val phoneNumber = if (phone.length <= maxPhoneLength) {
             phone
         } else {
             phone.substring(0 until maxPhoneLength)
         }
 
-        val update = client.copy(phone = phoneNumber)
+        val update = it.client.copy(phone = phoneNumber)
         updateClient(update)
-
-        copy(phone = phoneNumber)
     }
 
     fun onPhoneHasWhatsappChanged(cellphoneHasWhatsApp: Boolean) = setState {
         val whatsappUpdate = if (cellphoneHasWhatsApp) cellphone else ""
 
+        val update = client.copy(whatsapp = whatsappUpdate)
+        updateClient(update)
+
         copy(
             phoneHasWhatsApp = cellphoneHasWhatsApp,
-            whatsapp = whatsappUpdate,
         )
     }
 

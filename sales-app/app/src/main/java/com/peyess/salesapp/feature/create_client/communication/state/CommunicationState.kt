@@ -19,10 +19,10 @@ data class CommunicationState(
     val phoneHasWhatsApp: Boolean = true,
     val hasPhoneContact: Boolean = false,
 
-    val email: String = "",
-    val cellphone: String = "",
-    val whatsapp: String = "",
-    val phone: String = "",
+//    val email: String = "",
+//    val cellphone: String = "",
+//    val whatsapp: String = "",
+//    val phone: String = "",
 
     @PersistState val detectEmailError: Boolean = false,
     @PersistState val detectCellphoneError: Boolean = false,
@@ -35,6 +35,11 @@ data class CommunicationState(
     val isClientLoading = _clientAsync is Loading
             || (_clientAsync is Success && _clientAsync.invoke() == null)
     val client = _clientAsync.invoke() ?: ClientModel()
+
+    val email = client.email
+    val cellphone = client.cellphone
+    val whatsapp = client.whatsapp
+    val phone = client.phone
 
     private val _emailErrorId = validateEmail(email)
     val emailErrorId = _emailErrorId ?: R.string.empty_string

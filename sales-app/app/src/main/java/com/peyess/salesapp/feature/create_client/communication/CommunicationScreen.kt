@@ -17,6 +17,7 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -35,11 +37,16 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationState
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -47,6 +54,7 @@ import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.CellphoneNumberVisualTransformation
 import com.peyess.salesapp.ui.text_transformation.PhoneNumberVisualTransformation
 import com.peyess.salesapp.ui.text_transformation.UserZipCodeVisualTransformation
+import timber.log.Timber
 
 private val defaultSpacerSize = 32.dp
 private val checkboxSpacerWidth = 4.dp
@@ -55,9 +63,27 @@ private val checkboxSpacerHeight = 16.dp
 @Composable
 fun CreateClientCommunicationScreen(
     modifier: Modifier = Modifier,
-    onDone: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+    viewModelScope: LifecycleOwner? = null,
+    onDone: (CreateScenario) -> Unit = {},
 ) {
-    val viewModel: CommunicationViewModel = mavericksViewModel()
+    val viewModel: CommunicationViewModel = if (viewModelScope == null) {
+        mavericksViewModel()
+    } else {
+        mavericksViewModel(viewModelScope)
+    }
+
+    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
+    val scenarioParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(createScenarioParam)
+
+    LaunchedEffect(scenarioParameter) {
+        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
+
+        Timber.i("Using scenario $scenario")
+    }
 
     val email by viewModel.collectAsState(CommunicationState::email)
     val cellphone by viewModel.collectAsState(CommunicationState::cellphone)
@@ -119,7 +145,7 @@ fun CreateClientCommunicationScreen(
         phoneHasError = phoneHasError,
 
         isInputValid = isInputValid,
-        onDone = onDone,
+        onDone = { onDone(scenario) },
     )
 }
 

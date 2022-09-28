@@ -18,10 +18,25 @@ import com.peyess.salesapp.navigation.create_client.basic_info.createClientExitT
 import com.peyess.salesapp.navigation.create_client.communication.createClientCommunicationEnterTransition
 import com.peyess.salesapp.navigation.create_client.communication.createClientCommunicationExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
 
-const val isPickingParam = "isPicking"
-const val pickScenarioParam = "pickScenario"
-const val paymentIdParam = "paymentId"
+const val createScenarioParam = "createScenario"
+
+val basicInfoRoute = "${SalesAppScreens.CreateNewClientBasicInfo.name}/{$createScenarioParam}"
+val addressRoute = "${SalesAppScreens.CreateNewClientAddress.name}/{$createScenarioParam}"
+val communicationRoute = "${SalesAppScreens.CreateNewClientContact.name}/{$createScenarioParam}"
+
+fun formatBasicInfoRoute(param: String): String {
+    return "${SalesAppScreens.CreateNewClientBasicInfo.name}/{$param}"
+}
+
+fun formatAddressRoute(param: String): String {
+    return "${SalesAppScreens.CreateNewClientAddress.name}/{$param}"
+}
+
+fun formatCommunicationRoute(param: String): String {
+    return "${SalesAppScreens.CreateNewClientContact.name}/{$param}"
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildCreateClientNavGraph(
@@ -30,14 +45,9 @@ fun buildCreateClientNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = SalesAppScreens.CreateNewClientBasicInfo.name,
+        route = basicInfoRoute,
 //        arguments = listOf(
-//            navArgument(isPickingParam) { type = NavType.BoolType },
 //            navArgument(pickScenarioParam) { type = NavType.StringType },
-//            navArgument(paymentIdParam) {
-//                type = NavType.LongType
-//                defaultValue = 0L
-//            },
 //        ),
         enterTransition = createClientEnterTransition(),
         exitTransition = createClientExitTransition()
@@ -47,69 +57,92 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             onDone = {
-                 navHostController.navigate(SalesAppScreens.CreateNewClientAddress.name)
+                 navHostController.navigate(formatAddressRoute(it.toName()))
             },
         )
     }
 
     builder.composable(
-        route = SalesAppScreens.CreateNewClientAddress.name,
+        route = addressRoute,
         enterTransition = clientAddressEnterTransition(),
         exitTransition = clientAddressExitTransition()
     ) {
+        val viewModelScope = try {
+            navHostController.getBackStackEntry(basicInfoRoute)
+        } catch (error: Throwable) {
+            Timber.e("Could not find viewModelScope", error)
+            null
+        }
+
         CreateClientAddressScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
+            viewModelScope = viewModelScope,
             onDone = {
-                navHostController.navigate(SalesAppScreens.CreateNewClientContact.name)
+                navHostController.navigate(formatCommunicationRoute(it.toName()))
             },
         )
     }
 
     builder.composable(
-        route = SalesAppScreens.CreateNewClientContact.name,
+        route = communicationRoute,
         enterTransition = createClientCommunicationEnterTransition(),
-        exitTransition = createClientCommunicationExitTransition()
+        exitTransition = createClientCommunicationExitTransition(),
     ) {
+        val viewModelScope = try {
+            navHostController.getBackStackEntry(basicInfoRoute)
+        } catch (error: Throwable) {
+            Timber.e("Could not find viewModelScope", error)
+            null
+        }
+        
         CreateClientCommunicationScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
-            onDone = {},
+            viewModelScope = viewModelScope,
+            onDone = {
+                 when (it) {
+                     CreateScenario.Home ->
+                         navHostController.navigate(SalesAppScreens.Clients.name) {
+                             popUpTo(SalesAppScreens.Clients.name) {
+                                 inclusive = true
+                             }
+                         }
+
+                     CreateScenario.Sale -> {}
+//                         navHostController.navigate(SalesAppScreens.Clients.name) {
+//                             popUpTo(basicInfoRoute) {
+//                                 inclusive = true
+//                             }
+//                         }
+                 }
+            },
         )
     }
 }
 
-//sealed class CreateScenario {
-//    object ServiceOrder: CreateScenario()
-//    object Responsible: CreateScenario()
-//    object User: CreateScenario()
-//    object Witness: CreateScenario()
-//    object Payment: CreateScenario()
-//
-//    fun toName() = toName(this)
-//
-//    companion object {
-//        fun toName(scenario: CreateScenario): String {
-//            return when (scenario) {
-//                Responsible -> "Client"
-//                Payment -> "Payment"
-//                ServiceOrder -> "ServiceOrder"
-//                User -> "User"
-//                Witness -> "Witness"
-//            }
-//        }
-//
-//        fun fromName(name: String): CreateScenario? {
-//            return when (name) {
-//                "Client" -> Responsible
-//                "Payment" -> Payment
-//                "ServiceOrder" -> ServiceOrder
-//                "User" -> User
-//                "Witness" -> Witness
-//                else -> null
-//            }
-//        }
-//    }
-//}
+sealed class CreateScenario {
+    object Home: CreateScenario()
+    object Sale: CreateScenario()
+
+    fun toName() = toName(this)
+
+    companion object {
+        fun toName(scenario: CreateScenario): String {
+            return when (scenario) {
+                Home -> "Home"
+                Sale -> "Sale"
+            }
+        }
+
+        fun fromName(name: String): CreateScenario? {
+            return when (name) {
+                "Home" -> Home
+                "Sale" -> Sale
+                else -> null
+            }
+        }
+    }
+}

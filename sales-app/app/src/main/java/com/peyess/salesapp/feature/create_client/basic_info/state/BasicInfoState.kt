@@ -20,13 +20,13 @@ import java.time.format.DateTimeFormatter
 data class BasicInfoState(
     private val _clientAsync: Async<ClientModel?> = Uninitialized,
 
-    val picture: Uri = Uri.EMPTY,
-    val name: String = "",
-    val nameDisplay: String = "",
-    val birthday: ZonedDateTime = ZonedDateTime
-        .parse("2000-01-01T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
-    val document: String = "",
-    val sex: Sex = Sex.None,
+//    val picture: Uri = Uri.EMPTY,
+//    val name: String = "",
+//    val nameDisplay: String = "",
+//    val birthday: ZonedDateTime = ZonedDateTime
+//        .parse("2000-01-01T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
+//    val document: String = "",
+//    val sex: Sex = Sex.None,
 
     @PersistState val detectNameError: Boolean = false,
     @PersistState val detectNameDisplayError: Boolean = false,
@@ -35,6 +35,13 @@ data class BasicInfoState(
     val isClientLoading = _clientAsync is Loading
             || (_clientAsync is Success && _clientAsync.invoke() == null)
     val client = _clientAsync.invoke() ?: ClientModel()
+
+    val picture = client.picture
+    val name = client.name
+    val nameDisplay = client.nameDisplay
+    val birthday = client.birthday
+    val document = client.document
+    val sex = client.sex
 
     private val _nameErrorId = validateName(name)
     val nameErrorId = _nameErrorId ?: R.string.empty_string

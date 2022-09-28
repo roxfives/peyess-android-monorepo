@@ -38,33 +38,12 @@ class ClientAddressViewModel @AssistedInject constructor(
             }
     }
 
-    private fun findAddressByZipCode() = withState { state ->
+    private fun findAddressByZipCode(zipCode: String) = withState { state ->
         suspend {
-            addressRepository.findAddressByZipCode(state.zipCode)
+            addressRepository.findAddressByZipCode(zipCode)
         }.execute {
             copy(addressLookup = it)
         }
-    }
-
-    private fun updateAddress(address: AddressModel) = setState {
-        copy(
-            street = address.street,
-            complement = address.complement,
-            neighborhood = address.neighborhood,
-            city = address.city,
-            state = address.state,
-        )
-    }
-
-    private fun clearCurrentAddress() = setState {
-        copy(
-            street = "",
-            complement = "",
-            houseNumber = "",
-            neighborhood = "",
-            city = "",
-            state = "",
-        )
     }
 
     private fun updateClient(client: ClientModel) {
@@ -73,7 +52,33 @@ class ClientAddressViewModel @AssistedInject constructor(
         }
     }
 
-    fun onZipCodeChanged(value: String) = setState {
+    private fun updateAddress(address: AddressModel) = withState {
+        val client = it.client.copy(
+            street = address.street,
+            complement = address.complement,
+            neighborhood = address.neighborhood,
+            city = address.city,
+            state = address.state,
+        )
+
+        updateClient(client)
+    }
+
+    private fun clearCurrentAddress(zipCode: String) = withState {
+        val client = it.client.copy(
+            zipCode = zipCode,
+            street = "",
+            complement = "",
+            houseNumber = "",
+            neighborhood = "",
+            city = "",
+            state = "",
+        )
+
+        updateClient(client)
+    }
+
+    fun onZipCodeChanged(value: String) = withState {
         val zipCode = if (value.length <= maxZipCodeLength) {
             value
         } else {
@@ -81,56 +86,42 @@ class ClientAddressViewModel @AssistedInject constructor(
         }
 
         if (zipCode.length == maxZipCodeLength) {
-            clearCurrentAddress()
-            findAddressByZipCode()
+            clearCurrentAddress(zipCode)
+            findAddressByZipCode(zipCode)
+        } else {
+            val update = it.client.copy(zipCode = zipCode)
+            updateClient(update)
         }
-
-        val update = client.copy(zipCode = zipCode)
-        updateClient(update)
-
-        copy(zipCode = zipCode)
     }
 
-    fun onStreetChanged(value: String) = setState {
-        val update = client.copy(street = value)
+    fun onStreetChanged(value: String) = withState {
+        val update = it.client.copy(street = value)
         updateClient(update)
-
-        copy(street = value)
     }
 
-    fun onHouseNumberChanged(value: String) = setState {
-        val update = client.copy(houseNumber = value)
+    fun onHouseNumberChanged(value: String) = withState {
+        val update = it.client.copy(houseNumber = value)
         updateClient(update)
-
-        copy(houseNumber = value)
     }
 
-    fun onComplementChanged(value: String) = setState {
-        val update = client.copy(complement = value)
+    fun onComplementChanged(value: String) = withState {
+        val update = it.client.copy(complement = value)
         updateClient(update)
-
-        copy(complement = value)
     }
 
-    fun onNeighbourhoodChanged(value: String) = setState {
-        val update = client.copy(neighborhood = value)
+    fun onNeighbourhoodChanged(value: String) = withState {
+        val update = it.client.copy(neighborhood = value)
         updateClient(update)
-
-        copy(neighborhood = value)
     }
 
-    fun onCityChanged(value: String) = setState {
-        val update = client.copy(city = value)
+    fun onCityChanged(value: String) = withState {
+        val update = it.client.copy(city = value)
         updateClient(update)
-
-        copy(city = value)
     }
 
-    fun onStateChanged(value: String) = setState {
-        val update = client.copy(state = value)
+    fun onStateChanged(value: String) = withState {
+        val update = it.client.copy(state = value)
         updateClient(update)
-
-        copy(state = value)
     }
 
     fun onDetectZipCodeError() = setState {

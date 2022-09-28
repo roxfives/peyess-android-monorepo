@@ -21,13 +21,13 @@ data class ClientAddressState(
     private val _clientAsync: Async<ClientModel?> = Uninitialized,
     val addressLookup: Async<AddressModel> = Uninitialized,
 
-    val zipCode: String = "",
-    val street: String = "",
-    val houseNumber: String = "",
-    val complement: String = "",
-    val neighborhood: String = "",
-    val city: String = "",
-    val state: String = "",
+//    val zipCode: String = "",
+//    val street: String = "",
+//    val houseNumber: String = "",
+//    val complement: String = "",
+//    val neighborhood: String = "",
+//    val city: String = "",
+//    val state: String = "",
 
     @PersistState val detectZipCodeError: Boolean = false,
     @PersistState val detectStreetError: Boolean = false,
@@ -39,6 +39,14 @@ data class ClientAddressState(
     val isClientLoading = _clientAsync is Loading
             || (_clientAsync is Success && _clientAsync.invoke() == null)
     val client = _clientAsync.invoke() ?: ClientModel()
+
+    val zipCode = client.zipCode
+    val street = client.street
+    val houseNumber = client.houseNumber
+    val complement = client.complement
+    val neighborhood = client.neighborhood
+    val city = client.city
+    val state = client.state
 
     val isAddressLoading = addressLookup is Loading
     val addressNotFound = addressLookup is Fail

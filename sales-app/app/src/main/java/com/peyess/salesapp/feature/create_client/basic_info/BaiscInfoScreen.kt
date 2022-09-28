@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +57,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.mvrx.compose.collectAsState
@@ -70,6 +73,10 @@ import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoViewM
 import com.peyess.salesapp.feature.create_client.basic_info.utils.createClientFile
 import com.peyess.salesapp.feature.create_client.basic_info.utils.fromReadableSexName
 import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexName
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.createScenarioParam
+import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.date.PeyessDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -98,9 +105,22 @@ private val dividerSpacerSize = 32.dp
 @Composable
 fun BasicInfoScreen(
     modifier: Modifier = Modifier,
-    onDone: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+    onDone: (CreateScenario) -> Unit = {},
 ) {
     val viewModel: BasicInfoViewModel = mavericksViewModel()
+
+    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
+    val scenarioParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(createScenarioParam)
+
+    LaunchedEffect(scenarioParameter) {
+        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
+
+        Timber.i("Using scenario $scenario")
+    }
 
     val picture by viewModel.collectAsState(BasicInfoState::picture)
     val name by viewModel.collectAsState(BasicInfoState::name)
@@ -160,7 +180,7 @@ fun BasicInfoScreen(
         documentHasError = documentHasError,
         isInputValid = isInputValid,
 
-        onDone = onDone,
+        onDone = { onDone(scenario) },
     )
 }
 

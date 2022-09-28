@@ -10,6 +10,8 @@ import com.peyess.salesapp.feature.home.ClientScreen
 import com.peyess.salesapp.feature.home.HomeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.home.SalesScreen
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -44,10 +46,12 @@ fun buildHomeNavGraph(
         enterTransition = clientsEnterTransition(),
         exitTransition = clientsExitTransition()
     ) {
+       val scenario = CreateScenario.Home
+
         ClientScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
             onCreateNewClient = {
-                navHostController.navigate(SalesAppScreens.CreateNewClientBasicInfo.name)
+                navHostController.navigate(formatBasicInfoRoute(scenario.toName()))
             }
         )
     }

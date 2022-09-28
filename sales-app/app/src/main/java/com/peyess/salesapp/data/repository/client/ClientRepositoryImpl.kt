@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import timber.log.Timber
 import javax.inject.Inject
 
 class ClientRepositoryImpl @Inject constructor(
@@ -48,6 +49,8 @@ class ClientRepositoryImpl @Inject constructor(
             .dataStoreLatestClient
             .data
             .flatMapLatest { prefs ->
+                Timber.i("Getting latest client by id ${prefs[latestClientKey]}")
+
                 cacheCreateClientDao
                     .getById(prefs[latestClientKey] ?: "")
             }
@@ -58,9 +61,15 @@ class ClientRepositoryImpl @Inject constructor(
         val id = firebaseManager.uniqueId()
         val client = CacheCreateClientEntity(id = id)
 
+        Timber.i("Creating client with id $id")
+
         salesApplication.dataStoreLatestClient.edit { prefs ->
+            Timber.i("Setting latest id to $id")
+
             prefs[latestClientKey] = id
         }
+
+        Timber.i("Adding client to database $id")
         cacheCreateClientDao.add(client)
     }
 

@@ -14,6 +14,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -28,7 +29,10 @@ class BasicInfoViewModel @AssistedInject constructor(
     }
 
     private fun createNewClient() {
-        suspend { clientRepository.createNewLocalClient() }
+        viewModelScope.launch(Dispatchers.IO) {
+            Timber.i("Creating new local client now")
+            clientRepository.createNewLocalClient()
+        }
     }
 
 
@@ -42,7 +46,10 @@ class BasicInfoViewModel @AssistedInject constructor(
         clientRepository
             .latestLocalClientCreated()
             .execute {
+                Timber.i("Loading client is $it with ${it.invoke()}")
+
                 if (it is Success && it.invoke() == null) {
+                    Timber.i("Creating new client")
                     createNewClient()
                 }
 
@@ -50,54 +57,42 @@ class BasicInfoViewModel @AssistedInject constructor(
             }
     }
 
-    fun onPictureChanged(picture: Uri) = setState {
-        val client = client.copy(picture = picture)
+    fun onPictureChanged(picture: Uri) = withState {
+        val client = it.client.copy(picture = picture)
         updateClient(client)
-
-        copy(picture = picture)
     }
 
-    fun onNameChanged(value: String) = setState {
-        val client = client.copy(name = value)
+    fun onNameChanged(value: String) = withState {
+        val client = it.client.copy(name = value)
         updateClient(client)
-
-        copy(name = value)
     }
 
-    fun onNameDisplayChanged(value: String) = setState {
-        val client = client.copy(nameDisplay = value)
+    fun onNameDisplayChanged(value: String) = withState {
+        val client = it.client.copy(nameDisplay = value)
         updateClient(client)
-
-        copy(nameDisplay = value)
     }
 
-    fun onBirthdayChanged(value: LocalDate) = setState {
+    fun onBirthdayChanged(value: LocalDate) = withState {
         val day = value.atStartOfDay(ZoneId.systemDefault())
 
-        val client = client.copy(birthday = day)
+        val client = it.client.copy(birthday = day)
         updateClient(client)
-
-        copy(birthday = day)
     }
 
-    fun onSexChanged(value: Sex) = setState {
-        val client = client.copy(sex = value)
+    fun onSexChanged(value: Sex) = withState {
+        val client = it.client.copy(sex = value)
         updateClient(client)
-
-        copy(sex = value)
     }
 
-    fun onDocumentChanged(value: String) = setState {
+    fun onDocumentChanged(value: String) = withState {
         val document = if (value.length <= maxDocumentLength) {
             value
         } else {
             value.substring(0 until maxDocumentLength)
         }
 
-        val client = client.copy(document = document)
+        val client = it.client.copy(document = document)
         updateClient(client)
-
-        copy(document = document)
     }
 
     fun onDetectNameError() = setState {

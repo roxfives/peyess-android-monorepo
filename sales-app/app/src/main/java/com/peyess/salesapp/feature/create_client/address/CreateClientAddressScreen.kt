@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.create_client.address
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -40,8 +39,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
@@ -49,11 +50,15 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressState
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressViewModel
+import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.UserZipCodeVisualTransformation
+import timber.log.Timber
 
 private val defaultSpacerSize = 32.dp
 
@@ -69,9 +74,27 @@ private val animationProgressEnd = 1f
 @Composable
 fun CreateClientAddressScreen(
     modifier: Modifier = Modifier,
-    onDone: () -> Unit = {},
+    navHostController: NavHostController = rememberNavController(),
+    viewModelScope: LifecycleOwner? = null,
+    onDone: (CreateScenario) -> Unit = {},
 ) {
-    val viewModel: ClientAddressViewModel = mavericksViewModel()
+    val viewModel: ClientAddressViewModel = if (viewModelScope == null) {
+        mavericksViewModel()
+    } else {
+        mavericksViewModel(viewModelScope)
+    }
+
+    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
+    val scenarioParameter = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(createScenarioParam)
+
+    LaunchedEffect(scenarioParameter) {
+        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
+
+        Timber.i("Using scenario $scenario")
+    }
 
     val zipCode by viewModel.collectAsState(ClientAddressState::zipCode)
     val street by viewModel.collectAsState(ClientAddressState::street)
@@ -158,7 +181,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
-        onDone = onDone,
+        onDone = { onDone(scenario) },
     )
 }
 

@@ -15,6 +15,7 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.validateDocume
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateName
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateNameDisplay
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 data class BasicInfoState(
     private val _clientAsync: Async<ClientModel?> = Uninitialized,
@@ -22,7 +23,8 @@ data class BasicInfoState(
     val picture: Uri = Uri.EMPTY,
     val name: String = "",
     val nameDisplay: String = "",
-    val birthday: ZonedDateTime = ZonedDateTime.now(),
+    val birthday: ZonedDateTime = ZonedDateTime
+        .parse("2000-01-01T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
     val document: String = "",
     val sex: Sex = Sex.None,
 

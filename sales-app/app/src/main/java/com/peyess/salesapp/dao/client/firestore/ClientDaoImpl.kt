@@ -38,6 +38,7 @@ class ClientDaoImpl @Inject constructor(
                     }
                 }
 
+                Timber.i("Sending clients $clients")
                 trySend(clients ?: emptyList())
             }
 

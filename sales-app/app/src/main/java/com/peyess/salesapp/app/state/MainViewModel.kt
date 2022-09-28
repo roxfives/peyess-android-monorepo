@@ -28,9 +28,6 @@ class MainViewModel @AssistedInject constructor(
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
-        loadClients()
-        loadServiceOrders()
-
         setState {
             copy(
                 createNewSale = Success(false),
@@ -40,6 +37,13 @@ class MainViewModel @AssistedInject constructor(
         withState {
             gambetaDao.getGambeta(0).execute {
                 copy(isUpdatingProductsAsync = it)
+            }
+        }
+
+        onEach(MainAppState::authState) {
+            if (it is AppAuthenticationState.Authenticated) {
+                loadClients()
+                loadServiceOrders()
             }
         }
 

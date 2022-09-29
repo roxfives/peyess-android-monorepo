@@ -26,7 +26,7 @@ sealed class DemonstrationShown {
             // TODO: use string resource
             return when (demo) {
                 Multi -> "Multifocais"
-                Treatments -> "Tratamentos"
+                Treatments -> "Antirreflexo"
                 Photo -> "Fotossensíveis"
                 Misc -> "Outros"
             }
@@ -35,7 +35,7 @@ sealed class DemonstrationShown {
         fun fromName(name: String): DemonstrationShown {
             return when (name) {
                 "Multifocais" -> Multi
-                "Tratamentos" -> Treatments
+                "Antirreflexo" -> Treatments
                 "Outros" -> Misc
                 else -> Photo
             }

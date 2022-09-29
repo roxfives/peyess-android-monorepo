@@ -1,20 +1,13 @@
 package com.peyess.salesapp.dao.client.firestore
 
-import android.net.Uri
 import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
-import java.util.*
 
 @Keep
 @IgnoreExtraProperties
 data class FSClient(
-//    @JvmField
-//    @Keep
-//    @PropertyName("id")
-//    val id: String = "",
-
     @JvmField
     @Keep
     @PropertyName("name")
@@ -107,8 +100,8 @@ data class FSClient(
 
     @Keep
     @JvmField
-    @PropertyName("created_at")
-    val createdAt: Timestamp = Timestamp.now(),
+    @PropertyName("created")
+    val created: Timestamp = Timestamp.now(),
 
     @Keep
     @JvmField
@@ -119,6 +112,11 @@ data class FSClient(
     @JvmField
     @PropertyName("created_allowed_by")
     val createdAllowedBy: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("updated")
+    val updated: Timestamp = Timestamp.now(),
 
     @Keep
     @JvmField

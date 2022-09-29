@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.create_client.communication.state
 
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
@@ -11,7 +10,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -96,6 +94,11 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(hasPhoneContact = hasPhone)
     }
 
+
+    fun onHasAcceptedPromotionalMessages(hasAccepted: Boolean) = setState {
+        copy(hasAcceptedPromotionalMessages = hasAccepted)
+    }
+
     fun onDetectEmailError() = setState {
         copy(detectEmailError = true)
     }
@@ -114,15 +117,13 @@ class CommunicationViewModel @AssistedInject constructor(
 
     fun createClient() = withState {
         suspend {
-            clientRepository.uploadClient(it.client)
+            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
             clientRepository.clearCreateClientCache(it.client.id)
         }.execute(Dispatchers.IO) {
             Timber.i("Upload client: $it")
             copy(uploadClientAsync = it)
         }
     }
-
-
 
     // hilt
     @AssistedFactory

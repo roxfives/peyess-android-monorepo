@@ -19,6 +19,8 @@ data class CommunicationState(
     val phoneHasWhatsApp: Boolean = true,
     val hasPhoneContact: Boolean = false,
 
+    val hasAcceptedPromotionalMessages: Boolean = false,
+
 //    val email: String = "",
 //    val cellphone: String = "",
 //    val whatsapp: String = "",

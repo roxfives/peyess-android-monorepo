@@ -99,6 +99,9 @@ fun CreateClientCommunicationScreen(
         }
     }
 
+    val hasAcceptedPromotionalMessages by
+        viewModel.collectAsState(CommunicationState::hasAcceptedPromotionalMessages)
+
     val email by viewModel.collectAsState(CommunicationState::email)
     val cellphone by viewModel.collectAsState(CommunicationState::cellphone)
     val whatsapp by viewModel.collectAsState(CommunicationState::whatsapp)
@@ -131,6 +134,9 @@ fun CreateClientCommunicationScreen(
 
         hasPhoneContact = hasPhoneContact,
         onHasPhoneChanged = viewModel::onHasPhoneChanged,
+
+        hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
+        onHasAcceptedPromotionalMessages = viewModel::onHasAcceptedPromotionalMessages,
 
         email = email,
         onEmailChanged = viewModel::onEmailChanged,
@@ -177,6 +183,9 @@ private fun CommunicationScreenImpl(
 
     hasPhoneContact: Boolean = false,
     onHasPhoneChanged: (Boolean) -> Unit = {},
+
+    hasAcceptedPromotionalMessages: Boolean = false,
+    onHasAcceptedPromotionalMessages: (Boolean) -> Unit = {},
 
     email: String = "",
     onEmailChanged: (String) -> Unit = {},
@@ -402,6 +411,24 @@ private fun CommunicationScreenImpl(
                 Spacer(modifier = Modifier.width(checkboxSpacerWidth))
 
                 Text(text = stringResource(id = R.string.create_client_communication_phone_exists))
+            }
+
+            Row(
+                modifier = Modifier.minimumWidthModifier(
+                    state = checkboxMinWidthState,
+                    density = density,
+                ),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = hasAcceptedPromotionalMessages,
+                    onCheckedChange = onHasAcceptedPromotionalMessages,
+                )
+
+                Spacer(modifier = Modifier.width(checkboxSpacerWidth))
+
+                Text(text = stringResource(id = R.string.create_client_accept_promotional_messages))
             }
 
             Spacer(modifier = Modifier.weight(1f))

@@ -15,6 +15,6 @@ interface ClientRepository {
     suspend fun createNewLocalClient()
     suspend fun cancelLocalClientCreation()
 
-    suspend fun uploadClient(clientModel: ClientModel)
+    suspend fun uploadClient(clientModel: ClientModel, hasAcceptedPromotionalMessages: Boolean)
     suspend fun clearCreateClientCache(clientId: String)
 }

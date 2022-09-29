@@ -412,6 +412,8 @@
     <string name="mike_user_profile_message_sport_nauseating_yes_multi">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes específicas para práticas de esportes. \n\n Obs.: Lentes Multifocais normalmente trazem um certo desconforto na visão de perto.</string>
 
     <!--  UI Component: Create client  -->
+    <string name="create_client_accept_promotional_messages">Eu gostaria de receber promoções e campanhas das Óticas Diniz</string>
+
     <string name="create_client_error_name_blank">Nome do cliente não pode ser vazio</string>
     <string name="create_client_error_name_incomplete">Nome do cliente deve ser completo</string>
 
@@ -471,6 +473,7 @@
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
+    <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

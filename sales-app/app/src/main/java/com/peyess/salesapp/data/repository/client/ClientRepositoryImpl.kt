@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.google.firebase.Timestamp
 import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
@@ -18,7 +17,10 @@ import com.peyess.salesapp.data.adapter.client.toClientModel
 import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
+import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.client_legal.ClientLegalMethod
+import com.peyess.salesapp.data.model.client_legal.FSClientLegal
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.file.deleteFile
@@ -40,6 +42,7 @@ class ClientRepositoryImpl @Inject constructor(
     private val firebaseManager: FirebaseManager,
     private val cacheCreateClientDao: CacheCreateClientDao,
     private val clientDao: ClientDao,
+    private val clientLegalDao: ClientLegalDao,
     private val authenticationRepository: AuthenticationRepository,
 ): ClientRepository {
     private val Context.dataStoreLatestClient: DataStore<Preferences>
@@ -122,7 +125,10 @@ class ClientRepositoryImpl @Inject constructor(
         return downloadUrl
     }
 
-    override suspend fun uploadClient(clientModel: ClientModel) {
+    override suspend fun uploadClient(
+        clientModel: ClientModel,
+        hasAcceptedPromotionalMessages: Boolean,
+    ) {
         val updatedUri = if (clientModel.picture != Uri.EMPTY) {
             uploadClientProfilePicture(clientModel)
         } else {
@@ -150,9 +156,23 @@ class ClientRepositoryImpl @Inject constructor(
                 updatedBy = currentUser,
             )
 
+        val fsClientLegal = FSClientLegal(
+            hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
+            methodPromotionalMessages = ClientLegalMethod.SalesAppCreateAccount.toName(),
+
+            createdBy = currentUser,
+            createdAllowedBy = currentUser,
+            updatedAllowedBy = currentUser,
+            updatedBy = currentUser,
+        )
+
         clientDao.addClient(
             clientId = clientModel.id,
             client = fsClient,
+        )
+        clientLegalDao.addClientLegalFor(
+            clientId = clientModel.id,
+            clientLegal = fsClientLegal,
         )
     }
 

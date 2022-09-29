@@ -32,6 +32,7 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
+import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
@@ -82,6 +83,7 @@ object RepositoryModule {
         firebaseManager: FirebaseManager,
         cacheCreateClientDao: CacheCreateClientDao,
         clientDao: ClientDao,
+        clientLegalDao: ClientLegalDao,
         authenticationRepository: AuthenticationRepository,
     ): ClientRepository {
         return ClientRepositoryImpl(
@@ -89,6 +91,7 @@ object RepositoryModule {
             firebaseManager,
             cacheCreateClientDao,
             clientDao,
+            clientLegalDao,
             authenticationRepository,
         )
     }

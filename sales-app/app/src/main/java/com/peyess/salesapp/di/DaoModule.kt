@@ -51,6 +51,8 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
+import com.peyess.salesapp.data.dao.client.ClientLegalDao
+import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
@@ -72,6 +74,14 @@ object DaoModule {
         application: SalesApplication,
     ): CollaboratorsDao {
         return CollaboratorsDaoImpl(firebaseManager, application)
+    }
+    @Singleton
+    @Provides
+    fun provideClientLegalDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): ClientLegalDao {
+        return ClientLegalDaoImpl(application, firebaseManager)
     }
 
     @Singleton

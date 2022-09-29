@@ -1,8 +1,9 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.utils
 
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 
-fun animationFromCategory(categoryName: String): Int {
+fun animationFromCategory(categoryName: String, prescription: PrescriptionDataEntity): Int {
     val name = categoryName.lowercase()
 
     // TODO: create name from type
@@ -11,29 +12,50 @@ fun animationFromCategory(categoryName: String): Int {
         || name.contains("1.59")
         || name.contains("trivex")
     ) {
-        R.raw.lottie_comparison_myopia_85
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_hipermetropia_85
+        } else {
+            R.raw.lottie_comparison_myopia_85
+        }
     } else if (
         name.contains("1.60")
         || name.contains("1.61")
     ) {
-        R.raw.lottie_comparison_myopia_80
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_hipermetropia_80
+        } else {
+            R.raw.lottie_comparison_myopia_80
+        }
     } else if (
         name.contains("1.67")
     ) {
-        R.raw.lottie_comparison_myopia_65
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_hipermetropia_65
+        } else {
+
+            R.raw.lottie_comparison_myopia_65
+        }
     } else if (
         name.contains("1.74")
         || name.contains("1.70")
         || name.contains("1.80")
         || name.contains("1.90")
     ) {
-        R.raw.lottie_comparison_myopia_60
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_hipermetropia_60
+        } else {
+            R.raw.lottie_comparison_myopia_60
+        }
     } else {
-        R.raw.lottie_comparison_myopia_base
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_hipermetropia_base
+        } else {
+            R.raw.lottie_comparison_myopia_base
+        }
     }
 }
 
-fun bigAnimationFromCategory(categoryName: String): Int {
+fun bigAnimationFromCategory(categoryName: String, prescription: PrescriptionDataEntity): Int {
     val name = categoryName.lowercase()
 
     // TODO: create name from type
@@ -42,24 +64,44 @@ fun bigAnimationFromCategory(categoryName: String): Int {
         || name.contains("1.59")
         || name.contains("trivex")
     ) {
-        R.raw.lottie_comparison_big_myopia_85
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_big_hipermetropia_85
+        } else {
+            R.raw.lottie_comparison_big_myopia_85
+        }
     } else if (
         name.contains("1.60")
         || name.contains("1.61")
     ) {
-        R.raw.lottie_comparison_big_myopia_80
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_big_hipermetropia_80
+        } else {
+            R.raw.lottie_comparison_big_myopia_80
+        }
     } else if (
         name.contains("1.67")
     ) {
-        R.raw.lottie_comparison_big_myopia_65
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_big_hipermetropia_65
+        } else {
+            R.raw.lottie_comparison_big_myopia_65
+        }
     } else if (
         name.contains("1.74")
         || name.contains("1.70")
         || name.contains("1.80")
         || name.contains("1.90")
     ) {
-        R.raw.lottie_comparison_big_myopia_60
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_big_hipermetropia_60
+        } else {
+            R.raw.lottie_comparison_big_myopia_60
+        }
     } else {
-        R.raw.lottie_comparison_big_myopia_base
+        if (prescription.sphericalRight < 0) {
+            R.raw.lottie_comparison_big_hipermetropia_base
+        } else {
+            R.raw.lottie_comparison_big_myopia_base
+        }
     }
 }

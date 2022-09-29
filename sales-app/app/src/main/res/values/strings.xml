@@ -292,7 +292,7 @@
     <string name="so_ipd">DNP</string>
     <string name="so_height">Altura</string>
     <string name="so_diameter">Diâmetro:</string>
-    <string name="so_bridge_hoop">Ponto-aro:</string>
+    <string name="so_bridge_hoop">Ponte-aro:</string>
     <string name="so_vertical_hoop">Aro vertical:</string>
     <string name="so_horizontal_hoop">Aro horizontal:</string>
     <string name="so_bridge">Ponte:</string>

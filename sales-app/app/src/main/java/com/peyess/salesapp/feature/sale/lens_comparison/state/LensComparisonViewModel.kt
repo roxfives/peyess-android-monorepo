@@ -8,7 +8,6 @@ import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMate
 import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
-import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
@@ -29,12 +28,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class LensComparisonViewModel @AssistedInject constructor(
     @Assisted initialState: LensComparisonState,
@@ -43,7 +39,7 @@ class LensComparisonViewModel @AssistedInject constructor(
 ): MavericksViewModel<LensComparisonState>(initialState) {
 
     data class NTuple4<T1, T2, T3, T4>(val t1: T1, val t2: T2, val t3: T3, val t4: T4)
-    private fun <T1, T2, T3, T4, T5, T6, T7, R> combineAll(
+    private fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combineAll(
         flow: Flow<T1>,
         flow2: Flow<T2>,
         flow3: Flow<T3>,
@@ -51,15 +47,17 @@ class LensComparisonViewModel @AssistedInject constructor(
         flow5: Flow<T5>,
         flow6: Flow<T6>,
         flow7: Flow<T7>,
-        transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R
+        flow8: Flow<T8>,
+        transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R
     ): Flow<R> = combine(
-        combine(flow, flow2, flow3, ::Triple),
-        combine(flow4, flow5, flow6, flow7, ::NTuple4),
+        combine(flow, flow2, flow3, flow4, ::NTuple4),
+        combine(flow5, flow6, flow7,  flow8, ::NTuple4),
     ) { t1, t2 ->
         transform(
-            t1.first,
-            t1.second,
-            t1.third,
+            t1.t1,
+            t1.t2,
+            t1.t3,
+            t1.t4,
             t2.t1,
             t2.t2,
             t2.t3,
@@ -86,8 +84,9 @@ class LensComparisonViewModel @AssistedInject constructor(
                             productRepository.treatmentById(comparison.comparisonTreatmentId).take(1),
 
                             saleRepository.activeSO().filterNotNull().take(1),
+                            saleRepository.currentPrescriptionData().take(1),
                         ) { originalLens, originalColoring, originalTreatment,
-                            pickedLens, pickedColoring, pickedTreatment, so ->
+                            pickedLens, pickedColoring, pickedTreatment, so, prescription ->
 
                             if (
                                 originalLens == null
@@ -110,6 +109,8 @@ class LensComparisonViewModel @AssistedInject constructor(
                             IndividualComparison(
                                 id = comparison.id,
                                 soId = so.id,
+
+                                prescription = prescription,
 
                                 lensComparison = LensComparison(
                                     originalLens = originalLens,

@@ -1,14 +1,16 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.model
 
 import androidx.annotation.RawRes
-import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.utils.animationFromCategory
 import com.peyess.salesapp.feature.sale.lens_comparison.utils.bigAnimationFromCategory
 
 data class IndividualComparison(
     val id: Int = 0,
     val soId: String = "",
+
+    val prescription: PrescriptionDataEntity = PrescriptionDataEntity(),
 
     val lensComparison: LensComparison = LensComparison(),
     val coloringComparison: ColoringComparison = ColoringComparison(),
@@ -24,8 +26,8 @@ data class IndividualComparison(
 
     val isPriceBad = finalPriceDifference < 0
 
-    @RawRes val animationId = animationFromCategory(lensComparison.pickedLens.materialCategory)
-    @RawRes val bigAnimationId = bigAnimationFromCategory(lensComparison.pickedLens.materialCategory)
+    @RawRes val animationId = animationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
+    @RawRes val bigAnimationId = bigAnimationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
 }
 
 fun IndividualComparison.toLensComparison(): LensComparisonEntity {

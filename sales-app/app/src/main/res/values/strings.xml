@@ -230,18 +230,18 @@
     <string name="dialog_select_treatment">Selecione a tratamento</string>
 
     <!-- UI Component: Demonstration   -->
-    <string name="demonstration_multi_category_0">Alto Desempenho</string>
-    <string name="demonstration_multi_category_1">Melhor Escolha</string>
-    <string name="demonstration_multi_category_2">Melhor Custo</string>
-    <string name="demonstration_multi_category_3">Tradicional</string>
-    <string name="demonstration_treatment_fat">Gordura</string>
-    <string name="demonstration_treatment_water">Água</string>
-    <string name="demonstration_treatment_damaged">Riscos</string>
-    <string name="demonstration_treatment_clear">Nítido</string>
+    <string name="demonstration_multi_category_0">Multifocais de Alto Desempenho</string>
+    <string name="demonstration_multi_category_1">Multifocais Melhor Escolha</string>
+    <string name="demonstration_multi_category_2">Multifocais Custo Benefício</string>
+    <string name="demonstration_multi_category_3">Tradicionais</string>
+    <string name="demonstration_treatment_fat">Mais Limpas</string>
+    <string name="demonstration_treatment_water">Mais Lisas</string>
+    <string name="demonstration_treatment_damaged">Mais Resistência</string>
+    <string name="demonstration_treatment_clear">Mais Nitidez</string>
     <string name="demonstration_transition_gray">Fotossensível Cinza</string>
     <string name="demonstration_transition_brown">Fotossensível Marrom</string>
     <string name="demonstration_transition_green">Fotossensível Verde</string>
-    <string name="demonstration_mono_blue">Proteção luz azul</string>
+    <string name="demonstration_mono_blue">Proteção Luz Azul</string>
     <string name="demonstration_mono_simple">Monofocais - Tradicional vs Digital</string>
 
 

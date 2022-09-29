@@ -417,9 +417,9 @@ private fun ProfilePicture(
         }
     }
 
-    if (cameraPermissionState.status == PermissionStatus.Granted && hasRequestedPermission) {
-        takePicture()
-    }
+//    if (cameraPermissionState.status == PermissionStatus.Granted && hasRequestedPermission) {
+//        takePicture()
+//    }
 
     Box(modifier = modifier.size(pictureBoxSize)) {
         AsyncImage(

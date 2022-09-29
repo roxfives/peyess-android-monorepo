@@ -425,7 +425,7 @@
 
     <string name="create_client_sex_input">Sexo</string>
 
-    <string name="create_client_name_input">Nome</string>
+    <string name="create_client_name_input">Nome Completo</string>
     <string name="create_client_name_display_input">Como gostaria que te chamássemos</string>
     <string name="create_client_document_input">Número do CPF</string>
 

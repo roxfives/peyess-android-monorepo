@@ -130,6 +130,10 @@ private fun ClientScreenImpl(
                     onClientPicked = {},
                 )
             }
+
+            item {
+                Spacer(modifier = Modifier.height(48.dp))
+            }
         }
     }
 }

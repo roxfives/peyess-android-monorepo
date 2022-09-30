@@ -76,6 +76,8 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexNam
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.isPickingParam
+import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.date.PeyessDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
@@ -106,9 +108,18 @@ private val dividerSpacerSize = 32.dp
 fun BasicInfoScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
-    onDone: (CreateScenario) -> Unit = {},
+    onDone: (
+        createScenario: CreateScenario,
+        paymentId: Long,
+    ) -> Unit = { _, _ -> },
 ) {
     val viewModel: BasicInfoViewModel = mavericksViewModel()
+
+    val paymentId = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getLong(paymentIdParam)
+        ?: 0L
 
     var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
     val scenarioParameter = navHostController
@@ -119,7 +130,7 @@ fun BasicInfoScreen(
     LaunchedEffect(scenarioParameter) {
         scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
 
-        Timber.i("Using scenario $scenario")
+        Timber.i("Using scenario $scenario from $scenarioParameter")
     }
 
     val picture by viewModel.collectAsState(BasicInfoState::picture)
@@ -180,7 +191,7 @@ fun BasicInfoScreen(
         documentHasError = documentHasError,
         isInputValid = isInputValid,
 
-        onDone = { onDone(scenario) },
+        onDone = { onDone(scenario, paymentId) },
     )
 }
 

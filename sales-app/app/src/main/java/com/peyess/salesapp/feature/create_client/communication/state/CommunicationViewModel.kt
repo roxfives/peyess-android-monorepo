@@ -1,16 +1,27 @@
 package com.peyess.salesapp.feature.create_client.communication.state
 
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.dao.client.room.toEntity
+import com.peyess.salesapp.data.adapter.client.toClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import okhttp3.internal.wait
 import timber.log.Timber
 
 private const val maxPhoneLength = 10
@@ -19,6 +30,7 @@ private const val maxCellphoneLength = 11
 class CommunicationViewModel @AssistedInject constructor(
     @Assisted initialState: CommunicationState,
     private val clientRepository: ClientRepository,
+    private val saleRepository: SaleRepository,
 ): MavericksViewModel<CommunicationState>(initialState) {
 
     init {
@@ -37,6 +49,36 @@ class CommunicationViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             clientRepository.updateLocalClient(client)
         }
+    }
+
+    private suspend fun addAllForServiceOrder(client: ClientDocument) {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .take(1)
+            .collect { so ->
+                saleRepository.pickClient(client.toEntity(so.id, ClientRole.User))
+                saleRepository.pickClient(client.toEntity(so.id, ClientRole.Responsible))
+            }
+    }
+
+    private suspend fun addOnlyOne(client: ClientDocument, role: ClientRole) {
+        saleRepository.activeSO()
+            .filterNotNull()
+            .take(1)
+            .collect { so ->
+                saleRepository.pickClient(client.toEntity(so.id, role))
+            }
+    }
+
+    fun updatePickScenario(
+        createScenarioParam: String,
+        paymentId: Long,
+    ) = setState {
+        copy(
+            createScenarioParam = CreateScenario.fromName(createScenarioParam)
+                ?: CreateScenario.Home,
+            paymentId = paymentId,
+        )
     }
 
     fun onEmailChanged(email: String) = withState {
@@ -94,7 +136,6 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(hasPhoneContact = hasPhone)
     }
 
-
     fun onHasAcceptedPromotionalMessages(hasAccepted: Boolean) = setState {
         copy(hasAcceptedPromotionalMessages = hasAccepted)
     }
@@ -115,9 +156,31 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(detectPhoneError = true)
     }
 
+    private suspend fun addClientToSale(clientModel: ClientModel, createScenarioParam: CreateScenario) {
+        val client = clientModel.toClientDocument()
+
+        when (createScenarioParam) {
+            CreateScenario.ServiceOrder -> addAllForServiceOrder(client).wait()
+            CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible).wait()
+            CreateScenario.User -> addOnlyOne(client, ClientRole.User).wait()
+            CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness).wait()
+            else -> {
+                Timber.w(
+                    "Function addClientToSale should not " +
+                            "have been called with parameter $createScenarioParam"
+                )
+            }
+        }
+    }
+
     fun createClient() = withState {
         suspend {
             clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
+
+            if (it.createScenarioParam != CreateScenario.Home) {
+                addClientToSale(it.client, it.createScenarioParam)
+            }
+
             clientRepository.clearCreateClientCache(it.client.id)
         }.execute(Dispatchers.IO) {
             Timber.i("Upload client: $it")

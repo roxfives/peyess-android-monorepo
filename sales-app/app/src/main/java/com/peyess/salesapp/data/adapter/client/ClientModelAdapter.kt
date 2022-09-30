@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.adapter.client
 
 import com.google.firebase.Timestamp
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.firestore.FSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.model.client.ClientModel
@@ -83,5 +84,21 @@ fun ClientModel.toFSClient(storeId: String): FSClient {
         whatsapp = whatsapp,
 
         storesIds = if (storeId.isBlank()) emptyList() else listOf(storeId),
+    )
+}
+
+fun ClientModel.toClientDocument(): ClientDocument {
+    return ClientDocument(
+        id = id,
+
+        name = name,
+        nameDisplay = nameDisplay,
+        picture = picture,
+        document = document,
+        sex = sex.toName(),
+
+        email = email,
+
+        shortAddress = "$city - $state"
     )
 }

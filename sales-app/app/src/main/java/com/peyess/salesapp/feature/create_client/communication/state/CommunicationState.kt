@@ -12,6 +12,8 @@ import com.peyess.salesapp.feature.create_client.communication.util.validateCell
 import com.peyess.salesapp.feature.create_client.communication.util.validateEmail
 import com.peyess.salesapp.feature.create_client.communication.util.validatePhone
 import com.peyess.salesapp.feature.create_client.communication.util.validateWhatsapp
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.pick_client.PickScenario
 
 data class CommunicationState(
     private val _clientAsync: Async<ClientModel?> = Uninitialized,
@@ -21,10 +23,8 @@ data class CommunicationState(
 
     val hasAcceptedPromotionalMessages: Boolean = false,
 
-//    val email: String = "",
-//    val cellphone: String = "",
-//    val whatsapp: String = "",
-//    val phone: String = "",
+    val createScenarioParam: CreateScenario = CreateScenario.ServiceOrder,
+    val paymentId: Long = 0L,
 
     val uploadClientAsync: Async<Unit> = Uninitialized,
 
@@ -42,6 +42,7 @@ data class CommunicationState(
     val isClientLoading = _clientAsync is Loading
             || (_clientAsync is Success && _clientAsync.invoke() == null)
     val client = _clientAsync.invoke() ?: ClientModel()
+    val clientId = client.id
 
     val email = client.email
     val cellphone = client.cellphone

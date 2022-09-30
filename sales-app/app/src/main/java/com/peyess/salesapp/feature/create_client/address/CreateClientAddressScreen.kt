@@ -53,6 +53,10 @@ import com.peyess.salesapp.feature.create_client.address.state.ClientAddressView
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
+import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.isPickingParam
+import com.peyess.salesapp.navigation.pick_client.paymentIdParam
+import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -76,13 +80,33 @@ fun CreateClientAddressScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     viewModelScope: LifecycleOwner? = null,
-    onDone: (CreateScenario) -> Unit = {},
+    onDone: (
+        createScenario: CreateScenario,
+        paymentId: Long,
+    ) -> Unit = { _, _-> },
 ) {
     val viewModel: ClientAddressViewModel = if (viewModelScope == null) {
         mavericksViewModel()
     } else {
         mavericksViewModel(viewModelScope)
     }
+
+    val isPicking = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getBoolean(isPickingParam)
+        ?: false
+
+    val pickScenarioParam = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(pickScenarioParam)
+        ?: PickScenario.ServiceOrder.toName()
+    val paymentId = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getLong(paymentIdParam)
+        ?: 0L
 
     var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
     val scenarioParameter = navHostController
@@ -181,7 +205,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
-        onDone = { onDone(scenario) },
+        onDone = { onDone(scenario, paymentId) },
     )
 }
 

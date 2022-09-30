@@ -14,6 +14,7 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.validateBirthD
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateDocument
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateName
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateNameDisplay
+import com.peyess.salesapp.navigation.pick_client.PickScenario
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -27,6 +28,10 @@ data class BasicInfoState(
 //        .parse("2000-01-01T10:15:30+01:00", DateTimeFormatter.ISO_OFFSET_DATE_TIME),
 //    val document: String = "",
 //    val sex: Sex = Sex.None,
+
+    val isPicking: Boolean = false,
+    val pickScenarioParam: String = PickScenario.ServiceOrder.toName(),
+    val paymentId: Long = 0L,
 
     @PersistState val detectNameError: Boolean = false,
     @PersistState val detectNameDisplayError: Boolean = false,

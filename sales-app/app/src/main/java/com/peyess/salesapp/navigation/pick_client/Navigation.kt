@@ -9,6 +9,8 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
 
 const val isPickingParam = "isPicking"
 const val pickScenarioParam = "pickScenario"
@@ -36,6 +38,22 @@ fun buildPickClientNavGraph(
         PickClientScreen(
             modifier = modifier,
             navHostController = navHostController,
+            onCreateNewClient = { paymentId, pickScenario ->
+                val createScenario = when (pickScenario) {
+                    PickScenario.ServiceOrder -> CreateScenario.ServiceOrder
+                    PickScenario.Payment -> CreateScenario.Payment
+                    PickScenario.Responsible -> CreateScenario.Responsible
+                    PickScenario.User -> CreateScenario.User
+                    PickScenario.Witness -> CreateScenario.Witness
+                }
+
+                val basicInfoRoute = formatBasicInfoRoute(
+                    createScenario = createScenario,
+                    paymentId = paymentId,
+                )
+
+                navHostController.navigate(basicInfoRoute)
+            }
         ) { paymentId, clientId, scenario ->
             when (scenario) {
                 PickScenario.Payment ->

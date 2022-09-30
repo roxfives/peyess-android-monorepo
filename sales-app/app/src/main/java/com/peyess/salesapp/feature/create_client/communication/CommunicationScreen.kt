@@ -27,7 +27,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -52,13 +51,14 @@ import com.peyess.salesapp.feature.create_client.communication.state.Communicati
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
+import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.CellphoneNumberVisualTransformation
 import com.peyess.salesapp.ui.text_transformation.PhoneNumberVisualTransformation
-import com.peyess.salesapp.ui.text_transformation.UserZipCodeVisualTransformation
 import timber.log.Timber
 
 private val defaultSpacerSize = 32.dp
@@ -70,7 +70,11 @@ fun CreateClientCommunicationScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     viewModelScope: LifecycleOwner? = null,
-    onDone: (CreateScenario) -> Unit = {},
+    onDone: (
+        createScenario: CreateScenario,
+        clientId: String,
+        paymentId: Long,
+    ) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: CommunicationViewModel = if (viewModelScope == null) {
         mavericksViewModel()
@@ -78,11 +82,26 @@ fun CreateClientCommunicationScreen(
         mavericksViewModel(viewModelScope)
     }
 
+    val createScenarioParam = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getString(createScenarioParam)
+        ?: CreateScenario.Home.toName()
+    val paymentId = navHostController
+        .currentBackStackEntry
+        ?.arguments
+        ?.getLong(paymentIdParam)
+        ?: 0L
+
+    LaunchedEffect(createScenarioParam, paymentId) {
+        viewModel.updatePickScenario(createScenarioParam, paymentId)
+    }
+
     var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
     val scenarioParameter = navHostController
         .currentBackStackEntry
         ?.arguments
-        ?.getString(createScenarioParam)
+        ?.getString(com.peyess.salesapp.navigation.create_client.createScenarioParam)
 
     LaunchedEffect(scenarioParameter) {
         scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
@@ -93,9 +112,11 @@ fun CreateClientCommunicationScreen(
     val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
     val uploadSuccessful by viewModel.collectAsState(CommunicationState::uploadSuccessful)
 
+    val clientId by viewModel.collectAsState(CommunicationState::clientId)
+
     LaunchedEffect(uploadSuccessful) {
         if (uploadSuccessful) {
-            onDone(scenario)
+            onDone(scenario, clientId, paymentId)
         }
     }
 

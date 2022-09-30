@@ -51,7 +51,7 @@ fun buildHomeNavGraph(
         ClientScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
             onCreateNewClient = {
-                navHostController.navigate(formatBasicInfoRoute(scenario.toName()))
+                navHostController.navigate(formatBasicInfoRoute(scenario))
             }
         )
     }

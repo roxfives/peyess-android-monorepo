@@ -258,6 +258,14 @@ private fun MiscList(modifier: Modifier = Modifier) {
 
             infoContent = stringResource(id = R.string.demonstration_mono_blue_info_content),
         )
+
+        LensAnimation(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(id = R.string.demonstration_mono_driving),
+            animationId = R.raw.lottie_demonstration_mono_driving,
+
+            infoContent = stringResource(id = R.string.demonstration_mono_driving_info_content),
+        )
     }
 }
 

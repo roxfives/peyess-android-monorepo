@@ -3,6 +3,7 @@ package com.peyess.salesapp.dao.service_order
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -14,7 +15,7 @@ class ServiceOrderDaoImpl @Inject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
 ): ServiceOrderDao {
-    override fun serviceOrders(): Flow<List<ServiceOrderDocument>> = flow {
+    override fun serviceOrders(): Flow<List<FSServiceOrder>> = flow {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             return@flow
@@ -41,9 +42,13 @@ class ServiceOrderDaoImpl @Inject constructor(
             .await()
 
         val serviceOrders = snaps.mapNotNull {
-                it.toObject(FSServiceOrder::class.java).toDocument()
+                it.toObject(FSServiceOrder::class.java)
             }
 
         emit(serviceOrders)
+    }
+
+    override suspend fun add(serviceOrder: FSServiceOrder) {
+        TODO("Not yet implemented")
     }
 }

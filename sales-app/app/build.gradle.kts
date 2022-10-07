@@ -4,6 +4,8 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
     id("kotlinx-serialization")
+
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 hilt {
@@ -149,4 +151,7 @@ dependencies {
     // Chard library (thanks Google)
     // TODO: add version to project gradle
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Nano-id
+    implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
 }

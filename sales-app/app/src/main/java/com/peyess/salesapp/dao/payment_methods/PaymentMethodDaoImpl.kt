@@ -21,7 +21,7 @@ class PaymentMethodDaoImpl @Inject constructor(
 
         val snaps = firestore
             .collection(
-                salesApplication.stringResource(R.string.fs_col_payments)
+                salesApplication.stringResource(R.string.fs_col_payment_methods)
                     .format(firebaseManager.currentStore!!.uid)
             )
             .whereEqualTo(salesApplication.stringResource(R.string.fs_field_payments_is_enabled), true)

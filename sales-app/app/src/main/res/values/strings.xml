@@ -470,8 +470,12 @@
     <string name="fs_col_family">lenses_designs</string>
     <string name="fs_col_description">lenses_designs</string>
     <string name="fs_col_clients">clients</string>
-    <string name="fs_col_payments">optical_stores/%1$s/local_optical_payment_method</string>
+    <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
     <string name="fs_col_so">optical_stores/%1$s/local_optical_so</string>
+    <string name="fs_col_positioning">optical_stores/%1$s/local_optical_positioning</string>
+    <string name="fs_col_measuring">optical_stores/%1$s/local_optical_measuring</string>
+    <string name="fs_col_prescription">optical_stores/%1$s/local_optical_prescription</string>
+    <string name="fs_col_purchase">optical_stores/%1$s/local_optical_purchase</string>
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>

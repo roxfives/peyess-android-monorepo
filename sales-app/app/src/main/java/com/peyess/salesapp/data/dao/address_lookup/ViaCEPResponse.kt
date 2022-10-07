@@ -1,9 +1,11 @@
 package com.peyess.salesapp.data.dao.address_lookup
 
+import androidx.annotation.Keep
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class ViaCEPResponse(
     @SerialName("erro")
     val erro: Boolean = false,

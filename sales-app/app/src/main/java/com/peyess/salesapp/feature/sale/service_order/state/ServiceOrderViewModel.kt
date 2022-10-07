@@ -1,9 +1,5 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
-import androidx.work.workDataOf
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -11,19 +7,25 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
+import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.data.repository.positioning.PositioningRepository
+import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
+import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
+import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.products.ProductSet
-import com.peyess.salesapp.workmanager.UpdateProductsWorker
-import com.peyess.salesapp.workmanager.sale.GenerateServiceOrderWorker
-import com.peyess.salesapp.workmanager.sale.saleIdKey
-import com.peyess.salesapp.workmanager.sale.soIdKey
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -35,19 +37,34 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.time.ZonedDateTime
+import kotlin.random.Random
+import kotlin.random.asJavaRandom
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
+    val salesApplication: SalesApplication,
     val saleRepository: SaleRepository,
     val productRepository: ProductRepository,
-    val salesApplication: SalesApplication,
+
+    private val salesDatabase: ActiveSalesDatabase,
+    private val clientDao: ClientDao,
+    private val authenticationRepository: AuthenticationRepository,
+    private val positioningRepository: PositioningRepository,
+    private val measuringRepository: MeasuringRepository,
+    private val prescriptionRepository: PrescriptionRepository,
+    private val purchaseRepository: PurchaseRepository,
+    private val serviceOrderRepository: ServiceOrderRepository,
+    private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
+
+    lateinit var serviceOrderUploader: ServiceOrderUploader
+    lateinit var serviceOrderHid: String
 
     init {
         loadClients()
@@ -59,6 +76,52 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadPayments()
         loadTotalPaid()
         loadTotalToPay()
+
+        createUploader()
+        createHid()
+    }
+
+    private fun createHid() {
+        if (!this::serviceOrderHid.isInitialized) {
+            val random = Random.asJavaRandom()
+            val size = 9
+            val alphabet = charArrayOf(
+                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+                'R', 'S', 'T', 'U', 'V', 'X', 'W', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7',
+                '8', '9'
+            )
+
+            val zonedDateTime = ZonedDateTime.now()
+            val year = zonedDateTime.year % 1000
+            val month = zonedDateTime.month.value
+            val day = zonedDateTime.dayOfMonth
+
+            val suffix = "%02d%02d%02d".format(year, month, day)
+            val id = NanoIdUtils.randomNanoId(random, alphabet, size)
+
+            serviceOrderHid = "$suffix-$id"
+            updateHid()
+        }
+    }
+
+    private fun updateHid() = setState {
+        copy(hid = serviceOrderHid)
+    }
+
+    private fun createUploader() {
+        serviceOrderUploader = ServiceOrderUploader(
+            salesDatabase,
+            productRepository,
+            clientDao,
+            authenticationRepository,
+            saleRepository,
+            positioningRepository,
+            measuringRepository,
+            prescriptionRepository,
+            purchaseRepository,
+            serviceOrderRepository,
+            firebaseManager,
+        )
     }
 
     private fun loadClients() = withState {
@@ -220,38 +283,55 @@ class ServiceOrderViewModel @AssistedInject constructor(
             }
     }
 
-    private fun createSOWorker(soId: String, saleId: String) {
-        Timber.i("Creating worker")
+//    private suspend fun generateServiceOrder(hid: String) {
+//
+//
+//        runBlocking {
+//
+//        }
+//    }
 
-        val workerData = workDataOf(
-            soIdKey to soId,
-            saleIdKey to saleId,
-        )
-
-        val uploadWorkRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<GenerateServiceOrderWorker>()
-                .setInputData(workerData)
-                .build()
-
-        WorkManager
-            .getInstance(salesApplication)
-            .enqueue(uploadWorkRequest)
-    }
+//    private fun createSOWorker(soId: String, saleId: String) {
+//        Timber.i("Creating worker")
+//
+//        val workerData = workDataOf(
+//            soIdKey to soId,
+//            saleIdKey to saleId,
+//        )
+//
+//        val uploadWorkRequest: WorkRequest =
+//            OneTimeWorkRequestBuilder<GenerateServiceOrderWorker>()
+//                .setInputData(workerData)
+//                .build()
+//
+//        WorkManager
+//            .getInstance(salesApplication)
+//            .enqueue(uploadWorkRequest)
+//    }
 
     fun generateSale() = withState {
-        saleRepository
-            .activeSO()
-            .filterNotNull()
-            .take(1)
-            .execute(Dispatchers.IO) {
-                if (it is Success) {
-                    createSOWorker(it.invoke().id, it.invoke().saleId)
+        suspend {
+            var soId = ""
+            var saleId = ""
 
-                    copy(isSaleDone = true)
-                } else {
-                    copy(isSaleDone = false)
+            saleRepository
+                .activeSO()
+                .filterNotNull()
+                .take(1)
+                .collect{
+                    soId = it.id
+                    saleId = it.saleId
                 }
-            }
+
+            Timber.i("Emitting SO with id $soId for sale $saleId")
+            serviceOrderUploader.emitServiceOrder(it.hid, soId, saleId)
+            Timber.i("Emitted SO with id $soId for sale $saleId")
+
+        }.execute(Dispatchers.IO) {
+            Timber.i("Generated Service Order result is $it")
+
+            copy(isSaleDone = it is Success)
+        }
     }
 
     fun createPayment(onAdded: (id: Long) -> Unit) {

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.internal.ktor
 
+import androidx.annotation.Keep
 import kotlinx.serialization.json.Json
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -37,7 +38,6 @@ val ktorHttpClient = HttpClient(Android) {
             override fun log(message: String) {
                 Timber.v("Logger Ktor => $message")
             }
-
         }
 
         level = LogLevel.ALL

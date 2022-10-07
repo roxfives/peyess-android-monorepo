@@ -23,6 +23,6 @@ fun FSClient.toDocument(id: String): ClientDocument {
         email = email,
         document = document,
         picture = Uri.parse(picture),
-        shortAddress = street,
+        shortAddress = shortAddress.ifBlank { "$city, $state" },
     )
 }

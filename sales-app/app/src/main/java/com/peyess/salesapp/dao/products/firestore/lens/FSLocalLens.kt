@@ -1,6 +1,7 @@
 package com.peyess.salesapp.dao.products.firestore.lens
 
 import androidx.annotation.Keep
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.dao.products.firestore.disponibility.FSDisponibility
@@ -319,6 +320,26 @@ data class FSLocalLens(
 
     @Keep
     @JvmField
+    @PropertyName("doc_version")
+    val doc_version: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("is_editable")
+    val is_editable: Boolean = false,
+
+    @Keep
+    @JvmField
+    @PropertyName("created")
+    val created: Timestamp = Timestamp.now(),
+
+    @Keep
+    @JvmField
+    @PropertyName("updated")
+    val updated: Timestamp = Timestamp.now(),
+
+    @Keep
+    @JvmField
     @PropertyName("created_at")
     val createdAt: Date = Date(),
 
@@ -329,8 +350,8 @@ data class FSLocalLens(
 
     @Keep
     @JvmField
-    @PropertyName("created_allowed_by")
-    val createdAllowedBy: String = "",
+    @PropertyName("create_allowed_by")
+    val createAllowedBy: String = "",
 
     @Keep
     @JvmField
@@ -339,8 +360,8 @@ data class FSLocalLens(
 
     @Keep
     @JvmField
-    @PropertyName("updated_allowed_by")
-    val updatedAllowedBy: String = "",
+    @PropertyName("update_allowed_by")
+    val updateAllowedBy: String = "",
 )
 
 fun FSLocalLens.getExplanations(): List<LocalProductExpEntity> {

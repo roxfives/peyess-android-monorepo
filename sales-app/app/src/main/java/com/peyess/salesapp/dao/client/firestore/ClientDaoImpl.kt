@@ -22,6 +22,7 @@ class ClientDaoImpl @Inject constructor(
             return@callbackFlow
         }
 
+        // Filter by store access
         firestore.collection(salesApplication.stringResource(R.string.fs_col_clients))
             .orderBy(salesApplication.stringResource(R.string.fs_field_clients_name))
             .addSnapshotListener { snapshot, exception ->

@@ -20,6 +20,16 @@ data class FSClientLegal(
 
     @Keep
     @JvmField
+    @PropertyName("doc_version")
+    val doc_version: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("is_editable")
+    val is_editable: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("created")
     val created: Timestamp = Timestamp.now(),
 
@@ -30,8 +40,8 @@ data class FSClientLegal(
 
     @Keep
     @JvmField
-    @PropertyName("created_allowed_by")
-    val createdAllowedBy: String = "",
+    @PropertyName("create_allowed_by")
+    val createAllowedBy: String = "",
 
     @Keep
     @JvmField
@@ -45,6 +55,6 @@ data class FSClientLegal(
 
     @Keep
     @JvmField
-    @PropertyName("updated_allowed_by")
-    val updatedAllowedBy: String = "",
+    @PropertyName("update_allowed_by")
+    val updateAllowedBy: String = "",
 )

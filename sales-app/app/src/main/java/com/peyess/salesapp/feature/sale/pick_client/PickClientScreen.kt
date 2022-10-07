@@ -160,7 +160,11 @@ private fun PickClientScreenImpl(
     onSearchClient: () -> Unit = {},
 ) {
     if (clients.isEmpty()) {
-        NoClientsYet(modifier = modifier)
+        NoClientsYet(
+            modifier = modifier,
+            onCreateNewClient = onCreateNewClient,
+            onSearchClient = onSearchClient,
+        )
     } else {
         LazyColumn(
             modifier = modifier,
@@ -177,43 +181,6 @@ private fun PickClientScreenImpl(
                     Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
                 }
             }
-//
-//            item {
-//                OutlinedButton(
-//                    modifier = Modifier
-//                        .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-//                        .fillMaxWidth()
-//                        .height(buttonHeight),
-//                    shape = MaterialTheme.shapes.large,
-//                    onClick = {},
-//                ) {
-//                    Row(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Start,
-//                        verticalAlignment = Alignment.CenterVertically,
-//                    ) {
-//                        Box(
-//                            modifier = Modifier
-//                                .height(buttonHeight)
-//                                .width(buttonHeight)
-//                                .padding(horizontal = SalesAppTheme.dimensions.grid_1)
-//                                .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-//                        ) {
-//                            Icon(
-//                                modifier = Modifier.align(Alignment.Center),
-//                                imageVector = Icons.Filled.PersonAdd,
-//                                tint = MaterialTheme.colors.onPrimary,
-//                                contentDescription = "",
-//                            )
-//                        }
-//
-//                        Text(
-//                            text = stringResource(id = R.string.btn_add_new_client),
-//                            style = MaterialTheme.typography.body1,
-//                        )
-//                    }
-//                }
-//            }
 
             items(clients.size) {
                 val client = clients[it]
@@ -309,6 +276,10 @@ private fun ClientCard(
 @Composable
 private fun NoClientsYet(
     modifier: Modifier = Modifier,
+
+    onClientPicked: (client: ClientDocument) -> Unit = {},
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -317,6 +288,16 @@ private fun NoClientsYet(
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results))
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            ClientActions(
+                modifier = Modifier.padding(horizontal = clientActionPadding),
+                onCreateNewClient = onCreateNewClient,
+                onSearchClient = onSearchClient,
+            )
+
+            Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
+        }
 
         LottieAnimation(
             modifier = modifier.padding(36.dp),

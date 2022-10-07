@@ -151,8 +151,8 @@ class ClientRepositoryImpl @Inject constructor(
             .copy(
                 picture = updatedUri.toString(),
                 createdBy = currentUser,
-                createdAllowedBy = currentUser,
-                updatedAllowedBy = currentUser,
+                createAllowedBy = currentUser,
+                updateAllowedBy = currentUser,
                 updatedBy = currentUser,
             )
 
@@ -161,8 +161,8 @@ class ClientRepositoryImpl @Inject constructor(
             methodPromotionalMessages = ClientLegalMethod.SalesAppCreateAccount.toName(),
 
             createdBy = currentUser,
-            createdAllowedBy = currentUser,
-            updatedAllowedBy = currentUser,
+            createAllowedBy = currentUser,
+            updateAllowedBy = currentUser,
             updatedBy = currentUser,
         )
 

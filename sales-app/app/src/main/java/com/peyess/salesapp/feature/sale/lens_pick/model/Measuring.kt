@@ -8,6 +8,8 @@ import kotlin.math.hypot
 import kotlin.math.sin
 
 data class Measuring(
+    val eye: Eye = Eye.None,
+
     val baseSize: Double = 0.0,
 
     val topAngle: Double = 0.0,
@@ -31,8 +33,11 @@ data class Measuring(
     val ve: Double = 0.0,
     val vu: Double = 0.0,
 
+    val fixedBridge: Double = 0.0,
     val fixedIpd: Double = 0.0,
+    val fixedHHoop: Double = 0.0,
     val fixedHe: Double = 0.0,
+    val fixedVHoop: Double = 0.0,
 
     val eulerAngleX: Double = 0.0,
     val eulerAngleY: Double = 0.0,
@@ -76,6 +81,8 @@ fun PositioningEntity.toMeasuring(): Measuring {
     val vu = abs(opticCenterY - framesTop) * proportionToPictureVertical
 
     return Measuring(
+        eye = eye,
+
         baseSize = abs(baseRight - baseLeft),
 
         topAngle = topPointRotation,
@@ -100,7 +107,10 @@ fun PositioningEntity.toMeasuring(): Measuring {
         ho = ho,
         vu = vu,
 
+        fixedBridge = -1.0,
         fixedIpd = -1.0,
+        fixedHHoop = -1.0,
         fixedHe = -1.0,
+        fixedVHoop = -1.0,
     )
 }

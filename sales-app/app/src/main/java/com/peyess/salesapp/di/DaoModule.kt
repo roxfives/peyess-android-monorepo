@@ -10,8 +10,8 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
-import com.peyess.salesapp.dao.service_order.ServiceOrderDao
-import com.peyess.salesapp.dao.service_order.ServiceOrderDaoImpl
+import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.data.dao.service_order.ServiceOrderDaoImpl
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
 import com.peyess.salesapp.dao.payment_methods.PaymentMethodDaoImpl
@@ -53,6 +53,13 @@ import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
+import com.peyess.salesapp.data.dao.measuring.MeasuringDao
+import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
+import com.peyess.salesapp.data.dao.positioning.PositioningDaoImpl
+import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
+import com.peyess.salesapp.data.dao.prescription.PrescriptionDaoImpl
+import com.peyess.salesapp.data.dao.purchase.PurchaseDao
+import com.peyess.salesapp.data.dao.purchase.PurchaseDaoImpl
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
@@ -75,6 +82,7 @@ object DaoModule {
     ): CollaboratorsDao {
         return CollaboratorsDaoImpl(firebaseManager, application)
     }
+
     @Singleton
     @Provides
     fun provideClientLegalDao(
@@ -82,6 +90,42 @@ object DaoModule {
         application: SalesApplication,
     ): ClientLegalDao {
         return ClientLegalDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFSPositioningDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): com.peyess.salesapp.data.dao.positioning.PositioningDao {
+        return PositioningDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFSPrescriptionDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): PrescriptionDao {
+        return PrescriptionDaoImpl(firebaseManager, application)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFSMeasuringDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): MeasuringDao {
+        return MeasuringDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun providePurchaseDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): PurchaseDao {
+        return PurchaseDaoImpl(application, firebaseManager)
     }
 
     @Singleton

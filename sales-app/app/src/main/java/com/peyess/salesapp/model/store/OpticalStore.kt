@@ -51,8 +51,8 @@ data class OpticalStore(
 
     val createdAt: Date = Date(),
     val createdBy:  String = "",
-    val createdAllowedBy:  String = "",
+    val createAllowedBy:  String = "",
     val updatedAt: Date = Date(),
     val updatedBy:  String = "",
-    val updatedAllowedBy:  String = "",
+    val updateAllowedBy:  String = "",
 )

@@ -24,6 +24,8 @@ sealed class PrismPosition {
     object Inferior: PrismPosition()
     object Axis: PrismPosition()
 
+    fun toName() = toName(this)
+
     companion object {
         val listOfPositions: List<PrismPosition?> = listOf(
             None,

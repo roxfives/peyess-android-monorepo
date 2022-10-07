@@ -76,8 +76,8 @@ data class FSCollaborator(
 
     @Keep
     @JvmField
-    @PropertyName("created_allowed_by")
-    val createdAllowedBy:  String = "",
+    @PropertyName("create_allowed_by")
+    val createAllowedBy:  String = "",
 
     @Keep
     @JvmField
@@ -91,18 +91,13 @@ data class FSCollaborator(
 
     @Keep
     @JvmField
-    @PropertyName("updated_allowed_by")
-    val updatedAllowedBy:  String = "",
+    @PropertyName("update_allowed_by")
+    val updateAllowedBy:  String = "",
 
     @Keep
     @JvmField
     @PropertyName("created")
     val created: Date = Date(),
-
-    @Keep
-    @JvmField
-    @PropertyName("create_allowed_by")
-    val createAllowedBy:  String = "",
 
     @Keep
     @JvmField
@@ -130,9 +125,9 @@ fun FSCollaborator.toDocument(): Collaborator {
 
         createdAt = this.createdAt,
         createdBy = this.createdBy,
-        createdAllowedBy = this.createdAllowedBy,
+        createAllowedBy = this.createAllowedBy,
         updatedAt = this.updatedAt,
         updatedBy = this.updatedBy,
-        updatedAllowedBy = this.updatedAllowedBy,
+        updateAllowedBy = this.updateAllowedBy,
     )
 }

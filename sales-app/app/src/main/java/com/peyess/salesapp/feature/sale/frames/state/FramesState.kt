@@ -15,12 +15,14 @@ sealed class Eye {
     object Right: Eye()
     object None: Eye()
 
+    fun toName() = toName(this)
+
     companion object {
         fun toName(eye: Eye?): String {
             return when(eye) {
-                is Right -> "Right"
-                is Left -> "Left"
-                else -> "None"
+                is Right -> "right"
+                is Left -> "left"
+                else -> "none"
             }
         }
 

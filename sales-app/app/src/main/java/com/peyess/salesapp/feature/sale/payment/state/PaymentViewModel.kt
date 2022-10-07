@@ -69,6 +69,7 @@ class PaymentViewModel @AssistedInject constructor(
                     saleRepository.updatePayment(
                         pay.copy(
                             clientId = payer.id,
+                            clientDocument = payer.document,
                             clientName = payer.name,
                             clientAddress = payer.shortAddress,
                             clientPicture = payer.picture,

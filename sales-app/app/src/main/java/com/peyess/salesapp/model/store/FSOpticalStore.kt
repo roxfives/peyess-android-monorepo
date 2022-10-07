@@ -176,7 +176,7 @@ data class FSOpticalStore(
     @Keep
     @JvmField
     @PropertyName("update_allowed_by")
-    val updatedAllowedBy:  String = "",
+    val updateAllowedBy:  String = "",
 
     @Keep
     @JvmField
@@ -218,9 +218,9 @@ fun FSOpticalStore.toDocument(): OpticalStore {
 
         createdAt = this.created,
         createdBy = this.createdBy,
-        createdAllowedBy = this.createAllowedBy,
+        createAllowedBy = this.createAllowedBy,
         updatedAt = this.updated,
         updatedBy = this.updatedBy,
-        updatedAllowedBy = this.updatedAllowedBy,
+        updateAllowedBy = this.updateAllowedBy,
     )
 }

@@ -9,18 +9,26 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
-import com.peyess.salesapp.dao.service_order.FSServiceOrder
+import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.adapter.measuring.toMeasuringDocument
+import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
+import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
+import com.peyess.salesapp.data.adapter.products.toDescription
+import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductsSold
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
+import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
+import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
-import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -32,14 +40,12 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -60,18 +66,21 @@ private data class ProductSet(
 class GenerateServiceOrderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    val productsDatabase: ProductsDatabase,
-    val salesDatabase: ActiveSalesDatabase,
-    val productRepository: ProductRepository,
-    val clientDao: ClientDao,
-    val salesApplication: SalesApplication,
-    val authenticationRepository: AuthenticationRepository,
-    val saleRepository: SaleRepository,
-    val firebaseManager: FirebaseManager,
+    private val salesDatabase: ActiveSalesDatabase,
+    private val productRepository: ProductRepository,
+    private val clientDao: ClientDao,
+    private val salesApplication: SalesApplication,
+    private val authenticationRepository: AuthenticationRepository,
+    private val saleRepository: SaleRepository,
+    private val positioningRepository: PositioningRepository,
+    private val measuringRepository: MeasuringRepository,
+    private val prescriptionRepository: PrescriptionRepository,
+    private val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
 
     private suspend fun addPrescriptionData(so: FSServiceOrder): FSServiceOrder {
         var prescriptionDataEntity: PrescriptionDataEntity? = null
+        var prescriptionPictureEntity: PrescriptionPictureEntity? = null
 
         salesDatabase
             .prescriptionDataDao()
@@ -79,12 +88,21 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             .take(1)
             .collect { prescriptionDataEntity = it }
 
-        if (prescriptionDataEntity == null) {
+        salesDatabase
+            .prescriptionPictureDao()
+            .getById(so.id)
+            .take(1)
+            .collect { prescriptionPictureEntity = it }
+
+        if (prescriptionDataEntity == null || prescriptionPictureEntity == null) {
             return so
         }
 
+        val prescriptionId =
+            uploadPrescription(prescriptionDataEntity!!, prescriptionPictureEntity!!, so)
+
         return so.copy(
-            prescriptionId = "",
+            prescriptionId = prescriptionId,
 
             lCylinder = prescriptionDataEntity!!.cylindricalLeft,
             lSpheric = prescriptionDataEntity!!.sphericalLeft,
@@ -104,9 +122,35 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
         )
     }
 
-    private suspend fun addPositioningData(so: FSServiceOrder): FSServiceOrder {
+    private suspend fun uploadPrescription(
+        prescriptionDataEntity: PrescriptionDataEntity,
+        prescriptionPictureEntity: PrescriptionPictureEntity,
+
+        so: FSServiceOrder
+    ): String {
+        val prescriptionId = firebaseManager.uniqueId()
+        val fsPrescription = prescriptionFrom(
+            id = prescriptionId,
+
+            clientDocument = so.clientDocument,
+            clientName = so.clientName,
+            salespersonUid = so.salespersonUid,
+
+            dataEntity = prescriptionDataEntity,
+            pictureEntity = prescriptionPictureEntity,
+        )
+
+        prescriptionRepository.add(fsPrescription)
+        return prescriptionId
+    }
+
+    private suspend fun addPositioningData(
+        so: FSServiceOrder,
+    ): FSServiceOrder {
         var positioningLeft: PositioningEntity? = null
         var positioningRight: PositioningEntity? = null
+
+        val currentStore = firebaseManager.currentStore?.uid ?: ""
 
         salesDatabase
             .positioningDao()
@@ -124,12 +168,78 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             return so
         }
 
-        val measuringLeft = positioningLeft!!.toMeasuring()
-        val measuringRight = positioningRight!!.toMeasuring()
+        val positioningLeftId = firebaseManager.uniqueId()
+        val positioningRightId = firebaseManager.uniqueId()
+
+        val measuringLeftId = firebaseManager.uniqueId()
+        val measuringRightId = firebaseManager.uniqueId()
+
+        // TODO: update height and width
+        val positioningDocLeft = positioningLeft!!.toPositioningDocument(
+            id = positioningLeftId,
+
+            storeId = currentStore,
+            prescriptionId = so.prescriptionId,
+
+            patientUid = so.clientUid,
+            patientName = so.clientName,
+            patientDocument = so.clientDocument,
+
+            salesPersonId = so.salespersonUid,
+            takenByUid = so.salespersonUid,
+            soId = so.id,
+        )
+        val positioningDocRight = positioningRight!!.toPositioningDocument(
+            id = positioningRightId,
+
+            storeId = currentStore,
+            prescriptionId = so.prescriptionId,
+
+            patientUid = so.clientUid,
+            patientName = so.clientName,
+            patientDocument = so.clientDocument,
+
+            salesPersonId = so.salespersonUid,
+            takenByUid = so.salespersonUid,
+            soId = so.id,
+        )
+
+        positioningRepository.add(positioningDocLeft)
+        positioningRepository.add(positioningDocRight)
+
+        val measuringLeft = positioningLeft!!
+            .toMeasuring()
+            .toMeasuringDocument(
+                measuringLeftId,
+                so.storeIds[0],
+                so.prescriptionId,
+                so.lPositioningId,
+                so.salespersonUid,
+                so.clientUid,
+                so.clientDocument,
+                so.clientName,
+                so.id,
+            )
+        val measuringRight = positioningRight!!
+            .toMeasuring()
+            .toMeasuringDocument(
+                measuringRightId,
+                so.storeIds[0],
+                so.prescriptionId,
+                so.lPositioningId,
+                so.salespersonUid,
+                so.clientUid,
+                so.clientDocument,
+                so.clientName,
+                so.id,
+            )
+
+        measuringRepository.add(measuringLeft)
+        measuringRepository.add(measuringRight)
 
         return so.copy(
-            lMeasuringId = "",
-            rMeasuringId = "",
+            lPositioningId = positioningLeftId,
+            rPositioningId = positioningRightId,
 
             lIpd = measuringLeft.ipd,
             lBridge = measuringLeft.bridge,
@@ -220,6 +330,9 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
 
         return so.copy(
             salespersonUid = user!!.id,
+            soldBy = user!!.id,
+            measureConfirmedBy = user!!.id,
+            discountAllowedBy = user!!.id,
 
             createdBy =  user!!.id,
             createAllowedBy =  user!!.id,
@@ -231,6 +344,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun addProductsData(so: FSServiceOrder): FSServiceOrder {
         var total = 0.0
+
+        var lensDesc = FSProductSoldDescription()
+        var coloringDesc = FSProductSoldDescription()
+        var treatmentDesc = FSProductSoldDescription()
+        var framesDesc = FSProductSoldDescription()
 
         saleRepository
             .pickedProduct()
@@ -250,6 +368,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
                 val treatment = it.treatment
                 val frames = it.frames
 
+//                lensDesc = lens.toDescription()
+//                coloringDesc = coloring.toDescription()
+//                treatmentDesc = treatment.toDescription()
+//                framesDesc = frames.toDescription()
+
                 val framesValue = if (frames.areFramesNew) {
                     frames.value
                 } else {
@@ -260,10 +383,10 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
                 var totalToPay = lens.price + framesValue
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.suggestedPrice
+                    totalToPay += coloringDesc.price
                 }
                 if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatment.suggestedPrice
+                    totalToPay += treatmentDesc.price
                 }
 
                 if (coloring.suggestedPrice > 0) {
@@ -280,8 +403,37 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
                 total = it
             }
 
-        return so.copy(total = total)
+        return so.copy(
+            samePurchaseSo = listOf(so.id),
+
+            total = total,
+            products = FSProductsSold(
+                lenses = mapOf(lensDesc.id to lensDesc),
+                colorings = mapOf(coloringDesc.id to coloringDesc),
+                treatments = mapOf(treatmentDesc.id to treatmentDesc),
+
+                frames = framesDesc,
+
+                misc = emptyMap(),
+            )
+        )
     }
+
+//    private suspend fun createPurchase(so: FSServiceOrder): FSPurchase {
+//        val payments: MutableList<SalePaymentEntity> = mutableListOf()
+//
+//        saleRepository
+//            .payments()
+//            .collect {
+//                payments.addAll(it)
+//            }
+//
+//        val purchase = FSPurchase(
+//
+//        )
+//
+//        return
+//    }
 
     override suspend fun doWork(): Result {
         val firestore = firebaseManager.storeFirestore
@@ -315,13 +467,17 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
 
             var serviceOrder = FSServiceOrder(
                 id = soId ?: "",
-                storeId = storeId,
+                storeIds = listOf(storeId),
 
                 state = "confirmed",
 
-                created = now,
-                updated = now,
+//                created = now,
+//                updated = now,
             )
+
+            serviceOrder = runBlocking {
+                addClientData(serviceOrder)
+            }
 
             serviceOrder = runBlocking {
                 addSalespersonData(serviceOrder)
@@ -332,15 +488,11 @@ class GenerateServiceOrderWorker @AssistedInject constructor(
             }
 
             serviceOrder = runBlocking {
-                addProductsData(serviceOrder)
-            }
-
-            serviceOrder = runBlocking {
                 addPositioningData(serviceOrder)
             }
 
             serviceOrder = runBlocking {
-                addClientData(serviceOrder)
+                addProductsData(serviceOrder)
             }
 
             runBlocking {

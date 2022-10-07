@@ -98,6 +98,20 @@ data class FSClient(
     @PropertyName("stores_ids")
     val storesIds: List<String> = emptyList(),
 
+    @JvmField
+    @Keep
+    @PropertyName("short_address")
+    val shortAddress: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("doc_version")
+    val doc_version: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("is_editable")
+    val is_editable: Boolean = false,
+
     @Keep
     @JvmField
     @PropertyName("created")
@@ -110,8 +124,8 @@ data class FSClient(
 
     @Keep
     @JvmField
-    @PropertyName("created_allowed_by")
-    val createdAllowedBy: String = "",
+    @PropertyName("create_allowed_by")
+    val createAllowedBy: String = "",
 
     @Keep
     @JvmField
@@ -125,19 +139,7 @@ data class FSClient(
 
     @Keep
     @JvmField
-    @PropertyName("updated_allowed_by")
-    val updatedAllowedBy: String = "",
+    @PropertyName("update_allowed_by")
+    val updateAllowedBy: String = "",
 )
 
-fun ClientDocument.toFirestore(): FSClient {
-    return FSClient(
-        nameDisplay = nameDisplay,
-        name = name,
-        sex = sex,
-        email = email,
-        document = document,
-//        picture = picture,
-//        shortAddress = shortAddress,
-//        accountStatus = UserAccountStatus.fromType(accountStatus)!!,
-    )
-}

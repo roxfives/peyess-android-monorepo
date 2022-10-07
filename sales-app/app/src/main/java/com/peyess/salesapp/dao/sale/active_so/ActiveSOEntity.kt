@@ -12,6 +12,8 @@ sealed class LensTypeCategoryName {
     object Far: LensTypeCategoryName()
     object Multi: LensTypeCategoryName()
 
+    fun toName() = fromType(this)
+
     companion object {
         fun fromName(name: String?): LensTypeCategoryName? {
 

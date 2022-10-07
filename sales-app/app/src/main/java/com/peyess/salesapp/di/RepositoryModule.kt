@@ -29,10 +29,13 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
-import com.peyess.salesapp.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
+import com.peyess.salesapp.data.dao.measuring.MeasuringDao
+import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
+import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
@@ -41,6 +44,14 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepositoryImpl
+import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
+import com.peyess.salesapp.data.repository.measuring.MeasuringRepositoryImpl
+import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.data.repository.payment.PurchaseRepositoryImpl
+import com.peyess.salesapp.data.repository.positioning.PositioningRepository
+import com.peyess.salesapp.data.repository.positioning.PositioningRepositoryImpl
+import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
+import com.peyess.salesapp.data.repository.prescription.PrescriptionRepositoryImpl
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -106,10 +117,42 @@ object RepositoryModule {
 
     @Provides
     @Singleton
+    fun providePositioningRepository(
+        positioningDao: com.peyess.salesapp.data.dao.positioning.PositioningDao,
+    ): PositioningRepository {
+        return PositioningRepositoryImpl(positioningDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePrescriptionRepository(
+        prescriptionDao: PrescriptionDao,
+    ): PrescriptionRepository {
+        return PrescriptionRepositoryImpl(prescriptionDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMeasuringRepository(
+        measuringDao: MeasuringDao,
+    ): MeasuringRepository {
+        return MeasuringRepositoryImpl(measuringDao)
+    }
+
+    @Provides
+    @Singleton
     fun providePaymentRepository(
         clientDao: PaymentMethodDao
     ): PaymentMethodRepository {
         return PaymentMethodRepositoryImpl(clientDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePurchaseRepository(
+        purchaseDao: PurchaseDao
+    ): PurchaseRepository {
+        return PurchaseRepositoryImpl(purchaseDao)
     }
 
     @Provides

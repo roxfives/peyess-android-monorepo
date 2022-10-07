@@ -382,7 +382,7 @@ private fun BasicInfoScreenImpl(
         Spacer(modifier = Modifier.weight(1f))
 
         PeyessNextStep(
-            canGoNext = isInputValid,
+            canGoNext = true, //isInputValid,
             onNext = onDone,
         )
     }

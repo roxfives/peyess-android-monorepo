@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.service_order
+package com.peyess.salesapp.data.dao.service_order
 
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
@@ -49,6 +49,30 @@ class ServiceOrderDaoImpl @Inject constructor(
     }
 
     override suspend fun add(serviceOrder: FSServiceOrder) {
-        TODO("Not yet implemented")
+        val firestore = firebaseManager.storeFirestore
+        if (firestore == null) { return }
+
+        val storeId = firebaseManager.currentStore!!.uid
+
+        val id = serviceOrder.id
+        val soPath = salesApplication
+            .stringResource(id = R.string.fs_col_so)
+            .format(storeId)
+
+        firestore
+            .collection(soPath)
+            .document(id)
+            .set(serviceOrder)
+            .addOnCompleteListener {
+                Timber.i("Completed with $it (${it.isSuccessful})")
+
+                if (!it.isSuccessful) {
+                    Timber.e(
+                        it.exception,
+                        "Error while uploading document with id ${id} at $soPath",
+                    )
+                }
+            }
+            .await()
     }
 }

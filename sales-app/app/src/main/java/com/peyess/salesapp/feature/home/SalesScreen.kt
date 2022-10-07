@@ -1,6 +1,5 @@
 package com.peyess.salesapp.feature.home
 
-import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,7 +50,7 @@ import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.dao.service_order.ServiceOrderDocument
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -60,9 +59,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
 private val buttonHeight = 72.dp

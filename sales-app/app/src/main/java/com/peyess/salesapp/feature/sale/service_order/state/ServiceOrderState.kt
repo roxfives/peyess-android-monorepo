@@ -40,6 +40,7 @@ data class ServiceOrderState(
     val totalToPayAsync: Async<Double> = Uninitialized,
     val totalPaidAsync: Async<Double> = Uninitialized,
 
+    val hid: String = "",
     val isSaleDone: Boolean = false,
 ): MavericksState {
     val isUserLoading = userClientAsync is Loading

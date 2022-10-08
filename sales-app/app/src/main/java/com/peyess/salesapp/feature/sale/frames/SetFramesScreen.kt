@@ -281,7 +281,7 @@ private fun SetFramesScreenImpl(
                 label = { Text(stringResource(id = R.string.frames_tag_code)) },
                 placeholder = { Text(stringResource(id = R.string.frames_tag_code)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Characters,
+                    keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(

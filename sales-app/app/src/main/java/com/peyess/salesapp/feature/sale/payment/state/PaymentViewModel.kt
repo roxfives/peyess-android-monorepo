@@ -11,6 +11,7 @@ import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.typing.sale.PaymentMethodType
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -73,6 +74,26 @@ class PaymentViewModel @AssistedInject constructor(
                             clientName = payer.name,
                             clientAddress = payer.shortAddress,
                             clientPicture = payer.picture,
+                        )
+                    )
+                }
+            }
+        }
+
+        onEach(PaymentState::payment) { payment ->
+            withState {
+                val minInstallments = 1
+                val maxInstallments = it.activePaymentMethod?.maxInstallments ?: minInstallments
+                val installments = if (it.activePaymentMethod?.hasInstallments == true) {
+                    payment.installments.coerceAtMost(maxInstallments)
+                } else {
+                    minInstallments
+                }
+
+                viewModelScope.launch(Dispatchers.IO) {
+                    saleRepository.updatePayment(
+                        payment.copy(
+                            installments = installments
                         )
                     )
                 }
@@ -188,6 +209,20 @@ class PaymentViewModel @AssistedInject constructor(
         val paid = value.coerceAtMost(it.payment.value + it.totalLeftToPay)
 
         saleRepository.updatePayment(it.payment.copy(value = paid))
+    }
+
+    fun onIncreaseInstallments(value: Int) = withState {
+        val maxInstallments = it.activePaymentMethod?.maxInstallments ?: 1
+        val newValue = (value + 1).coerceAtMost(maxInstallments)
+
+        saleRepository.updatePayment(it.payment.copy(installments = newValue))
+    }
+
+    fun onDecreaseInstallments(value: Int) = withState {
+        val minInstallments = 1
+        val newValue = (value - 1).coerceAtLeast(minInstallments)
+
+        saleRepository.updatePayment(it.payment.copy(installments = newValue))
     }
 
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {

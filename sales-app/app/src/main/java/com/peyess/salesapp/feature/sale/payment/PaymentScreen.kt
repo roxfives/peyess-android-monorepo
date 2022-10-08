@@ -4,11 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,15 +21,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -68,6 +77,7 @@ import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
+import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
@@ -81,6 +91,8 @@ private val pictureSizePx = 220
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
 private val profilePicPadding = 8.dp
+
+private val installmentsButtonSize = 64.dp
 
 @Composable
 fun PaymentScreen(
@@ -121,6 +133,10 @@ fun PaymentScreen(
         arePaymentMethodsLoading = arePaymentMethodsLoading,
         paymentMethods = paymentMethods,
 
+        installments = payment.installments,
+        onIncreaseInstallments = viewModel::onIncreaseInstallments,
+        onDecreaseInstallments = viewModel::onDecreaseInstallments,
+
         activePaymentMethod = activePaymentMethod,
         payment = payment,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
@@ -144,6 +160,10 @@ private fun PaymentScreenImpl(
 
     arePaymentMethodsLoading: Boolean = false,
     paymentMethods: List<PaymentMethod> = emptyList(),
+
+    installments: Int = 1,
+    onIncreaseInstallments: (value: Int) -> Unit = {},
+    onDecreaseInstallments: (value: Int) -> Unit = {},
 
     activePaymentMethod: PaymentMethod? = null,
     payment: SalePaymentEntity = SalePaymentEntity(),
@@ -177,6 +197,10 @@ private fun PaymentScreenImpl(
             activePaymentMethod = activePaymentMethod,
             arePaymentMethodsLoading = arePaymentMethodsLoading,
             paymentMethods = paymentMethods,
+
+            installments = installments,
+            onIncreaseInstallments = onIncreaseInstallments,
+            onDecreaseInstallments = onDecreaseInstallments,
 
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
@@ -289,6 +313,10 @@ private fun PaymentView(
     activePaymentMethod: PaymentMethod? = null,
     paymentMethods: List<PaymentMethod> = emptyList(),
 
+    installments: Int = 1,
+    onIncreaseInstallments: (value: Int) -> Unit = {},
+    onDecreaseInstallments: (value: Int) -> Unit = {},
+
     payment: SalePaymentEntity = SalePaymentEntity(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
@@ -375,6 +403,10 @@ private fun PaymentView(
 
                 total = payment.value,
                 onTotalChanged = onTotalPaidChanged,
+
+                installments = installments,
+                onIncreaseInstallments = onIncreaseInstallments,
+                onDecreaseInstallments = onDecreaseInstallments,
             )
         }
     }
@@ -388,6 +420,10 @@ private fun PaymentCard(
 
     total: Double = 0.0,
     onTotalChanged: (value: Double) -> Unit = {},
+
+    installments: Int = 1,
+    onIncreaseInstallments: (value: Int) -> Unit = {},
+    onDecreaseInstallments: (value: Int) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -437,7 +473,28 @@ private fun PaymentCard(
             ),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+
+        AnimatedVisibility(
+            visible = paymentMethod?.hasInstallments ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(stringResource(id = R.string.payment_installments))
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                InstallmentsInput(
+                    value = installments,
+                    onIncrease = onIncreaseInstallments,
+                    onDecrease = onDecreaseInstallments,
+                )
+            }
+        }
 
 //        AnimatedVisibility(
 //            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
@@ -462,6 +519,88 @@ private fun PaymentCard(
 //        ) {
 //            Text(text = "Add document picture")
 //        }
+    }
+}
+
+@Composable
+fun InstallmentsInput(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    value: Int = 1,
+    onIncrease: (value: Int) -> Unit = {},
+    onDecrease: (value: Int) -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .border(
+                BorderStroke(2.dp, if (enabled) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                }),
+                RoundedCornerShape(36.dp),
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        IconButton(
+            modifier = Modifier
+                .height(SalesAppTheme.dimensions.minimum_touch_target)
+                .width(SalesAppTheme.dimensions.minimum_touch_target)
+                .holdable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    enabled = enabled,
+                    onClick = { onDecrease(value) },
+                ),
+            enabled = enabled,
+            onClick = {},
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Remove,
+                contentDescription = "",
+                tint = if (enabled) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                },
+            )
+        }
+
+        Text(
+            modifier = Modifier
+                .height(IntrinsicSize.Max)
+                .width(installmentsButtonSize),
+            text = "%02d".format(value),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+            color = if (enabled) {
+                MaterialTheme.colors.primary
+            } else {
+                Color.Gray.copy(alpha = 0.5f)
+            },
+        )
+
+        IconButton(
+            modifier = Modifier
+                .holdable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    enabled = enabled,
+                    onClick = { onIncrease(value) }
+                ),
+            enabled = enabled,
+            onClick = {}
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "",
+                tint = if (enabled) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                },
+            )
+        }
     }
 }
 

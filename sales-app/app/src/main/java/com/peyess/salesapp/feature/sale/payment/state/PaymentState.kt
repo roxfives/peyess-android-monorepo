@@ -41,7 +41,7 @@ data class PaymentState(
         ClientDocument()
     }
 
-    val isPaymentLoading = clientAsync is Loading
+    val isPaymentLoading = paymentAsync is Loading
     val payment = if (paymentAsync is Success && paymentAsync.invoke() != null) {
         paymentAsync.invoke()!!
     } else {

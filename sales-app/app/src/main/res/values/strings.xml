@@ -313,6 +313,7 @@
     <string name="payment_still_missing">Ainda falta ser pago:</string>
     <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
     <string name="payment_delete">Excluir pagamento</string>
+    <string name="payment_installments">Número de parcelas: </string>
 
     <!-- UI Component: Anamnesis   -->
     <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>

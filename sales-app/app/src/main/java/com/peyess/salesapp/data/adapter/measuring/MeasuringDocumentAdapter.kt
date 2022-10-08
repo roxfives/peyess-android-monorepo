@@ -8,6 +8,8 @@ import com.peyess.salesapp.utils.time.toTimestamp
 fun MeasuringDocument.toFSMeasuring(): FSMeasuring {
     return FSMeasuring(
         id = id,
+
+        storeId = storeId,
         storeIds = storeIds,
 
         prescriptionId = prescriptionId,

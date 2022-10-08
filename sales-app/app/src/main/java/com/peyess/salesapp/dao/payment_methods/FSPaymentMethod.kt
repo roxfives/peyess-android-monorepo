@@ -48,7 +48,7 @@ data class FSPaymentMethod(
     @Keep
     @PropertyName("max_installments")
     @JvmField
-    val maxInstallments: Double = 0.0,
+    val maxInstallments: Int = 1,
 
     @Keep
     @PropertyName("has_document_picture")

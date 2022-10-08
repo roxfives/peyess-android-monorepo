@@ -16,7 +16,7 @@ data class PaymentMethod(
     val minSet: Double = 0.0,
 
     val hasInstallments: Boolean = false,
-    val maxInstallments: Double = 0.0,
+    val maxInstallments: Int = 0,
 
     val hasDocumentPicture: Boolean = false,
     val hasDocument: Boolean = false,

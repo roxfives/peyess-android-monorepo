@@ -5,7 +5,7 @@ import com.peyess.salesapp.typing.sale.PaymentMethodType
 
 
 data class PaymentDocument(
-    val method: PaymentMethodType = PaymentMethodType.Unknown,
+    val methodName: String = "",
     val methodId: String = "",
     val amount: Double = 0.0,
     val installments: Int = 0,

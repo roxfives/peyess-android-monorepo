@@ -5,7 +5,7 @@ import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 
 fun PaymentDocument.toFSPayment(): FSPayment {
     return FSPayment(
-        method = method.toName(),
+        method = methodName,
         methodId = methodId,
         amount = amount,
         installments = installments,

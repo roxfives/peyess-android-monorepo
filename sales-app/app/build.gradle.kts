@@ -6,6 +6,8 @@ plugins {
     id("kotlinx-serialization")
 
     id("org.jetbrains.kotlin.plugin.serialization")
+
+    id("com.google.firebase.crashlytics")
 }
 
 hilt {
@@ -134,6 +136,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-storage-ktx")
+    implementation ("com.google.firebase:firebase-crashlytics-ktx")
+    implementation ("com.google.firebase:firebase-analytics-ktx")
 
     // Ktor
     implementation("io.ktor:ktor-client-android:1.5.0")

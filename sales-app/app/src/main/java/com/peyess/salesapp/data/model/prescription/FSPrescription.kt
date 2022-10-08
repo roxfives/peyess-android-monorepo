@@ -15,6 +15,16 @@ data class FSPrescription(
 
     @JvmField
     @Keep
+    @PropertyName("store_id")
+    val storeId: String = "",
+
+    @JvmField
+    @Keep
+    @PropertyName("store_ids")
+    val storeIds: List<String> = emptyList(),
+
+    @JvmField
+    @Keep
     @PropertyName("emitted")
     val emitted: Timestamp = Timestamp.now(),
     @JvmField
@@ -36,6 +46,10 @@ data class FSPrescription(
     @PropertyName("is_copy")
     val isCopy: Boolean = false,
 
+    @JvmField
+    @Keep
+    @PropertyName("patient_uid")
+    val patientUid: String = "",
     @JvmField
     @Keep
     @PropertyName("patient_document")
@@ -138,12 +152,12 @@ data class FSPrescription(
     @Keep
     @JvmField
     @PropertyName("doc_version")
-    val doc_version: Int = 0,
+    val docVersion: Int = 0,
 
     @Keep
     @JvmField
     @PropertyName("is_editable")
-    val is_editable: Boolean = false,
+    val isEditable: Boolean = false,
 
     @Keep
     @JvmField

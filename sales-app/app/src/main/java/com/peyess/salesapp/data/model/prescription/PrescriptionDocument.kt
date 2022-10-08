@@ -1,12 +1,13 @@
 package com.peyess.salesapp.data.model.prescription
 
-import com.google.firebase.Timestamp
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import java.time.ZonedDateTime
 
 data class PrescriptionDocument(
     val id: String = "",
+
+    val storeId: String = "",
+    val storeIds: List<String> = emptyList(),
 
     val emitted: ZonedDateTime = ZonedDateTime.now(),
     val picture: String = "",
@@ -19,10 +20,10 @@ data class PrescriptionDocument(
     val patientDocument: String = "",
     val patientName: String = "",
 
+    val patientUid: String = "",
     val professionalDocument: String = "",
     val professionalName: String = "",
 
-    val lensType: LensTypeCategoryName = LensTypeCategoryName.Multi,
     val hasPrism: Boolean = false,
 
     val hasAddition: Boolean = false,
@@ -46,6 +47,9 @@ data class PrescriptionDocument(
     val rPrismAxis: Double = 0.0,
     val rPrismDegree: Double = 0.0,
     val rPrismPos: PrismPosition = PrismPosition.None,
+
+    val docVersion: Int = 0,
+    val isEditable: Boolean = false,
 
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy: String = "",

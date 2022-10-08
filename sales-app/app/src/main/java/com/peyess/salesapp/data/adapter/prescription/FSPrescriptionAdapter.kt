@@ -1,20 +1,19 @@
 package com.peyess.salesapp.data.adapter.prescription
 
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
-import com.peyess.salesapp.data.adapter.internal.utils.lensTypeName
-import com.peyess.salesapp.data.adapter.internal.utils.prismPositionName
-import com.peyess.salesapp.data.model.prescription.FSPrescription
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
+import java.time.ZonedDateTime
 
 fun prescriptionFrom(
     id: String,
 
     clientName: String,
     clientDocument: String,
+    clientUid: String,
     salespersonUid: String,
+
+    storeId: String,
 
     dataEntity: PrescriptionDataEntity,
     pictureEntity: PrescriptionPictureEntity,
@@ -22,9 +21,15 @@ fun prescriptionFrom(
     return PrescriptionDocument(
         id = id,
 
+        storeId = storeId,
+        storeIds = listOf(storeId),
+
+        emitted = ZonedDateTime.now(),
+
         picture = pictureEntity.pictureUri.toString(),
         isCopy = pictureEntity.isCopy,
 
+        patientUid = clientUid,
         patientDocument = clientDocument,
         patientName = clientName,
 

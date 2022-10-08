@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.adapter.prescription
 
-import com.peyess.salesapp.data.adapter.internal.utils.prismPositionName
 import com.peyess.salesapp.data.model.prescription.FSPrescription
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
 import com.peyess.salesapp.utils.time.toTimestamp
@@ -8,6 +7,9 @@ import com.peyess.salesapp.utils.time.toTimestamp
 fun PrescriptionDocument.toFSPrescription(): FSPrescription {
     return FSPrescription(
         id = id,
+
+        storeId = storeId,
+        storeIds = storeIds,
 
         emitted = emitted.toTimestamp(),
 
@@ -20,38 +22,42 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
 
         patientDocument = patientDocument,
         patientName = patientName,
+        patientUid = patientUid,
+
         professionalDocument = professionalDocument,
         professionalName = professionalName,
 
-        pd = pd,
-        lIpd = lIpd,
-        rIpd = rIpd,
+        hasPrism = hasPrism,
 
+        hasAddition = hasAddition,
+
+        pd = pd,
+
+        lIpd = lIpd,
         lCylinder = lCylinder,
         lSpherical = lSpherical,
         lAxisDegree = lAxisDegree,
+        lAddition = lAddition,
+        lPrismAxis = lPrismAxis,
+        lPrismDegree = lPrismDegree,
+        lPrismPos = lPrismPos.toName(),
 
+        rIpd = rIpd,
         rCylinder = rCylinder,
         rSpherical = rSpherical,
         rAxisDegree = rAxisDegree,
-
-        hasAddition = hasAddition,
-        lAddition = lAddition,
         rAddition = rAddition,
-
-        hasPrism = hasPrism,
-
-        lPrismAxis = lPrismAxis,
-        lPrismDegree = lPrismDegree,
-        lPrismPos = prismPositionName(lPrismPos),
-
         rPrismAxis = rPrismAxis,
         rPrismDegree = rPrismDegree,
-        rPrismPos = prismPositionName(rPrismPos),
+        rPrismPos = rPrismPos.toName(),
+
+        docVersion = docVersion,
+        isEditable = isEditable,
 
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
+
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,

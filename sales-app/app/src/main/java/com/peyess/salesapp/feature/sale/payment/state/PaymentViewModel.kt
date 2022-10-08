@@ -7,6 +7,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
+import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -32,12 +33,15 @@ class PaymentViewModel @AssistedInject constructor(
     private val productRepository: ProductRepository,
     private val clientRepository: ClientRepository,
     private val paymentMethodRepository: PaymentMethodRepository,
+    private val cardFlagsRepository: CardFlagRepository,
 ): MavericksViewModel<PaymentState>(initialState) {
 
     init {
         loadTotalPaid()
         loadTotalToPay()
         loadPaymentMethods()
+
+        loadCardFlagsRepository()
 
         onEach(PaymentState::totalPaidAsync, PaymentState::totalToPayAsync) { paid, toPay ->
             if (paid is Success && toPay is Success) {
@@ -137,6 +141,14 @@ class PaymentViewModel @AssistedInject constructor(
             }
     }
 
+    private fun loadCardFlagsRepository() = withState {
+        cardFlagsRepository
+            .listCards()
+            .execute(Dispatchers.IO) {
+                copy(cardFlagsAsync = it)
+            }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun loadTotalToPay() = withState {
         saleRepository
@@ -209,6 +221,19 @@ class PaymentViewModel @AssistedInject constructor(
         val paid = value.coerceAtMost(it.payment.value + it.totalLeftToPay)
 
         saleRepository.updatePayment(it.payment.copy(value = paid))
+    }
+
+    fun onMethodPaymentChanged(document: String) = withState {
+        saleRepository.updatePayment(it.payment.copy(document = document))
+    }
+
+    fun onCardFlagChanged(cardFlagIcon: Uri, cardFlagName: String) = withState {
+        saleRepository.updatePayment(
+            it.payment.copy(
+                cardFlagIcon = cardFlagIcon,
+                cardFlagName = cardFlagName,
+            )
+        )
     }
 
     fun onIncreaseInstallments(value: Int) = withState {

@@ -9,6 +9,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import timber.log.Timber
 
 data class PaymentState(
@@ -18,6 +19,8 @@ data class PaymentState(
     val clientAsync: Async<ClientDocument?> = Uninitialized,
 
     val paymentAsync: Async<SalePaymentEntity?> = Uninitialized,
+
+    val cardFlagsAsync: Async<List<CardFlagDocument>> = Uninitialized,
 
     val soAsync: Async<ActiveSOEntity?> = Uninitialized,
     val totalToPayAsync: Async<Double> = Uninitialized,
@@ -33,6 +36,9 @@ data class PaymentState(
         Timber.i("Setting empty payment methods")
         emptyList()
     }
+
+    val areCardFlagsLoading = cardFlagsAsync is Loading
+    val cardFlags = cardFlagsAsync.invoke() ?: emptyList()
 
     val isClientLoading = clientAsync is Loading
     val client = if (clientAsync is Success && clientAsync.invoke() != null) {

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.payment
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -35,6 +36,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -69,17 +72,25 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.feature.sale.payment.state.PaymentState
 import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
+import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentPlaceholder
+import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentTitle
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
+import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.listItems
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -88,7 +99,15 @@ import java.text.NumberFormat
 private val pictureSize = 220.dp
 private val pictureSizePx = 220
 
-private val cardPadding = 16.dp
+private val paymentDataSpacerHeight = 32.dp
+
+private val cardFlagHeight = 40.dp
+private val cardFlagWidth = 60.dp
+private val cardFlagHeightPx = 40
+private val cardFlagWidthPx = 60
+
+private val cardFlagEditSpacerWidth = 8.dp
+
 private val cardSpacerWidth = 2.dp
 private val profilePicPadding = 8.dp
 
@@ -115,6 +134,9 @@ fun PaymentScreen(
     val isClientLoading by viewModel.collectAsState(PaymentState::isClientLoading)
     val client by viewModel.collectAsState(PaymentState::client)
 
+    val areCardFlagsLoading by viewModel.collectAsState(PaymentState::areCardFlagsLoading)
+    val cardFlags by viewModel.collectAsState(PaymentState::cardFlags)
+
     val payment by viewModel.collectAsState(PaymentState::payment)
 
     val totalLeftToPay by viewModel.collectAsState(PaymentState::totalLeftToPay)
@@ -123,6 +145,9 @@ fun PaymentScreen(
     val arePaymentMethodsLoading by viewModel.collectAsState(PaymentState::arePaymentsLoading)
     val activePaymentMethod by viewModel.collectAsState(PaymentState::activePaymentMethod)
 
+    val cardFlagIcon = payment.cardFlagIcon
+    val cardFlagName = payment.cardFlagName
+
     PaymentScreenImpl(
         modifier = modifier,
 
@@ -130,8 +155,18 @@ fun PaymentScreen(
         client = client,
         toBePaid = totalLeftToPay,
 
+        areCardFlagsLoading = areCardFlagsLoading,
+        cardFlags = cardFlags,
+
+        cardFlagIcon = cardFlagIcon,
+        cardFlagName = cardFlagName,
+        onCardFlagChanged = viewModel::onCardFlagChanged,
+
         arePaymentMethodsLoading = arePaymentMethodsLoading,
         paymentMethods = paymentMethods,
+
+        methodDocument = payment.document,
+        onMethodDocumentUpdate = viewModel::onMethodPaymentChanged,
 
         installments = payment.installments,
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
@@ -158,8 +193,18 @@ private fun PaymentScreenImpl(
     client: ClientDocument = ClientDocument(),
     toBePaid: Double = 0.0,
 
+    areCardFlagsLoading: Boolean = false,
+    cardFlags: List<CardFlagDocument> = emptyList(),
+
+    cardFlagIcon: Uri = Uri.EMPTY,
+    cardFlagName: String = "",
+    onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
+
     arePaymentMethodsLoading: Boolean = false,
     paymentMethods: List<PaymentMethod> = emptyList(),
+
+    methodDocument: String = "",
+    onMethodDocumentUpdate: (value: String) -> Unit = {},
 
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
@@ -194,9 +239,19 @@ private fun PaymentScreenImpl(
         PaymentView(
             modifier = Modifier.fillMaxWidth(),
 
+            areCardFlagsLoading = areCardFlagsLoading,
+            cardFlags = cardFlags,
+
+            cardFlagIcon = cardFlagIcon,
+            cardFlagName = cardFlagName,
+            onCardFlagChanged = onCardFlagChanged,
+
             activePaymentMethod = activePaymentMethod,
             arePaymentMethodsLoading = arePaymentMethodsLoading,
             paymentMethods = paymentMethods,
+
+            methodDocument = methodDocument,
+            onMethodDocumentUpdate = onMethodDocumentUpdate,
 
             installments = installments,
             onIncreaseInstallments = onIncreaseInstallments,
@@ -309,6 +364,13 @@ private fun ClientView(
 private fun PaymentView(
     modifier: Modifier = Modifier,
 
+    areCardFlagsLoading: Boolean = false,
+    cardFlags: List<CardFlagDocument> = emptyList(),
+
+    cardFlagIcon: Uri = Uri.EMPTY,
+    cardFlagName: String = "",
+    onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
+
     arePaymentMethodsLoading: Boolean = false,
     activePaymentMethod: PaymentMethod? = null,
     paymentMethods: List<PaymentMethod> = emptyList(),
@@ -316,6 +378,9 @@ private fun PaymentView(
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
+
+    methodDocument: String = "",
+    onMethodDocumentUpdate: (value: String) -> Unit = {},
 
     payment: SalePaymentEntity = SalePaymentEntity(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
@@ -404,6 +469,16 @@ private fun PaymentView(
                 total = payment.value,
                 onTotalChanged = onTotalPaidChanged,
 
+                cardFlagIcon = cardFlagIcon,
+                cardFlagName = cardFlagName,
+                onCardFlagChanged = onCardFlagChanged,
+
+                areCardFlagsLoading = areCardFlagsLoading,
+                cardFlags = cardFlags,
+
+                methodDocument = methodDocument,
+                onMethodDocumentUpdate = onMethodDocumentUpdate,
+
                 installments = installments,
                 onIncreaseInstallments = onIncreaseInstallments,
                 onDecreaseInstallments = onDecreaseInstallments,
@@ -418,12 +493,22 @@ private fun PaymentCard(
     modifier: Modifier = Modifier,
     paymentMethod: PaymentMethod? = null,
 
+    areCardFlagsLoading: Boolean = false,
+    cardFlags: List<CardFlagDocument> = emptyList(),
+
+    cardFlagIcon: Uri = Uri.EMPTY,
+    cardFlagName: String = "",
+    onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
+
     total: Double = 0.0,
     onTotalChanged: (value: Double) -> Unit = {},
 
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
+
+    methodDocument: String = "",
+    onMethodDocumentUpdate: (value: String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -473,57 +558,263 @@ private fun PaymentCard(
             ),
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+
 
         AnimatedVisibility(
             visible = paymentMethod?.hasInstallments ?: false,
             enter = scaleIn(),
             exit = scaleOut(),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(stringResource(id = R.string.payment_installments))
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(id = R.string.payment_installments))
 
-                InstallmentsInput(
-                    value = installments,
-                    onIncrease = onIncreaseInstallments,
-                    onDecrease = onDecreaseInstallments,
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    InstallmentsInput(
+                        value = installments,
+                        onIncrease = onIncreaseInstallments,
+                        onDecrease = onDecreaseInstallments,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = paymentMethod?.hasDocument ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            val title = stringResource(id = methodDocumentTitle(paymentMethod?.type))
+            val placeholder = stringResource(id = methodDocumentPlaceholder(paymentMethod?.type))
+
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(title)
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    MethodDocumentInput(
+                        placeholder = placeholder,
+
+                        methodDocument = methodDocument,
+                        onMethodDocumentUpdate = onMethodDocumentUpdate,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(id = R.string.payment_card))
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    CardFlagInput(
+                        areCardFlagsLoading = areCardFlagsLoading,
+                        cardFlags = cardFlags,
+
+                        cardFlagIcon = cardFlagIcon,
+                        cardFlagName = cardFlagName,
+                        onCardFlagChanged = onCardFlagChanged,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MethodDocumentInput(
+    modifier: Modifier = Modifier,
+
+    placeholder: String = "",
+    methodDocument: String = "",
+    onMethodDocumentUpdate: (value: String) -> Unit = {},
+) {
+    val softKeyboardController = LocalSoftwareKeyboardController.current
+
+    PeyessOutlinedTextField(
+        modifier = modifier,
+
+        value = methodDocument,
+        onValueChange = onMethodDocumentUpdate,
+
+        placeholder = { Text(text = placeholder) },
+        label = { /*TODO*/ },
+
+        isError = false,
+        errorMessage = "",
+
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { softKeyboardController?.hide() }
+        )
+    )
+}
+
+@Composable
+private fun CardFlagInput(
+    modifier: Modifier = Modifier,
+
+    areCardFlagsLoading: Boolean = false,
+    cardFlags: List<CardFlagDocument> = emptyList(),
+
+
+    cardFlagIcon: Uri = Uri.EMPTY,
+    cardFlagName: String = "",
+    onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
+) {
+    val dialogState = rememberMaterialDialogState()
+    CardFlagInputDialog(
+        dialogState = dialogState,
+
+        areCardFlagsLoading = areCardFlagsLoading,
+        cardFlags = cardFlags,
+        onCardFlagPicked = onCardFlagChanged,
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            LazyImage(
+                modifier = Modifier.clickable { dialogState.show() },
+                image = cardFlagIcon,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            if (cardFlagName.isNotBlank()) {
+                Text(
+                    text = cardFlagName,
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold)
                 )
             }
         }
 
-//        AnimatedVisibility(
-//            visible = paymentMethod?.cardFlags?.isNotEmpty() ?: false,
-//            enter = scaleIn(),
-//            exit = scaleOut(),
-//        ) {
-//            Text(text = "Card flags")
-//        }
-//
-//        AnimatedVisibility(
-//            visible = paymentMethod?.hasDocument ?: false,
-//            enter = scaleIn(),
-//            exit = scaleOut(),
-//        ) {
-//            Text(text = "Document input")
-//        }
-//
-//        AnimatedVisibility(
-//            visible = paymentMethod?.hasDocumentPicture ?: false,
-//            enter = scaleIn(),
-//            exit = scaleOut(),
-//        ) {
-//            Text(text = "Add document picture")
-//        }
+        Spacer(modifier = Modifier.width(cardFlagEditSpacerWidth))
+
+        IconButton(onClick = { dialogState.show() }) {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                contentDescription = "",
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+private fun CardFlagInputDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    areCardFlagsLoading: Boolean = false,
+    cardFlags: List<CardFlagDocument> = emptyList(),
+    
+    onCardFlagPicked: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
+) {
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
+        },
+    ) {
+        AnimatedVisibility(
+            visible = areCardFlagsLoading,
+            enter = scaleIn(),
+            exit = scaleOut()
+        ) {
+            CircularProgressIndicator()
+        }
+
+        listItems(
+            list = cardFlags,
+            onClick = { _, item -> onCardFlagPicked(item.icon, item.name) },
+        ) { _, cardFlag ->
+            Row(
+                modifier = Modifier.padding(32.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(cardFlagHeight)
+                        .width(cardFlagWidth),
+                ) {
+                    LazyImage(image = cardFlag.icon)
+                }
+                
+                Text(
+                    modifier = Modifier.padding(start = 12.dp),
+                    text = cardFlag.name,
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun InstallmentsInput(
+private fun LazyImage(
+    modifier: Modifier = Modifier,
+    image: Uri = Uri.EMPTY,
+) {
+    AsyncImage(
+        modifier = modifier
+            .width(if (image == Uri.EMPTY) { cardFlagHeight } else { cardFlagWidth })
+            .height(cardFlagHeight)
+            .clip(RoundedCornerShape(8.dp)),
+
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(image)
+            .decoderFactory(SvgDecoder.Factory())
+            .crossfade(true)
+            .size(
+                width = cardFlagWidthPx,
+                height = cardFlagHeightPx,
+            )
+            .build(),
+
+        contentScale = ContentScale.FillBounds,
+        contentDescription = "",
+
+        error = painterResource(id = R.drawable.ic_default_placeholder),
+        fallback = painterResource(id = R.drawable.ic_default_placeholder),
+        placeholder = painterResource(id = R.drawable.ic_default_placeholder),
+    )
+}
+
+@Composable
+private fun InstallmentsInput(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     value: Int = 1,

@@ -314,6 +314,11 @@
     <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
     <string name="payment_delete">Excluir pagamento</string>
     <string name="payment_installments">Número de parcelas: </string>
+    <string name="payment_document_check">Número do cheque: </string>
+    <string name="payment_document_deposit">Número da transferência: </string>
+    <string name="payment_document_check_placeholder">Número do cheque</string>
+    <string name="payment_document_deposit_placeholder">Número da transferência</string>
+    <string name="payment_card">Bandeira do cartão: </string>
 
     <!-- UI Component: Anamnesis   -->
     <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>
@@ -477,6 +482,7 @@
     <string name="fs_col_measuring">optical_stores/%1$s/local_optical_measuring</string>
     <string name="fs_col_prescription">optical_stores/%1$s/local_optical_prescription</string>
     <string name="fs_col_purchase">optical_stores/%1$s/local_optical_purchase</string>
+    <string name="fs_col_card_flags">payment_card</string>
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
@@ -491,6 +497,7 @@
     <string name="fs_field_payments_priority">priority</string>
     <string name="fs_field_payments_is_enabled">is_enabled</string>
     <string name="fs_field_so_created">created</string>
+    <string name="fs_field_card_flag_name">name</string>
 
     <string name="fs_field_lenses_group_priority">priority</string>
 

@@ -53,6 +53,11 @@ data class SalePaymentEntity(
     val document: String = "",
     @ColumnInfo(name = "doc_pic")
     val docPicture: Uri = Uri.EMPTY,
+
+    @ColumnInfo(name = "card_flag_name")
+    val cardFlagName: String = "",
+    @ColumnInfo(name = "card_flag_icon")
+    val cardFlagIcon: Uri = Uri.EMPTY,
 ) {
     companion object {
         const val tableName = "payments"

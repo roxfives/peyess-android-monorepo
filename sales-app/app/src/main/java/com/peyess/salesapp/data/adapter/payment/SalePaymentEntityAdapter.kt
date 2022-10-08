@@ -43,8 +43,8 @@ fun SalePaymentEntity.toPaymentDocument(): PaymentDocument {
         documentPicture = "",
         financialInst = FinancialInstitutionType.fromName(""),
 
-        cardFlagName = "",
-        cardFlagIcon = "",
+        cardFlagName = cardFlagName,
+        cardFlagIcon = cardFlagIcon.toString(),
 
         payerUid = clientId,
         payerDocument = clientDocument,

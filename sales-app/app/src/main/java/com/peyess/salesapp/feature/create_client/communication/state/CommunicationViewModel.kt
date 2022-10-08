@@ -17,11 +17,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 private const val maxPhoneLength = 10
@@ -160,10 +159,10 @@ class CommunicationViewModel @AssistedInject constructor(
         val client = clientModel.toClientDocument()
 
         when (createScenarioParam) {
-            CreateScenario.ServiceOrder -> addAllForServiceOrder(client).wait()
-            CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible).wait()
-            CreateScenario.User -> addOnlyOne(client, ClientRole.User).wait()
-            CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness).wait()
+            CreateScenario.ServiceOrder -> addAllForServiceOrder(client)
+            CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible)
+            CreateScenario.User -> addOnlyOne(client, ClientRole.User)
+            CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness)
             else -> {
                 Timber.w(
                     "Function addClientToSale should not " +
@@ -174,17 +173,29 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun createClient() = withState {
-        suspend {
-            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
+        val createdId = it.clientId
 
-            if (it.createScenarioParam != CreateScenario.Home) {
+        suspend {
+            Timber.i("Creating client ${it.client}")
+
+            runBlocking {
+                clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
+            }
+
+            if (
+                it.createScenarioParam != CreateScenario.Home
+                    && it.createScenarioParam != CreateScenario.Payment
+            ) {
                 addClientToSale(it.client, it.createScenarioParam)
             }
 
             clientRepository.clearCreateClientCache(it.client.id)
-        }.execute(Dispatchers.IO) {
-            Timber.i("Upload client: $it")
-            copy(uploadClientAsync = it)
+        }.execute(Dispatchers.IO) { uploadState ->
+            Timber.i("Upload client: $uploadState")
+            copy(
+                uploadClientAsync = uploadState,
+                uploadedId = createdId,
+            )
         }
     }
 

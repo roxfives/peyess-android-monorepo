@@ -112,10 +112,12 @@ fun CreateClientCommunicationScreen(
     val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
     val uploadSuccessful by viewModel.collectAsState(CommunicationState::uploadSuccessful)
 
-    val clientId by viewModel.collectAsState(CommunicationState::clientId)
+    val clientId by viewModel.collectAsState(CommunicationState::uploadedId)
 
-    LaunchedEffect(uploadSuccessful) {
-        if (uploadSuccessful) {
+    LaunchedEffect(uploadSuccessful, clientId) {
+        if (uploadSuccessful && clientId.isNotBlank()) {
+            Timber.i("Navigating with client $clientId")
+
             onDone(scenario, clientId, paymentId)
         }
     }

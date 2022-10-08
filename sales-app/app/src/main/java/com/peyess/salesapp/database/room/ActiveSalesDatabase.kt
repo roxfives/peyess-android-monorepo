@@ -23,6 +23,7 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
+import com.peyess.salesapp.data.database.converters.ConverterPaymentMethodType
 import com.peyess.salesapp.database.room.converters.ConverterClientRole
 import com.peyess.salesapp.database.room.converters.ConverterEye
 import com.peyess.salesapp.database.room.converters.ConverterFramesType
@@ -44,7 +45,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         ClientEntity::class,
         SalePaymentEntity::class,
     ],
-    version = 40,
+    version = 42,
 )
 @TypeConverters(
     ConverterLocalDate::class,

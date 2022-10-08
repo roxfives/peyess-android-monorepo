@@ -4,7 +4,6 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
-import com.peyess.salesapp.typing.sale.PaymentMethodType
 
 fun SalePaymentEntity.toFSPayment(): FSPayment {
     return FSPayment(
@@ -32,7 +31,7 @@ fun SalePaymentEntity.toFSPayment(): FSPayment {
 
 fun SalePaymentEntity.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
-        method = PaymentMethodType.fromName(methodName),
+        methodName = methodName,
         methodId = methodId,
         amount = value,
         installments = installments,

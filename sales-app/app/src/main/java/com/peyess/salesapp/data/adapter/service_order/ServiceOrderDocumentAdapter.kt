@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.service_order
 
 import com.peyess.salesapp.data.adapter.product_sold_desc.toDenormalizedPurchaseDescription
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductsSold
+import com.peyess.salesapp.data.model.sale.purchase.DenormalizedPurchaseDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
@@ -83,16 +84,24 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
     )
 }
 
-
-
-fun ServiceOrderDocument.toPreview(): DenormalizedServiceOrderDescDocument {
+fun ServiceOrderDocument.toPreview(isOwnFrames: Boolean): DenormalizedServiceOrderDescDocument {
     return DenormalizedServiceOrderDescDocument(
         lenses = products.lenses.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
         colorings = products.colorings.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
         treatments = products.treatments.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
 
-        frames = products.frames.toDenormalizedPurchaseDescription(),
+        frames = if (isOwnFrames) {
+            DenormalizedPurchaseDescriptionDocument(
+                id = "",
+                units = 0,
 
-        misc = products.colorings.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
+                // TODO: internationalize (and use string resource)
+                description = "Aro próprio",
+            )
+        } else {
+            products.frames.toDenormalizedPurchaseDescription()
+        },
+
+        misc = products.misc.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
     )
 }

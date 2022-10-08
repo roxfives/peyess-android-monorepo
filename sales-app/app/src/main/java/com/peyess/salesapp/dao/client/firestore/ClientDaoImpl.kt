@@ -44,27 +44,6 @@ class ClientDaoImpl @Inject constructor(
             }
 
         awaitClose()
-//            .get()
-//            .addOnCompleteListener {
-//                Timber.i("Clients task: ${it.isSuccessful}")
-//
-//                if (!it.isSuccessful) {
-//                    Timber.e(it.exception)
-//                }
-//            }
-//            .await()
-
-//        Timber.i("Mapping clients from: ${snaps}")
-//        val clients = snaps.mapNotNull {
-//                try {
-//                    it.toObject(FSClient::class.java).toDocument(it.id)
-//                } catch (error: Throwable) {
-//                    Timber.e(error, "Failed to convert client document")
-//                    null
-//                }
-//            }
-//
-//        emit(clients)
     }
 
     override fun clientById(clientId: String): Flow<ClientDocument?> = flow {

@@ -229,6 +229,12 @@
     <string name="dialog_select_coloring">Selecione a coloração</string>
     <string name="dialog_select_treatment">Selecione a tratamento</string>
 
+    <string name="dialog_front_info_title">Pontos de espessura</string>
+    <string name="dialog_sideways_info_title">Animação espessura</string>
+
+    <string name="dialog_front_info_content">Os valores informados são calculados levando em consideração a base ideal para receita informada, as medidas da armação e considerando o material do produto selecionado. Para lentes prontas acabadas desconsidere esses valores. Valores simulados para lentes surfaçadas tradicionais.</string>
+    <string name="dialog_sideways_info_content">Os valores informados são calculados levando em comparação lentes surfaçadas tradicionalmente no material orgânico de índice 1.50. Lentes prontas acabadas ou de tecnologia digital oferecem melhora considerável na redução de peso e espessura.</string>
+
     <!-- UI Component: Demonstration   -->
     <string name="demonstration_multi_category_0">Multifocais de Alto Desempenho</string>
     <string name="demonstration_multi_category_1">Multifocais Melhor Escolha</string>

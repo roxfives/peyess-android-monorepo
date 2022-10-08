@@ -90,6 +90,9 @@ import kotlin.math.abs
 private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
 private val withFilterColor = Color.hsv(79f, 1f, 0.77f)
 
+private val dialogSpacerHeight = 32.dp
+private val infoTextPadding = 32.dp
+
 val buttonHeight = 120.dp
 
 private val thicknessAnimationHeight = 128.dp
@@ -828,6 +831,22 @@ private fun AnimationDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
     individualComparison: IndividualComparison,
 ) {
+    val infoFrontDialogState = rememberMaterialDialogState()
+    InfoDialog(
+        dialogState = infoFrontDialogState,
+
+        title = stringResource(id = R.string.dialog_front_info_title),
+        infoContent = stringResource(id = R.string.dialog_front_info_content),
+    )
+
+    val infoSidewaysDialogState = rememberMaterialDialogState()
+    InfoDialog(
+        dialogState = infoSidewaysDialogState,
+
+        title = stringResource(id = R.string.dialog_sideways_info_title),
+        infoContent = stringResource(id = R.string.dialog_sideways_info_content),
+    )
+
     MaterialDialog(
         dialogState = dialogState,
         buttons = {
@@ -865,7 +884,7 @@ private fun AnimationDialog(
                     color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
                 )
 
-                IconButton(onClick = { /* TODO: add info */ }) {
+                IconButton(onClick = { infoFrontDialogState.show() }) {
                     Icon(imageVector = Icons.Filled.Info, contentDescription = "")
                 }
             }
@@ -887,7 +906,7 @@ private fun AnimationDialog(
                     color = MaterialTheme.colors.primary.copy(alpha = 0.5f),
                 )
 
-                IconButton(onClick = { /* TODO: add info */ }) {
+                IconButton(onClick = { infoSidewaysDialogState.show() }) {
                     Icon(imageVector = Icons.Filled.Info, contentDescription = "")
                 }
             }
@@ -898,6 +917,48 @@ private fun AnimationDialog(
                 iterations = 1,
                 clipSpec = LottieClipSpec.Progress(0f, 1f),
             )
+        }
+    }
+}
+
+@Composable
+private fun InfoDialog(
+    modifier: Modifier = Modifier,
+
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    title: String = "",
+    infoContent: String = "",
+    infoObs: String = "",
+) {
+    // TODO: use string resource
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = { positiveButton("Legal!") },
+    ) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            title(title)
+
+            Text(
+                modifier = Modifier.padding(horizontal = infoTextPadding),
+                text = infoContent,
+                style = MaterialTheme.typography.body1
+                    .copy(textAlign = TextAlign.Center),
+            )
+
+            if (infoObs.isNotBlank()) {
+                Spacer(modifier = Modifier.height(dialogSpacerHeight))
+
+                Text(
+                    modifier = Modifier.padding(horizontal = infoTextPadding),
+                    text = infoObs,
+                    style = MaterialTheme.typography.caption,
+                )
+            }
         }
     }
 }

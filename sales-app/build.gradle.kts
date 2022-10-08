@@ -14,7 +14,7 @@ buildscript {
         set("mavericks_version", "2.7.0")
 
         set("firebase_bom", "30.3.1")
-        set("coil_version", "2.1.0")
+        set("coil_version", "2.2.0")
         set("data_store", "1.0.0")
         set("android_crypto", "1.0.0")
         set("room_version", "2.4.3")

@@ -21,7 +21,7 @@ dependencies {
     val mavericksVersion = rootProject.extra["mavericks_version"]
     val lottieVersion = rootProject.extra["lottie_version"]
     val firebaseBOM = rootProject.extra["firebase_bom"]
-    val kotlinVersion = rootProject.ext["coil_version"]
+    val coilVersion = rootProject.ext["coil_version"]
     val dataStoreVersion = rootProject.ext["data_store"]
     val androidCrypto = rootProject.ext["android_crypto"]
     val roomVersion = rootProject.ext["room_version"]
@@ -88,8 +88,9 @@ dependencies {
 
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
-    implementation("io.coil-kt:coil:$kotlinVersion")
-    implementation("io.coil-kt:coil-compose:$kotlinVersion")
+    implementation("io.coil-kt:coil:$coilVersion")
+    implementation("io.coil-kt:coil-compose:$coilVersion")
+    implementation("io.coil-kt:coil-svg:$coilVersion")
 
     // Compose UI tooling
     debugImplementation("androidx.compose.ui:ui-tooling:$composeVersion")

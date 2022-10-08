@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order.utils
 
 import android.net.Uri
-import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
@@ -42,7 +41,6 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -51,7 +49,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.ZonedDateTime
 
@@ -138,10 +135,18 @@ class ServiceOrderUploader constructor(
 
         so: ServiceOrderDocument
     ): String {
-        val id = prescriptionId.ifBlank { firebaseManager.uniqueId() }
+        val id = prescriptionId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            prescriptionId = uniqueId
+
+            uniqueId
+        }
         val fsPrescription = prescriptionFrom(
             id = id,
 
+            storeId = so.storeId,
+
+            clientUid = so.clientUid,
             clientDocument = so.clientDocument,
             clientName = so.clientName,
             salespersonUid = so.salespersonUid,
@@ -180,11 +185,31 @@ class ServiceOrderUploader constructor(
                     "right == $positioningRight")
         }
 
-        val posLeftId = positioningLeftId.ifBlank { firebaseManager.uniqueId() }
-        val posRightId = positioningRightId.ifBlank { firebaseManager.uniqueId() }
+        val posLeftId = positioningLeftId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            positioningLeftId = uniqueId
 
-        val measLeftId = measuringLeftId.ifBlank { firebaseManager.uniqueId() }
-        val measRightId = measuringRightId.ifBlank { firebaseManager.uniqueId() }
+            uniqueId
+        }
+        val posRightId = positioningRightId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            positioningRightId = uniqueId
+
+            uniqueId
+        }
+
+        val measLeftId = measuringLeftId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            measuringLeftId = uniqueId
+
+            uniqueId
+        }
+        val measRightId = measuringRightId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            measuringRightId = uniqueId
+
+            uniqueId
+        }
 
         val positioningDocLeft = positioningLeft!!.toPositioningDocument(
             id = posLeftId,
@@ -435,7 +460,12 @@ class ServiceOrderUploader constructor(
     }
 
     private suspend fun createPurchase(serviceOrder: ServiceOrderDocument): PurchaseDocument {
-        val id = purchaseId.ifBlank { firebaseManager.uniqueId() }
+        val id = purchaseId.ifBlank {
+            val uniqueId = firebaseManager.uniqueId()
+            purchaseId = uniqueId
+
+            uniqueId
+        }
 
         val storeId = firebaseManager.currentStore?.uid
         if (storeId == null) {
@@ -449,6 +479,15 @@ class ServiceOrderUploader constructor(
             .collect {
                 payments.addAll(it)
             }
+
+        var frames: FramesEntity? = null
+        saleRepository
+            .currentFramesData()
+            .take(1)
+            .collect {
+                frames = it
+            }
+
 
         return PurchaseDocument(
             id = id,
@@ -487,14 +526,15 @@ class ServiceOrderUploader constructor(
 
             state = PurchaseState.PendingConfirmation,
 
-            // TODO add payer document
-            payerUids = payments.map { it.clientId },
-            payerDocuments = payments.map { it.clientDocument },
+            payerUids = payments.map { it.clientId }.distinct(),
+            payerDocuments = payments.map { it.clientDocument }.distinct(),
             payments = payments.map { it.toPaymentDocument() },
 
             soStates = mapOf(serviceOrder.id to SOState.fromName(serviceOrder.state)),
             soIds = listOf(serviceOrder.id),
-            soPreviews = mapOf(serviceOrder.id to serviceOrder.toPreview()),
+            soPreviews = mapOf(
+                serviceOrder.id to serviceOrder.toPreview(frames?.areFramesNew == false)
+            ),
             soWithIssues = emptyList(),
             hasRectifiedSo = false,
             isLegalCustom = false,
@@ -584,9 +624,9 @@ class ServiceOrderUploader constructor(
         }
 
         serviceOrder = serviceOrder.copy(
+            purchaseId = purchaseId,
             payerUids = purchase.payerUids,
             payerDocuments = purchase.payerDocuments,
-
         )
 
         runBlocking {

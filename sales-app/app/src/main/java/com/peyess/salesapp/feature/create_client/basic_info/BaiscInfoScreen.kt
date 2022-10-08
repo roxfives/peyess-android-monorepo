@@ -75,10 +75,7 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.fromReadableSe
 import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexName
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
-import com.peyess.salesapp.navigation.pick_client.PickScenario
-import com.peyess.salesapp.navigation.pick_client.isPickingParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.date.PeyessDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -214,7 +211,7 @@ private fun BasicInfoScreenImpl(
     birthday: ZonedDateTime = ZonedDateTime.now(),
     onBirthdayChanged: (LocalDate) -> Unit = {},
 
-    sex: Sex = Sex.None,
+    sex: Sex = Sex.Unknown,
     onSexChanged: (Sex) -> Unit = {},
 
     document: String = "",
@@ -482,13 +479,12 @@ private fun PickSexDialog(
 ) {
     val sexesList = sexes
         .filterNotNull()
-        .filter { it != Sex.None }
         .map {
             Timber.i("Mapping $it")
             readableSexName(it)
         }
 
-    Timber.i("Available sexes are: $sexesList")
+    Timber.i("Available sexes are: $sexesList from $sexes")
 
     MaterialDialog(
         dialogState = dialogState,
@@ -513,7 +509,7 @@ private fun SexPicker(
     modifier: Modifier = Modifier,
     title: String = "",
     enabled: Boolean = true,
-    sex: Sex = Sex.None,
+    sex: Sex = Sex.Unknown,
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
 ) {
     Column(

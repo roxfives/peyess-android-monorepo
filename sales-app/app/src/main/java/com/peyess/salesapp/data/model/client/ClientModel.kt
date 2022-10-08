@@ -11,7 +11,7 @@ data class ClientModel(
     val picture: Uri = Uri.EMPTY,
     val birthday: ZonedDateTime = ZonedDateTime.now(),
     val document: String = "",
-    val sex: Sex = Sex.Other,
+    val sex: Sex = Sex.Unknown,
 
     val zipCode: String = "",
     val street: String = "",

@@ -6,8 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.data.model.client.Sex
 import java.time.OffsetDateTime
-import java.time.ZonedDateTime
-import java.util.Date
 
 @Entity(
     tableName = CacheCreateClientEntity.tableName,
@@ -28,7 +26,7 @@ data class CacheCreateClientEntity(
     @ColumnInfo(name = "document")
     val document: String = "",
     @ColumnInfo(name = "sex")
-    val sex: Sex = Sex.Other,
+    val sex: Sex = Sex.Unknown,
 
     @ColumnInfo(name = "zip_code")
     val zipCode: String = "",

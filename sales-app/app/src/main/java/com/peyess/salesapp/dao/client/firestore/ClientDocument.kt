@@ -17,11 +17,11 @@ data class ClientDocument(
 fun FSClient.toDocument(id: String): ClientDocument {
     return ClientDocument(
         id = id,
+        document = document,
         nameDisplay = nameDisplay,
         name = name,
         sex = sex,
         email = email,
-        document = document,
         picture = Uri.parse(picture),
         shortAddress = shortAddress.ifBlank { "$city, $state" },
     )

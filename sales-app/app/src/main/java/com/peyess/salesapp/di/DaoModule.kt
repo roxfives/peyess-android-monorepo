@@ -51,6 +51,8 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
+import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
+import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
@@ -90,6 +92,15 @@ object DaoModule {
         application: SalesApplication,
     ): ClientLegalDao {
         return ClientLegalDaoImpl(application, firebaseManager)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCardFlagDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): CardFlagDao {
+        return CardFlagDaoImpl(firebaseManager, application)
     }
 
     @Singleton

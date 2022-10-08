@@ -32,12 +32,15 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
+import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
+import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
+import com.peyess.salesapp.data.repository.card_flag.CardFlagRepositoryImpl
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -113,6 +116,14 @@ object RepositoryModule {
         serviceOrderDao: ServiceOrderDao,
     ): ServiceOrderRepository {
         return ServiceOrderRepositoryImpl(serviceOrderDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCardFlagRepository(
+        cardFlagDao: CardFlagDao,
+    ): CardFlagRepository {
+        return CardFlagRepositoryImpl(cardFlagDao)
     }
 
     @Provides

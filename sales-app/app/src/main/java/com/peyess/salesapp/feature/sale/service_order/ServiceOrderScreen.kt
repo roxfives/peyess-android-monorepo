@@ -168,8 +168,14 @@ fun ServiceOrderScreen(
     val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
 
     val isSaleDone by viewModel.collectAsState(ServiceOrderState::isSaleDone)
+    val isSaleLoading by viewModel.collectAsState(ServiceOrderState::isSaleLoading)
+    val hasSaleFailed by viewModel.collectAsState(ServiceOrderState::hasSaleFailed)
 
-    if (isSaleDone) {
+    if (isSaleLoading) {
+        SaleLoading(modifier = Modifier.fillMaxSize())
+    } else if (hasSaleFailed) {
+        SaleFail(modifier = Modifier.fillMaxSize(), onTimeout = viewModel::failedAnimationFinished)
+    } else if (isSaleDone) {
         SaleDone(modifier = Modifier.fillMaxSize(), onTimeout = onFinishSale)
     } else {
         ServiceOrderScreenImpl(
@@ -253,6 +259,59 @@ fun SaleDone(modifier: Modifier = Modifier, onTimeout: () -> Unit = {}) {
                 .fillMaxSize(),
             composition = composition,
             progress = { progress },
+        )
+    }
+}
+
+@Composable
+fun SaleFail(modifier: Modifier = Modifier, onTimeout: () -> Unit = {}) {
+    val animationStart = remember { mutableStateOf(false) }
+    val progress by animateFloatAsState(
+        targetValue = if (!animationStart.value) 0f else 1f,
+        animationSpec = tween(4000)
+    ) {
+        onTimeout()
+    }
+
+    LaunchedEffect(true) {
+        animationStart.value = true
+    }
+
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_so_failure)
+    )
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colors.background,
+    ) {
+        LottieAnimation(
+            modifier = modifier
+                .padding(164.dp)
+                .fillMaxSize(),
+            composition = composition,
+            progress = { progress },
+        )
+    }
+}
+
+@Composable
+fun SaleLoading(modifier: Modifier = Modifier) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_so_loading)
+    )
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colors.background,
+    ) {
+        LottieAnimation(
+            modifier = modifier
+                .padding(164.dp)
+                .fillMaxSize(),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
         )
     }
 }

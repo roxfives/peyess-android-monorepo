@@ -283,31 +283,9 @@ class ServiceOrderViewModel @AssistedInject constructor(
             }
     }
 
-//    private suspend fun generateServiceOrder(hid: String) {
-//
-//
-//        runBlocking {
-//
-//        }
-//    }
-
-//    private fun createSOWorker(soId: String, saleId: String) {
-//        Timber.i("Creating worker")
-//
-//        val workerData = workDataOf(
-//            soIdKey to soId,
-//            saleIdKey to saleId,
-//        )
-//
-//        val uploadWorkRequest: WorkRequest =
-//            OneTimeWorkRequestBuilder<GenerateServiceOrderWorker>()
-//                .setInputData(workerData)
-//                .build()
-//
-//        WorkManager
-//            .getInstance(salesApplication)
-//            .enqueue(uploadWorkRequest)
-//    }
+    fun failedAnimationFinished() = setState {
+        copy(hasSaleFailed = false)
+    }
 
     fun generateSale() = withState {
         suspend {
@@ -330,7 +308,11 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }.execute(Dispatchers.IO) {
             Timber.i("Generated Service Order result is $it")
 
-            copy(isSaleDone = it is Success)
+            copy(
+                isSaleDone = it is Success,
+                isSaleLoading = it is Loading,
+                hasSaleFailed = it is Fail,
+            )
         }
     }
 

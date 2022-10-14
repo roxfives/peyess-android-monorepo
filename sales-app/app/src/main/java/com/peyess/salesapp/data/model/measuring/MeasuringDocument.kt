@@ -54,6 +54,8 @@ data class MeasuringDocument(
     val fixedHe: Double = 0.0,
     val fixedVHoop: Double = 0.0,
 
+    val fixedDiameter: Double = 0.0,
+
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy: String = "",
     val createAllowedBy: String = "",

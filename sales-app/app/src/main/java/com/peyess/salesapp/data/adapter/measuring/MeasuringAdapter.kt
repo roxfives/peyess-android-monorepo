@@ -66,6 +66,8 @@ fun Measuring.toMeasuringDocument(
         fixedHe = fixedHe,
         fixedVHoop = fixedVHoop,
 
+        fixedDiameter = fixedDiameter,
+
         createdBy = salespersonId,
         createAllowedBy = salespersonId,
         updatedBy = salespersonId,

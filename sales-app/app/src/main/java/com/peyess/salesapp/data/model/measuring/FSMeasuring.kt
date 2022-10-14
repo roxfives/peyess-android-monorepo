@@ -175,6 +175,11 @@ data class FSMeasuring(
 
     @Keep
     @JvmField
+    @PropertyName("fixed_diameter")
+    val fixedDiameter: Double = 0.0,
+
+    @Keep
+    @JvmField
     @PropertyName("doc_version")
     val doc_version: Int = 0,
 

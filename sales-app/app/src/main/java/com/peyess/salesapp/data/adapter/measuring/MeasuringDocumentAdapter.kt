@@ -54,6 +54,8 @@ fun MeasuringDocument.toFSMeasuring(): FSMeasuring {
         fixedHe = fixedHe,
         fixedVHoop = fixedVHoop,
 
+        fixedDiameter = fixedDiameter,
+
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,

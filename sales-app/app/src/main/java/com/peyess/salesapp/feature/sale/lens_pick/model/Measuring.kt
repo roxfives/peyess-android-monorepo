@@ -1,6 +1,8 @@
 package com.peyess.salesapp.feature.sale.lens_pick.model
 
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.data.model.raw_measuring.RawMeasuring
+import com.peyess.salesapp.data.adapter.raw_measuring.toMeasuring
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import kotlin.math.abs
 import kotlin.math.cos
@@ -38,6 +40,8 @@ data class Measuring(
     val fixedHHoop: Double = 0.0,
     val fixedHe: Double = 0.0,
     val fixedVHoop: Double = 0.0,
+
+    val fixedDiameter: Double = 0.0,
 
     val eulerAngleX: Double = 0.0,
     val eulerAngleY: Double = 0.0,
@@ -80,7 +84,7 @@ fun PositioningEntity.toMeasuring(): Measuring {
             proportionToPictureHorizontal
     val vu = abs(opticCenterY - framesTop) * proportionToPictureVertical
 
-    return Measuring(
+    val raw = RawMeasuring(
         eye = eye,
 
         baseSize = abs(baseRight - baseLeft),
@@ -110,11 +114,7 @@ fun PositioningEntity.toMeasuring(): Measuring {
         he = he,
         ho = ho,
         vu = vu,
-
-        fixedBridge = -1.0,
-        fixedIpd = -1.0,
-        fixedHHoop = -1.0,
-        fixedHe = -1.0,
-        fixedVHoop = -1.0,
     )
+
+    return raw.toMeasuring()
 }

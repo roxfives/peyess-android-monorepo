@@ -101,6 +101,10 @@ fun PositioningEntity.toMeasuring(): Measuring {
         verticalHoop = verticalHoop,
         middleCheck = middleCheck,
 
+        eulerAngleX = eulerAngleX,
+        eulerAngleY = eulerAngleY,
+        eulerAngleZ = eulerAngleZ,
+
         ve = ve,
         ipd = ipd,
         he = he,

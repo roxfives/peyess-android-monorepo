@@ -98,6 +98,13 @@ data class PositioningEntity(
     val proportionToPictureHorizontal: Double = 0.0,
     @ColumnInfo(name = "proportion_to_picture_vertical")
     val proportionToPictureVertical: Double = 0.0,
+
+    @ColumnInfo(name = "euler_angle_x")
+    val eulerAngleX: Double = 0.0,
+    @ColumnInfo(name = "euler_angle_y")
+    val eulerAngleY: Double = 0.0,
+    @ColumnInfo(name = "euler_angle_z")
+    val eulerAngleZ: Double = 0.0,
 ) {
     companion object {
         const val tableName = "positioning_data"

@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.root
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.FabPosition
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -8,6 +9,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.peyess.salesapp.navigation.SalesAppScreens
@@ -16,6 +18,8 @@ import com.peyess.salesapp.ui.component.bottom_bar.BottomNavBarActions
 import com.peyess.salesapp.ui.component.fab.PeyessFloatingActionButton
 import com.peyess.salesapp.ui.component.top_bar.TopBar
 import timber.log.Timber
+
+val bottomBarHeight = 72.dp
 
 @Composable
 fun SalesAppRoot(
@@ -58,6 +62,7 @@ fun SalesAppRoot(
         },
         bottomBar = {
             BottomBar(
+                modifier = Modifier.height(72.dp),
                 currentScreen = currentScreen,
                 navHostController = navHostController,
                 actions = actions,

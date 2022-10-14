@@ -4,20 +4,31 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.peyess.salesapp.R
 import com.peyess.salesapp.navigation.SalesAppScreens
+
+private val buttonPadding = 1.dp
 
 @Composable
 fun BottomBar(
@@ -32,14 +43,15 @@ fun BottomBar(
         exit = slideOutVertically(targetOffsetY = { 0 }),
     ) {
         BottomAppBar(
+            modifier = modifier,
             elevation = 10.dp,
-            modifier = modifier
         ) {
-            IconButton(
-                onClick = {
-                    actions.onHomeSelected()
-                },
-                modifier = Modifier.weight(1f, true),
+            Column(
+                modifier = Modifier
+                    .padding(buttonPadding)
+                    .weight(weight = 1f, fill = true),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val tint by animateColorAsState(
                     if (currentScreen == SalesAppScreens.Home)
@@ -48,16 +60,23 @@ fun BottomBar(
                         MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
                 )
 
-                Icon(Icons.Filled.Home, tint = tint, contentDescription = "")
+                IconButton(onClick = { actions.onHomeSelected() }) {
+                   Icon(Icons.Filled.Home, tint = tint, contentDescription = "")
+                }
+
+                Text(
+                    text = stringResource(id = R.string.bottom_bar_home),
+                    style = MaterialTheme.typography.caption.copy(color = tint),
+                )
             }
 
-            IconButton(
-                onClick = {
-                    actions.onSaleSelected()
-                },
-                modifier = Modifier.weight(1f, true),
-
-                ) {
+            Column(
+                modifier = Modifier
+                    .padding(buttonPadding)
+                    .weight(weight = 1f, fill = true),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 val tint by animateColorAsState(
                     if (currentScreen == SalesAppScreens.SaleScreen)
                         MaterialTheme.colors.onPrimary
@@ -65,12 +84,22 @@ fun BottomBar(
                         MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
                 )
 
-                Icon(Icons.Filled.LocalOffer, tint = tint, contentDescription = "")
+                IconButton(onClick = { actions.onSaleSelected() }) {
+                    Icon(Icons.Filled.LocalOffer, tint = tint, contentDescription = "")
+                }
+
+                Text(
+                    text = stringResource(id = R.string.bottom_bar_sale),
+                    style = MaterialTheme.typography.caption.copy(color = tint),
+                )
             }
 
-            IconButton(
-                onClick = { actions.onPeopleSelected() },
-                modifier = Modifier.weight(1f, true),
+            Column(
+                modifier = Modifier
+                    .padding(buttonPadding)
+                    .weight(weight = 1f, fill = true),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val tint by animateColorAsState(
                     if (currentScreen == SalesAppScreens.Clients)
@@ -79,7 +108,14 @@ fun BottomBar(
                         MaterialTheme.colors.onPrimary.copy(alpha = 0.5f)
                 )
 
-                Icon(Icons.Filled.Person, tint = tint, contentDescription = "")
+                IconButton(onClick = { actions.onPeopleSelected() }) {
+                    Icon(Icons.Filled.Person, tint = tint, contentDescription = "")
+                }
+
+                Text(
+                    text = stringResource(id = R.string.bottom_bar_client),
+                    style = MaterialTheme.typography.caption.copy(color = tint),
+                )
             }
         }
     }

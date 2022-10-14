@@ -5,6 +5,9 @@
 
     <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
 
+    <string name="bottom_bar_home">Início</string>
+    <string name="bottom_bar_sale">Vendas</string>
+    <string name="bottom_bar_client">Clientes</string>
 
     <!-- UI Component: Password  -->
     <string name="password_input">Digite a sua senha</string>

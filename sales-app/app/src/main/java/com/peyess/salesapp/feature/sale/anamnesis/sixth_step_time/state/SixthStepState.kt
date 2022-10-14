@@ -37,13 +37,13 @@ data class SixthStepState(
 
     val totalLeft = totalAvailable - totalUsed
 
-    val farUsage = (sports + driving) / totalUsed
+    val farUsage = (externalArea + sports + driving) / totalUsed
     val nearUsage = (reading + phone) / totalUsed
-    val intermediateUsage = (computer + television) / totalUsed
+    val intermediateUsage = (computer + television + driving + internalArea) / totalUsed
 
-    val sunLightExposure = (driving + sports + externalArea) / totalUsed
+    val sunLightExposure = externalArea / totalUsed
 
-    val artificialLightExposure = (phone + computer + television + externalArea + internalArea) / totalUsed
+    val artificialLightExposure = (phone + computer + television + internalArea) / totalUsed
 
-    val blueLightExposure = (phone + computer + television + externalArea + internalArea) / totalUsed
+    val blueLightExposure = (phone + computer + television + sports + externalArea + internalArea) / totalUsed
 }

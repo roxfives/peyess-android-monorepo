@@ -281,6 +281,18 @@ private fun GraphsScreenImpl(
                                 Text(text = "Televisão: ${toTimeString(television)}")
                             }
                         }
+
+                        if (driving > 0) {
+                            Row {
+                                Text(text = "Dirigindo: ${toTimeString(driving)}")
+                            }
+                        }
+
+                        if (internalArea > 0) {
+                            Row {
+                                Text(text = "Área interna: ${toTimeString(internalArea)}")
+                            }
+                        }
                     }
                 }
             }
@@ -332,14 +344,6 @@ private fun GraphsScreenImpl(
                         .weight(1f),
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    if (driving > 0) {
-                        Text(text = "Dirigindo: ${toTimeString(driving)}")
-                    }
-
-                    if (sports > 0) {
-                        Text(text = "Esportes: ${toTimeString(sports)}")
-                    }
-
                     if (externalArea > 0) {
                         Text(text = "Área externa: ${toTimeString(externalArea)}")
                     }
@@ -403,10 +407,6 @@ private fun GraphsScreenImpl(
 
                     if (television > 0) {
                         Text(text = "Televisão: ${toTimeString(television)}")
-                    }
-
-                    if (externalArea > 0) {
-                        Text(text = "Área externa: ${toTimeString(externalArea)}")
                     }
 
                     if (internalArea > 0) {
@@ -473,6 +473,10 @@ private fun GraphsScreenImpl(
 
                     if (television > 0) {
                         Text(text = "Televisão: ${toTimeString(television)}")
+                    }
+
+                    if (sports > 0) {
+                        Text(text = "Esporte: ${toTimeString(sports)}")
                     }
 
                     if (externalArea > 0) {

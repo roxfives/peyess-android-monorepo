@@ -344,6 +344,10 @@ private fun GraphsScreenImpl(
                         .weight(1f),
                     verticalArrangement = Arrangement.Center,
                 ) {
+                    if (sports > 0) {
+                        Text(text = "Esportes: ${toTimeString(sports)}")
+                    }
+
                     if (externalArea > 0) {
                         Text(text = "Área externa: ${toTimeString(externalArea)}")
                     }
@@ -476,7 +480,7 @@ private fun GraphsScreenImpl(
                     }
 
                     if (sports > 0) {
-                        Text(text = "Esporte: ${toTimeString(sports)}")
+                        Text(text = "Esportes: ${toTimeString(sports)}")
                     }
 
                     if (externalArea > 0) {

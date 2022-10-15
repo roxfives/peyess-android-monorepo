@@ -41,7 +41,7 @@ data class SixthStepState(
     val nearUsage = (reading + phone) / totalUsed
     val intermediateUsage = (computer + television + driving + internalArea) / totalUsed
 
-    val sunLightExposure = externalArea / totalUsed
+    val sunLightExposure = (sports + externalArea) / totalUsed
 
     val artificialLightExposure = (phone + computer + television + internalArea) / totalUsed
 

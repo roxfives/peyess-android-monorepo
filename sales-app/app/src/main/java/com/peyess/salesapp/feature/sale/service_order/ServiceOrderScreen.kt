@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -86,6 +87,10 @@ import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
 import java.lang.Double.max
 import java.text.NumberFormat
 
@@ -107,6 +112,9 @@ private val subsectionSpacerSize = 16.dp
 private val productSpacerSize = 8.dp
 
 private val spaceBetweenMeasureValue = 8.dp
+
+private val dialogSpacerHeight = 32.dp
+private val infoTextPadding = 32.dp
 
 @Composable
 fun ServiceOrderScreen(
@@ -1188,10 +1196,25 @@ private fun MeasuresSection(
         val density = LocalDensity.current
         val minimumWidthState = remember { MinimumWidthState() }
 
+        val infoDialogState = rememberMaterialDialogState()
+        InfoDialog(
+            title = stringResource(id = R.string.so_measure_info_title),
+            dialogState = infoDialogState,
+            infoContent = stringResource(id = R.string.so_measure_info_content),
+        )
+
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_measure))
 
             Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = {
+                    infoDialogState.show()
+                },
+            ) {
+                Icon(imageVector = Icons.Filled.Info, contentDescription = "")
+            }
 
 //            IconButton(
 //                onClick = { /*TODO*/ },
@@ -1891,6 +1914,48 @@ private fun NoPaymentsYet(modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+private fun InfoDialog(
+    modifier: Modifier = Modifier,
+
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    title: String = "",
+    infoContent: String = "",
+    infoObs: String = "",
+) {
+    // TODO: use string resource
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = { positiveButton("Legal!") },
+    ) {
+        Column(
+            modifier = modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
+        ) {
+            title(title)
+
+            Text(
+                modifier = Modifier.padding(horizontal = infoTextPadding),
+                text = infoContent,
+                style = MaterialTheme.typography.body1
+                    .copy(textAlign = TextAlign.Center),
+            )
+
+            if (infoObs.isNotBlank()) {
+                Spacer(modifier = Modifier.height(dialogSpacerHeight))
+
+                Text(
+                    modifier = Modifier.padding(horizontal = infoTextPadding),
+                    text = infoObs,
+                    style = MaterialTheme.typography.caption,
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun PaymentCardPreview() {
@@ -2014,3 +2079,4 @@ private fun ClientSectionPreview() {
         )
     }
 }
+

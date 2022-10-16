@@ -6,13 +6,13 @@ import kotlin.math.round
 
 internal class BridgeCorrectionModel : CorrectionModel() {
     override fun fixField(rawMeasuring: RawMeasuring): Double {
-        val bridge = rawMeasuring.bridge * -0.69311305
-        val horizontalCheck = rawMeasuring.horizontalCheck * -0.2746577
-        val verticalCheck = rawMeasuring.verticalCheck * -0.0840033
-        val ve = rawMeasuring.ve * 0.2447102
-        val bottomPoint = rawMeasuring.bottomPoint * -0.12043775
-        val eulerX = rawMeasuring.eulerAngleX * 0.11192217
-        val intercept = 0.1367223274938127
+        val bridge = rawMeasuring.bridge * -0.63286615 //-0.69311305
+        val horizontalCheck = rawMeasuring.horizontalCheck * -0.25144899 //-0.2746577
+        val verticalCheck = rawMeasuring.verticalCheck * -0.07611089 //-0.0840033
+        val ve = rawMeasuring.ve * 0.19329001 //0.2447102
+        val bottomPoint = rawMeasuring.bottomPoint * -0.11161496 //-0.12043775
+        val eulerX = rawMeasuring.eulerAngleX * 0.13882194 //0.11192217
+        val intercept = 0.08683901736094168 //0.1367223274938127
 
         val diff = bridge + horizontalCheck + verticalCheck + ve + bottomPoint + eulerX + intercept
         val prediction = rawMeasuring.bridge + diff

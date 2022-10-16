@@ -48,6 +48,7 @@ fun MeasuringDocument.toFSMeasuring(): FSMeasuring {
         ve = ve,
         vu = vu,
 
+        fixedHorizontalBridgeHoop = fixedHorizontalBridgeHoop,
         fixedBridge = fixedBridge,
         fixedIpd = fixedIpd,
         fixedHHoop = fixedHHoop,

@@ -4,6 +4,7 @@ import com.peyess.salesapp.features.measuring_correction.internal.BridgeCorrecti
 import com.peyess.salesapp.features.measuring_correction.internal.DiameterCorrectionModel
 import com.peyess.salesapp.features.measuring_correction.internal.HECorrectionModel
 import com.peyess.salesapp.features.measuring_correction.internal.HHoopCorrectionModel
+import com.peyess.salesapp.features.measuring_correction.internal.HorizontalBridgeHoopCorrectionModel
 import com.peyess.salesapp.features.measuring_correction.internal.IPDCorrectionModel
 import com.peyess.salesapp.features.measuring_correction.internal.VHoopCorrectionModel
 
@@ -14,6 +15,7 @@ sealed class CorrectionField {
     object HE: CorrectionField()
     object VHoop: CorrectionField()
     object Diameter: CorrectionField()
+    object HorizontalBridgeHoop: CorrectionField()
 }
 
 fun correctionModelFactory(field: CorrectionField): CorrectionModel {
@@ -24,5 +26,6 @@ fun correctionModelFactory(field: CorrectionField): CorrectionModel {
         CorrectionField.IPD -> IPDCorrectionModel()
         CorrectionField.VHoop -> VHoopCorrectionModel()
         CorrectionField.Diameter -> DiameterCorrectionModel()
+        CorrectionField.HorizontalBridgeHoop -> HorizontalBridgeHoopCorrectionModel()
     }
 }

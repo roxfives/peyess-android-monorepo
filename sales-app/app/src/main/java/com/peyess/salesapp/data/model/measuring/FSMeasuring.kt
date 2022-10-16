@@ -154,6 +154,11 @@ data class FSMeasuring(
 
     @Keep
     @JvmField
+    @PropertyName("fixed_horizontal_bridge_hoop")
+    val fixedHorizontalBridgeHoop: Double = 0.0,
+
+    @Keep
+    @JvmField
     @PropertyName("fixed_bridge")
     val fixedBridge: Double = 0.0,
     @Keep

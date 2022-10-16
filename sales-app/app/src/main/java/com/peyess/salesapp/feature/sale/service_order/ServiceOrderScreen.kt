@@ -1339,7 +1339,7 @@ private fun MeasuresSection(
                 ) {
                     Text(text = stringResource(id = R.string.so_diameter))
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
-                    Text(text = "%.2f".format(max(measureLeft.diameter, measureRight.diameter)))
+                    Text(text = "%.2f".format(max(measureLeft.fixedDiameter, measureRight.fixedDiameter)))
                 }
 
                 Row(
@@ -1350,7 +1350,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            max(measureLeft.horizontalBridgeHoop, measureRight.horizontalBridgeHoop)
+                            max(measureLeft.fixedHorizontalBridgeHoop, measureRight.fixedHorizontalBridgeHoop)
                         )
                     )
                 }
@@ -1363,7 +1363,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            max(measureLeft.verticalHoop, measureRight.verticalHoop)
+                            max(measureLeft.fixedVHoop, measureRight.fixedVHoop)
                         )
                     )
                 }
@@ -1376,7 +1376,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            max(measureLeft.horizontalHoop, measureRight.horizontalHoop)
+                            max(measureLeft.fixedHHoop, measureRight.fixedHHoop)
                         )
                     )
                 }
@@ -1389,7 +1389,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            max(measureLeft.bridge, measureRight.bridge)
+                            max(measureLeft.fixedBridge, measureRight.fixedBridge)
                         )
                     )
                 }

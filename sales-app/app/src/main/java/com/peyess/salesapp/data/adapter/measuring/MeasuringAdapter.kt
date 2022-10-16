@@ -60,6 +60,7 @@ fun Measuring.toMeasuringDocument(
         ve = ve,
         vu = vu,
 
+        fixedHorizontalBridgeHoop = fixedHorizontalBridgeHoop,
         fixedBridge = fixedBridge,
         fixedIpd = fixedIpd,
         fixedHHoop = fixedHHoop,

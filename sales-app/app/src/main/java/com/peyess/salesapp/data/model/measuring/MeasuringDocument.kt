@@ -48,6 +48,7 @@ data class MeasuringDocument(
     val ve: Double = 0.0,
     val vu: Double = 0.0,
 
+    val fixedHorizontalBridgeHoop: Double = 0.0,
     val fixedBridge: Double = 0.0,
     val fixedIpd: Double = 0.0,
     val fixedHHoop: Double = 0.0,

@@ -6,6 +6,7 @@ import com.peyess.salesapp.features.measuring_correction.CorrectionField
 import com.peyess.salesapp.features.measuring_correction.correctionModelFactory
 
 fun RawMeasuring.toMeasuring(): Measuring {
+    val fixerBridgeHoop = correctionModelFactory(CorrectionField.HorizontalBridgeHoop)
     val fixerBridge = correctionModelFactory(CorrectionField.Bridge)
     val fixerIpd = correctionModelFactory(CorrectionField.IPD)
     val fixerHHoop = correctionModelFactory(CorrectionField.HHoop)
@@ -39,6 +40,7 @@ fun RawMeasuring.toMeasuring(): Measuring {
         ve = ve,
         vu = vu,
 
+        fixedHorizontalBridgeHoop =  fixerBridgeHoop.fixField(this),
         fixedBridge = fixerBridge.fixField(this),
         fixedIpd = fixerIpd.fixField(this),
         fixedHHoop = fixerHHoop.fixField(this),

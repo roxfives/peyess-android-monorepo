@@ -22,10 +22,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.retryWhen
@@ -149,10 +151,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
             .flatMapLatest {
                 if (it == null) {
                     Timber.e("Current user is not defined")
-                    error("Current user is not defined")
+//                    error("Current user is not defined")
                 }
 
-                localPasscodeManager.setUserPasscode(it, passcode)
+                localPasscodeManager.setUserPasscode(it ?: "", passcode)
             }
     }
 
@@ -163,10 +165,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
             .flatMapLatest {
                 if (it == null) {
                     Timber.e("Current user is not defined")
-                    error("Current user is not defined")
+//                    error("Current user is not defined")
                 }
 
-                localPasscodeManager.userHasPassword(it)
+                localPasscodeManager.userHasPassword(it ?: "")
             }
     }
 
@@ -184,20 +186,18 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun currentUser(): Flow<Collaborator> {
+    override fun currentUser(): Flow<Collaborator?> {
         return salesApplication.dataStoreCurrentUser.data
             .map { prefs -> prefs[currentCollaboratorKey] }
-            .filterNotNull()
             .flatMapLatest {
-                if (it == null) {
-                    Timber.e("Current user is not defined")
-//                    error("Current user is not defined")
+                if (it == null || it.isBlank()) {
+                    Timber.i("Current user is not defined")
+
+                    return@flatMapLatest flowOf(null)
                 }
 
-                collaboratorsDao.user(uid = it ?: "")
+                collaboratorsDao.user(uid = it)
                 // TODO: find why it returns null
-            }.retryWhen { exception, attempt ->
-                exception is IllegalStateException && attempt < currentUserThreshold
             }
     }
 
@@ -218,6 +218,14 @@ class AuthenticationRepositoryImpl @Inject constructor(
             val ids = it.map { user -> user.id }
 
             firebaseManager.loadedUsers(ids)
+        }
+    }
+
+    override suspend fun exit() {
+        salesApplication.dataStoreCurrentUser.edit { prefs ->
+            prefs[currentCollaboratorKey] = ""
+            prefs[currentCollaboratorAuthStateKey] =
+                LocalAuthorizationState.Unauthorized.toString()
         }
     }
 

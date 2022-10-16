@@ -14,6 +14,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
@@ -32,7 +33,7 @@ class WelcomeViewModel @AssistedInject constructor(
     }
 
     private fun loadCurrentCollaborator() = withState {
-        authenticationRepository.currentUser().execute(Dispatchers.IO) {
+        authenticationRepository.currentUser().filterNotNull().execute(Dispatchers.IO) {
             copy(collaborator = it)
         }
     }

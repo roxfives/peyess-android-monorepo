@@ -150,13 +150,16 @@ fun HomeScreen(
     HomeScreenImpl(
         modifier = modifier,
 
-        collaborator = collaborator,
+        collaborator = collaborator ?: Collaborator(),
         isLoadingCollaborator = isLoadingCollaborator,
 
         store = store,
         isLoadingStore = isLoadingStore,
 
-        onSignOut = onSignOut,
+        onSignOut = {
+            viewModel.exit()
+            onSignOut()
+        },
 
         onStartSale = {
             viewModel.startNewSale()

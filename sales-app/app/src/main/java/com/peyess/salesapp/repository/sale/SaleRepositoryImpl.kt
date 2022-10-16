@@ -69,7 +69,7 @@ class SaleRepositoryImpl @Inject constructor(
             by preferencesDataStore(currentSaleFileName)
 
     override fun createSale(): Flow<Boolean> {
-        return authenticationRepository.currentUser().map {
+        return authenticationRepository.currentUser().filterNotNull().map {
             val activeSale = ActiveSalesEntity(
                 id = firebaseManager.uniqueId(),
                 collaboratorUid = it.id,

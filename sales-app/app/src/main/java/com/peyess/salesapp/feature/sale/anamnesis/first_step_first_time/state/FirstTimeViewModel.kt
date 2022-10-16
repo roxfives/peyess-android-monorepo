@@ -40,9 +40,7 @@ class FirstTimeViewModel @AssistedInject constructor(
             saleRepository.activeSO().retryWhen { _, attempt ->
                 attempt < 10
             }.filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().retryWhen { _, attempt ->
-                attempt < 10
-            }.filterNotNull().map { it.name },
+            authenticationRepository.currentUser().filterNotNull().map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)
         }.execute(Dispatchers.IO) {

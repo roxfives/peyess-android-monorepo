@@ -359,6 +359,7 @@ class ServiceOrderUploader constructor(
 
         authenticationRepository
             .currentUser()
+            .filterNotNull()
             .take(1)
             .collect {
                 user = it

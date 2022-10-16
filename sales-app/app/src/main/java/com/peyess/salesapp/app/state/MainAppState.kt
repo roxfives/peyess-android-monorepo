@@ -30,7 +30,7 @@ data class MainAppState(
     // Client screen
     val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
 
-    val currentCollaboratorAsync: Async<Collaborator> = Uninitialized,
+    val currentCollaboratorAsync: Async<Collaborator?> = Uninitialized,
     val currentStoreAsync: Async<OpticalStore> = Uninitialized,
 
     val hasPickedClient: Boolean = false,
@@ -48,7 +48,7 @@ data class MainAppState(
 
     // Home Screen
     val isLoadingCollaborator: Boolean = false
-    val collaborator: Collaborator = if (currentCollaboratorAsync !is Success) {
+    val collaborator: Collaborator? = if (currentCollaboratorAsync !is Success) {
         Collaborator()
     } else {
         currentCollaboratorAsync.invoke()

@@ -44,6 +44,8 @@ class MainActivity: ComponentActivity() {
             val authState by viewModel.collectAsState(MainAppState::authState)
 
             LaunchedEffect(authState) {
+                Timber.i("Setting auth state with $authState")
+
                 when (authState) {
                     is AppAuthenticationState.Unauthenticated -> {
                         navHostController.backQueue.clear()

@@ -123,9 +123,7 @@ class FramesViewModel @AssistedInject constructor(
             saleRepository.activeSO().retryWhen { _, attempt ->
                 attempt < 10
             }.filterNotNull().map { it.clientName },
-            authenticationRepository.currentUser().retryWhen { _, attempt ->
-                attempt < 10
-            }.map { it.name },
+            authenticationRepository.currentUser().filterNotNull().map { it.name },
         ) { client, collaborator ->
             MikeMessageResult(client, collaborator)
         }.take(1).execute(Dispatchers.IO) {

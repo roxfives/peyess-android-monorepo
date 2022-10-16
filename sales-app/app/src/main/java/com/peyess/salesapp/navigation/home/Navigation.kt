@@ -27,8 +27,13 @@ fun buildHomeNavGraph(
     ) {
         HomeScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
-            onStartSale = { navHostController.navigate(SalesAppScreens.SaleWelcome.name) },
 
+            onSignOut = {
+                navHostController.backQueue.clear()
+                navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
+            },
+
+            onStartSale = { navHostController.navigate(SalesAppScreens.SaleWelcome.name) },
             onAddClient = {
                 val scenario = CreateScenario.Home
 

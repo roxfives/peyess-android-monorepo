@@ -16,7 +16,7 @@ interface AuthenticationRepository {
 
     fun resetCurrentUser(): Flow<Boolean>
 
-    fun currentUser(): Flow<Collaborator>
+    fun currentUser(): Flow<Collaborator?>
 
     fun userSignOut(): Flow<UserAuthenticationState>
 
@@ -41,4 +41,6 @@ interface AuthenticationRepository {
     fun userFirebaseApp(uid: String): FirebaseApp?
 
     fun activeCollaborators(): Flow<List<Collaborator>>
+
+    suspend fun exit()
 }

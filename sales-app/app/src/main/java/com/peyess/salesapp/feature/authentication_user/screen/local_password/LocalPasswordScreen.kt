@@ -71,7 +71,7 @@ fun LocalPasswordScreen(
             if (!hasNavigated.value) {
                 hasNavigated.value = true
 
-                navHostController.navigate(SalesAppScreens.SaleScreen.name) {
+                navHostController.navigate(SalesAppScreens.Home.name) {
                     popUpTo(SalesAppScreens.LocalPasscode.name) {
                         inclusive = true
                     }

@@ -8,6 +8,8 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.database.room.gambeta.GambetaEntity
+import com.peyess.salesapp.model.store.OpticalStore
+import com.peyess.salesapp.model.users.Collaborator
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 
 sealed class AppAuthenticationState {
@@ -28,6 +30,9 @@ data class MainAppState(
     // Client screen
     val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
 
+    val currentCollaboratorAsync: Async<Collaborator> = Uninitialized,
+    val currentStoreAsync: Async<OpticalStore> = Uninitialized,
+
     val hasPickedClient: Boolean = false,
 
     val pickScenario: PickScenario = PickScenario.ServiceOrder,
@@ -39,6 +44,21 @@ data class MainAppState(
         isUpdatingProductsAsync.invoke()?.isUpdating ?: true
     } else {
         true
+    }
+
+    // Home Screen
+    val isLoadingCollaborator: Boolean = false
+    val collaborator: Collaborator = if (currentCollaboratorAsync !is Success) {
+        Collaborator()
+    } else {
+        currentCollaboratorAsync.invoke()
+    }
+
+    val isLoadingStore: Boolean = false
+    val store: OpticalStore = if (currentStoreAsync !is Success) {
+        OpticalStore()
+    } else {
+        currentStoreAsync.invoke()
     }
 
     // Client screen

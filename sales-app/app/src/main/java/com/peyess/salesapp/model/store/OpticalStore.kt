@@ -55,4 +55,6 @@ data class OpticalStore(
     val updatedAt: Date = Date(),
     val updatedBy:  String = "",
     val updateAllowedBy:  String = "",
-)
+) {
+    val shortAddress = "$neighborhood, $city"
+}

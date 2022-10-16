@@ -22,6 +22,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -186,16 +187,17 @@ class AuthenticationRepositoryImpl @Inject constructor(
     override fun currentUser(): Flow<Collaborator> {
         return salesApplication.dataStoreCurrentUser.data
             .map { prefs -> prefs[currentCollaboratorKey] }
+            .filterNotNull()
             .flatMapLatest {
                 if (it == null) {
                     Timber.e("Current user is not defined")
-                    error("Current user is not defined")
+//                    error("Current user is not defined")
                 }
 
-                collaboratorsDao.user(uid = it)
+                collaboratorsDao.user(uid = it ?: "")
                 // TODO: find why it returns null
-            }.retryWhen { cause, attempt ->
-                cause is IllegalStateException && attempt < currentUserThreshold
+            }.retryWhen { exception, attempt ->
+                exception is IllegalStateException && attempt < currentUserThreshold
             }
     }
 

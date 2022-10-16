@@ -9,6 +9,7 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import dagger.assisted.Assisted
@@ -24,7 +25,7 @@ class MainViewModel @AssistedInject constructor(
     val saleRepository: SaleRepository,
     private val clientRepository: ClientRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
-    val gambetaDao: GambetaDao,
+    private val gambetaDao: GambetaDao,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
@@ -57,6 +58,23 @@ class MainViewModel @AssistedInject constructor(
 //                    copy(authState = AppAuthenticationState.Away)
 
             }
+        }
+
+        loadCurrentCollaborator()
+        loadStore()
+    }
+
+    private fun loadStore() = withState {
+        authenticationRepository.currentStore.execute {
+            Timber.i("Current store $it")
+            copy(currentStoreAsync = it)
+        }
+    }
+
+    private fun loadCurrentCollaborator() = withState {
+        authenticationRepository.currentUser().execute(Dispatchers.IO) {
+            Timber.i("Current colalborator is $it")
+            copy(currentCollaboratorAsync = it)
         }
     }
 

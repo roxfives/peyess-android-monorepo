@@ -27,6 +27,13 @@ fun buildHomeNavGraph(
     ) {
         HomeScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
+            onStartSale = { navHostController.navigate(SalesAppScreens.SaleWelcome.name) },
+
+            onAddClient = {
+                val scenario = CreateScenario.Home
+
+                navHostController.navigate(formatBasicInfoRoute(scenario))
+            },
         )
     }
 

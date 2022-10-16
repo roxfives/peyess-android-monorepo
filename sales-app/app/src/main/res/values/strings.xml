@@ -54,6 +54,24 @@
     <string name="error_wrong_passcode">A senha é inválida</string>
 
     <!-- UI Component: Home   -->
+    <string name="home_welcome">Boas vindas, %1$s</string>
+
+    <string name="home_notifications">Notificações</string>
+    <string name="home_no_notifications">Você não tem nenhuma notificação</string>
+
+    <string name="home_btn_exit">Sair</string>
+
+    <string name="home_btn_visual_acuity_title">Acuidade visual</string>
+    <string name="home_btn_visual_acuity_subtitle">Para perto</string>
+
+    <string name="home_btn_clients_title">Novo cliente</string>
+    <string name="home_btn_no_clients_subtitle">Sem clientes cadastrados</string>
+    <string name="home_btn_clients_subtitle">%1$d clientes</string>
+
+    <string name="home_btn_sale_title">Nova venda</string>
+    <string name="home_btn_sale_pending_subtitle">Existem vendas pendentes</string>
+    <string name="home_btn_sale_subtitle">Sem vendas pendentes</string>
+
     <string name="btn_make_new_sale">Fazer nova venda</string>
 
     <string name="btn_client_action_add_client">Adicionar cliente</string>

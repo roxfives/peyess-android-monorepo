@@ -33,6 +33,7 @@ fun buildHomeNavGraph(
                 navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
             },
 
+            onStartVisualAcuity = { navHostController.navigate(SalesAppScreens.VisualAcuity.name) },
             onStartSale = { navHostController.navigate(SalesAppScreens.SaleWelcome.name) },
             onAddClient = {
                 val scenario = CreateScenario.Home

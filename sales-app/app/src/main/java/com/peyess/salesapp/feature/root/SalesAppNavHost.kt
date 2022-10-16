@@ -14,6 +14,7 @@ import com.peyess.salesapp.navigation.demonstration.buildDemonstrationNavGraph
 import com.peyess.salesapp.navigation.home.buildHomeNavGraph
 import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
 import com.peyess.salesapp.navigation.sale.buildSaleNavGraph
+import com.peyess.salesapp.navigation.visual_acuity.buildVisualAcuityNavGraph
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -52,5 +53,7 @@ fun SalesAppNavHost(
         buildDemonstrationNavGraph(modifier, navHostController, this)
 
         buildCreateClientNavGraph(modifier, navHostController, this)
+
+        buildVisualAcuityNavGraph(modifier, navHostController, this)
     }
 }

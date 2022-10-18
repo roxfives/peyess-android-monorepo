@@ -49,7 +49,7 @@ fun ClientDocument.toEntity(soId: String, clientRole: ClientRole): ClientEntity 
         id = id,
         nameDisplay = nameDisplay,
         name = name,
-        sex = sex,
+        sex = sex.toName(),
         email = email,
         document = document,
         picture = picture,

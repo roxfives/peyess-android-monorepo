@@ -94,11 +94,21 @@ fun ClientModel.toClientDocument(): ClientDocument {
         name = name,
         nameDisplay = nameDisplay,
         picture = picture,
+        birthday = birthday,
         document = document,
-        sex = sex.toName(),
+        sex = sex,
+
+        zipCode = zipCode,
+        street = street,
+        houseNumber = houseNumber,
+        complement = complement,
+        neighborhood = neighborhood,
+        city = city,
+        state = state,
 
         email = email,
-
-        shortAddress = "$city - $state"
+        phone = phone,
+        cellphone = cellphone,
+        whatsapp = whatsapp,
     )
 }

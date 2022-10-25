@@ -55,7 +55,9 @@ class FramesViewModel @AssistedInject constructor(
                     copy(
                         showMike = hasPotentialProblems
                                 && (framesType is FramesType.AcetateScrewed
-                                    || framesType is FramesType.MetalScrewed)
+                                    || framesType is FramesType.MetalScrewed
+                                    || framesType is FramesType.AcetateNylon
+                                    || framesType is FramesType.MetalNylon)
                     )
                 }
             }

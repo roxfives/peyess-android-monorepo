@@ -52,7 +52,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override val currentStore: Flow<OpticalStore>
         get() = storeDao.store(
-                storeId = firebaseManager.currentStore!!.uid
+                storeId = firebaseManager.currentStore?.uid ?: ""
             )
 
     override suspend fun updateCurrentUser(uid: String) {

@@ -230,7 +230,7 @@
     <string name="lens_incompatible_reason_compatible">A lente é compatível com as exigências do cliente</string>
     <string name="lens_incompatible_reason_required_mono">A lente é monofocal, mas o cliente precisa de uma multifocal</string>
     <string name="lens_incompatible_reason_required_multi">A lente é multifocal, mas o cliente precisa de uma monofocal</string>
-    <string name="lens_incompatible_reason_diameter_too_big">O diametro do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_diameter_too_big">O diâmetro do cliente é maior do que o suportado por essa lente</string>
     <string name="lens_incompatible_reason_spherical_too_big">O grau esférico do cliente é maior do que o suportado por essa lente</string>
     <string name="lens_incompatible_reason_spherical_too_small">O grau esférico do cliente é menor do que o suportado por essa lente</string>
     <string name="lens_incompatible_reason_cylindrical_too_big">O grau cilíndrico do cliente é maior do que o suportado por essa lente</string>

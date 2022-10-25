@@ -140,6 +140,10 @@ class LensPickViewModel @AssistedInject constructor(
                 suggestionList = combine(lensesByGroup) { it.asList() }
             }
         }
+
+        withState {
+            lenses = productRepository.filteredLenses(lensFilter = it.filter)
+        }
     }
 
     private fun loadLensGroups() = withState {

@@ -65,7 +65,11 @@ class UpdateProductsWorker @AssistedInject constructor(
 
             val lens = it.toLocalLensEntity()
             Timber.i("Adding lens with price ${lens.price}")
-            productsDatabase.localLensDao().add(lens)
+            try {
+                productsDatabase.localLensDao().add(lens)
+            } catch (e: Throwable) {
+                Timber.e("Error while inserting lens ${lens.id}: \n\t $lens")
+            }
 
             try {
                 val explanations = it.getExplanations()

@@ -18,6 +18,8 @@ sealed class FramesType {
     object AcetateScrewed: FramesType()
     object None: FramesType()
 
+    fun toName() = toName(this)
+
     companion object {
         val listOfPositions = listOf(
             MetalNylon,
@@ -42,7 +44,7 @@ sealed class FramesType {
             }
         }
 
-        fun toFramesType(name: String?): FramesType? {
+        fun toFramesType(name: String): FramesType {
             Timber.i("Translating name $name")
 
             return when(name) {
@@ -52,7 +54,7 @@ sealed class FramesType {
                 "Metal Fechado" -> MetalEnclosed
                 "Metal Nylon" -> MetalNylon
                 "Metal Parafusado" -> MetalScrewed
-                else -> MetalEnclosed
+                else -> None
             }
         }
     }

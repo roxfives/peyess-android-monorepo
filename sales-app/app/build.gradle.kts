@@ -159,4 +159,12 @@ dependencies {
 
     // Nano-id
     implementation("com.aventrix.jnanoid:jnanoid:2.0.0")
+
+    // PDF
+    implementation("io.github.nvest-solutions:html-to-pdf-convertor:1.0.0")
+
+    // Test libraries
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.9")
+    testImplementation("net.datafaker:datafaker:1.6.0")
 }

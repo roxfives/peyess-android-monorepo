@@ -16,8 +16,12 @@ afterEvaluate { project ->
             }
 
             testOptions {
-                unitTests.returnDefaultValues = true
+                unitTests {
+                    returnDefaultValues = true
+                    includeAndroidResources = true
+                }
             }
+
             packagingOptions {
                 resources {
                     excludes += "/META-INF/{AL2.0,LGPL2.1}"

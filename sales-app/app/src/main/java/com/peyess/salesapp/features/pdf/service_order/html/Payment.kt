@@ -235,7 +235,7 @@ private fun legalTextForFullPayment(
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +
-                "COMPRADOR e pagaremos o valor de $totalPaid da seguinte forma:"
+                "RESPONSÁVEL e pagaremos o valor de $totalPaid da seguinte forma:"
     } else {
         "Em razão do presente pedido, pago neste ato a importância de $totalPaid através das " +
                 "Formas de Pagamento abaixo:"
@@ -259,7 +259,7 @@ private fun legalTextWithoutFullPayment(
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +
-                "COMPRADOR e pagaremos o valor de $totalPaid da seguinte forma:"
+                "RESPONSÁVEL e pagaremos o valor de $totalPaid da seguinte forma:"
     } else {
         "Em razão do presente pedido, declaro que pagarei o valor de $totalPaid da seguinte forma:"
     }

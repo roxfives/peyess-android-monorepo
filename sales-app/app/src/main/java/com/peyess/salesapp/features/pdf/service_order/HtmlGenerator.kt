@@ -151,9 +151,9 @@ fun buildHtml(
             productData +
             productListSection +
             paymentSection +
+            deliverySection +
             takeAwayAuthorizationSection +
             ownFramesSection +
-            deliverySection +
             conditions
 
     return generateServiceOrder(style = style, content = content)

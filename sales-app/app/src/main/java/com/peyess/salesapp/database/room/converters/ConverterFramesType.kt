@@ -7,9 +7,9 @@ import timber.log.Timber
 class ConverterFramesType {
     @TypeConverter
     fun fromName(name: String?): FramesType? {
-        Timber.i("Converting $name to ${FramesType.toFramesType(name)}")
+        Timber.i("Converting $name to ${FramesType.toFramesType(name ?: "")}")
 
-        return FramesType.toFramesType(name)
+        return FramesType.toFramesType(name ?: "")
     }
 
     @TypeConverter

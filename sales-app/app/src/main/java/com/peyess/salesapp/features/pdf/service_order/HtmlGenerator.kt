@@ -24,19 +24,16 @@ fun buildHtml(
     purchase: PurchaseDocument,
 ): String {
     val dayFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
-    val hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     val saleDate = serviceOrder.created
 
     val saleDataSection = generateSaleData(
         saleHid = serviceOrder.hid,
 
-        saleDate = saleDate.format(dayFormatter),
-        saleHour = saleDate.format(hourFormatter),
+        saleDate = saleDate,
 
         clientName = serviceOrder.responsibleName,
         clientBirthday = dayFormatter.format(serviceOrder.responsibleBirthday),
-        clientId = serviceOrder.responsibleUid,
         clientDocument = serviceOrder.responsibleDocument,
         clientRg = "-",
 

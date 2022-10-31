@@ -3,10 +3,6 @@ package com.peyess.salesapp.features.pdf.utils
 import android.content.Context
 import androidx.core.os.ConfigurationCompat
 import java.text.NumberFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -48,4 +44,10 @@ fun printDate(date: ZonedDateTime): String {
 
     return dateFormatter.format(date)
 
+}
+
+fun printHours(date: ZonedDateTime): String {
+    val hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    return "${hourFormatter.format(date)}hrs"
 }

@@ -5,6 +5,7 @@ import androidx.core.os.ConfigurationCompat
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.features.pdf.utils.printDocument
 import com.peyess.salesapp.features.pdf.utils.printPaymentMethodValue
 import com.peyess.salesapp.features.pdf.utils.printValue
 import com.peyess.salesapp.typing.sale.PaymentMethodType
@@ -62,7 +63,7 @@ private fun buildPaymentForMoney(context: Context, payment: PaymentDocument): St
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(
         context,
@@ -85,7 +86,7 @@ private fun buildPaymentForPix(context: Context, payment: PaymentDocument): Stri
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(
         context,
@@ -108,7 +109,7 @@ private fun buildPaymentForDebit(context: Context, payment: PaymentDocument): St
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(
         context,
@@ -131,7 +132,7 @@ private fun buildPaymentForCredit(context: Context, payment: PaymentDocument): S
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(
         context,
@@ -154,7 +155,7 @@ private fun buildPaymentForCrediario(context: Context, payment: PaymentDocument)
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(context, "CARNÊ", payment.installments)
 
@@ -173,7 +174,7 @@ private fun buildPaymentForBankTransfer(context: Context, payment: PaymentDocume
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(context, "TRANSFERÊNCIA BANCÁRIA", payment.installments)
 
@@ -192,7 +193,7 @@ private fun buildPaymentForBankCheck(context: Context, payment: PaymentDocument)
     currencyFormat.maximumFractionDigits = 2
 
     val clientName = payment.payerName
-    val clientDocument = payment.payerDocument
+    val clientDocument = printDocument(payment.payerDocument)
 
     val paymentMethod = printPaymentMethodValue(context, "CHEQUE", payment.installments)
 

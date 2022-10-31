@@ -4,7 +4,13 @@ import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductsSold
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductsSoldDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldFramesDescription
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 
 @Keep
 @IgnoreExtraProperties
@@ -40,6 +46,11 @@ data class FSServiceOrder(
     @PropertyName("salesperson_uid")
     val salespersonUid: String = "",
 
+
+    @Keep
+    @JvmField
+    @PropertyName("client_uid")
+    val clientUid: String = "",
     @Keep
     @JvmField
     @PropertyName("client_document")
@@ -54,9 +65,45 @@ data class FSServiceOrder(
     val clientPicture: String = "",
     @Keep
     @JvmField
-    @PropertyName("client_uid")
-    val clientUid: String = "",
+    @PropertyName("client_birthday")
+    val clientBirthday: Timestamp = Timestamp.now(),
+    @Keep
+    @JvmField
+    @PropertyName("client_phone")
+    val clientPhone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_cellphone")
+    val clientCellphone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_neighborhood")
+    val clientNeighborhood: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_street")
+    val clientStreet: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_city")
+    val clientCity: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_state")
+    val clientState: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_housenumber")
+    val clientHouseNumber: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("client_zipcode")
+    val clientZipCode: String = "",
 
+    @Keep
+    @JvmField
+    @PropertyName("responsible_uid")
+    val responsibleUid: String = "",
     @Keep
     @JvmField
     @PropertyName("responsible_document")
@@ -71,9 +118,46 @@ data class FSServiceOrder(
     val responsiblePicture: String = "",
     @Keep
     @JvmField
-    @PropertyName("responsible_uid")
-    val responsibleUid: String = "",
+    @PropertyName("responsible_birthday")
+    val responsibleBirthday: Timestamp = Timestamp.now(),
+    @Keep
+    @JvmField
+    @PropertyName("responsible_phone")
+    val responsiblePhone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_cellphone")
+    val responsibleCellphone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_neighborhood")
+    val responsibleNeighborhood: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_street")
+    val responsibleStreet: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_city")
+    val responsibleCity: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_state")
+    val responsibleState: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_housenumber")
+    val responsibleHouseNumber: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_zipcode")
+    val responsibleZipCode: String = "",
 
+
+    @Keep
+    @JvmField
+    @PropertyName("witness_uid")
+    val witnessUid: String = "",
     @Keep
     @JvmField
     @PropertyName("has_witness")
@@ -92,8 +176,53 @@ data class FSServiceOrder(
     val witnessPicture: String = "",
     @Keep
     @JvmField
-    @PropertyName("witness_uid")
-    val witnessUid: String = "",
+    @PropertyName("witness_birthday")
+    val witnessBirthday: Timestamp = Timestamp.now(),
+    @Keep
+    @JvmField
+    @PropertyName("witness_phone")
+    val witnessPhone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_cellphone")
+    val witnessCellphone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_neighborhood")
+    val witnessNeighborhood: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_street")
+    val witnessStreet: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_city")
+    val witnessCity: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_state")
+    val witnessState: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_housenumber")
+    val witnessHouseNumber: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_zipcode")
+    val witnessZipCode: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("has_takeaway")
+    val hasTakeaway: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("takeaway_name")
+    val takeawayName: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("takeaway_document")
+    val takeawayDocument: String = "",
 
     // Lifecycle data
     @Keep
@@ -136,16 +265,55 @@ data class FSServiceOrder(
     @PropertyName("payer_documents")
     val payerDocuments: List<String> = emptyList(),
 
+//    @Keep
+//    @JvmField
+//    @PropertyName("products")
+//    val products: FSProductsSold = FSProductsSold(),
+
     @Keep
     @JvmField
-    @PropertyName("products")
-    val products: FSProductsSold = FSProductsSold(),
+    @PropertyName("has_own_frames")
+    val hasOwnFrames: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("left_products")
+    val leftProducts: FSProductSoldEyeSet = FSProductSoldEyeSet(),
+    @Keep
+    @JvmField
+    @PropertyName("right_products")
+    val rightProducts: FSProductSoldEyeSet = FSProductSoldEyeSet(),
+    @Keep
+    @JvmField
+    @PropertyName("frames_products")
+    val framesProducts: FSProductSoldFramesDescription = FSProductSoldFramesDescription(),
+    @Keep
+    @JvmField
+    @PropertyName("misc_products")
+    val miscProducts: List<FSProductSoldDescription> = emptyList(),
 
     // Denormilized prescription data
     @Keep
     @JvmField
     @PropertyName("prescription_id")
     val prescriptionId: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("is_copy")
+    val isCopy: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("professional_name")
+    val professionalName: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("professional_id")
+    val professionalId: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("prescription_date")
+    val prescriptionDate: Timestamp = Timestamp.now(),
+
     @Keep
     @JvmField
     @PropertyName("l_cylinder")
@@ -204,12 +372,7 @@ data class FSServiceOrder(
     @PropertyName("r_prism_pos")
     val rPrismPos: String = "",
 
-    // Denormalized measuring data
-    @Keep
-    @JvmField
-    @PropertyName("l_ipd")
-    val lIpd: Double = 0.0,
-
+    // Denormalized measuring and prescription data
     @Keep
     @JvmField
     @PropertyName("l_positioning_id")
@@ -228,6 +391,10 @@ data class FSServiceOrder(
     @PropertyName("r_measuring_id")
     val rMeasuringId: String = "",
 
+    @Keep
+    @JvmField
+    @PropertyName("l_ipd")
+    val lIpd: Double = 0.0,
     @Keep
     @JvmField
     @PropertyName("l_bridge")
@@ -257,7 +424,6 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("r_ipd")
     val rIpd: Double = 0.0,
-
     @Keep
     @JvmField
     @PropertyName("r_bridge")
@@ -308,6 +474,30 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
+    @PropertyName("is_payment_full")
+    val isPaymentFull: Boolean = true,
+    @Keep
+    @JvmField
+    @PropertyName("left_to_pay")
+    val leftToPay: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total")
+    val total:  Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total_paid")
+    val totalPaid:  Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total_discount")
+    val totalDiscount:  Double = 0.0,
+
+    @Keep
+    @JvmField
     @PropertyName("created")
     val created: Timestamp = Timestamp.now(),
 
@@ -335,9 +525,4 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("update_allowed_by")
     val updateAllowedBy:  String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("total")
-    val total:  Double = 0.0,
 )

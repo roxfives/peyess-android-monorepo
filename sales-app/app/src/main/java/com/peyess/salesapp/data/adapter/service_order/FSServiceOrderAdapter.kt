@@ -1,8 +1,8 @@
 package com.peyess.salesapp.data.adapter.service_order
 
-import com.peyess.salesapp.data.adapter.product_sold_desc.toFSDenormalizedPurchaseDescription
-import com.peyess.salesapp.data.adapter.products_sold.toProductsSoldDocument
-import com.peyess.salesapp.data.model.sale.purchase.FSDenormalizedServiceOrderDesc
+import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldDescriptionDocument
+import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldFramesDescriptionDocument
+import com.peyess.salesapp.data.adapter.products_sold.toProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.utils.time.toZonedDateTime
@@ -22,17 +22,54 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         clientDocument = clientDocument,
         clientName = clientName,
         clientPicture = clientPicture,
+        clientBirthday = clientBirthday.toZonedDateTime(),
+        clientPhone = clientPhone,
+        clientCellphone = clientCellphone,
+        clientNeighborhood = clientNeighborhood,
+        clientStreet = clientStreet,
+        clientCity = clientCity,
+        clientState = clientState,
+        clientHouseNumber = clientHouseNumber,
+        clientZipCode = clientZipCode,
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,
         responsiblePicture = responsiblePicture,
+        responsibleBirthday = responsibleBirthday.toZonedDateTime(),
+        responsiblePhone = responsiblePhone,
+        responsibleCellphone = responsibleCellphone,
+        responsibleNeighborhood = responsibleNeighborhood,
+        responsibleStreet = responsibleStreet,
+        responsibleCity = responsibleCity,
+        responsibleState = responsibleState,
+        responsibleHouseNumber = responsibleHouseNumber,
+        responsibleZipCode = responsibleZipCode,
 
         hasWitness = hasWitness,
         witnessUid = witnessUid,
         witnessDocument = witnessDocument,
         witnessName = witnessName,
         witnessPicture = witnessPicture,
+        witnessBirthday = witnessBirthday.toZonedDateTime(),
+        witnessPhone = witnessPhone,
+        witnessCellphone = witnessCellphone,
+        witnessNeighborhood = witnessNeighborhood,
+        witnessStreet = witnessStreet,
+        witnessCity = witnessCity,
+        witnessState = witnessState,
+        witnessHouseNumber = witnessHouseNumber,
+        witnessZipCode = witnessZipCode,
+
+        hasTakeaway = hasTakeaway,
+        takeawayName = takeawayName,
+        takeawayDocument = takeawayDocument,
+
+        hasOwnFrames = hasOwnFrames,
+        leftProducts = leftProducts.toProductSoldEyeSetDocument(),
+        rightProducts = rightProducts.toProductSoldEyeSetDocument(),
+        framesProducts = framesProducts.toProductSoldFramesDescriptionDocument(),
+        miscProducts = miscProducts.map { it.toProductSoldDescriptionDocument() },
 
         state = state,
         rectified = rectified,
@@ -45,10 +82,13 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
 
         payerUids = payerUids,
         payerDocuments = payerDocuments,
-        total = total,
-        products = products.toProductsSoldDocument(),
 
         prescriptionId = prescriptionId,
+
+        isCopy = isCopy,
+        professionalName = professionalName,
+        professionalId = professionalId,
+        prescriptionDate = prescriptionDate.toZonedDateTime(),
 
         lCylinder = lCylinder,
         lSpheric = lSpheric,
@@ -90,6 +130,13 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
 
         measureConfirmedBy = measureConfirmedBy,
         discountAllowedBy = discountAllowedBy,
+
+        isPaymentFull = isPaymentFull,
+        leftToPay = leftToPay,
+
+        total = total,
+        totalPaid = totalPaid,
+        totalDiscount = totalDiscount,
 
         created = created.toZonedDateTime(),
         createdBy = createdBy,

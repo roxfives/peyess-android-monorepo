@@ -16,7 +16,7 @@ data class PurchaseDocument(
     val storeIds: List<String> = emptyList(),
 
     val clientUids: List<String> = emptyList(),
-    val clients: List<DenormalizedClientDocument>,
+    val clients: List<DenormalizedClientDocument> = emptyList(),
 
     val responsibleDocument: String = "",
     val responsibleName: String = "",
@@ -32,10 +32,10 @@ data class PurchaseDocument(
     val salespersonUid: String = "",
 
     val isDiscountPerProduct: Boolean = false,
-    val overallDiscount: DiscountDescriptionDocument,
+    val overallDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
     val price: Double = 0.0,
     val priceWithDiscount: Double = 0.0,
-    val prodDiscount: Map<String, PurchaseProductsDiscountDocument>,
+    val prodDiscount: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
 
     val state: PurchaseState = PurchaseState.Unknown,
 

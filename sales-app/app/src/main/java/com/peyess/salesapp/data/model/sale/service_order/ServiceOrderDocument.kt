@@ -1,10 +1,10 @@
 package com.peyess.salesapp.data.model.sale.service_order
 
-import androidx.annotation.Keep
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductsSoldDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 import java.time.ZonedDateTime
 
-@Keep
 data class ServiceOrderDocument(
     val id: String = "",
 
@@ -15,22 +15,54 @@ data class ServiceOrderDocument(
     val picture: String = "",
 
     val salespersonUid: String = "",
+    val salespersonName: String = "",
 
+    val clientUid: String = "",
     val clientDocument: String = "",
     val clientName: String = "",
     val clientPicture: String = "",
-    val clientUid: String = "",
+    val clientBirthday: ZonedDateTime = ZonedDateTime.now(),
+    val clientPhone: String = "",
+    val clientCellphone: String = "",
+    val clientNeighborhood: String = "",
+    val clientStreet: String = "",
+    val clientCity: String = "",
+    val clientState: String = "",
+    val clientHouseNumber: String = "",
+    val clientZipCode: String = "",
 
+    val responsibleUid: String = "",
     val responsibleDocument: String = "",
     val responsibleName: String = "",
     val responsiblePicture: String = "",
-    val responsibleUid: String = "",
+    val responsibleBirthday: ZonedDateTime = ZonedDateTime.now(),
+    val responsiblePhone: String = "",
+    val responsibleCellphone: String = "",
+    val responsibleNeighborhood: String = "",
+    val responsibleStreet: String = "",
+    val responsibleCity: String = "",
+    val responsibleState: String = "",
+    val responsibleHouseNumber: String = "",
+    val responsibleZipCode: String = "",
 
+    val witnessUid: String = "",
     val hasWitness: Boolean = false,
     val witnessDocument: String = "",
     val witnessName: String = "",
     val witnessPicture: String = "",
-    val witnessUid: String = "",
+    val witnessBirthday: ZonedDateTime = ZonedDateTime.now(),
+    val witnessPhone: String = "",
+    val witnessCellphone: String = "",
+    val witnessNeighborhood: String = "",
+    val witnessStreet: String = "",
+    val witnessCity: String = "",
+    val witnessState: String = "",
+    val witnessHouseNumber: String = "",
+    val witnessZipCode: String = "",
+
+    val hasTakeaway: Boolean = false,
+    val takeawayName: String = "",
+    val takeawayDocument: String = "",
 
     // Lifecycle data
     val state: String = "",
@@ -48,10 +80,21 @@ data class ServiceOrderDocument(
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),
 
-    val products: ProductsSoldDocument = ProductsSoldDocument(),
+//    val products: ProductsSoldDocument = ProductsSoldDocument(),
+    val hasOwnFrames: Boolean = false,
+    val leftProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
+    val rightProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
+    val framesProducts: ProductSoldFramesDescriptionDocument = ProductSoldFramesDescriptionDocument(),
+    val miscProducts: List<ProductSoldDescriptionDocument> = emptyList(),
 
     // Denormilized prescription data
     val prescriptionId: String = "",
+
+    val isCopy: Boolean = false,
+    val professionalName: String = "",
+    val professionalId: String = "",
+    val prescriptionDate: ZonedDateTime = ZonedDateTime.now(),
+
     val lCylinder: Double = 0.0,
     val lSpheric: Double = 0.0,
     val lAxisDegree: Double = 0.0,
@@ -98,6 +141,13 @@ data class ServiceOrderDocument(
     val measureConfirmedBy: String = "",
     val discountAllowedBy: String = "",
 
+    val isPaymentFull: Boolean = true,
+    val leftToPay: Double = 0.0,
+
+    val total:  Double = 0.0,
+    val totalPaid:  Double = 0.0,
+    val totalDiscount:  Double = 0.0,
+
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy:  String = "",
     val createAllowedBy:  String = "",
@@ -105,6 +155,4 @@ data class ServiceOrderDocument(
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy:  String = "",
     val updateAllowedBy:  String = "",
-
-    val total:  Double = 0.0,
 )

@@ -21,14 +21,16 @@ sealed class FramesType {
     fun toName() = toName(this)
 
     companion object {
-        val listOfPositions = listOf(
-            MetalNylon,
-            MetalEnclosed,
-            MetalScrewed,
-            AcetateEnclosed,
-            AcetateNylon,
-            AcetateScrewed,
-        )
+        val listOfPositions by lazy {
+            listOf(
+                MetalNylon,
+                MetalEnclosed,
+                MetalScrewed,
+                AcetateEnclosed,
+                AcetateNylon,
+                AcetateScrewed,
+            )
+        }
 
         fun toName(position: FramesType?): String {
             Timber.i("Translating position $position")

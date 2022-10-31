@@ -27,14 +27,16 @@ sealed class PrismPosition {
     fun toName() = toName(this)
 
     companion object {
-        val listOfPositions: List<PrismPosition?> = listOf(
-            None,
-            Nasal,
-            Temporal,
-            Superior,
-            Inferior,
-            Axis,
-        )
+        val listOfPositions: List<PrismPosition> by lazy {
+            listOf(
+                None,
+                Nasal,
+                Temporal,
+                Superior,
+                Inferior,
+                Axis,
+            )
+        }
 
         fun toName(position: PrismPosition?): String {
             return when(position) {

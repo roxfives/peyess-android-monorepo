@@ -98,7 +98,7 @@ fun PeyessDialogDatePicker(
         }) {
 
         datepicker(
-            title = stringResource(id = R.string.dialog_select_date_title),
+            title = title,
             initialDate = currDate,
         ) { date ->
             onSetDate(date)

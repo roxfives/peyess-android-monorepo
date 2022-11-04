@@ -150,6 +150,12 @@ class FramesMeasureViewModel @AssistedInject constructor(
             PositioningAnimationState.PositioningBaseRight ->
                 Parameter.BaseRight
 
+            PositioningAnimationState.PositioningBaseTop ->
+                Parameter.BaseTop
+
+            PositioningAnimationState.PositioningBaseBottom ->
+                Parameter.BaseBottom
+
             PositioningAnimationState.CheckError ->
                 Parameter.CheckMiddle
         }
@@ -1075,6 +1081,66 @@ class FramesMeasureViewModel @AssistedInject constructor(
                         (it.currentSpeed / 10).coerceAtLeast(slow)
             )
         )
+    }
+
+    fun moveBaseTopUp() = withState {
+        updateSpeedMovement()
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseTop = it.positioning.baseTop - it.currentSpeed
+            )
+        )
+//        viewState = viewState.copy(
+//            positioning = viewState.positioning.copy(
+//                baseTop = viewState.positioning.baseTop - currentSpeed
+//            )
+//        )
+    }
+
+    fun moveBaseTopDown() = withState {
+        updateSpeedMovement()
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseTop = it.positioning.baseTop + it.currentSpeed
+            )
+        )
+//        viewState = viewState.copy(
+//            positioning = viewState.positioning.copy(
+//                baseTop = viewState.positioning.baseTop + currentSpeed
+//            )
+//        )
+    }
+
+    fun moveBaseBottomUp() = withState {
+        updateSpeedMovement()
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseBottom = it.positioning.baseBottom - it.currentSpeed
+            )
+        )
+//        viewState = viewState.copy(
+//            positioning = viewState.positioning.copy(
+//                baseBottom = viewState.positioning.baseBottom - currentSpeed
+//            )
+//        )
+    }
+
+    fun moveBaseBottomDown() = withState {
+        updateSpeedMovement()
+
+        saleRepository.updatePositioning(
+            it.positioning.copy(
+                baseBottom = it.positioning.baseBottom + it.currentSpeed
+            )
+        )
+//        viewState = viewState.copy(
+//            positioning = viewState.positioning.copy(
+//                baseBottom = viewState.positioning.baseBottom + currentSpeed
+//            )
+//        )
     }
 
     fun moveCheckLeftRight() = withState {

@@ -71,6 +71,11 @@ data class FSMeasuring(
     val baseSize: Double = 0.0,
     @Keep
     @JvmField
+    @PropertyName("base_height")
+    val baseHeight: Double = 0.0,
+
+    @Keep
+    @JvmField
     @PropertyName("top_angle")
     val topAngle: Double = 0.0,
     @Keep

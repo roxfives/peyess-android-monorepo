@@ -4,6 +4,8 @@ fun isMoveUpVisible(animationState: PositioningAnimationState): Boolean {
     return when (animationState) {
         PositioningAnimationState.PositioningCheckBottom,
         PositioningAnimationState.PositioningCheckTop,
+        PositioningAnimationState.PositioningBaseBottom,
+        PositioningAnimationState.PositioningBaseTop,
         PositioningAnimationState.PositioningFramesBottom,
         PositioningAnimationState.PositioningFramesTop,
         PositioningAnimationState.PositioningOpticCenter ->

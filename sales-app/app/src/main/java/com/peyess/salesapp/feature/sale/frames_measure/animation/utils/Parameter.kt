@@ -8,6 +8,8 @@ sealed class Parameter {
     object AngleTop : Parameter()
     object BaseLeft : Parameter()
     object BaseRight : Parameter()
+    object BaseTop : Parameter()
+    object BaseBottom : Parameter()
     object CheckLeft : Parameter()
     object CheckRight : Parameter()
     object CheckTop : Parameter()
@@ -31,6 +33,10 @@ sealed class Parameter {
                 BaseLeft ->
                     Color.Yellow.toArgb()
                 BaseRight ->
+                    Color.Yellow.toArgb()
+                BaseTop ->
+                    Color.Yellow.toArgb()
+                BaseBottom ->
                     Color.Yellow.toArgb()
                 CheckBottom ->
                     Color.Yellow.toArgb()
@@ -68,6 +74,10 @@ sealed class Parameter {
                 BaseLeft ->
                     Color.Yellow.toArgb()
                 BaseRight ->
+                    Color.Yellow.toArgb()
+                BaseTop ->
+                    Color.Yellow.toArgb()
+                BaseBottom ->
                     Color.Yellow.toArgb()
                 CheckBottom ->
                     Color.Yellow.toArgb()

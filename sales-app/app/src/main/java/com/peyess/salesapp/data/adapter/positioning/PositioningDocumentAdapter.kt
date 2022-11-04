@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.adapter.positioning
 
-import com.google.firebase.Timestamp
 import com.peyess.salesapp.data.model.positioning.FSPositioning
 import com.peyess.salesapp.data.model.positioning.PositioningDocument
 import com.peyess.salesapp.utils.time.toTimestamp
@@ -19,10 +18,15 @@ fun PositioningDocument.toFSPositioning(): FSPositioning {
         patientDocument = patientDocument,
         patientName = patientName,
         eye = eye,
+
         baseLeft = baseLeft,
         baseLeftRotation = baseLeftRotation,
         baseRight = baseRight,
         baseRightRotation = baseRightRotation,
+
+        baseTop = baseTop,
+        baseBottom = baseBottom,
+
         topPointLength = topPointLength,
         topPointRotation = topPointRotation,
         bottomPointLength = bottomPointLength,

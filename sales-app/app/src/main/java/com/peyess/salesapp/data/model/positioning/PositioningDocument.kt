@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.model.positioning
 
-import com.google.firebase.Timestamp
 import java.time.ZonedDateTime
 
 data class PositioningDocument(
@@ -26,12 +25,13 @@ data class PositioningDocument(
     val eye: String = "",
 
     val baseLeft: Double = 0.0,
-
     val baseLeftRotation: Double = 0.0,
 
     val baseRight: Double = 0.0,
-
     val baseRightRotation: Double = 0.0,
+
+    val baseTop: Double = 0.0,
+    val baseBottom: Double = 0.0,
 
     val topPointLength: Double = 0.0,
 

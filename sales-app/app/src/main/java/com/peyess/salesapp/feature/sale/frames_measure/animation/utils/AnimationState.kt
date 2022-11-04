@@ -8,6 +8,8 @@ sealed class PositioningAnimationState {
     object PositioningCheckMiddle : PositioningAnimationState()
     object PositioningBaseLeft : PositioningAnimationState()
     object PositioningBaseRight : PositioningAnimationState()
+    object PositioningBaseTop : PositioningAnimationState()
+    object PositioningBaseBottom : PositioningAnimationState()
     object PositioningCheckLeft : PositioningAnimationState()
     object PositioningCheckRight : PositioningAnimationState()
     object PositioningCheckTop : PositioningAnimationState()
@@ -52,6 +54,12 @@ fun nextStateEyeLeft(curState: PositioningAnimationState): PositioningAnimationS
             PositioningAnimationState.PositioningBaseRight
 
         PositioningAnimationState.PositioningBaseRight ->
+            PositioningAnimationState.PositioningBaseTop
+
+        PositioningAnimationState.PositioningBaseTop ->
+            PositioningAnimationState.PositioningBaseBottom
+
+        PositioningAnimationState.PositioningBaseBottom ->
             PositioningAnimationState.PositioningCheckLeft
 
         PositioningAnimationState.PositioningCheckLeft ->
@@ -117,8 +125,14 @@ fun previousStateLeftEye(curState: PositioningAnimationState): PositioningAnimat
         PositioningAnimationState.PositioningBaseRight ->
             PositioningAnimationState.PositioningBaseLeft
 
-        PositioningAnimationState.PositioningCheckLeft ->
+        PositioningAnimationState.PositioningBaseTop ->
             PositioningAnimationState.PositioningBaseRight
+
+        PositioningAnimationState.PositioningBaseBottom ->
+            PositioningAnimationState.PositioningBaseTop
+
+        PositioningAnimationState.PositioningCheckLeft ->
+            PositioningAnimationState.PositioningBaseBottom
 
         PositioningAnimationState.PositioningCheckRight ->
             PositioningAnimationState.PositioningCheckLeft
@@ -187,6 +201,12 @@ fun nextStateRightEye(curState: PositioningAnimationState): PositioningAnimation
             PositioningAnimationState.PositioningBaseRight
 
         PositioningAnimationState.PositioningBaseRight ->
+            PositioningAnimationState.PositioningBaseTop
+
+        PositioningAnimationState.PositioningBaseTop ->
+            PositioningAnimationState.PositioningBaseBottom
+
+        PositioningAnimationState.PositioningBaseBottom->
             PositioningAnimationState.PositioningCheckLeft
 
         PositioningAnimationState.PositioningCheckLeft ->
@@ -252,8 +272,14 @@ fun previousStateRightEye(curState: PositioningAnimationState): PositioningAnima
         PositioningAnimationState.PositioningBaseRight ->
             PositioningAnimationState.PositioningBaseLeft
 
-        PositioningAnimationState.PositioningCheckLeft ->
+        PositioningAnimationState.PositioningBaseTop ->
             PositioningAnimationState.PositioningBaseRight
+
+        PositioningAnimationState.PositioningBaseBottom ->
+            PositioningAnimationState.PositioningBaseTop
+
+        PositioningAnimationState.PositioningCheckLeft ->
+            PositioningAnimationState.PositioningBaseBottom
 
         PositioningAnimationState.PositioningCheckRight ->
             PositioningAnimationState.PositioningCheckLeft

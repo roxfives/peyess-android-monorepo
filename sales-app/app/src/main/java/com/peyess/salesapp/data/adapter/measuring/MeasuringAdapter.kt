@@ -36,6 +36,8 @@ fun Measuring.toMeasuringDocument(
         eye = eye,
 
         baseSize = baseSize,
+        baseHeight = baseHeight,
+
         topAngle = topAngle,
         topPoint = topPoint,
         bottomAngle = bottomAngle,

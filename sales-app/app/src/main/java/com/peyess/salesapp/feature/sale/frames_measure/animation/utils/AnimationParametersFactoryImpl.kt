@@ -16,6 +16,8 @@ class AnimationParametersFactoryImpl(
         Parameter.AngleTop,
         Parameter.BaseLeft,
         Parameter.BaseRight,
+        Parameter.BaseTop,
+        Parameter.BaseBottom,
         Parameter.CheckLeft,
         Parameter.CheckRight,
         Parameter.CheckTop,

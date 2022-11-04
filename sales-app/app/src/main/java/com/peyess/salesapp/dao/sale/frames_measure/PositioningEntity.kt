@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import kotlin.math.abs
@@ -25,10 +26,13 @@ private const val screenHeight = 3264.0
 //    ]
 )
 data class PositioningEntity(
-    @ColumnInfo(name = "so_id") val soId: String = "",
-    @ColumnInfo(name = "eye") val eye: Eye = Eye.None,
+    @ColumnInfo(name = "so_id")
+    val soId: String = "",
+    @ColumnInfo(name = "eye")
+    val eye: Eye = Eye.None,
 
-    @ColumnInfo(name = "picture") val picture: Uri = Uri.EMPTY,
+    @ColumnInfo(name = "picture")
+    val picture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "rotation")
     val rotation: Double = 0.0,
@@ -44,6 +48,11 @@ data class PositioningEntity(
     val baseRight: Double = (if (eye == Eye.Left) 0.65 else 0.35) * screenWidth,
     @ColumnInfo(name = "base_right_rotation")
     val baseRightRotation: Double = 0.0,
+
+    @ColumnInfo(name = "base_top")
+    val baseTop: Double = 0.41 * screenHeight,
+    @ColumnInfo(name = "base_bottom")
+    val baseBottom: Double = 0.52 * screenHeight,
 
     @ColumnInfo(name = "top_point_length")
     val topPointLength: Double = 245.0,

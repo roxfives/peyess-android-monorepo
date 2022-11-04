@@ -24,7 +24,10 @@ fun MeasuringDocument.toFSMeasuring(): FSMeasuring {
         patientDocument = patientDocument,
         patientName = patientName,
         eye = eyeName(eye),
+
         baseSize = baseSize,
+        baseHeight = baseHeight,
+
         topAngle = topAngle,
         topPoint = topPoint,
         bottomAngle = bottomAngle,

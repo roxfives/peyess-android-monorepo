@@ -13,6 +13,7 @@ data class Measuring(
     val eye: Eye = Eye.None,
 
     val baseSize: Double = 0.0,
+    val baseHeight: Double = 0.0,
 
     val topAngle: Double = 0.0,
     val topPoint: Double = 0.0,
@@ -89,6 +90,7 @@ fun PositioningEntity.toMeasuring(): Measuring {
         eye = eye,
 
         baseSize = abs(baseRight - baseLeft),
+        baseHeight = abs(baseBottom - baseTop),
 
         topAngle = topPointRotation,
         topPoint = hypot(topPointBase, topPointHeight),

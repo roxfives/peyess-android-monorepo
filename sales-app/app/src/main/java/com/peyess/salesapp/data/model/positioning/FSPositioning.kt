@@ -84,6 +84,13 @@ data class FSPositioning(
     val baseRightRotation: Double = 0.0,
 
     @JvmField
+    @PropertyName("base_top")
+    val baseTop: Double = 0.0,
+    @JvmField
+    @PropertyName("base_bottom")
+    val baseBottom: Double = 0.0,
+
+    @JvmField
     @Keep
     @PropertyName("top_point_length")
     val topPointLength: Double = 0.0,

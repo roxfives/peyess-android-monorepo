@@ -34,6 +34,10 @@ fun PositioningEntity.toPositioningDocument(
         baseLeftRotation = baseLeftRotation,
         baseRight = baseRight,
         baseRightRotation = baseRightRotation,
+
+        baseTop = baseTop,
+        baseBottom = baseBottom,
+
         topPointLength = topPointLength,
         topPointRotation = topPointRotation,
         bottomPointLength = bottomPointLength,

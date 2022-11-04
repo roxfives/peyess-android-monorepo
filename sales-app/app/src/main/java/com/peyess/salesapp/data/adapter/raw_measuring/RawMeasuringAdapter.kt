@@ -18,6 +18,7 @@ fun RawMeasuring.toMeasuring(): Measuring {
         eye = eye,
 
         baseSize = baseSize,
+        baseHeight = baseHeight,
 
         topAngle = topAngle,
         topPoint = topPoint,

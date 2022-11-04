@@ -5,7 +5,8 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.state.HeadState
 
-fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye): LottieCompositionSpec.RawRes {
+fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye):
+        LottieCompositionSpec.RawRes {
     if (eye == Eye.None) {
         return LottieCompositionSpec.RawRes(R.raw.lottie_measuring_adjust_left)
     }
@@ -120,6 +121,18 @@ fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye): LottieComp
             } else {
                 LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_right_positioning_right)
             }
+        PositioningAnimationState.PositioningBaseTop ->
+            if (eye == Eye.Left) {
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_left_positioning_left)
+            } else {
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_left_positioning_right)
+            }
+        PositioningAnimationState.PositioningBaseBottom ->
+            if (eye == Eye.Left) {
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_right_positioning_left)
+            } else {
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_right_positioning_right)
+            }
         PositioningAnimationState.PositioningTopPointAngle ->
             if (eye == Eye.Left) {
                 LottieCompositionSpec.RawRes(R.raw.lottie_measuring_point_top_angle_positioning_left)
@@ -148,7 +161,7 @@ fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye): LottieComp
 }
 
 fun headCompositionFor(state: HeadState):
-    LottieCompositionSpec.RawRes {
+        LottieCompositionSpec.RawRes {
     return when (state) {
         HeadState.Idle ->
             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_looking_for_someone)

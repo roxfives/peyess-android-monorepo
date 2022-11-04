@@ -79,6 +79,41 @@ class MediatorFactoryImpl : MediatorFactory {
                     { framesMeasureViewModel.moveBaseRightRight() },
                 )
 
+            Parameter.BaseTop ->
+                VerticalMediatorImpl(
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardRotation },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardMiddleX },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.positioning.baseTop },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardLength },
+
+                    Parameter.activeColor(parameter),
+                    Parameter.inactiveColor(parameter),
+
+                    { framesMeasureViewModel.moveBaseTopUp() },
+                    { framesMeasureViewModel.moveBaseTopDown() },
+                )
+            Parameter.BaseBottom ->
+                VerticalMediatorImpl(
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardRotation },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardMiddleX },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.positioning.baseBottom },
+                    framesMeasureViewModel
+                        .stateFlow.map { it.standardLength },
+
+                    Parameter.activeColor(parameter),
+                    Parameter.inactiveColor(parameter),
+
+                    { framesMeasureViewModel.moveBaseBottomUp() },
+                    { framesMeasureViewModel.moveBaseBottomDown() },
+                )
+
             Parameter.CheckBottom ->
                 VerticalMediatorImpl(
                     framesMeasureViewModel.stateFlow.map { it.standardRotation },

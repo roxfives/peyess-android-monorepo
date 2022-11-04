@@ -23,6 +23,12 @@ class MeasuringParameterFactoryImpl() : MeasuringParameterFactory {
             Parameter.BaseRight ->
                 VerticalRect(mediator, coroutineScope)
 
+            Parameter.BaseTop ->
+                HorizontalRect(mediator, coroutineScope)
+
+            Parameter.BaseBottom ->
+                HorizontalRect(mediator, coroutineScope)
+
             Parameter.CheckBottom ->
                 HorizontalRect(mediator, coroutineScope)
 

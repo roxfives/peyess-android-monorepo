@@ -25,6 +25,8 @@ data class MeasuringDocument(
     val eye: Eye = Eye.None,
 
     val baseSize: Double = 0.0,
+    val baseHeight: Double = 0.0,
+
     val topAngle: Double = 0.0,
     val topPoint: Double = 0.0,
     val bottomAngle: Double = 0.0,

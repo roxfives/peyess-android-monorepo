@@ -147,6 +147,9 @@ dependencies {
 
     // Misc libs ----------------------------------------------------------------------------------
 
+    // Star rating
+    implementation("com.github.a914-gowtham:compose-ratingbar:1.2.4")
+
     // Zoom layout
     implementation("com.otaliastudios:zoomlayout:$zoomLayoutVersion")
 

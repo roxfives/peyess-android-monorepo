@@ -375,7 +375,8 @@
     <string name="wake_up">Acorda</string>
     <string name="sleep">Dorme</string>
 
-    <string name="user_profile_previous_experience_classification">Por favor, classifique sua experiência com o seu óculos anteior</string>
+    <!--    <string name="user_profile_previous_experience_classification">Por favor, classifique sua experiência com o seu óculos anteior</string>-->
+    <string name="user_profile_previous_experience_classification">Por favor, avalie a sua experiência com o seu óculos anteior</string>
 
     <string name="user_profile_sixth_step">Ajuste a sua intensidade de uso:</string>
     <string name="phone_or_tablet">Celular ou tablet</string>

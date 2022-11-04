@@ -31,7 +31,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun PeyessDatePicker(
+fun PeyessDialogDatePicker(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     title: String = "",

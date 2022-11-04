@@ -25,7 +25,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -76,7 +75,7 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexNam
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.ui.component.date.PeyessDatePicker
+import com.peyess.salesapp.ui.component.date.PeyessDialogDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessNextStep
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -91,7 +90,6 @@ import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 private const val pictureSize = 256
 
@@ -366,7 +364,7 @@ private fun BasicInfoScreenImpl(
 
         Spacer(modifier = Modifier.height(defaultSpacerSize))
 
-        PeyessDatePicker(
+        PeyessDialogDatePicker(
             modifier = Modifier.minimumWidthModifier(
                 state = minWidthSelectableState,
                 density = density,

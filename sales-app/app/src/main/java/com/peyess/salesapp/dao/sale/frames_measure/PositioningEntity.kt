@@ -99,9 +99,9 @@ data class PositioningEntity(
     val opticCenterY: Double = 0.44 * screenHeight,
 
     @ColumnInfo(name = "height")
-    val realParamHeight: Double = 40.0,
+    val realParamHeight: Double = 38.7,
     @ColumnInfo(name = "width")
-    val realParamWidth: Double = 30.0,
+    val realParamWidth: Double = 28.3,
 
     @ColumnInfo(name = "proportion_to_picture_horizontal")
     val proportionToPictureHorizontal: Double = 0.0,

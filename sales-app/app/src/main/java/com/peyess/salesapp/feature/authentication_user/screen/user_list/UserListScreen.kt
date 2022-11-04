@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,15 +20,19 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Details
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,6 +65,7 @@ import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.Us
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.extentions.activity
 
 @Composable
 fun UserListScreen(
@@ -234,6 +240,33 @@ private fun Header(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val context = LocalContext.current
+
+            Button(onClick = {
+                context.activity()?.finishAffinity()
+            }) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Filled.Logout,
+                        contentDescription = "",
+                    )
+
+                    Text(text = stringResource(id = R.string.home_btn_exit))
+                }
+            }
+        }
     }
 }
 
@@ -290,6 +323,14 @@ fun UserBox(
         ) {
             Text(text = stringResource(id = R.string.btn_enter))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun HeaderPreview() {
+    SalesAppTheme {
+        Header()
     }
 }
 

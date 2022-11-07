@@ -155,7 +155,7 @@ private fun SetFramesScreenImpl(
         PeyessChipGroup(
             keepSameWidth = false,
             items = FramesType.listOfPositions,
-            itemName = { FramesType.toName(it) },
+            itemName = { FramesType.toName(it ?: FramesType.None) },
             selected = framesType,
             onSelectedChanged = onFramesTypeChange,
         )

@@ -20,12 +20,12 @@ import com.peyess.salesapp.data.adapter.payment.toPaymentDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
+import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductsSoldDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
@@ -49,6 +49,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 private data class ProductSet(
@@ -114,8 +117,20 @@ class ServiceOrderUploader constructor(
             ""
         }
 
+        val instant: Instant = prescriptionPictureEntity!!
+            .prescriptionDate
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+        val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        val zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault())
+
         return so.copy(
             prescriptionId = prescriptionId,
+
+            isCopy = prescriptionPictureEntity!!.isCopy,
+            professionalName = prescriptionPictureEntity!!.professionalName,
+            professionalId = prescriptionPictureEntity!!.professionalId,
+            prescriptionDate = zonedDateTime,
 
             lCylinder = prescriptionDataEntity!!.cylindricalLeft,
             lSpheric = prescriptionDataEntity!!.sphericalLeft,
@@ -291,21 +306,21 @@ class ServiceOrderUploader constructor(
             lMeasuringId = measLeftId,
             rMeasuringId = measRightId,
 
-            lIpd = measuringLeft.ipd,
-            lBridge = measuringLeft.bridge,
-            lDiameter = measuringLeft.diameter,
-            lHe = measuringLeft.he,
-            lHorizontalBridgeHoop = measuringLeft.horizontalBridgeHoop,
-            lHorizontalHoop = measuringLeft.horizontalHoop,
-            lVerticalHoop = measuringLeft.verticalHoop,
+            lIpd = measuringLeft.fixedIpd,
+            lBridge = measuringLeft.fixedBridge,
+            lDiameter = measuringLeft.fixedDiameter,
+            lHe = measuringLeft.fixedHe,
+            lHorizontalBridgeHoop = measuringLeft.fixedHorizontalBridgeHoop,
+            lHorizontalHoop = measuringLeft.fixedHHoop,
+            lVerticalHoop = measuringLeft.fixedVHoop,
 
-            rIpd = measuringRight.ipd,
-            rBridge = measuringRight.bridge,
-            rDiameter = measuringRight.diameter,
-            rHe = measuringRight.he,
-            rHorizontalBridgeHoop = measuringRight.horizontalBridgeHoop,
-            rHorizontalHoop = measuringRight.horizontalHoop,
-            rVerticalHoop = measuringRight.verticalHoop,
+            rIpd = measuringRight.fixedIpd,
+            rBridge = measuringRight.fixedBridge,
+            rDiameter = measuringRight.fixedDiameter,
+            rHe = measuringRight.fixedHe,
+            rHorizontalBridgeHoop = measuringRight.fixedHorizontalBridgeHoop,
+            rHorizontalHoop = measuringRight.fixedHHoop,
+            rVerticalHoop = measuringRight.fixedVHoop,
         )
     }
 
@@ -343,7 +358,7 @@ class ServiceOrderUploader constructor(
             .collect { witness = it }
 
         if (user == null || responsible == null) {
-            error("User or responsible is null: " +
+            error("User (${user?.id}) or responsible (${responsible?.id}) is null: " +
                     "user == $user and responsible == $responsible")
         }
 
@@ -352,16 +367,43 @@ class ServiceOrderUploader constructor(
             clientName = user!!.name,
             clientPicture = user!!.picture.toString(),
             clientUid = user!!.id,
+            clientBirthday = user!!.birthday,
+            clientPhone = user!!.phone,
+            clientCellphone = user!!.cellphone,
+            clientNeighborhood = user!!.neighborhood,
+            clientStreet = user!!.street,
+            clientCity = user!!.city,
+            clientState = user!!.state,
+            clientHouseNumber = user!!.houseNumber,
+            clientZipcode = user!!.zipCode,
 
             responsibleDocument = responsible!!.document,
             responsibleName = responsible!!.name,
             responsiblePicture = responsible!!.picture.toString(),
             responsibleUid = responsible!!.id,
+            responsibleBirthday = responsible!!.birthday,
+            responsiblePhone = responsible!!.phone,
+            responsibleCellphone = responsible!!.cellphone,
+            responsibleNeighborhood = responsible!!.neighborhood,
+            responsibleStreet = responsible!!.street,
+            responsibleCity = responsible!!.city,
+            responsibleState = responsible!!.state,
+            responsibleHouseNumber = responsible!!.houseNumber,
+            responsibleZipcode = responsible!!.zipCode,
 
             witnessDocument = witness?.document ?: "",
             witnessName = witness?.name ?: "",
             witnessPicture = (witness?.picture ?: "").toString(),
             witnessUid = witness?.id ?: "",
+            witnessBirthday = witness?.birthday ?: ZonedDateTime.now(),
+            witnessPhone = witness?.phone ?: "",
+            witnessCellphone = witness?.cellphone ?: "",
+            witnessNeighborhood = witness?.neighborhood ?: "",
+            witnessStreet = witness?.street ?: "",
+            witnessCity = witness?.city ?: "",
+            witnessState = witness?.state ?: "",
+            witnessHouseNumber = witness?.houseNumber ?: "",
+            witnessZipcode = witness?.zipCode ?: "",
         )
     }
 
@@ -382,6 +424,8 @@ class ServiceOrderUploader constructor(
 
         return so.copy(
             salespersonUid = user!!.id,
+            salespersonName = user!!.name,
+
             soldBy = user!!.id,
             measureConfirmedBy = user!!.id,
             discountAllowedBy = user!!.id,
@@ -397,10 +441,10 @@ class ServiceOrderUploader constructor(
     private suspend fun addProductsData(so: ServiceOrderDocument): ServiceOrderDocument {
         var total = 0.0
 
-        var lensDesc = ProductSoldDescriptionDocument()
-        var coloringDesc = ProductSoldDescriptionDocument()
-        var treatmentDesc = ProductSoldDescriptionDocument()
-        var framesDesc = ProductSoldDescriptionDocument()
+        var lens = LocalLensEntity()
+        var coloring = LocalColoringEntity()
+        var treatment = LocalTreatmentEntity()
+        var frames = FramesEntity()
 
         saleRepository
             .pickedProduct()
@@ -415,15 +459,10 @@ class ServiceOrderUploader constructor(
                 )
             }
             .map {
-                val lens = it.lens
-                val coloring = it.coloring
-                val treatment = it.treatment
-                val frames = it.frames
-
-                lensDesc = lens.toDescription()
-                coloringDesc = coloring.toDescription()
-                treatmentDesc = treatment.toDescription()
-                framesDesc = frames.toDescription()
+                lens = it.lens
+                coloring = it.coloring
+                treatment = it.treatment
+                frames = it.frames
 
                 val framesValue = if (frames.areFramesNew) {
                     frames.value
@@ -435,10 +474,10 @@ class ServiceOrderUploader constructor(
                 var totalToPay = lens.price + framesValue
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloringDesc.price
+                    totalToPay += coloring.price
                 }
                 if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatmentDesc.price
+                    totalToPay += frames.value
                 }
 
                 if (coloring.suggestedPrice > 0) {
@@ -459,15 +498,19 @@ class ServiceOrderUploader constructor(
             samePurchaseSo = listOf(so.id),
 
             total = total,
-//            products = ProductsSoldDocument(
-//                lenses = mapOf(lensDesc.id to lensDesc),
-//                colorings = mapOf(coloringDesc.id to coloringDesc),
-//                treatments = mapOf(treatmentDesc.id to treatmentDesc),
-//
-//                frames = framesDesc,
-//
-//                misc = emptyMap(),
-//            )
+            hasOwnFrames = !frames.areFramesNew,
+            leftProducts = ProductSoldEyeSetDocument(
+                lenses = lens.toDescription(),
+                colorings = coloring.toDescription(),
+                treatments = treatment.toDescription(),
+            ),
+            rightProducts = ProductSoldEyeSetDocument(
+                lenses = lens.toDescription(),
+                colorings = coloring.toDescription(),
+                treatments = treatment.toDescription(),
+            ),
+            framesProducts = frames.toDescription(),
+            miscProducts = emptyList(),
         )
     }
 
@@ -492,15 +535,6 @@ class ServiceOrderUploader constructor(
                 payments.addAll(it)
             }
 
-        var frames: FramesEntity? = null
-        saleRepository
-            .currentFramesData()
-            .take(1)
-            .collect {
-                frames = it
-            }
-
-
         return PurchaseDocument(
             id = id,
 
@@ -520,14 +554,33 @@ class ServiceOrderUploader constructor(
             responsibleName = serviceOrder.responsibleName,
             responsiblePicture = serviceOrder.responsiblePicture,
             responsibleUid = serviceOrder.responsibleUid,
+            responsibleBirthday = serviceOrder.responsibleBirthday,
+            responsiblePhone = serviceOrder.responsiblePhone,
+            responsibleCellphone = serviceOrder.responsibleCellphone,
+            responsibleNeighborhood = serviceOrder.responsibleNeighborhood,
+            responsibleStreet = serviceOrder.responsibleStreet,
+            responsibleCity = serviceOrder.responsibleCity,
+            responsibleState = serviceOrder.responsibleState,
+            responsibleHouseNumber = serviceOrder.responsibleHouseNumber,
+            responsibleZipcode = serviceOrder.responsibleZipcode,
 
             hasWitness = serviceOrder.hasWitness,
             witnessDocument = serviceOrder.witnessDocument,
             witnessName = serviceOrder.witnessName,
             witnessPicture = serviceOrder.witnessPicture,
             witnessUid = serviceOrder.witnessUid,
+            witnessBirthday = serviceOrder.witnessBirthday,
+            witnessPhone = serviceOrder.witnessPhone,
+            witnessCellphone = serviceOrder.witnessCellphone,
+            witnessNeighborhood = serviceOrder.witnessNeighborhood,
+            witnessStreet = serviceOrder.witnessStreet,
+            witnessCity = serviceOrder.witnessCity,
+            witnessState = serviceOrder.witnessState,
+            witnessHouseNumber = serviceOrder.witnessHouseNumber,
+            witnessZipcode = serviceOrder.witnessZipcode,
 
             salespersonUid = serviceOrder.salespersonUid,
+            salespersonName = serviceOrder.salespersonName,
 
             isDiscountPerProduct = false,// serviceOrder.is_discount_per_product,
             overallDiscount = DiscountDescriptionDocument(), // serviceOrder.overall_discount,
@@ -545,7 +598,7 @@ class ServiceOrderUploader constructor(
             soStates = mapOf(serviceOrder.id to SOState.fromName(serviceOrder.state)),
             soIds = listOf(serviceOrder.id),
             soPreviews = mapOf(
-//                serviceOrder.id to serviceOrder.toPreview(frames?.areFramesNew == false)
+                serviceOrder.id to serviceOrder.toPreview()
             ),
             soWithIssues = emptyList(),
             hasRectifiedSo = false,

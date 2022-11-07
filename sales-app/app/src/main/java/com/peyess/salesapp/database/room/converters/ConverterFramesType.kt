@@ -14,8 +14,8 @@ class ConverterFramesType {
 
     @TypeConverter
     fun toName(type: FramesType?): String? {
-        Timber.i("Converting $type to ${FramesType.toName(type)}")
+        Timber.i("Converting $type to ${FramesType.toName(type ?: FramesType.None)}")
 
-        return FramesType.toName(type)
+        return FramesType.toName(type ?: FramesType.None)
     }
 }

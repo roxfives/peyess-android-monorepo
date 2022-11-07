@@ -32,7 +32,7 @@ sealed class FramesType {
             )
         }
 
-        fun toName(position: FramesType?): String {
+        fun toName(position: FramesType): String {
             Timber.i("Translating position $position")
 
             return when(position) {
@@ -42,7 +42,7 @@ sealed class FramesType {
                 MetalEnclosed -> "Metal Fechado"
                 MetalNylon -> "Metal Nylon"
                 MetalScrewed -> "Metal Parafusado"
-                None, null -> "None"
+                None-> "None"
             }
         }
 

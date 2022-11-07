@@ -1,19 +1,12 @@
 package com.peyess.salesapp.data.adapter.service_order
 
-import com.peyess.salesapp.data.adapter.product_sold_desc.toDenormalizedPurchaseDescription
 import com.peyess.salesapp.data.adapter.product_sold_desc.toFSProductSoldFramesDescription
 import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescription
-import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldDescriptionDocument
-import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
-import com.peyess.salesapp.data.adapter.products_sold.toFSProductsSold
-import com.peyess.salesapp.data.adapter.products_sold.toProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.purchase.DenormalizedPurchaseDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.utils.time.toTimestamp
-import com.peyess.salesapp.utils.time.toZonedDateTime
 
 fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
     return FSServiceOrder(
@@ -36,7 +29,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         clientCity = clientCity,
         clientState = clientState,
         clientHouseNumber = clientHouseNumber,
-        clientZipCode = clientZipCode,
+        clientZipcode = clientZipcode,
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
@@ -50,7 +43,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         responsibleCity = responsibleCity,
         responsibleState = responsibleState,
         responsibleHouseNumber = responsibleHouseNumber,
-        responsibleZipCode = responsibleZipCode,
+        responsibleZipcode = responsibleZipcode,
 
         hasWitness = hasWitness,
         witnessUid = witnessUid,
@@ -65,7 +58,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         witnessCity = witnessCity,
         witnessState = witnessState,
         witnessHouseNumber = witnessHouseNumber,
-        witnessZipCode = witnessZipCode,
+        witnessZipcode = witnessZipcode,
 
         hasTakeaway = hasTakeaway,
         takeawayName = takeawayName,
@@ -144,24 +137,15 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
     )
 }
 
-//fun ServiceOrderDocument.toPreview(isOwnFrames: Boolean): DenormalizedServiceOrderDescDocument {
-//    return DenormalizedServiceOrderDescDocument(
-//        lenses = products.lenses.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
-//        colorings = products.colorings.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
-//        treatments = products.treatments.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
-//
-//        frames = if (isOwnFrames) {
-//            DenormalizedPurchaseDescriptionDocument(
-//                id = "",
-//                units = 0,
-//
-//                // TODO: internationalize (and use string resource)
-//                description = "Aro próprio",
-//            )
-//        } else {
-//            products.frames.toDenormalizedPurchaseDescription()
-//        },
-//
-//        misc = products.misc.map { (_, v) -> v.toDenormalizedPurchaseDescription() },
-//    )
-//}
+fun ServiceOrderDocument.toPreview(): DenormalizedServiceOrderDescDocument {
+    return DenormalizedServiceOrderDescDocument(
+        hasOwnFrames = hasOwnFrames,
+
+        leftProducts = leftProducts,
+        rightProducts = rightProducts,
+
+        framesProducts = framesProducts,
+
+        miscProducts = miscProducts,
+    )
+}

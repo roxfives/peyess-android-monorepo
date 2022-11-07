@@ -98,7 +98,7 @@ data class FSServiceOrder(
     @Keep
     @JvmField
     @PropertyName("client_zipcode")
-    val clientZipCode: String = "",
+    val clientZipcode: String = "",
 
     @Keep
     @JvmField
@@ -151,7 +151,7 @@ data class FSServiceOrder(
     @Keep
     @JvmField
     @PropertyName("responsible_zipcode")
-    val responsibleZipCode: String = "",
+    val responsibleZipcode: String = "",
 
 
     @Keep
@@ -209,7 +209,7 @@ data class FSServiceOrder(
     @Keep
     @JvmField
     @PropertyName("witness_zipcode")
-    val witnessZipCode: String = "",
+    val witnessZipcode: String = "",
 
     @Keep
     @JvmField

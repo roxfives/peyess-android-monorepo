@@ -30,7 +30,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         clientCity = clientCity,
         clientState = clientState,
         clientHouseNumber = clientHouseNumber,
-        clientZipCode = clientZipCode,
+        clientZipcode = clientZipcode,
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
@@ -44,7 +44,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         responsibleCity = responsibleCity,
         responsibleState = responsibleState,
         responsibleHouseNumber = responsibleHouseNumber,
-        responsibleZipCode = responsibleZipCode,
+        responsibleZipcode = responsibleZipcode,
 
         hasWitness = hasWitness,
         witnessUid = witnessUid,
@@ -59,7 +59,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         witnessCity = witnessCity,
         witnessState = witnessState,
         witnessHouseNumber = witnessHouseNumber,
-        witnessZipCode = witnessZipCode,
+        witnessZipcode = witnessZipcode,
 
         hasTakeaway = hasTakeaway,
         takeawayName = takeawayName,

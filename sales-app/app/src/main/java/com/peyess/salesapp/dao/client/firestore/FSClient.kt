@@ -98,10 +98,6 @@ data class FSClient(
     @PropertyName("stores_ids")
     val storesIds: List<String> = emptyList(),
 
-    @JvmField
-    @Keep
-    @PropertyName("short_address")
-    val shortAddress: String = "",
     @Keep
     @JvmField
     @PropertyName("doc_version")

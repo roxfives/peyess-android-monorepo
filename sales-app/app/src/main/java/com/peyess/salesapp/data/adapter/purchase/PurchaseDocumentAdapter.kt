@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.adapter.purchase
 
+import com.google.firebase.Timestamp
 import com.peyess.salesapp.data.adapter.client.toFSDenormalizedClient
 import com.peyess.salesapp.data.adapter.payment.toFSPayment
 import com.peyess.salesapp.data.adapter.purchase_discount_desc.toFSDiscountDescription
@@ -19,18 +20,37 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         clientUids = clientUids,
         clients = clients.map { it.toFSDenormalizedClient() },
 
+        responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,
         responsiblePicture = responsiblePicture,
-        responsibleUid = responsibleUid,
+        responsibleBirthday = responsibleBirthday.toTimestamp(),
+        responsiblePhone = responsiblePhone,
+        responsibleCellphone = responsibleCellphone,
+        responsibleNeighborhood = responsibleNeighborhood,
+        responsibleStreet = responsibleStreet,
+        responsibleCity = responsibleCity,
+        responsibleState = responsibleState,
+        responsibleHouseNumber = responsibleHouseNumber,
+        responsibleZipcode = responsibleZipcode,
 
         hasWitness = hasWitness,
+        witnessUid = witnessUid,
         witnessDocument = witnessDocument,
         witnessName = witnessName,
         witnessPicture = witnessPicture,
-        witnessUid = witnessUid,
+        witnessBirthday = witnessBirthday.toTimestamp(),
+        witnessPhone = witnessPhone,
+        witnessCellphone = witnessCellphone,
+        witnessNeighborhood = witnessNeighborhood,
+        witnessStreet = witnessStreet,
+        witnessCity = witnessCity,
+        witnessState = witnessState,
+        witnessHouseNumber = witnessHouseNumber,
+        witnessZipcode = witnessZipcode,
 
         salespersonUid = salespersonUid,
+        salespersonName = salespersonName,
 
         isDiscountPerProduct = isDiscountPerProduct,
         overallDiscount = overallDiscount.toFSDiscountDescription(),

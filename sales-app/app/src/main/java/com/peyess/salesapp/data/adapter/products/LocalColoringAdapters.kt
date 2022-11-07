@@ -13,9 +13,9 @@ fun LocalColoringEntity.toDescription(): ProductSoldDescriptionDocument {
     // TODO: update to local price
     return ProductSoldDescriptionDocument(
         id = id,
-        units = 2,
+        units = 1,
         nameDisplay = name(),
-        price = suggestedPrice,
+        price = suggestedPrice / 2.0,
         discount = DiscountDescriptionDocument(),
     )
 }

@@ -8,7 +8,7 @@ import java.time.ZonedDateTime
 data class ServiceOrderDocument(
     val id: String = "",
 
-    val hid: String = "", // Human-friendly id (has to be unique in each store),
+    val hid: String = "", // Human-friendly id (has to be unique in each store)
     val storeId: String = "",
     val storeIds: List<String> = emptyList(),
 
@@ -29,7 +29,7 @@ data class ServiceOrderDocument(
     val clientCity: String = "",
     val clientState: String = "",
     val clientHouseNumber: String = "",
-    val clientZipCode: String = "",
+    val clientZipcode: String = "",
 
     val responsibleUid: String = "",
     val responsibleDocument: String = "",
@@ -43,10 +43,10 @@ data class ServiceOrderDocument(
     val responsibleCity: String = "",
     val responsibleState: String = "",
     val responsibleHouseNumber: String = "",
-    val responsibleZipCode: String = "",
+    val responsibleZipcode: String = "",
 
-    val witnessUid: String = "",
     val hasWitness: Boolean = false,
+    val witnessUid: String = "",
     val witnessDocument: String = "",
     val witnessName: String = "",
     val witnessPicture: String = "",
@@ -58,7 +58,7 @@ data class ServiceOrderDocument(
     val witnessCity: String = "",
     val witnessState: String = "",
     val witnessHouseNumber: String = "",
-    val witnessZipCode: String = "",
+    val witnessZipcode: String = "",
 
     val hasTakeaway: Boolean = false,
     val takeawayName: String = "",
@@ -80,7 +80,6 @@ data class ServiceOrderDocument(
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),
 
-//    val products: ProductsSoldDocument = ProductsSoldDocument(),
     val hasOwnFrames: Boolean = false,
     val leftProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
     val rightProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
@@ -113,14 +112,13 @@ data class ServiceOrderDocument(
     val rPrismPos: String = "",
 
     // Denormilized measuring data
-    val lIpd: Double = 0.0,
-
     val lPositioningId: String = "",
     val rPositioningId: String = "",
 
     val lMeasuringId: String = "",
     val rMeasuringId: String = "",
 
+    val lIpd: Double = 0.0,
     val lBridge: Double = 0.0,
     val lDiameter: Double = 0.0,
     val lHe: Double = 0.0,
@@ -129,7 +127,6 @@ data class ServiceOrderDocument(
     val lVerticalHoop: Double = 0.0,
 
     val rIpd: Double = 0.0,
-
     val rBridge: Double = 0.0,
     val rDiameter: Double = 0.0,
     val rHe: Double = 0.0,

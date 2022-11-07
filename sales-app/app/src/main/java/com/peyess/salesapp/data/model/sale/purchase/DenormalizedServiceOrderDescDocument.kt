@@ -1,12 +1,17 @@
 package com.peyess.salesapp.data.model.sale.purchase
 
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
+
 
 data class DenormalizedServiceOrderDescDocument(
-    val lenses: List<DenormalizedPurchaseDescriptionDocument> = emptyList(),
-    val colorings: List<DenormalizedPurchaseDescriptionDocument> = emptyList(),
-    val treatments: List<DenormalizedPurchaseDescriptionDocument> = emptyList(),
+    val hasOwnFrames: Boolean = false,
 
-    val frames: DenormalizedPurchaseDescriptionDocument = DenormalizedPurchaseDescriptionDocument(),
+    val leftProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
+    val rightProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
 
-    val misc: List<DenormalizedPurchaseDescriptionDocument> = emptyList(),
+    val framesProducts: ProductSoldFramesDescriptionDocument = ProductSoldFramesDescriptionDocument(),
+
+    val miscProducts: List<ProductSoldDescriptionDocument> = emptyList(),
 )

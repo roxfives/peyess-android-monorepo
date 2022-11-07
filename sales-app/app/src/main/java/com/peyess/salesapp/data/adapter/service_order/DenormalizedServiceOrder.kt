@@ -1,17 +1,24 @@
 package com.peyess.salesapp.data.adapter.service_order
 
+import com.peyess.salesapp.data.adapter.product_sold_desc.toFSProductSoldFramesDescription
+import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescription
+import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.adapter.purchase_desc.toFSDenormalizedPurchaseDescription
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSDenormalizedServiceOrderDesc
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 
 fun DenormalizedServiceOrderDescDocument.toFSDenormalizedServiceOrderDesc(): FSDenormalizedServiceOrderDesc {
     return FSDenormalizedServiceOrderDesc(
-        lenses = lenses.map { it.toFSDenormalizedPurchaseDescription() },
-        colorings = colorings.map { it.toFSDenormalizedPurchaseDescription() },
-        treatments = treatments.map { it.toFSDenormalizedPurchaseDescription() },
+        hasOwnFrames = hasOwnFrames,
 
-        frames = frames.toFSDenormalizedPurchaseDescription(),
+        leftProducts = leftProducts.toFSProductSoldEyeSet(),
+        rightProducts = rightProducts.toFSProductSoldEyeSet(),
 
-        misc = misc.map { it.toFSDenormalizedPurchaseDescription() },
+        framesProducts = framesProducts.toFSProductSoldFramesDescription(),
+
+        miscProducts = miscProducts.map { it.toFSSoldProductDescription() },
     )
 }

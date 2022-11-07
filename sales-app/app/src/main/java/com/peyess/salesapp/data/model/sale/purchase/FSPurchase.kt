@@ -36,6 +36,10 @@ data class FSPurchase(
 
     @Keep
     @JvmField
+    @PropertyName("responsible_uid")
+    val responsibleUid: String = "",
+    @Keep
+    @JvmField
     @PropertyName("responsible_document")
     val responsibleDocument: String = "",
     @Keep
@@ -48,13 +52,49 @@ data class FSPurchase(
     val responsiblePicture: String = "",
     @Keep
     @JvmField
-    @PropertyName("responsible_uid")
-    val responsibleUid: String = "",
+    @PropertyName("responsible_birthday")
+    val responsibleBirthday: Timestamp = Timestamp.now(),
+    @Keep
+    @JvmField
+    @PropertyName("responsible_phone")
+    val responsiblePhone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_cellphone")
+    val responsibleCellphone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_neighborhood")
+    val responsibleNeighborhood: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_street")
+    val responsibleStreet: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_city")
+    val responsibleCity: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_state")
+    val responsibleState: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_housenumber")
+    val responsibleHouseNumber: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("responsible_zipcode")
+    val responsibleZipcode: String = "",
 
     @Keep
     @JvmField
     @PropertyName("has_witness")
     val hasWitness: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("witness_uid")
+    val witnessUid: String = "",
     @Keep
     @JvmField
     @PropertyName("witness_document")
@@ -69,13 +109,49 @@ data class FSPurchase(
     val witnessPicture: String = "",
     @Keep
     @JvmField
-    @PropertyName("witness_uid")
-    val witnessUid: String = "",
+    @PropertyName("witness_birthday")
+    val witnessBirthday: Timestamp = Timestamp.now(),
+    @Keep
+    @JvmField
+    @PropertyName("witness_phone")
+    val witnessPhone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_cellphone")
+    val witnessCellphone: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_neighborhood")
+    val witnessNeighborhood: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_street")
+    val witnessStreet: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_city")
+    val witnessCity: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_state")
+    val witnessState: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_housenumber")
+    val witnessHouseNumber: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("witness_zipcode")
+    val witnessZipcode: String = "",
 
     @Keep
     @JvmField
     @PropertyName("salesperson_uid")
     val salespersonUid: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("salesperson_name")
+    val salespersonName: String = "",
 
     @Keep
     @JvmField

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
+import android.content.Context
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -11,6 +12,7 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
+import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
@@ -25,6 +27,7 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -39,8 +42,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.time.ZonedDateTime
 import kotlin.random.Random
@@ -105,7 +108,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     private fun updateHid() = setState {
-        copy(hid = serviceOrderHid)
+        copy(hidServiceOrder = serviceOrderHid)
     }
 
     private fun createUploader() {
@@ -287,6 +290,36 @@ class ServiceOrderViewModel @AssistedInject constructor(
         copy(hasSaleFailed = false)
     }
 
+    private fun generateServiceOrderPdf() = withState {
+        suspend {
+            var soId = ""
+            var saleId = ""
+
+            saleRepository
+                .activeSO()
+                .filterNotNull()
+                .take(1)
+                .collect{
+                    soId = it.id
+                    saleId = it.saleId
+                }
+
+            Timber.i("Emitting SO with id $soId for sale $saleId")
+            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, false)
+            serviceOrderUploader.emitServiceOrder(salePair.first, salePair.second, saleId)
+            Timber.i("Emitted SO with id $soId for sale $saleId")
+
+        }.execute(Dispatchers.IO) {
+            Timber.i("Generated Service Order result is $it")
+
+            copy(
+                isSaleDone = it is Success,
+                isSaleLoading = it is Loading,
+                hasSaleFailed = it is Fail,
+            )
+        }
+    }
+
     fun generateSale() = withState {
         suspend {
             var soId = ""
@@ -302,7 +335,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 }
 
             Timber.i("Emitting SO with id $soId for sale $saleId")
-            serviceOrderUploader.emitServiceOrder(it.hid, soId, saleId)
+            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, true)
+            serviceOrderUploader.emitServiceOrder(salePair.first, salePair.second, saleId)
             Timber.i("Emitted SO with id $soId for sale $saleId")
 
         }.execute(Dispatchers.IO) {
@@ -312,6 +346,36 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 isSaleDone = it is Success,
                 isSaleLoading = it is Loading,
                 hasSaleFailed = it is Fail,
+            )
+        }
+    }
+
+    fun generateServiceOrderPdf(context: Context) = withState {
+        suspend {
+            var client: ClientDocument? = null
+
+            clientDao.clientById(it.userClient.id).collect { c -> client = c }
+
+//            val html = buildHtml(
+//                ZonedDateTime.now(),
+//                it.hid, client ?: ClientDocument(),
+//                ServiceOrderDocument(),
+//            )
+            val html = ""
+
+            val htmlToPdfConvertor = HtmlToPdfConvertor(context)
+
+//                    printInstance?.pdfPrintAttrs = PrintAttributes.Builder()
+//                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+//                        .setColorMode(COLOR_MODE_COLOR)
+//                        .build()
+
+            val file = createPrintFile(context)
+            htmlToPdfConvertor.convert(
+                file,
+                html,
+                {},
+                {},
             )
         }
     }

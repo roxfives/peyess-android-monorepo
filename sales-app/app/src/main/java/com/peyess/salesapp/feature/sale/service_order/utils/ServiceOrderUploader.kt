@@ -20,7 +20,6 @@ import com.peyess.salesapp.data.adapter.payment.toPaymentDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
-import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
@@ -82,7 +81,10 @@ class ServiceOrderUploader constructor(
     var measuringLeftId = ""
     var measuringRightId = ""
 
-    private suspend fun addPrescriptionData(so: ServiceOrderDocument): ServiceOrderDocument {
+    private suspend fun addPrescriptionData(
+        so: ServiceOrderDocument,
+        uploadPartialData: Boolean,
+    ): ServiceOrderDocument {
         var prescriptionDataEntity: PrescriptionDataEntity? = null
         var prescriptionPictureEntity: PrescriptionPictureEntity? = null
 
@@ -102,11 +104,15 @@ class ServiceOrderUploader constructor(
             error("Prescription not found")
         }
 
-        val prescriptionId = uploadPrescription(
-            prescriptionDataEntity!!,
-            prescriptionPictureEntity!!,
-            so,
-        )
+        val prescriptionId = if (uploadPartialData) {
+            uploadPrescription(
+                prescriptionDataEntity!!,
+                prescriptionPictureEntity!!,
+                so,
+            )
+        } else {
+            ""
+        }
 
         return so.copy(
             prescriptionId = prescriptionId,
@@ -161,6 +167,7 @@ class ServiceOrderUploader constructor(
 
     private suspend fun addPositioningData(
         so: ServiceOrderDocument,
+        uploadPartialData: Boolean,
     ): ServiceOrderDocument {
         var positioningLeft: PositioningEntity? = null
         var positioningRight: PositioningEntity? = null
@@ -240,8 +247,10 @@ class ServiceOrderUploader constructor(
             soId = so.id,
         )
 
-        positioningRepository.add(positioningDocLeft)
-        positioningRepository.add(positioningDocRight)
+        if (uploadPartialData) {
+            positioningRepository.add(positioningDocLeft)
+            positioningRepository.add(positioningDocRight)
+        }
 
         val measuringLeft = positioningLeft!!
             .toMeasuring()
@@ -270,8 +279,10 @@ class ServiceOrderUploader constructor(
                 so.id,
             )
 
-        measuringRepository.add(measuringLeft)
-        measuringRepository.add(measuringRight)
+        if (uploadPartialData) {
+            measuringRepository.add(measuringLeft)
+            measuringRepository.add(measuringRight)
+        }
 
         return so.copy(
             lPositioningId = posLeftId,
@@ -448,15 +459,15 @@ class ServiceOrderUploader constructor(
             samePurchaseSo = listOf(so.id),
 
             total = total,
-            products = ProductsSoldDocument(
-                lenses = mapOf(lensDesc.id to lensDesc),
-                colorings = mapOf(coloringDesc.id to coloringDesc),
-                treatments = mapOf(treatmentDesc.id to treatmentDesc),
-
-                frames = framesDesc,
-
-                misc = emptyMap(),
-            )
+//            products = ProductsSoldDocument(
+//                lenses = mapOf(lensDesc.id to lensDesc),
+//                colorings = mapOf(coloringDesc.id to coloringDesc),
+//                treatments = mapOf(treatmentDesc.id to treatmentDesc),
+//
+//                frames = framesDesc,
+//
+//                misc = emptyMap(),
+//            )
         )
     }
 
@@ -534,7 +545,7 @@ class ServiceOrderUploader constructor(
             soStates = mapOf(serviceOrder.id to SOState.fromName(serviceOrder.state)),
             soIds = listOf(serviceOrder.id),
             soPreviews = mapOf(
-                serviceOrder.id to serviceOrder.toPreview(frames?.areFramesNew == false)
+//                serviceOrder.id to serviceOrder.toPreview(frames?.areFramesNew == false)
             ),
             soWithIssues = emptyList(),
             hasRectifiedSo = false,
@@ -554,11 +565,12 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    suspend fun emitServiceOrder(
+    suspend fun generateSaleData(
         hid: String,
         serviceOrderId: String,
         localSaleId: String,
-    ) {
+        uploadPartialData: Boolean,
+    ): Pair<ServiceOrderDocument, PurchaseDocument> {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             error("Firestore instance for store is null")
@@ -566,25 +578,6 @@ class ServiceOrderUploader constructor(
 
         Timber.i("Creating SO with id $serviceOrderId for sale $localSaleId")
         val storeId = firebaseManager.currentStore!!.uid
-        var sale: ActiveSalesEntity? = null
-
-        Timber.i("Getting current sale")
-        salesDatabase
-            .activeSalesDao()
-            .getById(localSaleId)
-            .take(1)
-            .collect {
-                sale = it
-            }
-        Timber.i("Current sale found: $sale")
-
-        if (sale != null) {
-            salesDatabase
-                .activeSalesDao()
-                .update(sale!!.copy(isUploading = true))
-        } else {
-            error("Sale not found")
-        }
 
         val now = ZonedDateTime.now()
         var serviceOrder = ServiceOrderDocument(
@@ -609,11 +602,11 @@ class ServiceOrderUploader constructor(
         }
 
         serviceOrder = runBlocking {
-            addPrescriptionData(serviceOrder)
+            addPrescriptionData(serviceOrder, uploadPartialData)
         }
 
         serviceOrder = runBlocking {
-            addPositioningData(serviceOrder)
+            addPositioningData(serviceOrder, uploadPartialData)
         }
 
         serviceOrder = runBlocking {
@@ -630,12 +623,44 @@ class ServiceOrderUploader constructor(
             payerDocuments = purchase.payerDocuments,
         )
 
+        return Pair(serviceOrder, purchase)
+    }
+
+    suspend fun emitServiceOrder(
+        serviceOrder: ServiceOrderDocument,
+        purchase: PurchaseDocument,
+        localSaleId: String,
+    ) {
+        val firestore = firebaseManager.storeFirestore
+        if (firestore == null) {
+            error("Firestore instance for store is null")
+        }
+
+        var sale: ActiveSalesEntity? = null
+
+        Timber.i("Getting current sale with id $localSaleId")
+        salesDatabase
+            .activeSalesDao()
+            .getById(localSaleId)
+            .take(1)
+            .collect {
+                sale = it
+            }
+        Timber.i("Current sale found: $sale")
+
+        if (sale != null) {
+            salesDatabase
+                .activeSalesDao()
+                .update(sale!!.copy(isUploading = true))
+        } else {
+            error("Sale not found")
+        }
+
         runBlocking {
             purchaseRepository.add(purchase)
             serviceOrderRepository.add(serviceOrder)
         }
 
-        Timber.i("Finished creating SO with id $serviceOrderId for sale $localSaleId")
         if (sale != null) {
             salesDatabase
                 .activeSalesDao()

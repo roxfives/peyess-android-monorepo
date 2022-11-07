@@ -82,7 +82,7 @@ data class FramesEntity(
     @ColumnInfo(name = "reference") val reference: String = "",
     @ColumnInfo(name = "value") val value: Double = 0.0,
     @ColumnInfo(name = "tag_code") val tagCode: String = "",
-    @ColumnInfo(name = "type") val type: FramesType? = null,
+    @ColumnInfo(name = "type") val type: FramesType = FramesType.None,
 
     @ColumnInfo(name = "info") val framesInfo: String = "",
 ) {

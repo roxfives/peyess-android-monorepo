@@ -302,6 +302,7 @@
     <string name="so_subsection_title_witness">Testemunha</string>
 
     <string name="btn_change_client">Alterar</string>
+    <string name="btn_finish_sale">Gerar O.S.</string>
 
     <string name="so_section_title_prescription">Receita</string>
 

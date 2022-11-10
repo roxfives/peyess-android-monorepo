@@ -1,10 +1,15 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
+import android.net.Uri
+import androidx.annotation.RawRes
+import androidx.annotation.StringRes
 import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
@@ -15,6 +20,7 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import timber.log.Timber
@@ -40,11 +46,18 @@ data class ServiceOrderState(
     val totalToPayAsync: Async<Double> = Uninitialized,
     val totalPaidAsync: Async<Double> = Uninitialized,
 
-    val hid: String = "",
+    val hidServiceOrder: String = "",
+    val hidSale: String = "",
+
+    val serviceOrderPdfAsync: Async<Uri> = Uninitialized,
+    @StringRes
+    val serviceOrderPdfErrorMessage: Int = R.string.empty_string,
 
     val isSaleDone: Boolean = false,
     val isSaleLoading: Boolean = false,
     val hasSaleFailed: Boolean = false,
+
+    val isSOPdfBeingGenerated: Boolean = false,
 ): MavericksState {
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
@@ -139,4 +152,9 @@ data class ServiceOrderState(
     }
 
     val canAddNewPayment = totalPaid < totalToPay
+
+    val serviceOrderPdf: Uri = serviceOrderPdfAsync.invoke() ?: Uri.EMPTY
+    val isServiceOrderPdfLoading = serviceOrderPdfAsync is Loading
+    val isServiceOrderPdfSuccess = serviceOrderPdfAsync is Success
+    val isServiceOrderPdfError = serviceOrderPdfAsync is Fail
 }

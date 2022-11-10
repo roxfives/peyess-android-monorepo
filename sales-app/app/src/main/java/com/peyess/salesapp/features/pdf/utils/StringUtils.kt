@@ -49,5 +49,5 @@ fun printDate(date: ZonedDateTime): String {
 fun printHours(date: ZonedDateTime): String {
     val hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-    return "${hourFormatter.format(date)}hrs"
+    return hourFormatter.format(date)
 }

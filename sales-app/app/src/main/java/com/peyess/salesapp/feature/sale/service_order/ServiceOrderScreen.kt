@@ -1,11 +1,13 @@
 package com.peyess.salesapp.feature.sale.service_order
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -55,6 +58,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -65,6 +71,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.placeholder.material.placeholder
+import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
@@ -83,7 +90,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.annotated_string.pluralResource
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -91,6 +98,7 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import timber.log.Timber
 import java.lang.Double.max
 import java.text.NumberFormat
 
@@ -136,6 +144,8 @@ fun ServiceOrderScreen(
     onGenerateBudget: () -> Unit = {},
     onFinishSale: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+
     val viewModel: ServiceOrderViewModel = mavericksViewModel()
 
     val user by viewModel.collectAsState(ServiceOrderState::userClient)
@@ -178,6 +188,8 @@ fun ServiceOrderScreen(
     val isSaleDone by viewModel.collectAsState(ServiceOrderState::isSaleDone)
     val isSaleLoading by viewModel.collectAsState(ServiceOrderState::isSaleLoading)
     val hasSaleFailed by viewModel.collectAsState(ServiceOrderState::hasSaleFailed)
+
+    val isGeneratingPdfDocument by viewModel.collectAsState(ServiceOrderState::isSOPdfBeingGenerated)
 
     if (isSaleLoading) {
         SaleLoading(modifier = Modifier.fillMaxSize())
@@ -235,6 +247,34 @@ fun ServiceOrderScreen(
             },
             onDeletePayment = viewModel::deletePayment,
             onEditPayment = { onEditPayment(it.id, it.clientId) },
+
+            isGeneratingPdfDocument = isGeneratingPdfDocument,
+            onGenerateServiceOrderPdf = {
+                viewModel.generateServiceOrderPdf(
+                    context = context,
+                    onPdfGenerated = {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val uri = it.toUri()
+                        Timber.i("Previous uri: ${uri}")
+
+                        val newUri = FileProvider
+                            .getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", it)
+
+                        Timber.i("New uri: $newUri")
+                        intent.setDataAndType(newUri, "application/pdf")
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                        try {
+                            startActivity(context, intent, null)
+                        } catch (err: Throwable) {
+                            Timber.e("Failed to open pdf handler: ${err.message}", err)
+
+                        }
+                    },
+                    onPdfGenerationFailed = {},
+                )
+            }
         )
     }
 }
@@ -363,12 +403,15 @@ private fun ServiceOrderScreenImpl(
     onAddPayment: () -> Unit = {},
     onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
     onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
+
+    isGeneratingPdfDocument: Boolean = false,
+    onGenerateServiceOrderPdf: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
     Surface(modifier = Modifier
         .fillMaxSize()
-        .padding(4.dp)
+        .padding(SalesAppTheme.dimensions.screen_offset)
         .verticalScroll(
             state = scrollState,
             enabled = true,
@@ -441,9 +484,56 @@ private fun ServiceOrderScreenImpl(
             Spacer(modifier = Modifier.height(16.dp))
 
             // TODO: use string resource
-            PeyessNextStep(
-                nextTitle = "Gerar O.S.",
+            StepperFooter(
+                middle = {
+                    ActionButtons(
+                        isGeneratingDocument = isGeneratingPdfDocument,
+                        onPrintServiceOrder = onGenerateServiceOrderPdf,
+                    )
+                },
+
+                nextTitle = stringResource(id = R.string.btn_finish_sale),
                 onNext = onFinishSale,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(
+    modifier: Modifier = Modifier,
+
+    isGeneratingDocument: Boolean = false,
+    canPrint: Boolean = true,
+    onPrintServiceOrder: () -> Unit = {},
+) {
+    if (isGeneratingDocument) {
+        CircularProgressIndicator()
+    } else {
+        val backgroundColor = if (canPrint) {
+            MaterialTheme.colors.primary
+        } else {
+            Color.Gray
+        }
+
+        val iconColor = if (canPrint) {
+            MaterialTheme.colors.onPrimary
+        } else {
+            Color.White
+        }
+
+        IconButton(
+            modifier = modifier
+                .background(
+                    color = backgroundColor,
+                    shape = CircleShape,
+                ),
+            onClick = onPrintServiceOrder,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.PictureAsPdf,
+                contentDescription = "",
+                tint = iconColor
             )
         }
     }

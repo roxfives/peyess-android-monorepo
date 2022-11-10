@@ -12,7 +12,6 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
@@ -22,6 +21,7 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
+import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -45,6 +45,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
+import java.io.File
 import java.time.ZonedDateTime
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -290,41 +291,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
         copy(hasSaleFailed = false)
     }
 
-    private fun generateServiceOrderPdf() = withState {
-        suspend {
-            var soId = ""
-            var saleId = ""
-
-            saleRepository
-                .activeSO()
-                .filterNotNull()
-                .take(1)
-                .collect{
-                    soId = it.id
-                    saleId = it.saleId
-                }
-
-            Timber.i("Emitting SO with id $soId for sale $saleId")
-            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, false)
-            serviceOrderUploader.emitServiceOrder(salePair.first, salePair.second, saleId)
-            Timber.i("Emitted SO with id $soId for sale $saleId")
-
-        }.execute(Dispatchers.IO) {
-            Timber.i("Generated Service Order result is $it")
-
-            copy(
-                isSaleDone = it is Success,
-                isSaleLoading = it is Loading,
-                hasSaleFailed = it is Fail,
-            )
-        }
-    }
-
     fun generateSale() = withState {
         suspend {
             var soId = ""
             var saleId = ""
 
+            Timber.i("Getting so info")
             saleRepository
                 .activeSO()
                 .filterNotNull()
@@ -333,9 +305,13 @@ class ServiceOrderViewModel @AssistedInject constructor(
                     soId = it.id
                     saleId = it.saleId
                 }
+            Timber.i("Got so info")
+
+            Timber.i("Generating SO with $soId for sale $saleId")
+            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, true)
+            Timber.i("Generated SO with $soId for sale $saleId")
 
             Timber.i("Emitting SO with id $soId for sale $saleId")
-            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, true)
             serviceOrderUploader.emitServiceOrder(salePair.first, salePair.second, saleId)
             Timber.i("Emitted SO with id $soId for sale $saleId")
 
@@ -350,32 +326,86 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    fun generateServiceOrderPdf(context: Context) = withState {
-        suspend {
-            var client: ClientDocument? = null
-
-            clientDao.clientById(it.userClient.id).collect { c -> client = c }
-
-//            val html = buildHtml(
-//                ZonedDateTime.now(),
-//                it.hid, client ?: ClientDocument(),
-//                ServiceOrderDocument(),
+//    fun generateServiceOrderPdf(context: Context) = withState {
+//        suspend {
+//            var client: ClientDocument? = null
+//
+//            clientDao.clientById(it.userClient.id).collect { c -> client = c }
+//
+////            val html = buildHtml(
+////                ZonedDateTime.now(),
+////                it.hid, client ?: ClientDocument(),
+////                ServiceOrderDocument(),
+////            )
+//            val html = ""
+//
+//            val htmlToPdfConvertor = HtmlToPdfConvertor(context)
+//
+////                    printInstance?.pdfPrintAttrs = PrintAttributes.Builder()
+////                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
+////                        .setColorMode(COLOR_MODE_COLOR)
+////                        .build()
+//
+//            val file = createPrintFile(context)
+//            htmlToPdfConvertor.convert(
+//                file,
+//                html,
+//                {},
+//                {},
 //            )
-            val html = ""
+//        }
+//    }
+    fun generateServiceOrderPdf(
+        context: Context,
+        onPdfGenerated: (File) -> Unit,
+        onPdfGenerationFailed: () -> Unit,
+    ) = withState {
+        suspend {
+            var soId = ""
+            var saleId = ""
 
-            val htmlToPdfConvertor = HtmlToPdfConvertor(context)
+            saleRepository
+                .activeSO()
+                .filterNotNull()
+                .take(1)
+                .collect{
+                    soId = it.id
+                    saleId = it.saleId
+                }
 
-//                    printInstance?.pdfPrintAttrs = PrintAttributes.Builder()
-//                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-//                        .setColorMode(COLOR_MODE_COLOR)
-//                        .build()
+            Timber.i("Generating pdf for $soId with sale $saleId")
 
-            val file = createPrintFile(context)
-            htmlToPdfConvertor.convert(
-                file,
-                html,
-                {},
-                {},
+            val salePair = serviceOrderUploader
+                .generateSaleData(it.hidServiceOrder, soId, saleId, false)
+            val html = buildHtml(context, salePair.first, salePair.second)
+            val htmlToPdfConverter = HtmlToPdfConvertor(context)
+
+            Timber.v("Using the html to print the document")
+            Timber.v(html)
+
+            viewModelScope.launch(Dispatchers.Main) {
+                val file = createPrintFile(context)
+                if (file.exists()) {
+                    file.delete()
+                }
+
+                htmlToPdfConverter.convert(
+                    file,
+                    html,
+                    {
+                        Timber.e("Failed to generate service order pdf: ${it.message}", it)
+                        onPdfGenerationFailed()
+                    },
+                    { onPdfGenerated(it) },
+                )
+            }
+
+            Timber.i("Generated PDF document for SO with id $soId for sale $saleId")
+        }.execute(Dispatchers.IO) {
+            Timber.i("Generated Service Order result is $it")
+
+            copy(
+                isSOPdfBeingGenerated = it is Loading,
             )
         }
     }

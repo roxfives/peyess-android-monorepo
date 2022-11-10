@@ -49,10 +49,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 private data class ProductSet(
     val lens: LocalLensEntity = LocalLensEntity(),
@@ -474,12 +478,13 @@ class ServiceOrderUploader constructor(
                 var totalToPay = lens.price + framesValue
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.price
+                    totalToPay += coloring.suggestedPrice
                 }
                 if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += frames.value
+                    totalToPay += treatment.suggestedPrice
                 }
 
+                // TODO: Refactor this set to have the data about being a placeholder only
                 if (coloring.suggestedPrice > 0) {
                     totalToPay += lens.suggestedPriceAddColoring
                 }
@@ -582,7 +587,7 @@ class ServiceOrderUploader constructor(
             salespersonUid = serviceOrder.salespersonUid,
             salespersonName = serviceOrder.salespersonName,
 
-            isDiscountPerProduct = false,// serviceOrder.is_discount_per_product,
+            isDiscountPerProduct = false, // serviceOrder.is_discount_per_product,
             overallDiscount = DiscountDescriptionDocument(), // serviceOrder.overall_discount,
 
             price = serviceOrder.total,
@@ -670,10 +675,24 @@ class ServiceOrderUploader constructor(
             createPurchase(serviceOrder)
         }
 
+        val totalPaid = if (purchase.payments.isEmpty()) {
+            0.0
+        } else {
+            purchase.payments
+                .map { it.amount }
+                .reduce { acc, payment -> acc + payment }
+        }
+        val totalLeft = BigDecimal(abs(serviceOrder.total - totalPaid))
+            .setScale(2, RoundingMode.HALF_EVEN)
+            .toDouble()
+
         serviceOrder = serviceOrder.copy(
             purchaseId = purchaseId,
             payerUids = purchase.payerUids,
             payerDocuments = purchase.payerDocuments,
+
+            totalPaid = totalPaid,
+            leftToPay = totalLeft,
         )
 
         return Pair(serviceOrder, purchase)

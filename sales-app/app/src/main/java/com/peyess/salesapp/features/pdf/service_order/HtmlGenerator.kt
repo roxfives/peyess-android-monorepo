@@ -16,14 +16,24 @@ import com.peyess.salesapp.features.pdf.service_order.html.generateProductData
 import com.peyess.salesapp.features.pdf.service_order.html.generateSaleData
 import com.peyess.salesapp.features.pdf.service_order.html.generateServiceOrder
 import com.peyess.salesapp.features.pdf.service_order.html.style
+import com.peyess.salesapp.features.pdf.utils.printValue
+import timber.log.Timber
 import java.time.format.DateTimeFormatter
+
+private fun printFramesDescription(value: String, isOwnFrames: Boolean = false): String {
+    return if (isOwnFrames) {
+        "ARO PRÓPRIO"
+    } else {
+        printValue(value)
+    }
+}
 
 fun buildHtml(
     context: Context,
     serviceOrder: ServiceOrderDocument,
     purchase: PurchaseDocument,
 ): String {
-    val dayFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+    val dayFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     val saleDate = serviceOrder.created
 
@@ -45,7 +55,7 @@ fun buildHtml(
         clientCity = serviceOrder.responsibleCity,
         clientState = serviceOrder.responsibleState,
         clientHouseNumber = serviceOrder.responsibleHouseNumber,
-        clientZipCode = serviceOrder.responsibleZipCode,
+        clientZipCode = serviceOrder.responsibleZipcode,
     )
 
     // TODO: add clientBirthday to ServiceOrder
@@ -64,7 +74,11 @@ fun buildHtml(
         treatmentRight = serviceOrder.rightProducts.treatments.nameDisplay.ifBlank { "-" },
 
         prescriptionDate = serviceOrder.prescriptionDate.format(dayFormatter),
-        prescriptionProfessional = serviceOrder.professionalName.ifBlank { "-" },
+        prescriptionProfessional = if (serviceOrder.isCopy) {
+            "CÓPIA LENSÔMETRO"
+        } else {
+            serviceOrder.professionalName.ifBlank { "-" }
+       },
 
         prescriptionLeftSpherical = "%.2f".format(serviceOrder.lSpheric),
         prescriptionLeftCylindrical = "%.2f".format(serviceOrder.lCylinder),
@@ -84,11 +98,26 @@ fun buildHtml(
         prescriptionRightDnp = "%.2f".format(serviceOrder.rIpd),
         prescriptionRightHeight = "%.2f".format(serviceOrder.rHe),
 
-        framesDesign = serviceOrder.framesProducts.design,
-        framesReference = serviceOrder.framesProducts.reference,
-        framesColor = serviceOrder.framesProducts.color,
-        framesStyle = serviceOrder.framesProducts.style,
-        framesType = serviceOrder.framesProducts.type.toName(),
+        framesDesign = printFramesDescription(
+            serviceOrder.framesProducts.design,
+            serviceOrder.hasOwnFrames,
+        ),
+        framesReference = printFramesDescription(
+            serviceOrder.framesProducts.reference,
+            serviceOrder.hasOwnFrames,
+        ),
+        framesColor = printFramesDescription(
+            serviceOrder.framesProducts.color,
+            serviceOrder.hasOwnFrames,
+        ),
+        framesStyle = printFramesDescription(
+            serviceOrder.framesProducts.style,
+            serviceOrder.hasOwnFrames,
+        ),
+        framesType = printFramesDescription(
+            serviceOrder.framesProducts.type.toName(),
+            serviceOrder.hasOwnFrames,
+        ),
 
         measuringBridge = "%.2f".format(serviceOrder.lBridge),
         measuringVHoop = "%.2f".format(serviceOrder.lVerticalHoop),
@@ -156,5 +185,9 @@ fun buildHtml(
             ownFramesSection +
             conditions
 
-    return generateServiceOrder(style = style, content = content)
+    val htmlDocument = generateServiceOrder(style = style, content = content)
+    Timber.v("Generated html")
+    Timber.v(htmlDocument)
+
+    return htmlDocument
 }

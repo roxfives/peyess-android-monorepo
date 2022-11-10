@@ -74,7 +74,7 @@ private fun productDescriptionFooter(
     val priceWithDiscountStr = currencyFormat.format(priceWithoutDiscount * (1 - discount))
     val discountStr = percentFormat.format(discount)
 
-    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooter s\" colspan=\"8\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column10 styleProductListFooter n\">$priceWithDiscountStr</td></tr>"
+    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooterName s\" colspan=\"8\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column10 styleProductListFooter n\">$priceWithDiscountStr</td></tr>"
 
     return productDescriptionTotal
 }
@@ -108,27 +108,38 @@ private fun buildProductList(
             ),
         )
 
-        sets.add(
-            productUnitDescription(
-                context = context,
-                productCode = "",
-                quantity = set.colorings.units,
-                priceWithoutDiscount = set.colorings.price,
-                discount = discountAsPercentage(set.colorings.discount, set.colorings.price),
-                description = set.colorings.nameDisplay,
-            ),
-        )
+        // TODO: Refactor this set to have the data about being a placeholder only
+        if (
+            set.colorings.nameDisplay.trim() != "Indisponível"
+            && set.colorings.nameDisplay.trim() != "Incolor"
+        ) {
+            sets.add(
+                productUnitDescription(
+                    context = context,
+                    productCode = "",
+                    quantity = set.colorings.units,
+                    priceWithoutDiscount = set.colorings.price,
+                    discount = discountAsPercentage(set.colorings.discount, set.colorings.price),
+                    description = set.colorings.nameDisplay,
+                ),
+            )
+        }
 
-        sets.add(
-            productUnitDescription(
-                context = context,
-                productCode = "",
-                quantity = set.treatments.units,
-                priceWithoutDiscount = set.treatments.price,
-                discount = discountAsPercentage(set.treatments.discount, set.treatments.price),
-                description = set.treatments.nameDisplay,
-            ),
-        )
+        if (
+            set.treatments.nameDisplay.trim() != "Indisponível"
+            && set.treatments.nameDisplay.trim() != "Incolor"
+        ) {
+            sets.add(
+                productUnitDescription(
+                    context = context,
+                    productCode = "",
+                    quantity = set.treatments.units,
+                    priceWithoutDiscount = set.treatments.price,
+                    discount = discountAsPercentage(set.treatments.discount, set.treatments.price),
+                    description = set.treatments.nameDisplay,
+                ),
+            )
+        }
     }
 
     frames.forEach {

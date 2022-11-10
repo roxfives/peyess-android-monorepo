@@ -9,7 +9,10 @@ import com.peyess.salesapp.features.pdf.utils.printDocument
 import com.peyess.salesapp.features.pdf.utils.printPaymentMethodValue
 import com.peyess.salesapp.features.pdf.utils.printValue
 import com.peyess.salesapp.typing.sale.PaymentMethodType
+import com.peyess.salesapp.utils.time.nextBusinessDay
 import java.text.NumberFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 //<!-- payment_text -->
 //
@@ -255,13 +258,13 @@ private fun legalTextWithoutFullPayment(
     currencyFormatter.maximumFractionDigits = 2
     currencyFormatter.minimumFractionDigits = 2
 
-    val totalPaid = currencyFormatter.format(serviceOrderDocument.totalPaid)
+    val totalToPay = currencyFormatter.format(serviceOrderDocument.total)
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +
-                "RESPONSÁVEL e pagaremos o valor de $totalPaid da seguinte forma:"
+                "RESPONSÁVEL e pagaremos o valor de $totalToPay da seguinte forma:"
     } else {
-        "Em razão do presente pedido, declaro que pagarei o valor de $totalPaid da seguinte forma:"
+        "Em razão do presente pedido, declaro que pagarei o valor de $totalToPay da seguinte forma:"
     }
 }
 
@@ -299,6 +302,44 @@ private fun buildPaymentList(context: Context, payments: List<PaymentDocument>):
     return paymentStr
 }
 
+private fun buildPaymentIncomplete(
+    context: Context,
+    serviceOrder: ServiceOrderDocument,
+): String {
+    val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
+
+    val currencyFormat = NumberFormat.getCurrencyInstance(currentLocale)
+    currencyFormat.minimumFractionDigits = 2
+    currencyFormat.maximumFractionDigits = 2
+
+    val percentFormat = NumberFormat.getPercentInstance(currentLocale)
+    percentFormat.minimumFractionDigits = 2
+    percentFormat.maximumFractionDigits = 2
+
+    val integerFormat = NumberFormat.getIntegerInstance(currentLocale)
+    integerFormat.minimumIntegerDigits = 1
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    val totalLeft = serviceOrder.leftToPay
+    val fineOnDefault = 0.01
+    val cumulativeFineOnDefault = 0.02
+    val limit = ZonedDateTime.now()
+        .plusDays(30)
+        .nextBusinessDay()
+
+    val paymentMethod = "À RECEBER"
+    val paymentValue = currencyFormat.format(totalLeft)
+    val fine = percentFormat.format(fineOnDefault)
+    val cumulativeFine = percentFormat.format(cumulativeFineOnDefault)
+    val installments = integerFormat.format(1)
+    val limitDate = dateFormatter.format(limit)
+
+    val bankCheck = "<tr class=\"row27\"> <td class=\"column0 style29 s style30\" colspan=\"2\">FORMA PAGAMENTO:</td><td class=\"column2 style24 s\" colspan=\"2\">${printValue(paymentMethod)}</td><td class=\"column4 style29 s style31\" colspan=\"2\">VALOR: ${printValue(paymentValue)}</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: ${printValue(limitDate)}</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: ${printValue(fine)}</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: ${printValue(cumulativeFine)}</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: ${printValue(installments)}</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr>"
+
+    return bankCheck
+}
+
 fun buildPaymentSection(
     context: Context,
     purchase: PurchaseDocument,
@@ -306,6 +347,11 @@ fun buildPaymentSection(
 ): String {
     val header = buildHeader(context, purchase, serviceOrder)
     val paymentList = buildPaymentList(context, purchase.payments)
+    val paymentIncomplete = if (!serviceOrder.isPaymentFull) {
+        buildPaymentIncomplete(context, serviceOrder)
+    } else {
+        ""
+    }
 
-    return header + paymentList
+    return header + paymentList + paymentIncomplete
 }

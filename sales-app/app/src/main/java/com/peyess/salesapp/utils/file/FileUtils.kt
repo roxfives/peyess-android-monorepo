@@ -40,6 +40,25 @@ fun deleteFile(uri: Uri) {
 
 }
 
+fun createPrintFile(context: Context): File {
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+
+    val storageDir = context.getExternalFilesDir(
+        Environment.DIRECTORY_DOCUMENTS
+    )
+
+    if (storageDir != null  && !storageDir.exists()) {
+        storageDir.mkdirs()
+        Timber.i("The external dir is ${storageDir.absolutePath}")
+    }
+    return File.createTempFile(
+        "print_test_${timeStamp}_",
+        ".pdf",
+        storageDir,
+    )
+}
+
+
 //fun createMeasureFile(context: Context, prefix: String): File {
 //
 //}

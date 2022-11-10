@@ -115,7 +115,21 @@ class PaymentViewModel @AssistedInject constructor(
                 if (it is Success) {
                     copy(
                         paymentMethodsAsync = it,
-                        activePaymentMethod = if (payments.isNotEmpty()) payments[0] else null
+                        activePaymentMethod = if (payments.isNotEmpty()) {
+                            val method = payments[0]
+
+                            saleRepository.updatePayment(
+                                this.payment.copy(
+                                    methodId = method.id,
+                                    methodType = method.type,
+                                    methodName = method.name,
+                                )
+                            )
+
+                            method
+                        } else {
+                            null
+                        }
                     )
                 } else {
                     copy(paymentMethodsAsync = it)
@@ -254,6 +268,7 @@ class PaymentViewModel @AssistedInject constructor(
         saleRepository.updatePayment(
             this.payment.copy(
                 methodId = method.id,
+                methodType = method.type,
                 methodName = method.name,
             )
         )

@@ -43,7 +43,7 @@ import com.peyess.salesapp.feature.demonstration.state.DemonstrationShown
 import com.peyess.salesapp.feature.demonstration.state.DemonstrationState
 import com.peyess.salesapp.feature.demonstration.state.DemonstrationViewModel
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
@@ -112,7 +112,7 @@ fun DemonstrationScreenImpl(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        PeyessNextStep(
+        StepperFooter(
             // TODO: use string resource
             nextTitle = "Legal!",
             onNext = onDone,

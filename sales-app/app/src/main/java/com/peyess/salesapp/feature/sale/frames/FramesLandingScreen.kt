@@ -39,7 +39,7 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames.state.FramesState
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -219,7 +219,7 @@ private fun FramesLandingScreenImpl(
 
         Spacer(modifier = Modifier.height(32.dp))
         Spacer(modifier = Modifier.weight(1f))
-        PeyessNextStep(
+        StepperFooter(
             onNext = onNext
         )
     }

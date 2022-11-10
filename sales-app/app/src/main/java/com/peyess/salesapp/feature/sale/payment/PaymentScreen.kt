@@ -78,7 +78,7 @@ import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentPlaceholder
 import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentTitle
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -264,7 +264,7 @@ private fun PaymentScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        PeyessNextStep(
+        StepperFooter(
             startButton = {
                 OutlinedButton(
                     modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),

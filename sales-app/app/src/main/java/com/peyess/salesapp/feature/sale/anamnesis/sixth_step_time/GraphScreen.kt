@@ -43,7 +43,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepState
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.utils.toTimeString
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import java.text.DecimalFormat
 
 val chartHeight = 256.dp
@@ -496,7 +496,7 @@ private fun GraphsScreenImpl(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        PeyessNextStep(onNext = onNext)
+        StepperFooter(onNext = onNext)
     }
 }
 

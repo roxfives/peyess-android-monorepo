@@ -53,7 +53,7 @@ import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
@@ -456,7 +456,7 @@ private fun CommunicationScreenImpl(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            PeyessNextStep(
+            StepperFooter(
                 canGoNext = isInputValid,
                 onNext = onDone,
             )

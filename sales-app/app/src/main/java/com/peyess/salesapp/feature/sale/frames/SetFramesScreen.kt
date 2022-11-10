@@ -37,7 +37,7 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames.state.FramesState
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
@@ -293,7 +293,7 @@ private fun SetFramesScreenImpl(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-        PeyessNextStep(
+        StepperFooter(
             canGoNext = canSetFrames,
             onNext = onDone,
         )

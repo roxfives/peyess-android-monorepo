@@ -34,7 +34,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepState
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
-import com.peyess.salesapp.ui.component.footer.PeyessNextStep
+import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -143,7 +143,7 @@ private fun FourthStepScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        PeyessNextStep(
+        StepperFooter(
             onNext = onNext
         )
     }

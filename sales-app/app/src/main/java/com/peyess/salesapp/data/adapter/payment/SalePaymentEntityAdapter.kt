@@ -32,7 +32,7 @@ fun SalePaymentEntity.toFSPayment(): FSPayment {
 
 fun SalePaymentEntity.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
-        methodName = PaymentMethodType.fromName(methodName),
+        methodName = PaymentMethodType.fromName(methodType),
         methodId = methodId,
         amount = value,
         installments = installments,

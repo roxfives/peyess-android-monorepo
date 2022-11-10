@@ -41,8 +41,8 @@ data class SalePaymentEntity(
     val methodId: String = "",
     @ColumnInfo(name = "method_name")
     val methodName: String = "",
-//    @ColumnInfo(name = "method_type")
-//    val methodType: PaymentMethodType = PaymentMethodType.Money,
+    @ColumnInfo(name = "method_type")
+    val methodType: String = "unknown",
 
     @ColumnInfo(name = "value")
     val value: Double = 0.0,

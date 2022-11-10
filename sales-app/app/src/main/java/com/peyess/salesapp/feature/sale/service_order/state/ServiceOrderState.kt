@@ -24,6 +24,9 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import timber.log.Timber
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.abs
 
 data class ServiceOrderState(
     val userClientAsync: Async<ClientEntity?> = Uninitialized,
@@ -152,6 +155,27 @@ data class ServiceOrderState(
     }
 
     val canAddNewPayment = totalPaid < totalToPay
+
+    val confirmationMessage = if (totalToPay <= totalPaid) {
+        val locale = Locale.getDefault()
+        val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
+        currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumIntegerDigits = 1
+
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPay)}"
+    } else {
+        val locale = Locale.getDefault()
+        val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
+        currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumIntegerDigits = 1
+
+        val missing = abs(totalToPay - totalPaid)
+
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPay)}" +
+                " com o saldo à receber de ${currencyFormatter.format(missing)}"
+    }
 
     val serviceOrderPdf: Uri = serviceOrderPdfAsync.invoke() ?: Uri.EMPTY
     val isServiceOrderPdfLoading = serviceOrderPdfAsync is Loading

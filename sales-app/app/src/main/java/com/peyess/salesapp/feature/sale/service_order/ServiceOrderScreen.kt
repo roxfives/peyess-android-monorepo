@@ -96,6 +96,7 @@ import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.message
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
@@ -191,6 +192,8 @@ fun ServiceOrderScreen(
 
     val isGeneratingPdfDocument by viewModel.collectAsState(ServiceOrderState::isSOPdfBeingGenerated)
 
+    val confirmationMessage by viewModel.collectAsState(ServiceOrderState::confirmationMessage)
+
     if (isSaleLoading) {
         SaleLoading(modifier = Modifier.fillMaxSize())
     } else if (hasSaleFailed) {
@@ -274,7 +277,9 @@ fun ServiceOrderScreen(
                     },
                     onPdfGenerationFailed = {},
                 )
-            }
+            },
+
+            confirmationMessage = confirmationMessage,
         )
     }
 }
@@ -406,8 +411,12 @@ private fun ServiceOrderScreenImpl(
 
     isGeneratingPdfDocument: Boolean = false,
     onGenerateServiceOrderPdf: () -> Unit = {},
+
+    confirmationMessage: String = "",
 ) {
     val scrollState = rememberScrollState()
+
+    val confirmationDialogState = rememberMaterialDialogState()
 
     Surface(modifier = Modifier
         .fillMaxSize()
@@ -482,7 +491,6 @@ private fun ServiceOrderScreenImpl(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
             // TODO: use string resource
             StepperFooter(
                 middle = {
@@ -493,9 +501,37 @@ private fun ServiceOrderScreenImpl(
                 },
 
                 nextTitle = stringResource(id = R.string.btn_finish_sale),
-                onNext = onFinishSale,
+                onNext = { confirmationDialogState.show() },
+            )
+
+
+            ConfirmationDialog(
+                dialogState = confirmationDialogState,
+                confirmationMessage = confirmationMessage,
+                onConfirm = onFinishSale,
             )
         }
+    }
+}
+
+@Composable
+private fun ConfirmationDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    confirmationMessage: String,
+    onConfirm: () -> Unit = {},
+) {
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            negativeButton(text = stringResource(id = R.string.so_confirmation_dialog_negative_btn))
+            positiveButton(
+                text = stringResource(id = R.string.so_confirmation_dialog_positive_btn),
+                onClick = onConfirm,
+            )
+        }
+    ) {
+        title(stringResource(id = R.string.so_confirmation_dialog_title))
+        message(confirmationMessage)
     }
 }
 

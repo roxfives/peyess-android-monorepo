@@ -33,7 +33,6 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.sale.frames.FramesType
-import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames.state.FramesState
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup

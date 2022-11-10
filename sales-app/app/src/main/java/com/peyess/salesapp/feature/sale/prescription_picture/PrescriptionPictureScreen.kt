@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -62,12 +61,9 @@ import coil.request.ImageRequest
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
-import com.google.android.gms.auth.api.phone.SmsCodeAutofillClient
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureState
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
 import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam

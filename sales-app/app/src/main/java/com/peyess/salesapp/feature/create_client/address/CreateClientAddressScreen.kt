@@ -50,7 +50,6 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressState
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressViewModel
-import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.PickScenario

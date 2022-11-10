@@ -51,7 +51,6 @@ import com.peyess.salesapp.feature.create_client.communication.state.Communicati
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
-import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState

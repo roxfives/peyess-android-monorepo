@@ -138,7 +138,6 @@ data class ServiceOrderDocument(
     val measureConfirmedBy: String = "",
     val discountAllowedBy: String = "",
 
-    val isPaymentFull: Boolean = true,
     val leftToPay: Double = 0.0,
 
     val total:  Double = 0.0,
@@ -152,4 +151,6 @@ data class ServiceOrderDocument(
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy:  String = "",
     val updateAllowedBy:  String = "",
-)
+) {
+    val isPaymentFull = leftToPay <= 0.0
+}

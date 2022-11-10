@@ -474,10 +474,6 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
-    @PropertyName("is_payment_full")
-    val isPaymentFull: Boolean = true,
-    @Keep
-    @JvmField
     @PropertyName("left_to_pay")
     val leftToPay: Double = 0.0,
 

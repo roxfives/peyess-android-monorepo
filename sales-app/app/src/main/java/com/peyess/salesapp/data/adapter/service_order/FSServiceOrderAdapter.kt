@@ -131,9 +131,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         measureConfirmedBy = measureConfirmedBy,
         discountAllowedBy = discountAllowedBy,
 
-        isPaymentFull = isPaymentFull,
         leftToPay = leftToPay,
-
         total = total,
         totalPaid = totalPaid,
         totalDiscount = totalDiscount,

@@ -335,9 +335,12 @@ private fun buildPaymentIncomplete(
     val installments = integerFormat.format(1)
     val limitDate = dateFormatter.format(limit)
 
-    val bankCheck = "<tr class=\"row27\"> <td class=\"column0 style29 s style30\" colspan=\"2\">FORMA PAGAMENTO:</td><td class=\"column2 style24 s\" colspan=\"2\">${printValue(paymentMethod)}</td><td class=\"column4 style29 s style31\" colspan=\"2\">VALOR: ${printValue(paymentValue)}</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: ${printValue(limitDate)}</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: ${printValue(fine)}</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: ${printValue(cumulativeFine)}</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: ${printValue(installments)}</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr>"
+    val clientName = serviceOrder.responsibleName
+    val clientDocument = printDocument(serviceOrder.responsibleDocument)
 
-    return bankCheck
+    val missingPayment = "<tr class=\"row25\"><td class=\"column2 style26 s style28\" colspan=\"8\">NOME: $clientName</td><td class=\"column8 style26 s style28\" colspan=\"3\">CPF: ${printValue(clientDocument)}</td></tr><tr class=\"row27\"> <td class=\"column0 style29 s style30\" colspan=\"2\">FORMA PAGAMENTO:</td><td class=\"column2 style24 s\" colspan=\"2\">${printValue(paymentMethod)}</td><td class=\"column4 style29 s style31\" colspan=\"2\">VALOR: ${printValue(paymentValue)}</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: ${printValue(limitDate)}</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: ${printValue(fine)}</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: ${printValue(cumulativeFine)}</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: ${printValue(installments)}</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr>"
+
+    return missingPayment
 }
 
 fun buildPaymentSection(

@@ -81,7 +81,7 @@
     <string name="go_next_default">Próximo</string>
     <string name="so_card_message">Ordem de Serviço no valor de %1$s emitida no dia %2$s com responsável %3$s</string>
 
-    <string name="btn_generate_pdf">Gerar PDF</string>
+    <string name="btn_open_pdf">Abrir PDF</string>
 
     <!-- UI Component: Welcome   -->
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>

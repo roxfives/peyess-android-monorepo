@@ -33,4 +33,22 @@ class PurchaseDaoImpl @Inject constructor(
             error(err)
         }
     }
+
+    override suspend fun getById(id: String): FSPurchase? {
+        val firestore = firebaseManager.storeFirestore
+        if (firestore == null) {
+            error("Firestore instance is uninitialized")
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        val purchasePath = salesApplication
+            .stringResource(R.string.fs_doc_purchase)
+            .format(storeId, id)
+
+        val purchaseDocRef = firestore.document(purchasePath)
+        val purchaseDoc = purchaseDocRef.get().await()
+        val fsPurchase = purchaseDoc.toObject(FSPurchase::class.java)
+
+        return fsPurchase
+    }
 }

@@ -32,7 +32,7 @@ data class FSPurchase(
     @Keep
     @JvmField
     @PropertyName("clients")
-    val clients: List<FSDenormalizedClient>,
+    val clients: List<FSDenormalizedClient> = emptyList(),
 
     @Keep
     @JvmField
@@ -160,7 +160,7 @@ data class FSPurchase(
     @Keep
     @JvmField
     @PropertyName("overall_discount")
-    val overallDiscount: FSDiscountDescription,
+    val overallDiscount: FSDiscountDescription = FSDiscountDescription(),
     @Keep
     @JvmField
     @PropertyName("price")
@@ -172,7 +172,7 @@ data class FSPurchase(
     @Keep
     @JvmField
     @PropertyName("prod_discount")
-    val prodDiscount: Map<String, FSPurchaseProductsDiscount>,
+    val prodDiscount: Map<String, FSPurchaseProductsDiscount> = emptyMap(),
 
     @Keep
     @JvmField

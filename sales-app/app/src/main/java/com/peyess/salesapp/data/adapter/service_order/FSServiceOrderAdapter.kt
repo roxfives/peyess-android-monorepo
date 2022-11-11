@@ -90,6 +90,9 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         professionalId = professionalId,
         prescriptionDate = prescriptionDate.toZonedDateTime(),
 
+        hasAddition = hasAddition,
+        hasPrism = hasPrism,
+
         lCylinder = lCylinder,
         lSpheric = lSpheric,
         lAxisDegree = lAxisDegree,

@@ -28,6 +28,22 @@ private fun printFramesDescription(value: String, isOwnFrames: Boolean = false):
     }
 }
 
+private fun printAdditionData(value: String, hasAddition: Boolean = false): String {
+    return if (hasAddition) {
+        printValue(value)
+    } else {
+        "------"
+    }
+}
+
+private fun printPrismData(value: String, hasPrism: Boolean = false): String {
+    return if (hasPrism) {
+        printValue(value)
+    } else {
+        "------------"
+    }
+}
+
 fun buildHtml(
     context: Context,
     serviceOrder: ServiceOrderDocument,
@@ -83,18 +99,18 @@ fun buildHtml(
         prescriptionLeftSpherical = "%.2f".format(serviceOrder.lSpheric),
         prescriptionLeftCylindrical = "%.2f".format(serviceOrder.lCylinder),
         prescriptionLeftAxis = "%.2f".format(serviceOrder.lAxisDegree),
-        prescriptionLeftAddition = "%.2f".format(serviceOrder.lAddition),
-        prescriptionLeftPrismPosition = serviceOrder.lPrismPos,
-        prescriptionLeftPrismDegree = "%.2f".format(serviceOrder.lPrismDegree),
+        prescriptionLeftAddition = printAdditionData( "%.2f".format(serviceOrder.lAddition), serviceOrder.hasAddition),
+        prescriptionLeftPrismPosition = printPrismData(serviceOrder.lPrismPos, serviceOrder.hasPrism),
+        prescriptionLeftPrismDegree = printPrismData("%.2f".format(serviceOrder.lPrismDegree), serviceOrder.hasPrism),
         prescriptionLeftDnp = "%.2f".format(serviceOrder.lIpd),
         prescriptionLeftHeight = "%.2f".format(serviceOrder.lHe),
 
         prescriptionRightSpherical = "%.2f".format(serviceOrder.rSpheric),
         prescriptionRightCylindrical = "%.2f".format(serviceOrder.rCylinder),
         prescriptionRightAxis = "%.2f".format(serviceOrder.rAxisDegree),
-        prescriptionRightAddition = "%.2f".format(serviceOrder.rAddition),
-        prescriptionRightPrismPosition = serviceOrder.rPrismPos,
-        prescriptionRightPrismDegree = "%.2f".format(serviceOrder.rPrismDegree),
+        prescriptionRightAddition = printAdditionData("%.2f".format(serviceOrder.rAddition), serviceOrder.hasAddition),
+        prescriptionRightPrismPosition = printPrismData(serviceOrder.rPrismPos, serviceOrder.hasPrism),
+        prescriptionRightPrismDegree = printPrismData("%.2f".format(serviceOrder.rPrismDegree), serviceOrder.hasPrism),
         prescriptionRightDnp = "%.2f".format(serviceOrder.rIpd),
         prescriptionRightHeight = "%.2f".format(serviceOrder.rHe),
 

@@ -85,6 +85,9 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         professionalId = professionalId,
         prescriptionDate = prescriptionDate.toTimestamp(),
 
+        hasAddition = hasAddition,
+        hasPrism = hasPrism,
+
         lCylinder = lCylinder,
         lSpheric = lSpheric,
         lAxisDegree = lAxisDegree,

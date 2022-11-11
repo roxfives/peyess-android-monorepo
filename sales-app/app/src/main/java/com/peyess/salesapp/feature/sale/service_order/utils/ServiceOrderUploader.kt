@@ -136,6 +136,9 @@ class ServiceOrderUploader constructor(
             professionalId = prescriptionPictureEntity!!.professionalId,
             prescriptionDate = zonedDateTime,
 
+            hasAddition = prescriptionDataEntity!!.hasAddition,
+            hasPrism = prescriptionDataEntity!!.hasPrism,
+
             lCylinder = prescriptionDataEntity!!.cylindricalLeft,
             lSpheric = prescriptionDataEntity!!.sphericalLeft,
             lAxisDegree = prescriptionDataEntity!!.axisLeft,

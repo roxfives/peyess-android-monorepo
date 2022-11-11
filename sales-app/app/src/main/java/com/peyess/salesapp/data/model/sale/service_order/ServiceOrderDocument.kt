@@ -94,6 +94,9 @@ data class ServiceOrderDocument(
     val professionalId: String = "",
     val prescriptionDate: ZonedDateTime = ZonedDateTime.now(),
 
+    val hasAddition: Boolean = false,
+    val hasPrism: Boolean = false,
+
     val lCylinder: Double = 0.0,
     val lSpheric: Double = 0.0,
     val lAxisDegree: Double = 0.0,
@@ -101,7 +104,6 @@ data class ServiceOrderDocument(
     val lPrismAxis: Double = 0.0,
     val lPrismDegree: Double = 0.0,
     val lPrismPos: String = "",
-
 
     val rCylinder: Double = 0.0,
     val rSpheric: Double = 0.0,

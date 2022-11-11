@@ -316,6 +316,15 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
+    @PropertyName("has_addition")
+    val hasAddition: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("has_prism")
+    val hasPrism: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("l_cylinder")
     val lCylinder: Double = 0.0,
     @Keep

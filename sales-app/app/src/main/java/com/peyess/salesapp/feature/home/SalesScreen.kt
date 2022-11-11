@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.home
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,12 +21,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,11 +47,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
+import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
@@ -59,6 +67,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 
@@ -74,6 +83,8 @@ fun SalesScreen(
     modifier: Modifier = Modifier,
     onStartNewSale: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+
     val firstStepViewModel: FirstTimeViewModel = mavericksActivityViewModel()
     val secondStepViewModel: SecondStepViewModel = mavericksActivityViewModel()
     val thirdStepViewModel: ThirdStepViewModel = mavericksActivityViewModel()
@@ -91,6 +102,8 @@ fun SalesScreen(
 
     val isServiceOrderListLoading by viewModel.collectAsState(MainAppState::isServiceOrderListLoading)
     val serviceOrderList by viewModel.collectAsState(MainAppState::serviceOrderList)
+
+    val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
 
     val hasStartedNewSale = remember {
         mutableStateOf(false)
@@ -124,10 +137,34 @@ fun SalesScreen(
             isServiceOrderListLoading = isServiceOrderListLoading,
 
             serviceOrderList = serviceOrderList,
-
             onStartNewSale = {
                 viewModel.startNewSale()
             },
+
+            isGeneratingPdfFor = isGeneratingPdfFor,
+            onGenerateSalePdf = {
+                viewModel.generateServiceOrderPdf(
+                    context = context,
+                    serviceOrder = it,
+                    onPdfGenerationFailure = {},
+                    onPdfGenerated = {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        val uri = FileProvider
+                            .getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", it)
+
+                        Timber.i("New uri: $uri")
+                        intent.setDataAndType(uri, "application/pdf")
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                        try {
+                            startActivity(context, intent, null)
+                        } catch (err: Throwable) {
+                            Timber.e("Failed to open pdf handler: ${err.message}", err)
+                        }
+                    }
+                )
+            }
         )
     }
 }
@@ -141,6 +178,8 @@ fun SaleList(
 
     serviceOrderList: List<ServiceOrderDocument> = emptyList(),
 
+    isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
+    onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
     onStartNewSale: () -> Unit = {},
 ) {
     LazyColumn(
@@ -196,6 +235,9 @@ fun SaleList(
                     .padding(SalesAppTheme.dimensions.grid_1_5)
                     .fillMaxWidth(),
                 serviceOrder = serviceOrderList[it],
+                isGeneratingPdf = isGeneratingPdfFor.first
+                        && isGeneratingPdfFor.second == serviceOrderList[it].id,
+                onGenerateSalePdf = onGenerateSalePdf,
             )
         }
 
@@ -209,6 +251,9 @@ fun SaleList(
 private fun ServiceOrderCard(
     modifier: Modifier = Modifier,
     serviceOrder: ServiceOrderDocument = ServiceOrderDocument(),
+
+    onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
+    isGeneratingPdf: Boolean = false,
 ) {
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val message = stringResource(id = R.string.so_card_message).format(
@@ -223,7 +268,7 @@ private fun ServiceOrderCard(
                 width = 2.dp,
                 MaterialTheme.colors.primary.copy(alpha = 0.5f),
             ), shape = RoundedCornerShape(6.dp))
-            .clickable { }
+            .clickable { },
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -291,10 +336,40 @@ private fun ServiceOrderCard(
                         style = MaterialTheme.typography.body1
                     )
                 }
+
+                Spacer(modifier = Modifier.width(2.dp))
             }
         }
 
         Text(modifier = Modifier.padding(16.dp), text = message)
+
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val backgroundColor = if (isGeneratingPdf) {
+                Color.Transparent
+            } else {
+                MaterialTheme.colors.primary
+            }
+
+            if (isGeneratingPdf) {
+                CircularProgressIndicator()
+            } else {
+                Button(
+                    onClick = {
+                        if (!isGeneratingPdf) {
+                            onGenerateSalePdf(serviceOrder)
+                        }
+                    },
+                ) {
+                    Text(text = stringResource(id = R.string.btn_generate_pdf))
+                }
+            }
+        }
     }
 }
 

@@ -1,31 +1,39 @@
 package com.peyess.salesapp.app.state
 
+import android.content.Context
+import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.utils.file.createPrintFile
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
-
+import java.io.File
 
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
-    val authenticationRepository: AuthenticationRepository,
-    val saleRepository: SaleRepository,
+    private val authenticationRepository: AuthenticationRepository,
+    private val saleRepository: SaleRepository,
     private val clientRepository: ClientRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
+    private val purchaseRepository: PurchaseRepository,
     private val gambetaDao: GambetaDao,
 ): MavericksViewModel<MainAppState>(initialState) {
 
@@ -92,6 +100,47 @@ class MainViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(serviceOrderListAsync = it)
             }
+
+    }
+
+    fun generateServiceOrderPdf(
+        context: Context,
+        serviceOrder: ServiceOrderDocument,
+        onPdfGenerationFailure: (err: Throwable) -> Unit = {},
+        onPdfGenerated: (file: File) -> Unit = {}
+    ) = withState {
+        suspend {
+            purchaseRepository
+                .getById(serviceOrder.purchaseId)
+        }.execute(Dispatchers.IO) {
+            if (it is Success && it.invoke() != null) {
+                viewModelScope.launch(Dispatchers.Main) {
+                    val htmlToPdfConverter = HtmlToPdfConvertor(context)
+
+                    val purchase = it.invoke()
+                    val html = buildHtml(
+                        context,
+                        serviceOrder,
+                        purchase!!,
+                    )
+
+                    val file = createPrintFile(context)
+                    htmlToPdfConverter.convert(
+                        file,
+                        html,
+                        onPdfGenerationFailure,
+                        { onPdfGenerated(it) },
+                    )
+                }
+            }
+
+            val isGeneratingPdf = it is Loading
+            val generatingFor = if (isGeneratingPdf) serviceOrder.id else ""
+
+            copy(
+                isGeneratingPdfFor = Pair(isGeneratingPdf, generatingFor),
+            )
+        }
 
     }
 

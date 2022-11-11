@@ -81,6 +81,8 @@
     <string name="go_next_default">Próximo</string>
     <string name="so_card_message">Ordem de Serviço no valor de %1$s emitida no dia %2$s com responsável %3$s</string>
 
+    <string name="btn_generate_pdf">Gerar PDF</string>
+
     <!-- UI Component: Welcome   -->
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
     <string name="label_client_name">Primeiro nome do(a) cliente</string>
@@ -523,6 +525,7 @@
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
     <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
+    <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

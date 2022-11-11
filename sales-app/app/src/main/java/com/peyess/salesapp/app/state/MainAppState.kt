@@ -37,6 +37,8 @@ data class MainAppState(
 
     val pickScenario: PickScenario = PickScenario.ServiceOrder,
     val pickedId: String = "",
+
+    val isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
 ): MavericksState {
     val isCreatingNewSale = createNewSale is Loading
 

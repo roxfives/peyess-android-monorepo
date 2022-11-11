@@ -60,7 +60,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -257,14 +256,11 @@ fun ServiceOrderScreen(
                     context = context,
                     onPdfGenerated = {
                         val intent = Intent(Intent.ACTION_VIEW)
-                        val uri = it.toUri()
-                        Timber.i("Previous uri: ${uri}")
-
-                        val newUri = FileProvider
+                        val uri = FileProvider
                             .getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", it)
 
-                        Timber.i("New uri: $newUri")
-                        intent.setDataAndType(newUri, "application/pdf")
+                        Timber.i("New uri: $uri")
+                        intent.setDataAndType(uri, "application/pdf")
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 

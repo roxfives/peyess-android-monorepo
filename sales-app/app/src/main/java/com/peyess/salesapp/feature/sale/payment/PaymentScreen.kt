@@ -125,10 +125,14 @@ fun PaymentScreen(
     val paymentId = navHostController.currentBackStackEntry?.arguments?.getLong("paymentId")
 
     LaunchedEffect(clientId) {
-        viewModel.loadClient(clientId ?: "")
+        if (clientId != null && clientId.isNotBlank()) {
+            viewModel.loadClient(clientId)
+        }
     }
     LaunchedEffect(paymentId) {
-        viewModel.loadPayment(paymentId ?: 0L)
+        if (paymentId != null) {
+            viewModel.loadPayment(paymentId)
+        }
     }
 
     val isClientLoading by viewModel.collectAsState(PaymentState::isClientLoading)

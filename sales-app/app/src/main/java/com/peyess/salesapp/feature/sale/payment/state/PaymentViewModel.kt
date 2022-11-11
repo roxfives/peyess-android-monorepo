@@ -60,17 +60,42 @@ class PaymentViewModel @AssistedInject constructor(
             }
         }
 
+//        onAsync(PaymentState::clientAsync) { client ->
+//            withState { state ->
+//                if (client != null) {
+//                    saleRepository.updatePayment(
+//                        state.payment.copy(
+//                            clientId = client.id,
+//                            clientDocument = client.document,
+//                            clientName = client.name,
+//                            clientAddress = client.shortAddress,
+//                            clientPicture = client.picture,
+//                        )
+//                    )
+//                }
+//            }
+//        }
+
         onEach(PaymentState::paymentAsync, PaymentState::clientAsync) { payment, client ->
             val pay = payment.invoke()
             val payer = client.invoke()
+
+            Timber.i("UPDATING: Pay async is $payment")
+            Timber.i("UPDATING: Payer async is $client")
+
+            Timber.i("UPDATING: Pay is $pay")
+            Timber.i("UPDATING: Payer is $payer")
 
             if (
                 payment is Success
                     && client is Success
                     && pay != null
-                    && payer != null
+                    && (payer != null && payer.id.isNotBlank())
             ) {
                 viewModelScope.launch(Dispatchers.IO) {
+                    Timber.i("UPDATING: with pay $pay")
+                    Timber.i("UPDATING: with payer $payer")
+
                     saleRepository.updatePayment(
                         pay.copy(
                             clientId = payer.id,

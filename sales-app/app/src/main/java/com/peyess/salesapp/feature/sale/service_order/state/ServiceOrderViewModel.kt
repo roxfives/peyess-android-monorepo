@@ -291,7 +291,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         copy(hasSaleFailed = false)
     }
 
-    fun generateSale() = withState {
+    fun generateSale(context: Context) = withState {
         suspend {
             var soId = ""
             var saleId = ""
@@ -308,7 +308,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
             Timber.i("Got so info")
 
             Timber.i("Generating SO with $soId for sale $saleId")
-            val salePair = serviceOrderUploader.generateSaleData(it.hidServiceOrder, soId, saleId, true)
+            val salePair = serviceOrderUploader
+                .generateSaleData(context, it.hidServiceOrder, soId, saleId, true)
             Timber.i("Generated SO with $soId for sale $saleId")
 
             Timber.i("Emitting SO with id $soId for sale $saleId")
@@ -376,7 +377,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             Timber.i("Generating pdf for $soId with sale $saleId")
 
             val salePair = serviceOrderUploader
-                .generateSaleData(it.hidServiceOrder, soId, saleId, false)
+                .generateSaleData(context, it.hidServiceOrder, soId, saleId, false)
             val html = buildHtml(context, salePair.first, salePair.second)
             val htmlToPdfConverter = HtmlToPdfConvertor(context)
 

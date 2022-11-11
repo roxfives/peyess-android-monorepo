@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order.utils
 
+import android.content.Context
 import android.net.Uri
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
@@ -32,6 +33,7 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.users.Collaborator
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -522,7 +524,10 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    private suspend fun createPurchase(serviceOrder: ServiceOrderDocument): PurchaseDocument {
+    private suspend fun createPurchase(
+        context: Context,
+        serviceOrder: ServiceOrderDocument,
+    ): PurchaseDocument {
         val id = purchaseId.ifBlank {
             val uniqueId = firebaseManager.uniqueId()
             purchaseId = uniqueId
@@ -543,7 +548,7 @@ class ServiceOrderUploader constructor(
                 payments.addAll(it)
             }
 
-        return PurchaseDocument(
+        var purchase = PurchaseDocument(
             id = id,
 
             storeId = storeId,
@@ -624,9 +629,15 @@ class ServiceOrderUploader constructor(
             updatedBy = serviceOrder.updatedBy,
             updateAllowedBy = serviceOrder.updateAllowedBy,
         )
+
+        val legalText = buildHtml(context, serviceOrder, purchase)
+        purchase = purchase.copy(legalText = legalText)
+
+        return purchase
     }
 
     suspend fun generateSaleData(
+        context: Context,
         hid: String,
         serviceOrderId: String,
         localSaleId: String,
@@ -675,7 +686,7 @@ class ServiceOrderUploader constructor(
         }
 
         val purchase = runBlocking {
-            createPurchase(serviceOrder)
+            createPurchase(context, serviceOrder)
         }
 
         val totalPaid = if (purchase.payments.isEmpty()) {

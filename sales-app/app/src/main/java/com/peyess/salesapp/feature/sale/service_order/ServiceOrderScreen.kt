@@ -203,7 +203,7 @@ fun ServiceOrderScreen(
         ServiceOrderScreenImpl(
             modifier = modifier,
 
-            onFinishSale = viewModel::generateSale,
+            onFinishSale = { viewModel.generateSale(context) },
 
             onChangeResponsible = onChangeResponsible,
             onChangeUser = onChangeUser,

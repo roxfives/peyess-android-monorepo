@@ -14,6 +14,10 @@ data class FSPurchase(
     @JvmField
     @PropertyName("id")
     val id: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("hid")
+    val hid: String = "",
 
     @Keep
     @JvmField

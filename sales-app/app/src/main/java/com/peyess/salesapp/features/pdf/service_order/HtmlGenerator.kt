@@ -54,7 +54,7 @@ fun buildHtml(
     val saleDate = serviceOrder.created
 
     val saleDataSection = generateSaleData(
-        saleHid = serviceOrder.hid,
+        purchaseHid = purchase.hid,
 
         saleDate = saleDate,
 

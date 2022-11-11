@@ -11,6 +11,7 @@ import java.time.ZonedDateTime
 @IgnoreExtraProperties
 data class PurchaseDocument(
     val id: String = "",
+    val hid: String = "",
 
     val storeId: String = "",
     val storeIds: List<String> = emptyList(),

@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.service_order.utils
 
 import android.content.Context
 import android.net.Uri
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.client.room.ClientRole
@@ -59,6 +60,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.random.Random
+import kotlin.random.asJavaRandom
 
 private data class ProductSet(
     val lens: LocalLensEntity = LocalLensEntity(),
@@ -89,6 +92,8 @@ class ServiceOrderUploader constructor(
 
     var measuringLeftId = ""
     var measuringRightId = ""
+
+    var purchaseHid = ""
 
     private suspend fun addPrescriptionData(
         so: ServiceOrderDocument,
@@ -524,6 +529,26 @@ class ServiceOrderUploader constructor(
         )
     }
 
+    private fun createHid(): String {
+        val random = Random.asJavaRandom()
+        val size = 9
+        val alphabet = charArrayOf(
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+            'R', 'S', 'T', 'U', 'V', 'X', 'W', 'Y', 'Z', '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9'
+        )
+
+        val zonedDateTime = ZonedDateTime.now()
+        val year = zonedDateTime.year % 1000
+        val month = zonedDateTime.month.value
+        val day = zonedDateTime.dayOfMonth
+
+        val suffix = "%02d%02d%02d".format(year, month, day)
+        val id = NanoIdUtils.randomNanoId(random, alphabet, size)
+
+        return "$suffix-$id"
+    }
+
     private suspend fun createPurchase(
         context: Context,
         serviceOrder: ServiceOrderDocument,
@@ -550,6 +575,7 @@ class ServiceOrderUploader constructor(
 
         var purchase = PurchaseDocument(
             id = id,
+            hid = purchaseHid.ifBlank { createHid() },
 
             storeId = storeId,
             storeIds = listOf(storeId),

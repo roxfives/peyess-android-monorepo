@@ -12,6 +12,7 @@ import com.peyess.salesapp.utils.time.toTimestamp
 fun PurchaseDocument.toFSPurchase(): FSPurchase {
     return FSPurchase(
         id = id,
+        hid = hid,
 
         storeId = storeId,
         storeIds = storeIds,

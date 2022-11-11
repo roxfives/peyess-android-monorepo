@@ -14,6 +14,7 @@ import com.peyess.salesapp.utils.time.toZonedDateTime
 fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
     return PurchaseDocument(
         id = id,
+        hid = hid,
 
         storeId = storeId,
         storeIds = storeIds,

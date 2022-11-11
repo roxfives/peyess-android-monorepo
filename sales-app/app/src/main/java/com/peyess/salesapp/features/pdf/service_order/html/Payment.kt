@@ -324,7 +324,7 @@ private fun buildPaymentIncomplete(
     val totalLeft = serviceOrder.leftToPay
     val fineOnDefault = 0.01
     val cumulativeFineOnDefault = 0.02
-    val limit = ZonedDateTime.now()
+    val limit = serviceOrder.updated
         .plusDays(30)
         .nextBusinessDay()
 

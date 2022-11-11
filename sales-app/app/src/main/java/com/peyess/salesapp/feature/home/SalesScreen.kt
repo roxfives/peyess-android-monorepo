@@ -350,12 +350,6 @@ private fun ServiceOrderCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val backgroundColor = if (isGeneratingPdf) {
-                Color.Transparent
-            } else {
-                MaterialTheme.colors.primary
-            }
-
             if (isGeneratingPdf) {
                 CircularProgressIndicator()
             } else {

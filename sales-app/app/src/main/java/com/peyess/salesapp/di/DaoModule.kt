@@ -65,7 +65,7 @@ import com.peyess.salesapp.data.dao.purchase.PurchaseDaoImpl
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
-import com.peyess.salesapp.database.room.gambeta.GambetaDao
+import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.Module
 import dagger.Provides
@@ -405,7 +405,7 @@ object DaoModule {
 
     @Singleton
     @Provides
-    fun provideGambetaDao(productsDatabase: ProductsDatabase): GambetaDao {
-        return productsDatabase.gambetaDao()
+    fun provideProductsTableStateDao(productsDatabase: ProductsDatabase): ProductsTableStateDao {
+        return productsDatabase.productsTableStateDao()
     }
 }

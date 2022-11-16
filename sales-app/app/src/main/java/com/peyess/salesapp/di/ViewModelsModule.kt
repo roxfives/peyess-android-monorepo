@@ -29,6 +29,7 @@ import com.peyess.salesapp.feature.sale.prescription_lens_type.state.Prescriptio
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.feature.sale.welcome.state.WelcomeViewModel
+import com.peyess.salesapp.feature.settings_actions.state.SettingsAndActionViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -217,5 +218,12 @@ interface ViewModelsModule {
     @ViewModelKey(CommunicationViewModel::class)
     fun bindCommunicationViewModelFactory(
         factory: CommunicationViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsAndActionViewModel::class)
+    fun bindSettingsAndActionViewModelFactory(
+        factory: SettingsAndActionViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

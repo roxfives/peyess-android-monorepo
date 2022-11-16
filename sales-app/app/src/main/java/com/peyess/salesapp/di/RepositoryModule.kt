@@ -36,6 +36,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
+import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
@@ -55,6 +56,9 @@ import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepositoryImpl
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepositoryImpl
+import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
+import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepositoryImpl
+import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -246,5 +250,11 @@ object RepositoryModule {
         addressLookupDao: AddressLookupDao,
     ): AddressLookupRepository {
         return AddressLookupRepositoryImpl(addressLookupDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductsTableStateRepository(productsTableStateDao: ProductsTableStateDao): ProductsTableStateRepository {
+        return ProductsTableStateRepositoryImpl(productsTableStateDao)
     }
 }

@@ -45,9 +45,7 @@ fun isMoveRightVisible(animationState: PositioningAnimationState): Boolean {
 fun isRotateLeftVisible(animationState: PositioningAnimationState): Boolean {
     return when (animationState) {
         PositioningAnimationState.PositioningBottomPointAngle,
-        PositioningAnimationState.PositioningTopPointAngle,
-        PositioningAnimationState.PositioningCheckLeft,
-        PositioningAnimationState.PositioningCheckRight ->
+        PositioningAnimationState.PositioningTopPointAngle ->
             true
 
         else ->

@@ -32,7 +32,7 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 private val subtitleAlpha = 0.5f
 
 private val minButtonWidth = 160.dp
-private val maxButtonWidth = 200.dp
+private val maxButtonWidth = 220.dp
 
 private val minButtonHeight = 72.dp
 private val maxButtonHeight = 120.dp

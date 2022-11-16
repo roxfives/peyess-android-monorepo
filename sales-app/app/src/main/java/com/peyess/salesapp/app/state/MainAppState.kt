@@ -7,7 +7,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.database.room.gambeta.GambetaEntity
+import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.Collaborator
 import com.peyess.salesapp.navigation.pick_client.PickScenario
@@ -23,7 +23,7 @@ data class MainAppState(
 
     val createNewSale: Async<Boolean> = Success(false),
 
-    val isUpdatingProductsAsync: Async<GambetaEntity?> = Uninitialized,
+    val productsTableStatusAsync: Async<ProductsTableStatus?> = Uninitialized,
 
     val serviceOrderListAsync: Async<List<ServiceOrderDocument>> = Uninitialized,
 
@@ -42,11 +42,8 @@ data class MainAppState(
 ): MavericksState {
     val isCreatingNewSale = createNewSale is Loading
 
-    val isUpdatingProducts = if (isUpdatingProductsAsync is Success) {
-        isUpdatingProductsAsync.invoke()?.isUpdating ?: true
-    } else {
-        true
-    }
+    val isUpdatingProducts = productsTableStatusAsync.invoke()?.isUpdating ?: false
+    val hasProductUpdateFailed = productsTableStatusAsync.invoke()?.hasUpdateFailed ?: true
 
     // Home Screen
     val isLoadingCollaborator: Boolean = false

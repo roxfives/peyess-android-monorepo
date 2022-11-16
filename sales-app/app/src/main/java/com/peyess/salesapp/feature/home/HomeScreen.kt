@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.home
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,18 +15,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EMobiledata
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -99,6 +107,7 @@ private val buttonIconSize = 72.dp
 fun HomeScreen(
     modifier: Modifier = Modifier,
 
+    onSettings: () -> Unit = {},
     onSignOut: () -> Unit = {},
 
     onStartSale: () -> Unit = {},
@@ -123,7 +132,8 @@ fun HomeScreen(
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
     val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
 
-    val isUpdatingProducts by viewModel.collectAsState(MainAppState::isUpdatingProducts)
+    val isUpdatingProductsTable by viewModel.collectAsState(MainAppState::isUpdatingProducts)
+    val hasProductsTableUpdateFailed by viewModel.collectAsState(MainAppState::hasProductUpdateFailed)
 
     val hasStartedNewSale = remember {
         mutableStateOf(false)
@@ -156,6 +166,12 @@ fun HomeScreen(
         store = store,
         isLoadingStore = isLoadingStore,
 
+
+        isUpdatingProductsTable = isUpdatingProductsTable,
+        hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
+
+        onSettings = onSettings,
+
         onSignOut = {
             viewModel.exit()
             onSignOut()
@@ -179,6 +195,10 @@ private fun HomeScreenImpl(
     store: OpticalStore = OpticalStore(),
     isLoadingStore: Boolean = false,
 
+    isUpdatingProductsTable: Boolean = false,
+    hasProductsTableUpdateFailed: Boolean = false,
+
+    onSettings: () -> Unit = {},
     onSignOut: () -> Unit = {},
 
     onStartSale: () -> Unit = {},
@@ -206,12 +226,39 @@ private fun HomeScreenImpl(
         Spacer(modifier = Modifier.height(sectionSpacerHeight))
 
         ButtonsPanel(
+            isUpdatingProductsTable = isUpdatingProductsTable,
+            hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
+
             onStartSale = onStartSale,
             onAddClient = onAddClient,
             onStartVisualAcuity = onStartVisualAcuity,
         )
 
         Spacer(modifier = Modifier.height(sectionSpacerHeight))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedButton(
+                colors = ButtonDefaults.outlinedButtonColors(
+                    backgroundColor = MaterialTheme.colors.primary.copy(0.2f),
+                ),
+                shape = MaterialTheme.shapes.small,
+                onClick = onSettings,
+            ) {
+                Row {
+                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "")
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(text = stringResource(id = R.string.home_btn_settings_actions))
+                }
+            }
+        }
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -246,78 +293,84 @@ private fun ProfileData(
     if (isLoading) {
         CircularProgressIndicator()
     } else {
-        Row(
-            modifier = modifier
-                .padding(profileDataPadding)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top,
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .padding(profilePicturePadding)
-                    .size(profilePictureSize)
-                    // Clip image to be shaped as a circle
-                    .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
-                    .clip(CircleShape),
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(collaborator.picture)
-                    .crossfade(true)
-                    .size(width = profilePictureSizePx, height = profilePictureSizePx)
-                    .build(),
-                contentScale = ContentScale.FillBounds,
-                contentDescription = "",
-                error = painterResource(id = R.drawable.ic_profile_placeholder),
-                fallback = painterResource(id = R.drawable.ic_profile_placeholder),
-                placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
-            )
-
-            Spacer(modifier = Modifier.height(profilePictureSpacerWidth))
-
-            Column(
-                modifier = Modifier.height(IntrinsicSize.Max),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Center,
+            Row(
+                modifier = modifier
+                    .padding(profileDataPadding)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(
-                    text = stringResource(id = R.string.home_welcome).format(collaborator.nameDisplay),
-                    style = MaterialTheme.typography.subtitle1,
+                AsyncImage(
+                    modifier = Modifier
+                        .padding(profilePicturePadding)
+                        .size(profilePictureSize)
+                        // Clip image to be shaped as a circle
+                        .border(width = 2.dp,
+                            color = MaterialTheme.colors.primary,
+                            shape = CircleShape)
+                        .clip(CircleShape),
+                    model = ImageRequest.Builder(LocalContext.current).data(collaborator.picture)
+                        .crossfade(true)
+                        .size(width = profilePictureSizePx, height = profilePictureSizePx).build(),
+                    contentScale = ContentScale.FillBounds,
+                    contentDescription = "",
+                    error = painterResource(id = R.drawable.ic_profile_placeholder),
+                    fallback = painterResource(id = R.drawable.ic_profile_placeholder),
+                    placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
                 )
 
-                Spacer(modifier = Modifier.height(profileSpacerHeight))
+                Spacer(modifier = Modifier.height(profilePictureSpacerWidth))
 
-                Row {
-                    Icon(
-                        imageVector = Icons.Filled.Place,
-                        tint = MaterialTheme.colors.primary,
-                        contentDescription = "",
-                    )
-
-                    Spacer(modifier = Modifier.width(localizationSpacerWidth))
-
-                    Text(
-                        text = localization,
-                        style = MaterialTheme.typography.subtitle1,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(
-                modifier = Modifier.height(IntrinsicSize.Max),
-                onClick = onSignOut,
-            ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.height(IntrinsicSize.Max),
+                    horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Logout,
-                        contentDescription = "",
+                    Text(
+                        text = stringResource(id = R.string.home_welcome).format(collaborator.nameDisplay),
+                        style = MaterialTheme.typography.subtitle1,
                     )
 
-                    Text(text = stringResource(id = R.string.home_btn_exit))
+                    Spacer(modifier = Modifier.height(profileSpacerHeight))
+
+                    Row {
+                        Icon(
+                            imageVector = Icons.Filled.Place,
+                            tint = MaterialTheme.colors.primary,
+                            contentDescription = "",
+                        )
+
+                        Spacer(modifier = Modifier.width(localizationSpacerWidth))
+
+                        Text(
+                            text = localization,
+                            style = MaterialTheme.typography.subtitle1,
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                IconButton(
+                    modifier = Modifier.height(IntrinsicSize.Max),
+                    onClick = onSignOut,
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Logout,
+                            contentDescription = "",
+                        )
+
+                        Text(text = stringResource(id = R.string.home_btn_exit))
+                    }
                 }
             }
         }
@@ -329,6 +382,8 @@ private fun ButtonsPanel(
     modifier: Modifier = Modifier,
 
     totalClients: Int = 0,
+    isUpdatingProductsTable: Boolean = false,
+    hasProductsTableUpdateFailed: Boolean = false,
 
     onStartSale: () -> Unit = {},
     onAddClient: () -> Unit = {},
@@ -354,17 +409,41 @@ private fun ButtonsPanel(
                     state = minimumWidthState,
                     density = density,
                 ),
-                title = stringResource(id = R.string.home_btn_sale_title),
-                subtitle = stringResource(id = R.string.home_btn_sale_subtitle),
-
-                icon = {
-                    Icon(
-                        modifier = Modifier.size(buttonIconSize),
-                        imageVector = Icons.Filled.Sell,
-                        contentDescription = "",
-                    )
+                title = if (hasProductsTableUpdateFailed) {
+                    stringResource(id = R.string.home_btn_sale_title_failed)
+                } else if (isUpdatingProductsTable) {
+                    stringResource(id = R.string.home_btn_sale_title_updating)
+                } else {
+                    stringResource(id = R.string.home_btn_sale_title)
                 },
 
+                subtitle = if (hasProductsTableUpdateFailed) {
+                    stringResource(id = R.string.home_btn_sale_subtitle_failed)
+                } else if (isUpdatingProductsTable) {
+                    stringResource(id = R.string.home_btn_sale_subtitle_updating)
+                } else {
+                    stringResource(id = R.string.home_btn_sale_subtitle)
+                },
+
+                icon = {
+                    if (hasProductsTableUpdateFailed) {
+                        Icon(
+                            modifier = Modifier.size(buttonIconSize),
+                            imageVector = Icons.Filled.Error,
+                            contentDescription = "",
+                        )
+                    } else if (isUpdatingProductsTable) {
+                        CircularProgressIndicator()
+                    } else {
+                        Icon(
+                            modifier = Modifier.size(buttonIconSize),
+                            imageVector = Icons.Filled.Sell,
+                            contentDescription = "",
+                        )
+                    }
+                },
+
+                enabled = !isUpdatingProductsTable,
                 onClick = onStartSale,
             )
 
@@ -415,10 +494,6 @@ private fun ButtonsPanel(
 
                 onClick = onStartVisualAcuity,
             )
-
-//            Spacer(modifier = Modifier.width(buttonPanelSpacerWidth))
-//
-//            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }

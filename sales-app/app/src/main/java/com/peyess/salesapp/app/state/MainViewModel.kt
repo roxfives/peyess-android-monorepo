@@ -9,12 +9,11 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.database.room.gambeta.GambetaDao
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
-import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.file.createPrintFile
@@ -34,7 +33,7 @@ class MainViewModel @AssistedInject constructor(
     private val clientRepository: ClientRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
     private val purchaseRepository: PurchaseRepository,
-    private val gambetaDao: GambetaDao,
+    private val productsTableStateRepository: ProductsTableStateRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
@@ -42,12 +41,6 @@ class MainViewModel @AssistedInject constructor(
             copy(
                 createNewSale = Success(false),
             )
-        }
-
-        withState {
-            gambetaDao.getGambeta(0).execute {
-                copy(isUpdatingProductsAsync = it)
-            }
         }
 
         onEach(MainAppState::authState) {
@@ -69,8 +62,15 @@ class MainViewModel @AssistedInject constructor(
             }
         }
 
+        loadProductTableStatus()
         loadCurrentCollaborator()
         loadStore()
+    }
+
+    private fun loadProductTableStatus() {
+        productsTableStateRepository.observeState().execute {
+            copy(productsTableStatusAsync = it)
+        }
     }
 
     private fun loadStore() = withState {

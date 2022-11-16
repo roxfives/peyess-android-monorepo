@@ -28,16 +28,19 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.database.room.ProductsDatabase
-import com.peyess.salesapp.database.room.gambeta.GambetaDao
-import com.peyess.salesapp.database.room.gambeta.GambetaEntity
+import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
+import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+
+const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 
 @HiltWorker
 class UpdateProductsWorker @AssistedInject constructor(
@@ -45,9 +48,10 @@ class UpdateProductsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     val productsDatabase: ProductsDatabase,
     val salesApplication: SalesApplication,
-    val gambetaDao: GambetaDao,
+    val productsTableStateRepository: ProductsTableStateRepository,
     val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
+
     private fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
         val lenses = docs.mapNotNull {
             try {
@@ -306,15 +310,24 @@ class UpdateProductsWorker @AssistedInject constructor(
             .format(storeId)
 
         withContext(Dispatchers.IO) {
-            var gambetaEntity = GambetaEntity(0, false, true)
-            gambetaDao.getGambeta(0).take(1).collect {
-                gambetaEntity = it ?: GambetaEntity(0, false, true)
+            val forceUpdate = inputData
+                .getBoolean(forceUpdateKey, false)
+            Timber.i("Starting Worker with forceUpdate = $forceUpdate")
+
+            val productsTableStatus = runBlocking {
+                productsTableStateRepository.getCurrentState()
             }
 
-            if (gambetaEntity.hasUpdated) {
-                return@withContext Result.success()
+            if (
+                forceUpdate
+                || !productsTableStatus.hasUpdated
+                || productsTableStatus.hasUpdateFailed
+            ) {
+                productsTableStateRepository.update(
+                    productsTableStatus.copy(isUpdating = true),
+                )
             } else {
-                gambetaDao.add(gambetaEntity)
+                return@withContext Result.success()
             }
 
             Timber.i("Starting products update with path $lensPath")
@@ -363,12 +376,18 @@ class UpdateProductsWorker @AssistedInject constructor(
             } while (!snaps.isEmpty)
 
             Timber.i("Downloaded total of $totalDownloaded")
+            productsTableStateRepository
+                .update(
+                    ProductsTableStatus(
+                        hasUpdated = true,
+                        hasUpdateFailed = false,
+                        isUpdating = false,
+                    )
+                )
         }
 
-        gambetaDao.add(GambetaEntity(0, true, false))
         return Result.success()
     }
-
 
     companion object {
         const val pageLimit = 100L

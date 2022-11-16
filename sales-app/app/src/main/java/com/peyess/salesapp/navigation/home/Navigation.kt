@@ -28,6 +28,8 @@ fun buildHomeNavGraph(
         HomeScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
 
+            onSettings = { navHostController.navigate(SalesAppScreens.SettingsAndActions.name) },
+
             onSignOut = {
                 navHostController.backQueue.clear()
                 navHostController.navigate(SalesAppScreens.UserListAuthentication.name)

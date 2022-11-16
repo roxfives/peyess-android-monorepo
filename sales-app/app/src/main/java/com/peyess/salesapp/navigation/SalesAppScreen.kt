@@ -43,6 +43,7 @@ enum class SalesAppScreens {
     CreateNewClientContact,
 
     VisualAcuity,
+    SettingsAndActions,
 
     People,
     AddPerson,
@@ -93,6 +94,7 @@ enum class SalesAppScreens {
                 CreateNewClientContact.name -> CreateNewClientContact
 
                 VisualAcuity.name -> VisualAcuity
+                SettingsAndActions.name -> SettingsAndActions
 
                 SaleScreen.name -> SaleScreen
                 Home.name -> Home
@@ -150,6 +152,7 @@ enum class SalesAppScreens {
                 CreateNewClientContact.name -> "Criar novo cliente"
 
                 VisualAcuity.name -> "Acuidade Visual"
+                SettingsAndActions.name -> "Configurações e ações"
 
                 AddPerson.name -> "Adicionar pessoa"
                 Frames.name -> "Armações"

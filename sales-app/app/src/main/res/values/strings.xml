@@ -60,6 +60,7 @@
     <string name="home_no_notifications">Você não tem nenhuma notificação</string>
 
     <string name="home_btn_exit">Sair</string>
+    <string name="home_btn_settings_actions">Configurações e ações</string>
 
     <string name="home_btn_visual_acuity_title">Acuidade visual</string>
     <string name="home_btn_visual_acuity_subtitle">Para perto</string>
@@ -69,8 +70,12 @@
     <string name="home_btn_clients_subtitle">%1$d clientes</string>
 
     <string name="home_btn_sale_title">Nova venda</string>
+    <string name="home_btn_sale_title_updating">Atualizando</string>
+    <string name="home_btn_sale_title_failed">Erro</string>
     <string name="home_btn_sale_pending_subtitle">Existem vendas pendentes</string>
     <string name="home_btn_sale_subtitle">Sem vendas pendentes</string>
+    <string name="home_btn_sale_subtitle_updating">Lista de produtos em atualização</string>
+    <string name="home_btn_sale_subtitle_failed">Erro ao atualizar produtos</string>
 
     <string name="btn_make_new_sale">Fazer nova venda</string>
 
@@ -87,6 +92,11 @@
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
     <string name="label_client_name">Primeiro nome do(a) cliente</string>
     <string name="error_client_name_empty">O nome não pode ser vazio</string>
+
+    <!-- UI Component: Setttings and Actions   -->
+    <string name="settings_title_update_products">Forçar atualização da tabela de produtos</string>
+    <string name="settings_title_updating_products">Atualizando a tabela de produtos…</string>
+    <string name="settings_btn_done">Voltar</string>
 
     <!-- UI Component: PickLensType   -->
     <string name="mike_lens_type_default">Fantástico %1$s, agora podemos começar! Nos fale qual será o tipo de óculos que deseja entre as opções acima!</string>

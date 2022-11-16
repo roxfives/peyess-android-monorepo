@@ -369,14 +369,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isMoveLeftVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onMoveLeft() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_left)
@@ -394,17 +392,15 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isMoveDownVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onMoveDown() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
-                            LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_bottom)
+                            LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_down)
                         )
 
                         LottieAnimation(
@@ -419,14 +415,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isRotateLeftVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onRotateLeft() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_rotate_left)
@@ -444,14 +438,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isExpandVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onExpand() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_expand)
@@ -492,14 +484,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isMoveRightVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onMoveRight() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_right)
@@ -517,14 +507,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isMoveUpVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
+                            .size(width = 80.dp, height = 80.dp)
                             .holdable(interactionSource = remember { MutableInteractionSource() },
                                 onClick = { onMoveUp() }),
-                        shape = CircleShape,
-                        onClick = {},
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_up)
@@ -542,16 +530,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isRotateRightVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
-                            .holdable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { onRotateRight() }
-                            ),
-                        shape = CircleShape,
-                        onClick = {},
+                            .size(width = 80.dp, height = 80.dp)
+                            .holdable(interactionSource = remember { MutableInteractionSource() },
+                                onClick = { onRotateRight() }),
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_rotate_right)
@@ -569,16 +553,12 @@ private fun MeasureFramesScreenImpl(
                 AnimatedVisibility(
                     visible = isShrinkVisible,
                 ) {
-                    OutlinedButton(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = 32.dp, vertical = 4.dp)
-                            .size(width = 60.dp, height = 60.dp)
-                            .holdable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                onClick = { onShrink() }
-                            ),
-                        shape = CircleShape,
-                        onClick = {},
+                            .size(width = 80.dp, height = 80.dp)
+                            .holdable(interactionSource = remember { MutableInteractionSource() },
+                                onClick = { onShrink() }),
                     ) {
                         val composition by rememberLottieComposition(
                             LottieCompositionSpec.RawRes(R.raw.lottie_measuring_icon_shrink)
@@ -652,17 +632,18 @@ private fun MeasureFramesScreenImpl(
                     modifier = Modifier
                         .align(alignment = Alignment.BottomCenter)
                         .padding(bottom = 80.dp)
-                        .zIndex(1f)
+                        .zIndex(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
                 ) {
                     AnimatedVisibility(
                         visible = isPreviousVisible,
                     ) {
-                        OutlinedButton(
+                        Box(
                             modifier = Modifier
-                                .size(width = 80.dp, height = 80.dp)
-                                .padding(8.dp),
-                            shape = CircleShape,
-                            onClick = { onPrevious() }
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .size(width = 100.dp, height = 100.dp)
+                                .clickable { onPrevious() },
                         ) {
                             val composition by rememberLottieComposition(
                                 LottieCompositionSpec.RawRes(R.raw.lottie_measuring_backward)
@@ -697,12 +678,11 @@ private fun MeasureFramesScreenImpl(
                     AnimatedVisibility(
                         visible = isDoneVisible,
                     ) {
-                        OutlinedButton(
+                        Box(
                             modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .size(width = 80.dp, height = 80.dp)
-                                .padding(8.dp),
-                            shape = CircleShape,
-                            onClick = { onConfirm() }
+                                .clickable { onConfirm() },
                         ) {
                             val composition by rememberLottieComposition(
                                 LottieCompositionSpec.RawRes(R.raw.lottie_measuring_done)
@@ -720,15 +700,11 @@ private fun MeasureFramesScreenImpl(
                     AnimatedVisibility(
                         visible = isNextVisible,
                     ) {
-                        OutlinedButton(
+                        Box(
                             modifier = Modifier
-                                .size(width = 80.dp, height = 80.dp)
-                                .padding(8.dp),
-                            shape = CircleShape,
-                            onClick = {
-                                zoomPanel.resetZoom()
-                                onNext()
-                            }
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                                .size(width = 100.dp, height = 100.dp)
+                                .clickable { onNext() },
                         ) {
                             val composition by rememberLottieComposition(
                                 LottieCompositionSpec.RawRes(R.raw.lottie_measuring_forward)

@@ -35,14 +35,19 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
@@ -67,6 +72,154 @@ class SaleRepositoryImpl @Inject constructor(
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
+
+    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentSO by lazy {
+        salesApplication
+            .dataStoreCurrentSale
+            .data
+            .flatMapLatest { prefs ->
+                val saleId = prefs[currentSOKey]
+
+                if (saleId != null) {
+                    activeSODao.getById(saleId)
+                } else {
+                    error("Could not find sale id")
+                }
+            }.retryWhen { _ , attempt ->
+                attempt < currentSOThreshold
+            }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentSale by lazy {
+        salesApplication
+            .dataStoreCurrentSale
+            .data
+            .flatMapLatest { prefs ->
+                val saleId = prefs[currentSaleKey]
+
+                if (saleId != null) {
+                    activeSalesDao.getById(saleId)
+                } else {
+                    error("Could not find sale id")
+                }
+            }
+            .shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentPrescriptionPicture by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest { so ->
+                prescriptionPictureDao.getById(so.id).map {
+                    it ?: PrescriptionPictureEntity(soId = so.id)
+            }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentFramesData by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest { so ->
+                framesDataDao.getById(so.id).map {
+                    it ?: FramesEntity(soId = so.id)
+                }
+            }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentComparisons by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest {
+                comparisonDao.getBySo(it.id)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentPrescriptionData by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest { so ->
+                prescriptionDataDao.getById(so.id).map {
+                    Timber.i("Emitting prescription data")
+                    it ?: PrescriptionDataEntity(soId = so.id)
+            }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentPickedProducts by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest {
+                productPickedDao.getById(it.id)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentPayments by lazy {
+        currentSO
+            .filterNotNull()
+            .flatMapLatest {
+                salePaymentDao.getBySO(it.id)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentPositioningsByEye by lazy {
+        val eyes = Eye.allOptions
+
+        eyes.map { eye ->
+            eye to currentSO
+                .filterNotNull()
+                .flatMapLatest { so ->
+                    positioningDao.getById(so.id, eye).map { entity ->
+                        entity ?: PositioningEntity(soId = so.id, eye = eye)
+                            .updateInitialPositioningState()
+                    }
+            }
+        }.toMap()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val currentClientsByRole by lazy {
+        val roles = ClientRole.allOptions
+
+        roles.map { role ->
+            role to currentSO
+                .filterNotNull()
+                .flatMapLatest { so ->
+                    Timber.i("Got so $so")
+                    clientPickedDao.getClientForSO(role = role, soId = so.id)
+                }
+        }.toMap()
+    }
 
     override fun createSale(): Flow<Boolean> {
         return authenticationRepository.currentUser().filterNotNull().map {
@@ -101,84 +254,72 @@ class SaleRepositoryImpl @Inject constructor(
         activeSODao.update(so)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun activeSale(): Flow<ActiveSalesEntity?> {
-        return salesApplication
-            .dataStoreCurrentSale
-            .data
-            .flatMapLatest { prefs ->
-                val saleId = prefs[currentSaleKey]
-
-                if (saleId != null) {
-                    activeSalesDao.getById(saleId)
-                } else {
-                    error("Could not find sale id")
-                }
-            }
+        return currentSale
     }
 
     override fun updateActiveSO(activeSOEntity: ActiveSOEntity) {
         activeSODao.update(activeSOEntity)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun activeSO(): Flow<ActiveSOEntity?> {
-        return salesApplication
-            .dataStoreCurrentSale
-            .data
-            .flatMapLatest { prefs ->
-                val saleId = prefs[currentSOKey]
-
-                if (saleId != null) {
-                    activeSODao.getById(saleId)
-                } else {
-                    error("Could not find sale id")
-                }
-            }.retryWhen { cause, attempt ->
-                cause is IllegalStateException && attempt < currentSOThreshold
-            }
+        return currentSO
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {
-        return activeSO().filterNotNull().flatMapLatest { so ->
-            prescriptionPictureDao.getById(so.id).map {
-                it ?: PrescriptionPictureEntity(soId = so.id)
-            }
-        }
+        return currentPrescriptionPicture
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentPrescriptionData(): Flow<PrescriptionDataEntity> {
-        return activeSO().filterNotNull().flatMapLatest { so ->
-            prescriptionDataDao.getById(so.id).map {
-                Timber.i("Emitting prescription data")
-                it ?: PrescriptionDataEntity(soId = so.id)
-            }
-        }
+        return currentPrescriptionData
+    }
+
+    override fun currentFramesData(): Flow<FramesEntity> {
+        return currentFramesData
+    }
+
+    override fun comparisons(): Flow<List<LensComparisonEntity>> {
+        return currentComparisons
+    }
+
+    override fun pickedProduct(): Flow<ProductPickedEntity?> {
+        return currentPickedProducts
+    }
+
+    override fun payments(): Flow<List<SalePaymentEntity>> {
+        return currentPayments
+    }
+
+    override fun currentPositioning(eye: Eye): Flow<PositioningEntity> {
+        return currentPositioningsByEye[eye]!!
+
+//        activeSO().filterNotNull().flatMapLatest { so ->
+//            positioningDao.getById(so.id, eye).map {
+//                it ?: PositioningEntity(soId = so.id, eye = eye)
+//                    .updateInitialPositioningState()
+//            }
+//        }
+    }
+
+    override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
+        return currentClientsByRole[role]!!
     }
 
     override fun updateFramesData(frames: FramesEntity) {
         framesDataDao.update(frames)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun currentFramesData(): Flow<FramesEntity> {
-        return activeSO().filterNotNull().flatMapLatest { so ->
-            framesDataDao.getById(so.id).map {
-                it ?: FramesEntity(soId = so.id)
+    override suspend fun clearProductComparison() {
+        activeSO()
+            .filterNotNull()
+            .take(1)
+            .collect {
+                comparisonDao.deleteAllFromSO(it.id)
             }
-        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun currentPositioning(eye: Eye): Flow<PositioningEntity> {
-        return activeSO().filterNotNull().flatMapLatest { so ->
-            positioningDao.getById(so.id, eye).map {
-                it ?: PositioningEntity(soId = so.id, eye = eye)
-                    .updateInitialPositioningState()
-            }
-        }
+    override fun removeComparison(id: Int) {
+        comparisonDao.deleteById(id)
     }
 
     override fun updatePositioning(positioning: PositioningEntity) {
@@ -201,28 +342,6 @@ class SaleRepositoryImpl @Inject constructor(
         comparisonDao.add(comparisonEntity)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun comparisons(): Flow<List<LensComparisonEntity>> {
-        return activeSO()
-            .filterNotNull()
-            .flatMapLatest {
-                comparisonDao.getBySo(it.id)
-            }
-    }
-
-    override fun removeComparison(id: Int) {
-        comparisonDao.deleteById(id)
-    }
-
-    override suspend fun clearProductComparison() {
-        activeSO()
-            .filterNotNull()
-            .take(1)
-            .collect {
-                comparisonDao.deleteAllFromSO(it.id)
-            }
-    }
-
     override fun updateSaleComparison(comparison: LensComparisonEntity) {
         comparisonDao.update(comparison)
     }
@@ -231,35 +350,9 @@ class SaleRepositoryImpl @Inject constructor(
         productPickedDao.add(productPicked)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun pickedProduct(): Flow<ProductPickedEntity?> {
-        return activeSO()
-            .filterNotNull()
-            .flatMapLatest {
-                productPickedDao.getById(it.id)
-            }
-    }
-
-    @OptIn(FlowPreview::class)
-    override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
-        return activeSO()
-            .filterNotNull()
-            .flatMapConcat { so ->
-                Timber.i("Got so $so")
-                clientPickedDao.getClientForSO(role = role, soId = so.id)
-            }
-    }
-
     override fun pickClient(client: ClientEntity) {
         Timber.i("Adding client $client")
         clientPickedDao.add(client)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun payments(): Flow<List<SalePaymentEntity>> {
-        return activeSO()
-            .filterNotNull()
-            .flatMapLatest { salePaymentDao.getBySO(it.id) }
     }
 
     override fun addPayment(payment: SalePaymentEntity): Long {

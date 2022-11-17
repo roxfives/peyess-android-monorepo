@@ -18,6 +18,10 @@ sealed class Eye {
     fun toName() = toName(this)
 
     companion object {
+        val allOptions by lazy {
+            listOf(Left, Right, None)
+        }
+
         fun toName(eye: Eye?): String {
             return when(eye) {
                 is Right -> "right"

@@ -6,6 +6,10 @@ sealed class ClientRole {
     object Witness: ClientRole()
 
     companion object {
+        val allOptions by lazy {
+            listOf(User, Responsible, Witness)
+        }
+
         fun fromName(name: String?): ClientRole? {
 
             return when(name?.lowercase() ?: "") {

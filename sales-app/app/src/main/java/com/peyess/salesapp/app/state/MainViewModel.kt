@@ -8,6 +8,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
@@ -68,7 +69,7 @@ class MainViewModel @AssistedInject constructor(
     }
 
     private fun loadProductTableStatus() {
-        productsTableStateRepository.observeState().execute {
+        productsTableStateRepository.observeState().execute(Dispatchers.IO) {
             copy(productsTableStatusAsync = it)
         }
     }

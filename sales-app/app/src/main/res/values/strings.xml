@@ -3,6 +3,12 @@
     <string name="error_msg_default">Algo inesperado aconteceu, por favor tente novamente</string>
     <string name="empty_string" />
 
+    <string name="channel_name_products_table">Atualização de produtos</string>
+    <string name="channel_description_products_table">Notificações sobre atualizações de produtos</string>
+
+    <string name="notification_title_update_products_table">Atualização em andamento</string>
+    <string name="notification_description_update_products_table">Atualizando tabela de produtos…</string>
+
     <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
 
     <string name="bottom_bar_home">Início</string>

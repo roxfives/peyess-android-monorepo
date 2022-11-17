@@ -17,4 +17,7 @@ interface ProductsTableStateDao {
 
     @Query("SELECT * FROM ${ProductTableStateEntity.tableName} WHERE id = :id")
     suspend fun getProductTableState(id: Int): ProductTableStateEntity?
+
+    @Query("SELECT * FROM ${ProductTableStateEntity.tableName} WHERE ${true} = ${true}")
+    fun getAll(): List<ProductTableStateEntity>
 }

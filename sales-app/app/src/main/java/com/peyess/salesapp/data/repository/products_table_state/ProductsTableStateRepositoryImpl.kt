@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import timber.log.Timber
 import javax.inject.Inject
 
 class ProductsTableStateRepositoryImpl @Inject constructor(
@@ -21,7 +22,7 @@ class ProductsTableStateRepositoryImpl @Inject constructor(
 
     private val latestTableFlow by lazy {
         productsTableStateDao
-            .observeProductTableState(0)
+            .observeProductTableState(defaultId)
             .filterNotNull()
             .map { it.toProductTableState() }
             .shareIn(
@@ -31,17 +32,17 @@ class ProductsTableStateRepositoryImpl @Inject constructor(
             )
     }
 
-    private val defaultValue = ProductsTableStatus(
-        hasUpdated = false,
-        hasUpdateFailed = false,
-        isUpdating = true,
-    )
+    private val defaultValue = ProductsTableStatus()
+
+    private val defaultId = 0
 
     override suspend fun getCurrentState(): ProductsTableStatus {
-        return productsTableStateDao
-            .getProductTableState(0)
-            ?.toProductTableState()
-            ?: defaultValue.copy()
+        val tableEntity = productsTableStateDao.getProductTableState(defaultId)
+
+        val all = productsTableStateDao.getAll()
+        Timber.i("Got all (${all.size}): $all")
+
+        return tableEntity?.toProductTableState() ?: defaultValue.copy()
     }
 
     override fun observeState(): Flow<ProductsTableStatus> {
@@ -49,7 +50,7 @@ class ProductsTableStateRepositoryImpl @Inject constructor(
     }
 
     override fun update(productsTableStatus: ProductsTableStatus) {
-        val tableAsEntity = productsTableStatus.toProductsTableStatusEntity()
+        val tableAsEntity = productsTableStatus.toProductsTableStatusEntity(defaultId)
 
         productsTableStateDao.update(tableAsEntity)
     }

@@ -90,7 +90,7 @@ import com.peyess.salesapp.data.dao.products_table_state.ProductTableStateEntity
 
         ProductTableStateEntity::class,
     ],
-    version = 49,
+    version = 59,
 )
 abstract class ProductsDatabase: RoomDatabase() {
     abstract fun joinLensTreatmentDao(): JoinLensTreatmentDao

@@ -10,22 +10,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
+import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.AppAuthenticationState
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import com.peyess.salesapp.workmanager.UpdateProductsWorker
+import com.peyess.salesapp.workmanager.products.enqueueWorker
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -52,12 +47,14 @@ class MainActivity: ComponentActivity() {
                         navHostController.navigate(SalesAppScreens.StoreAuthentication.name)
                     }
 
-                    else -> {
+                    is AppAuthenticationState.Authenticated -> {
                         navHostController.backQueue.clear()
                         navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
 
                         createWorker()
                     }
+
+                    AppAuthenticationState.Away -> {}
                 }
             }
 
@@ -75,16 +72,10 @@ class MainActivity: ComponentActivity() {
         return super.onTouchEvent(event)
     }
 
-    private fun createWorker() {
-        Timber.i("Creating worker")
 
-        val uploadWorkRequest: WorkRequest =
-            OneTimeWorkRequestBuilder<UpdateProductsWorker>()
-                .build()
 
-        WorkManager
-            .getInstance(this)
-            .enqueue(uploadWorkRequest)
+    private suspend fun createWorker() {
+        enqueueWorker(context = applicationContext, workPolicy = ExistingWorkPolicy.KEEP)
     }
 
     @Suppress("DEPRECATION")

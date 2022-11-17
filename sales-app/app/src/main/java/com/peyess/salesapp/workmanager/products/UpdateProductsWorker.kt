@@ -1,13 +1,19 @@
-package com.peyess.salesapp.workmanager
+package com.peyess.salesapp.workmanager.products
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteConstraintException
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
+import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
+import com.peyess.salesapp.app.MainActivity
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.products.firestore.lens.FSLocalLens
 import com.peyess.salesapp.dao.products.firestore.lens.getExplanations
@@ -27,18 +33,18 @@ import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatme
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
-import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
+import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+
 
 const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 
@@ -46,8 +52,8 @@ const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 class UpdateProductsWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    val productsDatabase: ProductsDatabase,
     val salesApplication: SalesApplication,
+    val productsDatabase: ProductsDatabase,
     val productsTableStateRepository: ProductsTableStateRepository,
     val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
@@ -298,9 +304,50 @@ class UpdateProductsWorker @AssistedInject constructor(
         productsDatabase.clearAllTables()
     }
 
+    private fun createNotification() {
+        val context = salesApplication as Context
+        val packageManager = context.packageManager
+
+        val launchIntent = packageManager.getLaunchIntentForPackage(BuildConfig.APPLICATION_ID)
+        val pendingIntent = PendingIntent
+            .getActivity(context, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(context, "products_table_channel_id")
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(salesApplication.stringResource(R.string.notification_title_update_products_table))
+            .setContentText(salesApplication.stringResource(R.string.notification_description_update_products_table))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(false)
+            .setOngoing(true)
+            .setProgress(0, 100, true)
+            .setContentIntent(pendingIntent)
+
+        with(NotificationManagerCompat.from(context)) {
+            // notificationId is a unique int for each notification that you must define
+            notify(0, builder.build())
+        }
+    }
+
+    private fun dismissNotification() {
+        val context = salesApplication as Context
+
+        with(NotificationManagerCompat.from(context)) {
+            cancel(0)
+        }
+    }
+
     override suspend fun doWork(): Result {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
+            productsTableStateRepository
+                .update(
+                    ProductsTableStatus(
+                        hasUpdated = false,
+                        hasUpdateFailed = true,
+                        isUpdating = false,
+                    )
+                )
+
             return Result.retry()
         }
 
@@ -309,26 +356,29 @@ class UpdateProductsWorker @AssistedInject constructor(
             .stringResource(id = R.string.fs_col_lenses)
             .format(storeId)
 
-        withContext(Dispatchers.IO) {
+        Timber.i("Starting product update")
+        runBlocking(Dispatchers.IO) {
             val forceUpdate = inputData
                 .getBoolean(forceUpdateKey, false)
             Timber.i("Starting Worker with forceUpdate = $forceUpdate")
 
-            val productsTableStatus = runBlocking {
-                productsTableStateRepository.getCurrentState()
+            val productsTableStatus = productsTableStateRepository.getCurrentState()
+
+            val isUpdating = productsTableStatus.isUpdating
+            val needsUpdate = !productsTableStatus.hasUpdated
+                    || productsTableStatus.hasUpdateFailed
+
+            val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
+
+            if (avoidUpdate) {
+                return@runBlocking Result.success()
             }
 
-            if (
-                forceUpdate
-                || !productsTableStatus.hasUpdated
-                || productsTableStatus.hasUpdateFailed
-            ) {
-                productsTableStateRepository.update(
-                    productsTableStatus.copy(isUpdating = true),
-                )
-            } else {
-                return@withContext Result.success()
-            }
+            productsTableStateRepository.update(
+                productsTableStatus.copy(isUpdating = true),
+            )
+
+            createNotification()
 
             Timber.i("Starting products update with path $lensPath")
 
@@ -344,7 +394,16 @@ class UpdateProductsWorker @AssistedInject constructor(
 
             if (initQuery.size() != 1) {
                 Timber.e("Initial query has to be of size 1, but it is ${initQuery.size()}")
-                return@withContext Result.retry()
+                productsTableStateRepository
+                    .update(
+                        ProductsTableStatus(
+                            hasUpdated = false,
+                            hasUpdateFailed = true,
+                            isUpdating = false,
+                        )
+                    )
+
+                return@runBlocking Result.retry()
             }
 
             clearAllProducts()
@@ -384,12 +443,16 @@ class UpdateProductsWorker @AssistedInject constructor(
                         isUpdating = false,
                     )
                 )
+            dismissNotification()
         }
+        Timber.i("Finished product update")
 
         return Result.success()
     }
 
     companion object {
         const val pageLimit = 100L
+
+        const val workerTag = "TAG_UpdateProductsWorker"
     }
 }

@@ -155,4 +155,7 @@ data class ServiceOrderDocument(
     val updateAllowedBy:  String = "",
 ) {
     val isPaymentFull = leftToPay <= 0.0
+
+    val hasAxisLeft = lCylinder < 0
+    val hasAxisRight = rCylinder < 0
 }

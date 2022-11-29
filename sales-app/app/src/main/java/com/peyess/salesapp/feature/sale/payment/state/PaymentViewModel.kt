@@ -7,25 +7,36 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
+import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
+import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
+import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
+import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
-import com.peyess.salesapp.typing.sale.PaymentMethodType
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class PaymentViewModel @AssistedInject constructor(
@@ -36,6 +47,7 @@ class PaymentViewModel @AssistedInject constructor(
     private val paymentMethodRepository: PaymentMethodRepository,
     private val cardFlagsRepository: CardFlagRepository,
     private val discountRepository: OverallDiscountRepository,
+    private val paymentFeeRepository: PaymentFeeRepository,
 ): MavericksViewModel<PaymentState>(initialState) {
 
     init {
@@ -192,55 +204,97 @@ class PaymentViewModel @AssistedInject constructor(
             }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun loadTotalToPay() = withState { state ->
-        saleRepository
-            .pickedProduct()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(it.lensId).filterNotNull().take(1),
-                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
-                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
-                    saleRepository.currentFramesData(),
-                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
-                    ::ProductSet
-                )
+        suspend {
+            var pickedProducts: ProductPickedEntity? = null
+
+            var lens = LocalLensEntity()
+            var coloring = LocalColoringEntity()
+            var treatment = LocalTreatmentEntity()
+            var frames = FramesEntity()
+
+            saleRepository
+                .pickedProduct()
+                .filterNotNull()
+                .take(1)
+                .collect {
+                    pickedProducts = it
+                }
+
+            productRepository
+                .lensById(pickedProducts?.lensId ?: "")
+                .filterNotNull()
+                .take(1)
+                .collect {
+                    lens = it
+                }
+            productRepository
+                .coloringById(pickedProducts?.coloringId ?: "")
+                .filterNotNull()
+                .take(1)
+                .collect {
+                    coloring = it
+                }
+            productRepository
+                .treatmentById(pickedProducts?.treatmentId ?: "")
+                .filterNotNull()
+                .take(1)
+                .collect {
+                    treatment = it
+                }
+            saleRepository
+                .currentFramesData()
+                .filterNotNull()
+                .take(1)
+                .collect {
+                    frames = it
+                }
+
+            val framesValue = if (frames.areFramesNew) {
+                frames.value
+            } else {
+                0.0
             }
-            .map {
-                val lens = it.lens
-                val coloring = it.coloring
-                val treatment = it.treatment
-                val frames = it.frames
 
-                val framesValue = if (frames.areFramesNew) {
-                    frames.value
-                } else {
-                    0.0
-                }
+            val discount = discountRepository
+                .getDiscountForSale(state.saleId)
+                ?: OverallDiscountDocument()
 
-                // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price + framesValue
+            val fee = paymentFeeRepository
+                .getPaymentFeeForSale(state.saleId)
+                ?: PaymentFeeDocument()
 
-                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.suggestedPrice
-                }
-                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatment.suggestedPrice
-                }
+            var totalToPay = lens.price + framesValue
 
-                if (coloring.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddColoring
-                }
-                if (treatment.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddTreatment
-                }
-
-                it.calculateDiscount(totalToPay)
+            if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
+                totalToPay += coloring.suggestedPrice
             }
-            .execute(Dispatchers.IO) {
-                copy(totalToPayAsync = it)
+            if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
+                totalToPay += treatment.suggestedPrice
             }
+
+            if (coloring.suggestedPrice > 0) {
+                totalToPay += lens.suggestedPriceAddColoring
+            }
+            if (treatment.suggestedPrice > 0) {
+                totalToPay += lens.suggestedPriceAddTreatment
+            }
+
+            val valueWithDiscount = when (discount.discountMethod) {
+                DiscountCalcMethod.None -> totalToPay
+                DiscountCalcMethod.Percentage -> totalToPay * (1.0 - discount.overallDiscountValue)
+                DiscountCalcMethod.Whole -> totalToPay - discount.overallDiscountValue
+            }
+            val valueWithFee = when (fee.method) {
+                PaymentFeeCalcMethod.None -> valueWithDiscount
+                PaymentFeeCalcMethod.Percentage -> valueWithDiscount * (1.0 + fee.value)
+                PaymentFeeCalcMethod.Whole -> valueWithDiscount + fee.value
+            }
+
+            valueWithFee
+        }.execute(Dispatchers.IO) {
+            copy(totalToPayAsync = it)
+        }
     }
 
     fun loadClient(clientId: String) = withState {

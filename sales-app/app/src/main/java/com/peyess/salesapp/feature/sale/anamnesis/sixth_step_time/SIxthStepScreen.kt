@@ -33,7 +33,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepState
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.utils.toTimeString
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -384,7 +384,7 @@ private fun SixthStepScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             onNext = onNext
         )
     }

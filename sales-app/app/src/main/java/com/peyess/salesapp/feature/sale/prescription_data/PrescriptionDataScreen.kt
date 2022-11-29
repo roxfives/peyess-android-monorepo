@@ -70,7 +70,7 @@ import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionData
 import com.peyess.salesapp.feature.sale.prescription_data.state.minAddition
 import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismDegree
 import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -389,7 +389,7 @@ private fun PrescriptionScreenDataImpl(
         Spacer(modifier = Modifier.height(betweenSectionSpacer))
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             startButton = {
                 OutlinedButton(
                     modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),

@@ -91,7 +91,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.annotated_string.pluralResource
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -515,7 +515,7 @@ private fun ServiceOrderScreenImpl(
 
             Spacer(modifier = Modifier.height(16.dp))
             // TODO: use string resource
-            StepperFooter(
+            PeyessStepperFooter(
                 middle = {
                     ActionButtons(
                         isGeneratingDocument = isGeneratingPdfDocument,

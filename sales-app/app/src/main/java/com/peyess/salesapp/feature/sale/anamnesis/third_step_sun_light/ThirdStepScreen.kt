@@ -33,7 +33,7 @@ import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepState
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -142,7 +142,7 @@ private fun ThirdStepScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             onNext = onNext
         )
     }

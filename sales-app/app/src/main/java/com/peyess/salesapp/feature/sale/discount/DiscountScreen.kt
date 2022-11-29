@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -58,7 +57,7 @@ import com.peyess.salesapp.feature.sale.discount.state.DiscountViewModel
 import com.peyess.salesapp.feature.sale.discount.utils.parseParameterFullPrice
 import com.peyess.salesapp.feature.sale.discount.utils.parseParameterSaleId
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.text.PeyessMoneyInput
 import com.peyess.salesapp.ui.component.text.PeyessPercentInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -235,7 +234,7 @@ private fun DiscountScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             nextTitle = stringResource(id = R.string.go_next_default),
             onNext = onDone,
         )

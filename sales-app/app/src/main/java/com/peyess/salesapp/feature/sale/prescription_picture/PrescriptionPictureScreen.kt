@@ -67,7 +67,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureState
 import com.peyess.salesapp.feature.sale.prescription_picture.state.PrescriptionPictureViewModel
 import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -267,7 +267,7 @@ private fun PrescriptionPictureImpl(
             onProfessionalIdChanged = onProfessionalIdChanged,
         )
 
-        StepperFooter(canGoNext = canGoNext, onNext = onNext)
+        PeyessStepperFooter(canGoNext = canGoNext, onNext = onNext)
     }
 }
 

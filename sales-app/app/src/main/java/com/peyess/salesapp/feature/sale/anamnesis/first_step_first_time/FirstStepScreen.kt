@@ -39,7 +39,7 @@ import com.gowtham.ratingbar.StepSize
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeState
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -231,7 +231,7 @@ private fun FirstTimeScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             onNext = onNext
         )
     }

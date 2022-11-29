@@ -26,7 +26,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.sale.welcome.state.WelcomeState
 import com.peyess.salesapp.feature.sale.welcome.state.WelcomeViewModel
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
@@ -115,7 +115,7 @@ private fun WelcomeScreenImpl(
             )
         }
 
-        StepperFooter(
+        PeyessStepperFooter(
             canGoNext = canGoNext,
             onNext = onDone,
         )

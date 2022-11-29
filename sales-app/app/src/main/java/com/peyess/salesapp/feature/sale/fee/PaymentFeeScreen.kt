@@ -57,7 +57,7 @@ import com.peyess.salesapp.feature.sale.fee.state.PaymentFeeViewModel
 import com.peyess.salesapp.feature.sale.fee.utils.parseParameterFullPrice
 import com.peyess.salesapp.feature.sale.fee.utils.parseParameterSaleId
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.text.PeyessMoneyInput
 import com.peyess.salesapp.ui.component.text.PeyessPercentInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -234,7 +234,7 @@ private fun PaymentFeeScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(
+        PeyessStepperFooter(
             nextTitle = stringResource(id = R.string.go_next_default),
             onNext = onDone,
         )

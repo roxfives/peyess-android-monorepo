@@ -16,7 +16,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @Composable
-fun StepperFooter(
+fun PeyessStepperFooter(
     modifier: Modifier = Modifier,
     startButton: @Composable () -> Unit = {},
 

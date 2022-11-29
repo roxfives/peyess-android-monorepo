@@ -14,7 +14,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CallToAction
-import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +27,6 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.settings_actions.state.SettingsAndActionState
 import com.peyess.salesapp.feature.settings_actions.state.SettingsAndActionViewModel
-import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 private val listButtonPadding = 8.dp

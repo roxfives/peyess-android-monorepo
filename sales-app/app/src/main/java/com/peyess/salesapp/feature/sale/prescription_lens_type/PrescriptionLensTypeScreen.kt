@@ -23,7 +23,7 @@ import com.peyess.salesapp.feature.sale.prescription_lens_type.state.Prescriptio
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.model.products.LensTypeCategory
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
-import com.peyess.salesapp.ui.component.footer.StepperFooter
+import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 
 private val mikeHeight = 300.dp
@@ -106,7 +106,7 @@ private fun PrescriptionTypeScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        StepperFooter(onNext = onDone)
+        PeyessStepperFooter(onNext = onDone)
     }
 }
 

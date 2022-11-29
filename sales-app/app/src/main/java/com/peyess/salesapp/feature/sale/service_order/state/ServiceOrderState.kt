@@ -181,7 +181,7 @@ data class ServiceOrderState(
         totalToPayWithDiscount
     }
 
-    val canAddNewPayment = totalPaid < totalToPayWithDiscount
+    val canAddNewPayment = totalPaid < totalToPayWithFee
 
     val confirmationMessage = if (totalToPay <= totalPaid) {
         val locale = Locale.getDefault()

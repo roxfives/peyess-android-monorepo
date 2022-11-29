@@ -37,6 +37,7 @@ enum class SalesAppScreens {
     ServiceOrder,
     SalePayment,
     Discount,
+    PaymentFee,
     Demonstration,
 
     CreateNewClientBasicInfo,
@@ -89,6 +90,7 @@ enum class SalesAppScreens {
                 ServiceOrder.name -> ServiceOrder
                 SalePayment.name -> SalePayment
                 Discount.name -> Discount
+                PaymentFee.name -> PaymentFee
                 Demonstration.name -> Demonstration
 
                 CreateNewClientBasicInfo.name -> CreateNewClientBasicInfo
@@ -148,6 +150,7 @@ enum class SalesAppScreens {
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
                 SalePayment.name -> "Pagamento"
                 Discount.name -> "Aplicar Desconto"
+                PaymentFee.name -> "Aplicar Taxa"
                 Demonstration.name -> "Demonstração"
 
                 CreateNewClientBasicInfo.name -> "Criar novo cliente"

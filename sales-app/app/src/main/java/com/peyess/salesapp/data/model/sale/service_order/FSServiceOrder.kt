@@ -503,6 +503,11 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
+    @PropertyName("total_fee")
+    val totalFee:  Double = 0.0,
+
+    @Keep
+    @JvmField
     @PropertyName("created")
     val created: Timestamp = Timestamp.now(),
 

@@ -145,6 +145,7 @@ data class ServiceOrderDocument(
     val total:  Double = 0.0,
     val totalPaid:  Double = 0.0,
     val totalDiscount:  Double = 0.0,
+    val totalFee:  Double = 0.0,
 
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy:  String = "",
@@ -160,4 +161,5 @@ data class ServiceOrderDocument(
     val hasAxisRight = rCylinder < 0
 
     val totalWithDiscount = total * (1 - totalDiscount)
+    val totalWithFee = totalWithDiscount * (1 + totalFee)
 }

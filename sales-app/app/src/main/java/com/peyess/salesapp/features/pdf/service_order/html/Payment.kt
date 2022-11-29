@@ -258,7 +258,7 @@ private fun legalTextWithoutFullPayment(
     currencyFormatter.maximumFractionDigits = 2
     currencyFormatter.minimumFractionDigits = 2
 
-    val totalToPay = currencyFormatter.format(serviceOrderDocument.totalWithDiscount)
+    val totalToPay = currencyFormatter.format(serviceOrderDocument.totalWithFee)
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +

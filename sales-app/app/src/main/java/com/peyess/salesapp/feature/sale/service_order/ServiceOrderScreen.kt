@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Discount
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -144,6 +145,7 @@ fun ServiceOrderScreen(
     onAddPayment: (paymentId: Long) -> Unit = {},
     onEditPayment: (paymentId: Long, clientId: String) -> Unit = { _, _ -> },
     onAddDiscount: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _, -> },
+    onAddPaymentFee: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _, -> },
 
     onGenerateBudget: () -> Unit = {},
     onFinishSale: () -> Unit = {},
@@ -189,6 +191,7 @@ fun ServiceOrderScreen(
     val totalPaid by viewModel.collectAsState(ServiceOrderState::totalPaid)
     val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
     val totalToPayWithDiscount by viewModel.collectAsState(ServiceOrderState::totalToPayWithDiscount)
+    val totalToPayWithFee by viewModel.collectAsState(ServiceOrderState::totalToPayWithFee)
 
     val isSaleDone by viewModel.collectAsState(ServiceOrderState::isSaleDone)
     val isSaleLoading by viewModel.collectAsState(ServiceOrderState::isSaleLoading)
@@ -246,13 +249,20 @@ fun ServiceOrderScreen(
             canAddNewPayment = canAddNewPayment,
             isTotalPaidLoading = isTotalPaidLoading,
             totalPaid = totalPaid,
-            totalToPay = totalToPayWithDiscount,
+            totalToPay = totalToPayWithFee,
             isPaymentLoading = isPaymentsLoading,
             payments = payments,
             onAddPayment = {
                 viewModel.createPayment {
                     onAddPayment(it)
                 }
+            },
+            onAddPaymentFee = {
+                onAddPaymentFee(
+                    saleId,
+                    BigDecimal(totalToPayWithDiscount)
+                        .setScale(2, RoundingMode.HALF_EVEN),
+                )
             },
             onDeletePayment = viewModel::deletePayment,
             onEditPayment = { onEditPayment(it.id, it.clientId) },
@@ -416,6 +426,7 @@ private fun ServiceOrderScreenImpl(
     isPaymentLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
     onAddPayment: () -> Unit = {},
+    onAddPaymentFee: () -> Unit = {},
     onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
     onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
 
@@ -497,6 +508,7 @@ private fun ServiceOrderScreenImpl(
 
                 payments = payments,
                 onAddPayment = onAddPayment,
+                onAddPaymentFee = onAddPaymentFee,
                 onDeletePayment = onDeletePayment,
                 onEditPayment = onEditPayment,
             )
@@ -1840,6 +1852,7 @@ private fun PaymentSection(
     isLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
     onAddPayment: () -> Unit = {},
+    onAddPaymentFee: () -> Unit = {},
     onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
     onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
 ) {
@@ -1855,6 +1868,10 @@ private fun PaymentSection(
             SectionTitle(title = stringResource(id = R.string.so_section_title_payments))
 
             Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(onClick = onAddPaymentFee) {
+                Icon(imageVector = Icons.Filled.Paid, contentDescription = "")
+            }
 
             IconButton(
                 onClick = onAddPayment,

@@ -527,6 +527,12 @@
     <string name="discount_final_price">Preço final</string>
     <string name="discount_original_price">Sem desconto</string>
 
+    <!-- UI Component: Fee   -->
+    <string name="fee">Taxa</string>
+    <string name="fee_title">Escolha o método para a taxa e digite o valor</string>
+    <string name="fee_final_price">Preço final</string>
+    <string name="fee_original_price">Sem a taxa</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>

@@ -61,6 +61,7 @@ private fun productDescriptionFooter(
     salesPersonName: String,
     priceWithoutDiscount: Double,
     discount: Double,
+    fee: Double,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
 
@@ -72,11 +73,14 @@ private fun productDescriptionFooter(
     currencyFormat.minimumFractionDigits = 2
     currencyFormat.maximumFractionDigits = 2
 
+    val priceWithDiscount = priceWithoutDiscount * (1 - discount)
+    val priceWithFee = priceWithDiscount * (1 + fee)
+
     val priceWithoutDiscountStr = currencyFormat.format(priceWithoutDiscount)
-    val priceWithDiscountStr = currencyFormat.format(priceWithoutDiscount * (1 - discount))
+    val priceWithFeeStr = currencyFormat.format(priceWithFee)
     val discountStr = percentFormat.format(discount)
 
-    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooterName s\" colspan=\"8\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column10 styleProductListFooter n\">$priceWithDiscountStr</td></tr>"
+    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooterName s\" colspan=\"8\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column10 styleProductListFooter n\">$priceWithFeeStr</td></tr>"
 
     return productDescriptionTotal
 }
@@ -190,8 +194,9 @@ fun buildProductListDescription(
     salesPersonName: String,
     priceWithoutDiscount: Double,
     discount: Double,
+    fee: Double,
 ): String {
     return productDescriptionHeader +
             buildProductList(context, eyeSets, frames, misc) +
-            productDescriptionFooter(context, salesPersonName, priceWithoutDiscount, discount)
+            productDescriptionFooter(context, salesPersonName, priceWithoutDiscount, discount, fee)
 }

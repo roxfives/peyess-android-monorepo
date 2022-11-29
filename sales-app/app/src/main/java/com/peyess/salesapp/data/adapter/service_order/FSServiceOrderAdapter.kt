@@ -138,6 +138,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         total = total,
         totalPaid = totalPaid,
         totalDiscount = totalDiscount,
+        totalFee = totalFee,
 
         created = created.toZonedDateTime(),
         createdBy = createdBy,

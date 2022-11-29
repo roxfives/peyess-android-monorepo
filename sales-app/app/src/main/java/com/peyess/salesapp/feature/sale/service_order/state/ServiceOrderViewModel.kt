@@ -15,9 +15,11 @@ import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
@@ -30,6 +32,7 @@ import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
@@ -69,6 +72,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
     private val discountRepository: OverallDiscountRepository,
+    private val paymentFeeRepository: PaymentFeeRepository,
     private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
@@ -93,6 +97,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         onAsync(ServiceOrderState::saleIdAsync) {
             loadDiscount()
+            loadPaymentFee()
         }
 
         onAsync(ServiceOrderState::discountAsync) {
@@ -113,6 +118,14 @@ class ServiceOrderViewModel @AssistedInject constructor(
             .watchDiscountForSale(it.saleId)
             .execute { discount ->
                 copy(discountAsync = discount)
+            }
+    }
+
+    private fun loadPaymentFee() = withState {
+        paymentFeeRepository
+            .watchPaymentFeeForSale(it.saleId)
+            .execute { fee ->
+                copy(paymentFeeAsync = fee)
             }
     }
 
@@ -156,6 +169,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             purchaseRepository,
             serviceOrderRepository,
             discountRepository,
+            paymentFeeRepository,
             firebaseManager,
         )
     }
@@ -413,35 +427,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-//    fun generateServiceOrderPdf(context: Context) = withState {
-//        suspend {
-//            var client: ClientDocument? = null
-//
-//            clientDao.clientById(it.userClient.id).collect { c -> client = c }
-//
-////            val html = buildHtml(
-////                ZonedDateTime.now(),
-////                it.hid, client ?: ClientDocument(),
-////                ServiceOrderDocument(),
-////            )
-//            val html = ""
-//
-//            val htmlToPdfConvertor = HtmlToPdfConvertor(context)
-//
-////                    printInstance?.pdfPrintAttrs = PrintAttributes.Builder()
-////                        .setMediaSize(PrintAttributes.MediaSize.ISO_A4)
-////                        .setColorMode(COLOR_MODE_COLOR)
-////                        .build()
-//
-//            val file = createPrintFile(context)
-//            htmlToPdfConvertor.convert(
-//                file,
-//                html,
-//                {},
-//                {},
-//            )
-//        }
-//    }
     fun generateServiceOrderPdf(
         context: Context,
         onPdfGenerated: (File) -> Unit,

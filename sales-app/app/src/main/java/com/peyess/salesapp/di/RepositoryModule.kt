@@ -36,6 +36,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
+import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.purchase.PurchaseDao
@@ -58,6 +59,8 @@ import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepositoryImpl
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryImpl
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepositoryImpl
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
@@ -66,7 +69,6 @@ import com.peyess.salesapp.data.repository.products_table_state.ProductsTableSta
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepositoryImpl
 import com.peyess.salesapp.data.repository.purchase.DiscountGroupRepository
 import com.peyess.salesapp.data.repository.purchase.DiscountGroupRepositoryImpl
-import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -152,6 +154,14 @@ object RepositoryModule {
         discountGroupDao: DiscountGroupDao,
     ): DiscountGroupRepository {
         return DiscountGroupRepositoryImpl(discountGroupDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providePaymentFeeRepository(
+        paymentFeeDao: PaymentFeeDao,
+    ): PaymentFeeRepository {
+        return PaymentFeeRepositoryImpl(paymentFeeDao)
     }
 
     @Provides

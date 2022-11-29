@@ -22,9 +22,11 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Locale
@@ -49,6 +51,7 @@ data class ServiceOrderState(
     val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
 
     val discountAsync: Async<OverallDiscountDocument?> = Uninitialized,
+    val paymentFeeAsync: Async<PaymentFeeDocument?> = Uninitialized,
 
     val totalToPayAsync: Async<Double> = Uninitialized,
     val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
@@ -89,6 +92,9 @@ data class ServiceOrderState(
 
     val isDiscountLoading = discountAsync is Loading
     val discount = discountAsync.invoke()
+
+    val isPaymentFeeLoading = paymentFeeAsync is Loading
+    val paymentFee = paymentFeeAsync.invoke()
 
     val isPrescriptionPictureLoading = prescriptionPictureAsync is Loading
     val prescriptionPicture = if (prescriptionPictureAsync is Success) {
@@ -169,6 +175,11 @@ data class ServiceOrderState(
     } else {
         0.0
     }
+    val totalToPayWithFee = if (paymentFee != null) {
+        calculatePriceWithFee(totalToPayWithDiscount, paymentFee)
+    } else {
+        totalToPayWithDiscount
+    }
 
     val canAddNewPayment = totalPaid < totalToPayWithDiscount
 
@@ -197,4 +208,15 @@ data class ServiceOrderState(
     val isServiceOrderPdfLoading = serviceOrderPdfAsync is Loading
     val isServiceOrderPdfSuccess = serviceOrderPdfAsync is Success
     val isServiceOrderPdfError = serviceOrderPdfAsync is Fail
+
+    private fun calculatePriceWithFee(
+        totalToPay: Double,
+        fee: PaymentFeeDocument,
+    ): Double {
+        return when (fee.method) {
+            PaymentFeeCalcMethod.None -> totalToPay
+            PaymentFeeCalcMethod.Percentage -> totalToPay * (1 + fee.value)
+            PaymentFeeCalcMethod.Whole -> totalToPay + fee.value
+        }
+    }
 }

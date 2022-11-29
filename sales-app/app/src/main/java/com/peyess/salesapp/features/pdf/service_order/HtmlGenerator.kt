@@ -173,6 +173,7 @@ fun buildHtml(
         salesPersonName = serviceOrder.salespersonName,
         priceWithoutDiscount = serviceOrder.total,
         discount = serviceOrder.totalDiscount,
+        fee = serviceOrder.totalFee,
     )
 
     val paymentSection = buildPaymentSection(

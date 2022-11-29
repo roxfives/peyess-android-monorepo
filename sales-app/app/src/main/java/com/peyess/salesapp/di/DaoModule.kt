@@ -58,6 +58,7 @@ import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
+import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.positioning.PositioningDaoImpl
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDaoImpl
@@ -233,6 +234,12 @@ object DaoModule {
             firebaseManager = firebaseManager,
             salesApplication = application,
         )
+    }
+
+    @Singleton
+    @Provides
+    fun providePaymentFeeDao(appDatabase: ActiveSalesDatabase): PaymentFeeDao {
+        return appDatabase.paymentFeeDao()
     }
 
     @Singleton

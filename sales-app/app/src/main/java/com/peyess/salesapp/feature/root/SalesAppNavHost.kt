@@ -15,6 +15,7 @@ import com.peyess.salesapp.navigation.home.buildHomeNavGraph
 import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
 import com.peyess.salesapp.navigation.sale.buildSaleNavGraph
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavGraph
+import com.peyess.salesapp.navigation.sale.fee.buildFeeNavGraph
 import com.peyess.salesapp.navigation.settings_actions.buildSettingsAndActionsNavGraph
 import com.peyess.salesapp.navigation.visual_acuity.buildVisualAcuityNavGraph
 
@@ -61,5 +62,7 @@ fun SalesAppNavHost(
         buildSettingsAndActionsNavGraph(modifier, navHostController, this)
 
         buildDiscountNavGraph(modifier, navHostController, this)
+
+        buildFeeNavGraph(modifier, navHostController, this)
     }
 }

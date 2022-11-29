@@ -31,6 +31,7 @@ import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSo
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
@@ -43,6 +44,7 @@ import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,6 +85,7 @@ class ServiceOrderUploader constructor(
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
     private val discountRepository: OverallDiscountRepository,
+    private val paymentFeeRepository: PaymentFeeRepository,
     private val firebaseManager: FirebaseManager,
 ) {
     var purchaseId = ""
@@ -549,6 +552,21 @@ class ServiceOrderUploader constructor(
         )
     }
 
+    private suspend fun addFeeData(
+        saleId: String,
+        serviceOrder: ServiceOrderDocument,
+    ): ServiceOrderDocument {
+
+        val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
+        val totalFee = when (fee?.method) {
+            PaymentFeeCalcMethod.Percentage -> fee.value
+            PaymentFeeCalcMethod.Whole ->  fee.value / serviceOrder.totalWithDiscount
+            PaymentFeeCalcMethod.None, null -> 0.0
+        }
+
+        return serviceOrder.copy(totalFee = totalFee)
+    }
+
 
     private fun createHid(): String {
         val random = Random.asJavaRandom()
@@ -733,6 +751,7 @@ class ServiceOrderUploader constructor(
         }
 
         serviceOrder = addDiscountData(localSaleId, serviceOrder)
+        serviceOrder = addFeeData(localSaleId, serviceOrder)
 
         val purchase = runBlocking {
             createPurchase(context, serviceOrder)
@@ -745,7 +764,7 @@ class ServiceOrderUploader constructor(
                 .map { it.amount }
                 .reduce { acc, payment -> acc + payment }
         }
-        val totalLeft = BigDecimal(abs((serviceOrder.totalWithDiscount - totalPaid)))
+        val totalLeft = BigDecimal(abs((serviceOrder.totalWithFee - totalPaid)))
             .setScale(2, RoundingMode.HALF_EVEN)
             .toDouble()
 

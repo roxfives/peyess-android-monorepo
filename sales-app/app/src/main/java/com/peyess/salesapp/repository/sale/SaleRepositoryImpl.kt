@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
@@ -83,11 +84,7 @@ class SaleRepositoryImpl @Inject constructor(
             .flatMapLatest { prefs ->
                 val saleId = prefs[currentSOKey]
 
-                if (saleId != null) {
-                    activeSODao.getById(saleId)
-                } else {
-                    error("Could not find sale id")
-                }
+                activeSODao.getById(saleId ?: "")
             }.retryWhen { _ , attempt ->
                 attempt < currentSOThreshold
             }.shareIn(
@@ -105,13 +102,8 @@ class SaleRepositoryImpl @Inject constructor(
             .flatMapLatest { prefs ->
                 val saleId = prefs[currentSaleKey]
 
-                if (saleId != null) {
-                    activeSalesDao.getById(saleId)
-                } else {
-                    error("Could not find sale id")
-                }
-            }
-            .shareIn(
+                activeSalesDao.getById(saleId ?: "")
+            }.shareIn(
                 scope = repositoryScope,
                 replay = 1,
                 started = SharingStarted.WhileSubscribed(),
@@ -154,7 +146,11 @@ class SaleRepositoryImpl @Inject constructor(
             .filterNotNull()
             .flatMapLatest {
                 comparisonDao.getBySo(it.id)
-            }
+            }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -177,18 +173,22 @@ class SaleRepositoryImpl @Inject constructor(
     private val currentPickedProducts by lazy {
         currentSO
             .filterNotNull()
-            .flatMapLatest {
-                productPickedDao.getById(it.id)
-            }
+            .flatMapLatest { productPickedDao.getById(it.id) }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPayments by lazy {
         currentSO
             .filterNotNull()
-            .flatMapLatest {
-                salePaymentDao.getBySO(it.id)
-            }
+            .flatMapLatest { salePaymentDao.getBySO(it.id) }.shareIn(
+                scope = repositoryScope,
+                replay = 1,
+                started = SharingStarted.WhileSubscribed(),
+            )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -203,7 +203,11 @@ class SaleRepositoryImpl @Inject constructor(
                         entity ?: PositioningEntity(soId = so.id, eye = eye)
                             .updateInitialPositioningState()
                     }
-            }
+                }.shareIn(
+                    scope = repositoryScope,
+                    replay = 1,
+                    started = SharingStarted.WhileSubscribed(),
+                )
         }.toMap()
     }
 
@@ -217,7 +221,11 @@ class SaleRepositoryImpl @Inject constructor(
                 .flatMapLatest { so ->
                     Timber.i("Got so $so")
                     clientPickedDao.getClientForSO(role = role, soId = so.id)
-                }
+                }.shareIn(
+                    scope = repositoryScope,
+                    replay = 1,
+                    started = SharingStarted.WhileSubscribed(),
+                )
         }.toMap()
     }
 

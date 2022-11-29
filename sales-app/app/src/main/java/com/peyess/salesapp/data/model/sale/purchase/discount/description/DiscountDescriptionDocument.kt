@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.sale.service_order.discount_description
+package com.peyess.salesapp.data.model.sale.purchase.discount
 
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 

@@ -123,15 +123,15 @@ fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye):
             }
         PositioningAnimationState.PositioningBaseTop ->
             if (eye == Eye.Left) {
-                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_left_positioning_left)
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_base_top_positioning_left)
             } else {
-                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_left_positioning_right)
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_base_top_positioning_right)
             }
         PositioningAnimationState.PositioningBaseBottom ->
             if (eye == Eye.Left) {
-                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_right_positioning_left)
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_base_bottom_positioning_left)
             } else {
-                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_parameter_right_positioning_right)
+                LottieCompositionSpec.RawRes(R.raw.lottie_measuring_base_bottom_positioning_right)
             }
         PositioningAnimationState.PositioningTopPointAngle ->
             if (eye == Eye.Left) {

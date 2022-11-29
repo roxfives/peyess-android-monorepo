@@ -8,15 +8,15 @@ sealed class DiscountCalcMethod {
     fun toName() = toName(this)
 
     companion object {
-        fun toName(method: DiscountCalcMethod): String {
+        fun toName(method: DiscountCalcMethod?): String {
             return when (method) {
                 Percentage -> "percentage"
                 Whole -> "whole"
-                None -> "none"
+                else -> "none"
             }
         }
 
-        fun fromName(method: String): DiscountCalcMethod {
+        fun fromName(method: String?): DiscountCalcMethod {
             return when (method) {
                 "percentage" -> Percentage
                 "whole" -> Whole

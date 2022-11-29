@@ -84,6 +84,7 @@ import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
+import com.peyess.salesapp.ui.component.text.utils.currencyDigitsOnlyOrEmpty
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -518,8 +519,7 @@ private fun PaymentCard(
 
     val curPriceInput = BigDecimal(total)
         .setScale(2, RoundingMode.HALF_EVEN)
-        .multiply(BigDecimal(100))
-        .toBigInteger()
+//        .multiply(BigDecimal(100))
 
     Column(
         modifier = modifier,
@@ -534,7 +534,7 @@ private fun PaymentCard(
         Spacer(modifier = Modifier.height(8.dp))
 
         BasicTextField(
-            value = "$curPriceInput",
+            value = currencyDigitsOnlyOrEmpty(curPriceInput),
             onValueChange = {
                 val value = try {
                     BigDecimal(it)
@@ -561,8 +561,6 @@ private fun PaymentCard(
                 onDone = { keyboardController?.hide() },
             ),
         )
-
-
 
         AnimatedVisibility(
             visible = paymentMethod?.hasInstallments ?: false,

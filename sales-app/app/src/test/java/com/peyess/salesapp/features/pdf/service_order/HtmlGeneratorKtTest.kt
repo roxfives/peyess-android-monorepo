@@ -7,7 +7,7 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument

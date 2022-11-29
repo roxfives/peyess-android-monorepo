@@ -18,6 +18,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthS
 import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
+import com.peyess.salesapp.feature.sale.discount.state.DiscountViewModel
 import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
@@ -225,5 +226,12 @@ interface ViewModelsModule {
     @ViewModelKey(SettingsAndActionViewModel::class)
     fun bindSettingsAndActionViewModelFactory(
         factory: SettingsAndActionViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DiscountViewModel::class)
+    fun bindDiscountViewModelFactory(
+        factory: DiscountViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

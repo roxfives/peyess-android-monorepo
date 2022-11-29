@@ -26,8 +26,9 @@ import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
@@ -36,11 +37,12 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,7 +61,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -81,6 +82,7 @@ class ServiceOrderUploader constructor(
     private val prescriptionRepository: PrescriptionRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
+    private val discountRepository: OverallDiscountRepository,
     private val firebaseManager: FirebaseManager,
 ) {
     var purchaseId = ""
@@ -422,7 +424,7 @@ class ServiceOrderUploader constructor(
     }
 
     private suspend fun addSalespersonData(so: ServiceOrderDocument): ServiceOrderDocument {
-        var user: Collaborator? = null
+        var user: CollaboratorDocument? = null
 
         authenticationRepository
             .currentUser()
@@ -528,6 +530,25 @@ class ServiceOrderUploader constructor(
             miscProducts = emptyList(),
         )
     }
+
+    private suspend fun addDiscountData(
+        saleId: String,
+        serviceOrder: ServiceOrderDocument,
+    ): ServiceOrderDocument {
+
+        val discount = discountRepository.getDiscountForSale(saleId)
+        val totalDiscount = when (discount?.discountMethod) {
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.total
+            DiscountCalcMethod.None, null -> 0.0
+        }
+
+        return serviceOrder.copy(
+            totalDiscount = totalDiscount,
+            discountAllowedBy = serviceOrder.createAllowedBy,
+        )
+    }
+
 
     private fun createHid(): String {
         val random = Random.asJavaRandom()
@@ -711,6 +732,8 @@ class ServiceOrderUploader constructor(
             addProductsData(serviceOrder)
         }
 
+        serviceOrder = addDiscountData(localSaleId, serviceOrder)
+
         val purchase = runBlocking {
             createPurchase(context, serviceOrder)
         }
@@ -722,7 +745,7 @@ class ServiceOrderUploader constructor(
                 .map { it.amount }
                 .reduce { acc, payment -> acc + payment }
         }
-        val totalLeft = BigDecimal(abs(serviceOrder.total - totalPaid))
+        val totalLeft = BigDecimal(abs((serviceOrder.totalWithDiscount - totalPaid)))
             .setScale(2, RoundingMode.HALF_EVEN)
             .toDouble()
 

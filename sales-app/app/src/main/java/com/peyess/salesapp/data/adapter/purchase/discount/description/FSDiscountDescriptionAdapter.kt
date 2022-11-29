@@ -1,16 +1,17 @@
-package com.peyess.salesapp.data.adapter.purchase.discount
+package com.peyess.salesapp.data.adapter.purchase.discount.description
 
 import com.peyess.salesapp.data.adapter.payment_value_desc.toFSPaymentValueDescription
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseProductsDiscount
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseProductsDiscountDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.DiscountDescriptionDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import java.math.BigDecimal
 
 fun FSDiscountDescription.toDiscountDescriptionDocument(): DiscountDescriptionDocument {
     return DiscountDescriptionDocument(
         method = DiscountCalcMethod.fromName(method),
-        value = value,
+        value = BigDecimal(value),
     )
 }
 

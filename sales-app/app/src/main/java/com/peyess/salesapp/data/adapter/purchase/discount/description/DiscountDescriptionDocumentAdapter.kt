@@ -1,15 +1,15 @@
-package com.peyess.salesapp.data.adapter.purchase.discount
+package com.peyess.salesapp.data.adapter.purchase.discount.description
 
 import com.peyess.salesapp.data.adapter.payment_value_desc.toPaymentValueDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseProductsDiscount
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseProductsDiscountDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.DiscountDescriptionDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 
 fun DiscountDescriptionDocument.toFSDiscountDescription(): FSDiscountDescription {
     return FSDiscountDescription(
         method = method.toName(),
-        value = value,
+        value = value.toDouble(),
     )
 }
 

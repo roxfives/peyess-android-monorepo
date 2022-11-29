@@ -14,6 +14,8 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
@@ -27,6 +29,7 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
@@ -46,6 +49,7 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -64,6 +68,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val prescriptionRepository: PrescriptionRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
+    private val discountRepository: OverallDiscountRepository,
     private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
@@ -71,6 +76,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
     lateinit var serviceOrderHid: String
 
     init {
+        loadCurrentSale()
+
         loadClients()
         loadPrescriptionPicture()
         loadPrescriptionData()
@@ -83,6 +90,30 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         createUploader()
         createHid()
+
+        onAsync(ServiceOrderState::saleIdAsync) {
+            loadDiscount()
+        }
+
+        onAsync(ServiceOrderState::discountAsync) {
+            if (it != null) {
+                loadTotalToPayWithDiscount()
+            }
+        }
+    }
+
+    private fun loadCurrentSale() {
+        saleRepository.activeSale().execute {
+            copy(saleIdAsync = it)
+        }
+    }
+
+    private fun loadDiscount() = withState {
+        discountRepository
+            .watchDiscountForSale(it.saleId)
+            .execute { discount ->
+                copy(discountAsync = discount)
+            }
     }
 
     private fun createHid() {
@@ -124,6 +155,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             prescriptionRepository,
             purchaseRepository,
             serviceOrderRepository,
+            discountRepository,
             firebaseManager,
         )
     }
@@ -238,7 +270,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadTotalToPay() = withState {
+    private fun loadTotalToPay() = withState { state ->
         saleRepository
             .pickedProduct()
             .filterNotNull()
@@ -248,6 +280,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
                     productRepository.coloringById(it.coloringId).filterNotNull().take(1),
                     productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
                     saleRepository.currentFramesData(),
+                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
                     ::ProductSet
                 )
             }
@@ -284,6 +317,59 @@ class ServiceOrderViewModel @AssistedInject constructor(
             }
             .execute(Dispatchers.IO) {
                 copy(totalToPayAsync = it)
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun loadTotalToPayWithDiscount() = withState { state ->
+        saleRepository
+            .pickedProduct()
+            .filterNotNull()
+            .flatMapLatest {
+                combine(
+                    productRepository.lensById(it.lensId).filterNotNull().take(1),
+                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
+                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
+                    saleRepository.currentFramesData(),
+                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
+                    ::ProductSet
+                )
+            }
+            .map {
+                val lens = it.lens
+                val coloring = it.coloring
+                val treatment = it.treatment
+                val frames = it.frames
+
+                val framesValue = if (frames.areFramesNew) {
+                    frames.value
+                } else {
+                    0.0
+                }
+
+                // TODO: Update coloring and treatment to use price instead of suggested price
+                var totalToPay = lens.price + framesValue
+
+                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
+                    totalToPay += coloring.suggestedPrice
+                }
+                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
+                    totalToPay += treatment.suggestedPrice
+                }
+
+                if (coloring.suggestedPrice > 0) {
+                    totalToPay += lens.suggestedPriceAddColoring
+                }
+                if (treatment.suggestedPrice > 0) {
+                    totalToPay += lens.suggestedPriceAddTreatment
+                }
+
+                totalToPay = it.calculateDiscount(totalToPay)
+
+                totalToPay
+            }
+            .execute(Dispatchers.IO) {
+                copy(totalToPayWithDiscountAsync = it)
             }
     }
 

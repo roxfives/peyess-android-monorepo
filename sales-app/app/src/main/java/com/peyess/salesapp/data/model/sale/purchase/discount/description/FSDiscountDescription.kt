@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.sale.purchase.discount
+package com.peyess.salesapp.data.model.sale.purchase.discount.description
 
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties

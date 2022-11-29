@@ -36,6 +36,7 @@ enum class SalesAppScreens {
     PickClient,
     ServiceOrder,
     SalePayment,
+    Discount,
     Demonstration,
 
     CreateNewClientBasicInfo,
@@ -87,6 +88,7 @@ enum class SalesAppScreens {
                 PickClient.name -> PickClient
                 ServiceOrder.name -> ServiceOrder
                 SalePayment.name -> SalePayment
+                Discount.name -> Discount
                 Demonstration.name -> Demonstration
 
                 CreateNewClientBasicInfo.name -> CreateNewClientBasicInfo
@@ -145,6 +147,7 @@ enum class SalesAppScreens {
                 PickClient.name -> "Selecione o cadastro do cliente"
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
                 SalePayment.name -> "Pagamento"
+                Discount.name -> "Aplicar Desconto"
                 Demonstration.name -> "Demonstração"
 
                 CreateNewClientBasicInfo.name -> "Criar novo cliente"

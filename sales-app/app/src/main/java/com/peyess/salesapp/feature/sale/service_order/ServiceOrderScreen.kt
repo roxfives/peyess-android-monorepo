@@ -36,6 +36,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Discount
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
@@ -100,6 +101,8 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 import java.lang.Double.max
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 
 private val pictureSize = 60.dp
@@ -140,6 +143,7 @@ fun ServiceOrderScreen(
 
     onAddPayment: (paymentId: Long) -> Unit = {},
     onEditPayment: (paymentId: Long, clientId: String) -> Unit = { _, _ -> },
+    onAddDiscount: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _, -> },
 
     onGenerateBudget: () -> Unit = {},
     onFinishSale: () -> Unit = {},
@@ -184,6 +188,7 @@ fun ServiceOrderScreen(
     val isTotalPaidLoading by viewModel.collectAsState(ServiceOrderState::isTotalPaidLoading)
     val totalPaid by viewModel.collectAsState(ServiceOrderState::totalPaid)
     val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
+    val totalToPayWithDiscount by viewModel.collectAsState(ServiceOrderState::totalToPayWithDiscount)
 
     val isSaleDone by viewModel.collectAsState(ServiceOrderState::isSaleDone)
     val isSaleLoading by viewModel.collectAsState(ServiceOrderState::isSaleLoading)
@@ -192,6 +197,8 @@ fun ServiceOrderScreen(
     val isGeneratingPdfDocument by viewModel.collectAsState(ServiceOrderState::isSOPdfBeingGenerated)
 
     val confirmationMessage by viewModel.collectAsState(ServiceOrderState::confirmationMessage)
+
+    val saleId by viewModel.collectAsState(ServiceOrderState::saleId)
 
     if (isSaleLoading) {
         SaleLoading(modifier = Modifier.fillMaxSize())
@@ -239,7 +246,7 @@ fun ServiceOrderScreen(
             canAddNewPayment = canAddNewPayment,
             isTotalPaidLoading = isTotalPaidLoading,
             totalPaid = totalPaid,
-            totalToPay = totalToPay,
+            totalToPay = totalToPayWithDiscount,
             isPaymentLoading = isPaymentsLoading,
             payments = payments,
             onAddPayment = {
@@ -249,6 +256,12 @@ fun ServiceOrderScreen(
             },
             onDeletePayment = viewModel::deletePayment,
             onEditPayment = { onEditPayment(it.id, it.clientId) },
+            onAddDiscount = {
+                onAddDiscount(
+                    saleId,
+                    BigDecimal(totalToPay).setScale(2, RoundingMode.HALF_EVEN),
+                )
+            },
 
             isGeneratingPdfDocument = isGeneratingPdfDocument,
             onGenerateServiceOrderPdf = {
@@ -390,6 +403,7 @@ private fun ServiceOrderScreenImpl(
     treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
     framesEntity: FramesEntity = FramesEntity(),
     onEditProducts: () -> Unit = {},
+    onAddDiscount: () -> Unit = {},
 
     isMeasureLoading: Boolean = false,
     measureLeft: Measuring = Measuring(),
@@ -462,6 +476,7 @@ private fun ServiceOrderScreenImpl(
             ProductsSection(
                 isLoading = isProductLoading,
 
+                onAddDiscount = onAddDiscount,
                 onEditProducts = onEditProducts,
 
                 lensEntity = lensEntity,
@@ -1550,6 +1565,7 @@ private fun ProductsSection(
     isLoading: Boolean = false,
 
     onEditProducts: () -> Unit = {},
+    onAddDiscount: () -> Unit = {},
 
     lensEntity: LocalLensEntity = LocalLensEntity(),
     coloringEntity: LocalColoringEntity = LocalColoringEntity(),
@@ -1576,6 +1592,13 @@ private fun ProductsSection(
             SectionTitle(title = stringResource(id = R.string.so_section_title_products))
 
             Spacer(modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = onAddDiscount,
+                enabled = !isLoading,
+            ) {
+                Icon(imageVector = Icons.Filled.Discount, contentDescription = "")
+            }
 
             IconButton(
                 onClick = onEditProducts,

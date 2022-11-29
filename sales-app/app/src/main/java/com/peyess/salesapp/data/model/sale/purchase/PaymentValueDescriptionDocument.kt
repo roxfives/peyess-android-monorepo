@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.sale.purchase
 
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 
 data class PaymentValueDescriptionDocument(
     val discount: DiscountDescriptionDocument = DiscountDescriptionDocument(),

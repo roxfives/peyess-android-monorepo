@@ -15,11 +15,13 @@ import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
@@ -46,11 +48,15 @@ data class ServiceOrderState(
 
     val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
 
+    val discountAsync: Async<OverallDiscountDocument?> = Uninitialized,
+
     val totalToPayAsync: Async<Double> = Uninitialized,
+    val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
     val totalPaidAsync: Async<Double> = Uninitialized,
 
     val hidServiceOrder: String = "",
     val hidSale: String = "",
+    val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
 
     val serviceOrderPdfAsync: Async<Uri> = Uninitialized,
     @StringRes
@@ -62,6 +68,8 @@ data class ServiceOrderState(
 
     val isSOPdfBeingGenerated: Boolean = false,
 ): MavericksState {
+    val saleId = saleIdAsync.invoke()?.id ?: ""
+
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
         userClientAsync.invoke() ?: ClientEntity()
@@ -78,6 +86,9 @@ data class ServiceOrderState(
 
     val isWitnessLoading = witnessClientAsync is Loading
     val witnessClient = witnessClientAsync.invoke()
+
+    val isDiscountLoading = discountAsync is Loading
+    val discount = discountAsync.invoke()
 
     val isPrescriptionPictureLoading = prescriptionPictureAsync is Loading
     val prescriptionPicture = if (prescriptionPictureAsync is Success) {
@@ -148,13 +159,18 @@ data class ServiceOrderState(
     } else {
         0.0
     }
+    val totalToPayWithDiscount = if (totalToPayWithDiscountAsync is Success) {
+        totalToPayWithDiscountAsync.invoke()
+    } else {
+        0.0
+    }
     val totalPaid = if (totalPaidAsync is Success) {
         totalPaidAsync.invoke()
     } else {
         0.0
     }
 
-    val canAddNewPayment = totalPaid < totalToPay
+    val canAddNewPayment = totalPaid < totalToPayWithDiscount
 
     val confirmationMessage = if (totalToPay <= totalPaid) {
         val locale = Locale.getDefault()

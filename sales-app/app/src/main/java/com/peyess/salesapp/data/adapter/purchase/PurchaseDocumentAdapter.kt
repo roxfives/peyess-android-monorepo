@@ -2,8 +2,8 @@ package com.peyess.salesapp.data.adapter.purchase
 
 import com.peyess.salesapp.data.adapter.client.toFSDenormalizedClient
 import com.peyess.salesapp.data.adapter.payment.toFSPayment
-import com.peyess.salesapp.data.adapter.purchase_discount_desc.toFSDiscountDescription
-import com.peyess.salesapp.data.adapter.purchase_discount_desc.toFSPurchaseProductsDiscount
+import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSDiscountDescription
+import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSPurchaseProductsDiscount
 import com.peyess.salesapp.data.adapter.service_order.toFSDenormalizedServiceOrderDesc
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument

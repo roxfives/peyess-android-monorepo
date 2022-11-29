@@ -158,4 +158,6 @@ data class ServiceOrderDocument(
 
     val hasAxisLeft = lCylinder < 0
     val hasAxisRight = rCylinder < 0
+
+    val totalWithDiscount = total * (1 - totalDiscount)
 }

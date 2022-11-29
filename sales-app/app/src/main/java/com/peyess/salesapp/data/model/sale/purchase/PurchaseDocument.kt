@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.model.sale.purchase
 
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
 import java.time.ZonedDateTime

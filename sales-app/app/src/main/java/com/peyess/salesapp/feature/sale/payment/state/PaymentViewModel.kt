@@ -9,6 +9,7 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -34,9 +35,12 @@ class PaymentViewModel @AssistedInject constructor(
     private val clientRepository: ClientRepository,
     private val paymentMethodRepository: PaymentMethodRepository,
     private val cardFlagsRepository: CardFlagRepository,
+    private val discountRepository: OverallDiscountRepository,
 ): MavericksViewModel<PaymentState>(initialState) {
 
     init {
+        loadCurrentSale()
+
         loadTotalPaid()
         loadTotalToPay()
         loadPaymentMethods()
@@ -51,12 +55,6 @@ class PaymentViewModel @AssistedInject constructor(
                             .coerceAtLeast(0.0)
                     )
                 }
-            }
-        }
-
-        onEach(PaymentState::totalLeftToPay) {
-            if (it <= 0.0) {
-                // TODO: update payment to be at most totalLeftToPay
             }
         }
 
@@ -130,6 +128,12 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadCurrentSale() {
+        saleRepository.activeSale().execute {
+            copy(saleIdAsync = it)
+        }
+    }
+
     private fun loadPaymentMethods() = withState {
         paymentMethodRepository
             .payments()
@@ -189,7 +193,7 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadTotalToPay() = withState {
+    private fun loadTotalToPay() = withState { state ->
         saleRepository
             .pickedProduct()
             .filterNotNull()
@@ -199,6 +203,7 @@ class PaymentViewModel @AssistedInject constructor(
                     productRepository.coloringById(it.coloringId).filterNotNull().take(1),
                     productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
                     saleRepository.currentFramesData(),
+                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
                     ::ProductSet
                 )
             }
@@ -231,7 +236,7 @@ class PaymentViewModel @AssistedInject constructor(
                     totalToPay += lens.suggestedPriceAddTreatment
                 }
 
-                totalToPay
+                it.calculateDiscount(totalToPay)
             }
             .execute(Dispatchers.IO) {
                 copy(totalToPayAsync = it)

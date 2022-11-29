@@ -23,6 +23,9 @@ import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
+import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.model.discount.OverallDiscountEntity
+import com.peyess.salesapp.data.room.converter.ConverterOverallDiscountCalcMethod
 import com.peyess.salesapp.database.room.converters.ConverterClientRole
 import com.peyess.salesapp.database.room.converters.ConverterEye
 import com.peyess.salesapp.database.room.converters.ConverterFramesType
@@ -43,8 +46,9 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
         ProductPickedEntity::class,
         ClientEntity::class,
         SalePaymentEntity::class,
+        OverallDiscountEntity::class,
     ],
-    version = 47,
+    version = 48,
 )
 @TypeConverters(
     ConverterLocalDate::class,
@@ -54,6 +58,7 @@ import com.peyess.salesapp.database.room.converters.ConverterUri
     ConverterFramesType::class,
     ConverterEye::class,
     ConverterClientRole::class,
+    ConverterOverallDiscountCalcMethod::class,
 )
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao
@@ -75,4 +80,6 @@ abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun clientPickedDao(): ClientPickedDao
 
     abstract fun salePaymentsDao(): SalePaymentDao
+
+    abstract fun overallDiscountDao(): OverallDiscountDao
 }

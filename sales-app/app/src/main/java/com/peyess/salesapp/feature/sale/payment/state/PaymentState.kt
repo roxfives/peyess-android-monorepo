@@ -7,12 +7,15 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
+import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import timber.log.Timber
 
 data class PaymentState(
+    val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
+
     val paymentMethodsAsync: Async<List<PaymentMethod>> = Uninitialized,
     val activePaymentMethod: PaymentMethod? = null,
 
@@ -28,6 +31,8 @@ data class PaymentState(
 
     val totalLeftToPay: Double = 0.0,
 ): MavericksState {
+    val saleId = saleIdAsync.invoke()?.id ?: ""
+
     val arePaymentsLoading = paymentMethodsAsync is Loading
     val paymentMethods = if (paymentMethodsAsync is Success) {
         Timber.i("Setting payment methods ${paymentMethodsAsync.invoke()}")

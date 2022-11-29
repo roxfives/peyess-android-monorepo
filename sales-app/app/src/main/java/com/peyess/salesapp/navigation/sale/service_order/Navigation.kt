@@ -9,6 +9,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.service_order.ServiceOrderScreen
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
+import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildServiceOrderNavGraph(
@@ -73,7 +74,12 @@ fun buildServiceOrderNavGraph(
 
                 navHostController
                     .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$client")
+            },
+            onAddDiscount = { saleId, fullPrice ->
+                navHostController
+                    .navigate(buildDiscountNavRoute(saleId, fullPrice))
             }
+
         ) {
             navHostController.navigate(SalesAppScreens.Home.name) {
                 popUpTo(SalesAppScreens.Home.name) { inclusive = true}

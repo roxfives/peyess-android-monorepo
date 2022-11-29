@@ -2,11 +2,13 @@ package com.peyess.salesapp.features.pdf.service_order.html
 
 import android.content.Context
 import androidx.core.os.ConfigurationCompat
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 
 // Unit
@@ -81,9 +83,14 @@ private fun productDescriptionFooter(
 
 private fun discountAsPercentage(discount: DiscountDescriptionDocument, totalPrice: Double): Double {
     return when (discount.method) {
-        DiscountCalcMethod.None -> 0.0
-        DiscountCalcMethod.Percentage -> discount.value
-        DiscountCalcMethod.Whole -> (discount.value / totalPrice)
+        DiscountCalcMethod.None ->
+            0.0
+        DiscountCalcMethod.Percentage ->
+            discount.value.toDouble()
+        DiscountCalcMethod.Whole ->
+            discount.value
+                .divide(BigDecimal(totalPrice), RoundingMode.HALF_EVEN)
+                .toDouble()
     }
 }
 

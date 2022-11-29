@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
-import com.peyess.salesapp.data.model.sale.service_order.discount_description.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.typing.sale.PurchaseState
 
 @Keep

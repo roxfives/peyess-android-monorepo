@@ -55,6 +55,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
+import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
 import com.peyess.salesapp.data.dao.positioning.PositioningDaoImpl
@@ -66,6 +67,8 @@ import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.data.database.CacheCreateClientDatabase
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
+import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDao
+import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDaoImpl
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.Module
 import dagger.Provides
@@ -212,6 +215,24 @@ object DaoModule {
     @Provides
     fun provideSODao(appDatabase: ActiveSalesDatabase): ActiveSODao {
         return appDatabase.activeSODao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideOverallDiscountDao(appDatabase: ActiveSalesDatabase): OverallDiscountDao {
+        return appDatabase.overallDiscountDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDiscountGroupDao(
+        firebaseManager: FirebaseManager,
+        application: SalesApplication,
+    ): DiscountGroupDao {
+        return DiscountGroupDaoImpl(
+            firebaseManager = firebaseManager,
+            salesApplication = application,
+        )
     }
 
     @Singleton

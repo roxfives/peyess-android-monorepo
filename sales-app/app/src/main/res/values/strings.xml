@@ -521,6 +521,12 @@
     <string name="create_client_error_whatsapp_invalid">Número inválido</string>
     <!--    <string name="create_client_error_phone_empty">Telefone está vazio</string>-->
 
+    <!-- UI Component: Discount   -->
+    <string name="discount">Desconto</string>
+    <string name="discount_title">Escolha o método de desconto e digite o valor</string>
+    <string name="discount_final_price">Preço final</string>
+    <string name="discount_original_price">Sem desconto</string>
+
     <!-- Firestore collections   -->
     <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
     <string name="fs_col_store">optical_stores</string>
@@ -537,6 +543,8 @@
     <string name="fs_col_prescription">optical_stores/%1$s/local_optical_prescription</string>
     <string name="fs_col_purchase">optical_stores/%1$s/local_optical_purchase</string>
     <string name="fs_col_card_flags">payment_card</string>
+    <string name="fs_col_discount_groups">optical_stores/%1$s/local_optical_product_discount_groups</string>
+
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>

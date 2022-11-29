@@ -17,7 +17,7 @@ import java.text.NumberFormat
 // Total
 //<!-- vendedor, valor_sem_desconto, desconto, total -->
 
-private val productDescriptionHeader = "<tr class=\"row14\"> <td class=\"column0 style62 s style62\" colspan=\"11\"> DESCRIÇÃO DOS PRODUTOS </td></tr><tr class=\"row15\"> <td class=\"column0 style8 s\" colspan=\"2\">Código</td><td class=\"column2 style8 s\">Qt.</td><td class=\"column3 style60 s style60\" colspan=\"5\"> Produto </td><td class=\"column8 style8 s\">Valor</td><td class=\"column9 style8 s\">Desconto</td><td class=\"column10 style8 s\">R\$</td></tr>"
+private val productDescriptionHeader = "<tr class=\"row14\"> <td class=\"column0 style62 s style62\" colspan=\"11\"> DESCRIÇÃO DOS PRODUTOS </td></tr><tr class=\"row15\"> <td class=\"column0 style8 s\" colspan=\"1\">Código</td><td class=\"column2 style8 s\">Qt.</td><td class=\"column3 style60 s style60\" colspan=\"5\"> Produto </td><td class=\"column8 style8 s\">Valor</td><td class=\"column9 style8 s\">Desconto</td><td class=\"column9 style8 s\">Taxa</td><td class=\"column10 style8 s\">R\$</td></tr>"
 
 private fun productUnitDescription(
     context: Context,
@@ -28,6 +28,7 @@ private fun productUnitDescription(
     quantity: Int,
     priceWithoutDiscount: Double,
     discount: Double,
+    fee: Double,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
     System.out.println("Using locale $currentLocale from ${ConfigurationCompat.getLocales(context.resources.configuration)}")
@@ -50,8 +51,9 @@ private fun productUnitDescription(
     val priceWithoutDiscountStr = currencyFormat.format(priceWithoutDiscount)
     val priceWithDiscountStr = currencyFormat.format(priceWithDiscount)
     val discountStr = percentFormat.format(discount)
+    val feeStr = percentFormat.format(fee)
 
-    val productDescriptionUnit = "<tr class=\"row16\"> <td class=\"column0 style1 s\" colspan=\"2\">${productCode.ifBlank { "-" }}</td><td class=\"column2 style1 s\">$count</td><td class=\"column3 style1 s style61\" colspan=\"5\"> ${description.ifBlank { "-" }} </td><td class=\"column8 style1 n\">$priceWithoutDiscountStr</td><td class=\"column9 style1 n\">$discountStr</td><td class=\"column10 style1 n\">$priceWithDiscountStr</td></tr>"
+    val productDescriptionUnit = "<tr class=\"row16\"> <td class=\"column0 style1 s\" colspan=\"1\">${productCode.ifBlank { "-" }}</td><td class=\"column2 style1 s\">$count</td><td class=\"column3 style1 s style61\" colspan=\"5\"> ${description.ifBlank { "-" }} </td><td class=\"column8 style1 n\">$priceWithoutDiscountStr</td><td class=\"column9 style1 n\">$discountStr</td><td class=\"column9 style1 n\">$feeStr</td><td class=\"column10 style1 n\">$priceWithDiscountStr</td></tr>"
 
     return productDescriptionUnit
 }
@@ -79,8 +81,9 @@ private fun productDescriptionFooter(
     val priceWithoutDiscountStr = currencyFormat.format(priceWithoutDiscount)
     val priceWithFeeStr = currencyFormat.format(priceWithFee)
     val discountStr = percentFormat.format(discount)
+    val feeStr = percentFormat.format(fee)
 
-    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooterName s\" colspan=\"8\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column10 styleProductListFooter n\">$priceWithFeeStr</td></tr>"
+    val productDescriptionTotal = "<tr class=\"row22\"> <td class=\"column0 styleProductListFooterName s\" colspan=\"7\"> Vendedor: ${salesPersonName.ifBlank { "-" }} </td><td class=\"column8 styleProductListFooter n\">$priceWithoutDiscountStr</td><td class=\"column9 styleProductListFooter n\">$discountStr</td><td class=\"column9 styleProductListFooter n\">$feeStr</td><td class=\"column10 styleProductListFooter n\">$priceWithFeeStr</td></tr>"
 
     return productDescriptionTotal
 }
@@ -116,6 +119,7 @@ private fun buildProductList(
                 priceWithoutDiscount = set.lenses.price,
                 discount = discountAsPercentage(set.lenses.discount, set.lenses.price),
                 description = set.lenses.nameDisplay,
+                fee = 0.0,
             ),
         )
 
@@ -132,6 +136,7 @@ private fun buildProductList(
                     priceWithoutDiscount = set.colorings.price,
                     discount = discountAsPercentage(set.colorings.discount, set.colorings.price),
                     description = set.colorings.nameDisplay,
+                    fee = 0.0,
                 ),
             )
         }
@@ -148,6 +153,7 @@ private fun buildProductList(
                     priceWithoutDiscount = set.treatments.price,
                     discount = discountAsPercentage(set.treatments.discount, set.treatments.price),
                     description = set.treatments.nameDisplay,
+                    fee = 0.0,
                 ),
             )
         }
@@ -162,6 +168,7 @@ private fun buildProductList(
                 priceWithoutDiscount = it.price,
                 discount = discountAsPercentage(it.discount, it.price),
                 description = it.nameDisplay,
+                fee = 0.0,
             ),
         )
     }
@@ -175,6 +182,7 @@ private fun buildProductList(
                 priceWithoutDiscount = it.price,
                 discount = discountAsPercentage(it.discount, it.price),
                 description = it.nameDisplay,
+                fee = 0.0,
             ),
         )
     }

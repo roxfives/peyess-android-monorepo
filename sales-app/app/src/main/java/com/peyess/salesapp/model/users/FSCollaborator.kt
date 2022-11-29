@@ -110,8 +110,8 @@ data class FSCollaborator(
     val isEditable:  Boolean = true,
 )
 
-fun FSCollaborator.toDocument(): Collaborator {
-    return Collaborator(
+fun FSCollaborator.toDocument(): CollaboratorDocument {
+    return CollaboratorDocument(
         nameDisplay = nameDisplay,
         name = name,
         document = document,

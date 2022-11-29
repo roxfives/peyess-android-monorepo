@@ -6,16 +6,16 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 
 data class UserListState(
     val resettingCurrentUser: Async<Boolean> = Uninitialized,
     val currentStore: Async<OpticalStore> = Uninitialized,
 
-    val users: List<Collaborator> = listOf(),
+    val users: List<CollaboratorDocument> = listOf(),
 
     val updatingCurrentUser: Async<Boolean> = Uninitialized,
-    val currentUser: Collaborator = Collaborator(),
+    val currentUser: CollaboratorDocument = CollaboratorDocument(),
     val currentUserAuthState: Async<UserAuthenticationState> = Uninitialized,
     val authErrorMessage: String = "",
 

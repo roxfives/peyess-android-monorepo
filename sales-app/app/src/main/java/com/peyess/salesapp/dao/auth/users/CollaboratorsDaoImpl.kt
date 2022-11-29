@@ -6,7 +6,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.users.AccountStatus
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.model.users.FSCollaborator
 import com.peyess.salesapp.model.users.toDocument
 import kotlinx.coroutines.channels.awaitClose
@@ -23,7 +23,7 @@ class CollaboratorsDaoImpl @Inject constructor(
 ) : CollaboratorsDao {
     val firestore = firebaseManager.storeFirestore
 
-    private fun toCollaborators(snap:  QuerySnapshot?): List<Collaborator> {
+    private fun toCollaborators(snap:  QuerySnapshot?): List<CollaboratorDocument> {
         return if (snap != null) {
             snap.documents.mapNotNull {
                 Timber.i("Parsing collaborator", it)
@@ -38,7 +38,7 @@ class CollaboratorsDaoImpl @Inject constructor(
         }
     }
 
-    override fun user(uid: String): Flow<Collaborator> = flow {
+    override fun user(uid: String): Flow<CollaboratorDocument> = flow {
         if (firestore == null || firebaseManager.currentStore == null) {
             Timber.e("Firestore or firebase application is null")
             error("Firestore or firebase application is null")
@@ -68,7 +68,7 @@ class CollaboratorsDaoImpl @Inject constructor(
         }
     }
 
-    override fun subscribeToActiveAccounts(): Flow<List<Collaborator>> = callbackFlow {
+    override fun subscribeToActiveAccounts(): Flow<List<CollaboratorDocument>> = callbackFlow {
         val snapListener: ListenerRegistration?
         val storeId = firebaseManager.currentStore?.uid
 
@@ -104,6 +104,31 @@ class CollaboratorsDaoImpl @Inject constructor(
         awaitClose {
             Timber.i("Removing listener")
             snapListener.remove()
+        }
+    }
+
+    override suspend fun getById(uid: String): FSCollaborator? {
+        if (firestore == null || firebaseManager.currentStore == null) {
+            Timber.e("Firestore or firebase application is null")
+            return null
+        }
+
+        val docRef = firestore.collection(
+                application.stringResource(R.string.fs_col_collaborators)
+                    .format(firebaseManager.currentStore!!.uid)
+            )
+            .document(uid)
+
+        val fsCollaborator: FSCollaborator?
+        val snap = docRef.get().await()
+
+        return if (snap.exists()) {
+            fsCollaborator = snap.toObject(FSCollaborator::class.java)
+
+            fsCollaborator
+        } else {
+            Timber.e("Collaborator $uid does not exist")
+            null
         }
     }
 }

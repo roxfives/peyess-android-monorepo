@@ -39,6 +39,7 @@ import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
 import com.peyess.salesapp.ui.component.footer.StepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
+import com.peyess.salesapp.ui.component.text.utils.currencyDigitsOnlyOrEmpty
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
@@ -137,8 +138,8 @@ private fun SetFramesScreenImpl(
 
     val curPriceInput = BigDecimal(value)
         .setScale(2, RoundingMode.HALF_EVEN)
-        .multiply(BigDecimal(100))
-        .toBigInteger()
+//        .multiply(BigDecimal(100))
+//        .toBigInteger()
 
     Column(
         modifier = modifier,
@@ -244,7 +245,7 @@ private fun SetFramesScreenImpl(
             )
 
             PeyessOutlinedTextField(
-                value = "$curPriceInput",
+                value = currencyDigitsOnlyOrEmpty(curPriceInput),
                 onValueChange = {
                     val value = try {
                         BigDecimal(it)

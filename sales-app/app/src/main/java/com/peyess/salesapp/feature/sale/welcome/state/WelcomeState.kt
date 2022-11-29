@@ -6,16 +6,16 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 
 data class WelcomeState(
-    val collaborator: Async<Collaborator> = Uninitialized,
+    val collaboratorDocument: Async<CollaboratorDocument> = Uninitialized,
     val activeSO: Async<ActiveSOEntity?> = Uninitialized,
 
     val goNextAttempts: Int = 0,
     val hasUpdatedSale: Boolean = false,
 ): MavericksState {
-    val isLoading = collaborator is Loading || collaborator is Uninitialized
+    val isLoading = collaboratorDocument is Loading || collaboratorDocument is Uninitialized
             || activeSO is Loading || activeSO is Uninitialized
 
     private val _activeSO: ActiveSOEntity? = activeSO.invoke()

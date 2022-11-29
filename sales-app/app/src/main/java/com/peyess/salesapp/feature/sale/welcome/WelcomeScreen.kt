@@ -41,7 +41,7 @@ fun WelcomeScreen(
 
     val isLoading by viewModel.collectAsState(WelcomeState::isLoading)
 
-    val collaborator by viewModel.collectAsState(WelcomeState::collaborator)
+    val collaborator by viewModel.collectAsState(WelcomeState::collaboratorDocument)
     val clientName by viewModel.collectAsState(WelcomeState::clientName)
 
     val canGoNext by viewModel.collectAsState(WelcomeState::canGoNext)

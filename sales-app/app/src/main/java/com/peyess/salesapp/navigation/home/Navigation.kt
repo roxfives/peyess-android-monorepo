@@ -18,7 +18,7 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 fun buildHomeNavGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    builder: NavGraphBuilder
+    builder: NavGraphBuilder,
 ) {
     builder.composable(
         route = SalesAppScreens.Home.name,

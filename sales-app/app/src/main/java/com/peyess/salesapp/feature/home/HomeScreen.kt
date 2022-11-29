@@ -1,7 +1,5 @@
 package com.peyess.salesapp.feature.home
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,8 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -63,7 +59,6 @@ import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -71,7 +66,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.ui.component.button.HomeScreenButton
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -123,7 +118,7 @@ fun HomeScreen(
 
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
-    val collaborator by viewModel.collectAsState(MainAppState::collaborator)
+    val collaborator by viewModel.collectAsState(MainAppState::collaboratorDocument)
     val isLoadingCollaborator by viewModel.collectAsState(MainAppState::isLoadingCollaborator)
 
     val store by viewModel.collectAsState(MainAppState::store)
@@ -160,7 +155,7 @@ fun HomeScreen(
     HomeScreenImpl(
         modifier = modifier,
 
-        collaborator = collaborator ?: Collaborator(),
+        collaboratorDocument = collaborator ?: CollaboratorDocument(),
         isLoadingCollaborator = isLoadingCollaborator,
 
         store = store,
@@ -189,7 +184,7 @@ fun HomeScreen(
 private fun HomeScreenImpl(
     modifier: Modifier = Modifier,
 
-    collaborator: Collaborator = Collaborator(),
+    collaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     isLoadingCollaborator: Boolean = false,
 
     store: OpticalStore = OpticalStore(),
@@ -212,7 +207,7 @@ private fun HomeScreenImpl(
     ) {
         ProfileData(
             isLoading = isLoadingCollaborator || isLoadingStore,
-            collaborator = collaborator,
+            collaboratorDocument = collaboratorDocument,
             localization = store.shortAddress,
 
             onSignOut = onSignOut,
@@ -285,7 +280,7 @@ private fun ProfileData(
     modifier: Modifier = Modifier,
 
     isLoading: Boolean = false,
-    collaborator: Collaborator = Collaborator(),
+    collaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     localization: String = "",
 
     onSignOut: () -> Unit = {},
@@ -314,7 +309,7 @@ private fun ProfileData(
                             color = MaterialTheme.colors.primary,
                             shape = CircleShape)
                         .clip(CircleShape),
-                    model = ImageRequest.Builder(LocalContext.current).data(collaborator.picture)
+                    model = ImageRequest.Builder(LocalContext.current).data(collaboratorDocument.picture)
                         .crossfade(true)
                         .size(width = profilePictureSizePx, height = profilePictureSizePx).build(),
                     contentScale = ContentScale.FillBounds,
@@ -332,7 +327,7 @@ private fun ProfileData(
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = stringResource(id = R.string.home_welcome).format(collaborator.nameDisplay),
+                        text = stringResource(id = R.string.home_welcome).format(collaboratorDocument.nameDisplay),
                         style = MaterialTheme.typography.subtitle1,
                     )
 
@@ -532,7 +527,7 @@ private fun ProfileDataPreview() {
     SalesAppTheme {
         ProfileData(
             modifier = Modifier.fillMaxWidth(),
-            collaborator = Collaborator(nameDisplay = "vendedor"),
+            collaboratorDocument = CollaboratorDocument(nameDisplay = "vendedor"),
             localization = "São Carlos, SP",
         )
     }

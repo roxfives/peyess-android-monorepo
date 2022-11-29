@@ -8,11 +8,11 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.UserAuthenticationState
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.utils.string.isEmailValid
 
 data class UserAuthState(
-    val currentUser: Async<Collaborator> = Uninitialized,
+    val currentUser: Async<CollaboratorDocument> = Uninitialized,
     val currentUserAuthState: Async<UserAuthenticationState> = Uninitialized,
 
     val hasLocalPassword: Async<Boolean> = Uninitialized,

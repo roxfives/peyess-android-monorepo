@@ -29,7 +29,7 @@ sealed class AccountStatus {
     }
 }
 
-data class Collaborator(
+data class CollaboratorDocument(
     val nameDisplay:  String = "",
     val name:  String = "",
     val document:  String = "",

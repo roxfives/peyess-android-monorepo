@@ -2,11 +2,10 @@ package com.peyess.salesapp.repository.auth
 
 import com.google.firebase.FirebaseApp
 import com.peyess.salesapp.auth.LocalAuthorizationState
-import com.peyess.salesapp.auth.PeyessUser
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {
@@ -16,7 +15,8 @@ interface AuthenticationRepository {
 
     fun resetCurrentUser(): Flow<Boolean>
 
-    fun currentUser(): Flow<Collaborator?>
+    fun currentUser(): Flow<CollaboratorDocument?>
+    suspend fun fetchCurrentUserId(): String
 
     fun userSignOut(): Flow<UserAuthenticationState>
 
@@ -40,7 +40,7 @@ interface AuthenticationRepository {
 
     fun userFirebaseApp(uid: String): FirebaseApp?
 
-    fun activeCollaborators(): Flow<List<Collaborator>>
+    fun activeCollaborators(): Flow<List<CollaboratorDocument>>
 
     suspend fun exit()
 }

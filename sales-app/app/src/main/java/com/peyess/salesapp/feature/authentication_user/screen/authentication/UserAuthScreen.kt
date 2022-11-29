@@ -49,7 +49,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthState
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.state.UserAuthViewModel
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.group.CredentialsInput
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
@@ -135,7 +135,7 @@ fun UserAuthScreen(
                 modifier = modifier,
                 isLoading = isLoading,
 
-                currentCollaborator = user,
+                currentCollaboratorDocument = user,
                 isAuthenticated = isAuthenticated,
 
                 username = email,
@@ -184,7 +184,7 @@ fun UserSignIn(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
 
-    currentCollaborator: Collaborator = Collaborator(),
+    currentCollaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     isAuthenticated: Boolean = false,
 
     username: String = stringResource(id = R.string.empty_string),
@@ -224,7 +224,7 @@ fun UserSignIn(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(currentCollaborator.picture)
+                .data(currentCollaboratorDocument.picture)
                 .crossfade(true)
                 .size(width = 256, height = 256)
                 .build(),

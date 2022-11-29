@@ -9,7 +9,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 
 sealed class AppAuthenticationState {
@@ -30,7 +30,7 @@ data class MainAppState(
     // Client screen
     val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
 
-    val currentCollaboratorAsync: Async<Collaborator?> = Uninitialized,
+    val currentCollaboratorDocumentAsync: Async<CollaboratorDocument?> = Uninitialized,
     val currentStoreAsync: Async<OpticalStore> = Uninitialized,
 
     val hasPickedClient: Boolean = false,
@@ -47,10 +47,10 @@ data class MainAppState(
 
     // Home Screen
     val isLoadingCollaborator: Boolean = false
-    val collaborator: Collaborator? = if (currentCollaboratorAsync !is Success) {
-        Collaborator()
+    val collaboratorDocument: CollaboratorDocument? = if (currentCollaboratorDocumentAsync !is Success) {
+        CollaboratorDocument()
     } else {
-        currentCollaboratorAsync.invoke()
+        currentCollaboratorDocumentAsync.invoke()
     }
 
     val isLoadingStore: Boolean = false

@@ -13,12 +13,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.take
-import timber.log.Timber
 
 class WelcomeViewModel @AssistedInject constructor(
     @Assisted initialState: WelcomeState,
@@ -34,7 +29,7 @@ class WelcomeViewModel @AssistedInject constructor(
 
     private fun loadCurrentCollaborator() = withState {
         authenticationRepository.currentUser().filterNotNull().execute(Dispatchers.IO) {
-            copy(collaborator = it)
+            copy(collaboratorDocument = it)
         }
     }
 

@@ -17,20 +17,22 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.retryWhen
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,6 +48,20 @@ class AuthenticationRepositoryImpl @Inject constructor(
 ): AuthenticationRepository {
     private val Context.dataStoreCurrentUser: DataStore<Preferences>
         by preferencesDataStore(dataStoreFilename)
+
+    private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    private val currentCollaboratorId by lazy {
+        salesApplication
+            .dataStoreCurrentUser
+            .data
+            .map { prefs -> prefs[currentCollaboratorKey] }
+            .shareIn(
+                scope = repositoryScope,
+                started = SharingStarted.WhileSubscribed(),
+                replay = 1,
+            )
+    }
 
     override val storeAuthState: Flow<StoreAuthState>
         get() = firebaseManager.storeAuthState()
@@ -186,7 +202,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun currentUser(): Flow<Collaborator?> {
+    override fun currentUser(): Flow<CollaboratorDocument?> {
         return salesApplication.dataStoreCurrentUser.data
             .map { prefs -> prefs[currentCollaboratorKey] }
             .flatMapLatest {
@@ -201,6 +217,16 @@ class AuthenticationRepositoryImpl @Inject constructor(
             }
     }
 
+    override suspend fun fetchCurrentUserId(): String {
+        var collaboratorId = ""
+
+        currentCollaboratorId
+            .take(1)
+            .collect { collaboratorId = it ?: "" }
+
+        return collaboratorId
+    }
+
     override fun userFirebaseApp(uid: String): FirebaseApp? {
         return firebaseManager.userApplication(uid)
     }
@@ -213,7 +239,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
         return firebaseManager.noCacheFirebaseApp
     }
 
-    override fun activeCollaborators(): Flow<List<Collaborator>> {
+    override fun activeCollaborators(): Flow<List<CollaboratorDocument>> {
         return collaboratorsDao.subscribeToActiveAccounts().onEach {
             val ids = it.map { user -> user.id }
 

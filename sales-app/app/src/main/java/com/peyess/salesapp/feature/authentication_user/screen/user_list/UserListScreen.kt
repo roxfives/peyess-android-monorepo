@@ -21,14 +21,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Details
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Logout
@@ -58,7 +55,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.model.store.OpticalStore
-import com.peyess.salesapp.model.users.Collaborator
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListState
 import com.peyess.salesapp.feature.authentication_user.screen.user_list.state.UserListViewModel
 import com.peyess.salesapp.navigation.SalesAppScreens
@@ -107,7 +104,7 @@ fun UserAuthScreenComposable(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
 
-    users: List<Collaborator> = listOf(),
+    users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
     UserGrid(
@@ -123,7 +120,7 @@ fun UserAuthScreenComposable(
 fun UserGrid(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
-    users: List<Collaborator> = listOf(),
+    users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
     if(store is Success) {
@@ -272,7 +269,7 @@ private fun Header(
 @Composable
 fun UserBox(
     modifier: Modifier = Modifier,
-    user: Collaborator = Collaborator(),
+    user: CollaboratorDocument = CollaboratorDocument(),
     onEnter: (id: String) -> Unit = {},
 ) {
     Column(
@@ -337,6 +334,6 @@ private fun HeaderPreview() {
 @Composable
 fun PreviewUserBox(modifier: Modifier = Modifier) {
     UserBox(
-        user = Collaborator(picture = "https://images.unsplash.com/photo-1574701148212-8518049c7b2c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80"),
+        user = CollaboratorDocument(picture = "https://images.unsplash.com/photo-1574701148212-8518049c7b2c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80"),
     )
 }

@@ -23,6 +23,10 @@ data class FSProductSoldFramesDescription(
     val reference: String = "",
     @Keep
     @JvmField
+    @PropertyName("info")
+    val info: String = "",
+    @Keep
+    @JvmField
     @PropertyName("color")
     val color: String = "",
     @Keep

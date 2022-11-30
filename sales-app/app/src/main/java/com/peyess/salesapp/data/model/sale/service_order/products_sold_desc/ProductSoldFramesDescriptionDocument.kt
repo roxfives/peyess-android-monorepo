@@ -6,6 +6,8 @@ import com.peyess.salesapp.data.model.sale.purchase.discount.description.Discoun
 data class ProductSoldFramesDescriptionDocument(
     val id: String = "",
 
+    val info: String = "",
+
     val design: String = "",
     val reference: String = "",
     val color: String = "",

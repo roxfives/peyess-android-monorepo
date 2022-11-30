@@ -1,8 +1,12 @@
 package com.peyess.salesapp.data.model.sale.service_order
 
+import com.peyess.salesapp.dao.sale.frames.FramesType
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class ServiceOrderDocument(

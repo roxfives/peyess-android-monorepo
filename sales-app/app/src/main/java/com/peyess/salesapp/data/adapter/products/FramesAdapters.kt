@@ -17,6 +17,7 @@ fun FramesEntity.toDescription(): ProductSoldFramesDescriptionDocument {
         discount = DiscountDescriptionDocument(),
         design = description,
         reference = reference,
+        info = framesInfo,
         color = "",
         style = "",
         type = type,

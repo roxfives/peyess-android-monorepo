@@ -11,6 +11,7 @@ fun ProductSoldFramesDescriptionDocument
         id = id,
         design = design,
         reference = reference,
+        info = info,
         color = color,
         style = style,
         type = FramesType.toName(type),

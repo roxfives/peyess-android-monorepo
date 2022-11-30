@@ -11,6 +11,7 @@ fun FSProductSoldFramesDescription
         id = id,
         design = design,
         reference = reference,
+        info = info,
         color = color,
         style = style,
         type = FramesType.toFramesType(type),

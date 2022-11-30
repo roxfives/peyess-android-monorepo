@@ -183,14 +183,14 @@ data class ServiceOrderState(
 
     val canAddNewPayment = totalPaid < totalToPayWithFee
 
-    val confirmationMessage = if (totalToPay <= totalPaid) {
+    val confirmationMessage = if (totalToPayWithFee <= totalPaid) {
         val locale = Locale.getDefault()
         val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
         currencyFormatter.minimumFractionDigits = 2
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumIntegerDigits = 1
 
-        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPay)}"
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPayWithFee)}"
     } else {
         val locale = Locale.getDefault()
         val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
@@ -198,9 +198,9 @@ data class ServiceOrderState(
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumIntegerDigits = 1
 
-        val missing = abs(totalToPay - totalPaid)
+        val missing = abs(totalToPayWithFee - totalPaid)
 
-        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPay)}" +
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPayWithFee)}" +
                 " com o saldo à receber de ${currencyFormatter.format(missing)}"
     }
 

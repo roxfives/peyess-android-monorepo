@@ -195,18 +195,18 @@ private fun SetFramesScreenImpl(
 
         if (!areFramesNew) {
             PeyessOutlinedTextField(
-                value = description,
-                onValueChange =  onDescriptionChange,
-                isError = descriptionHasError,
-                errorMessage = descriptionErrorMessage,
+                value = info,
+                onValueChange =  onInfoChange,
+                isError = infoHasError,
+                errorMessage = infoErrorMessage,
                 label = { Text(stringResource(id = R.string.frames_info)) },
                 placeholder = { Text(stringResource(id = R.string.frames_info)) },
                 keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Characters,
-                    imeAction = ImeAction.Next,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(focusDirection = FocusDirection.Down) }
+                    onDone = { keyboardController?.hide() }
                 ),
             )
         }

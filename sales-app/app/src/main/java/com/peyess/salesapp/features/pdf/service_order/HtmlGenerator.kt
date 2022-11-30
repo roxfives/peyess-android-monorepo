@@ -20,6 +20,18 @@ import com.peyess.salesapp.features.pdf.utils.printValue
 import timber.log.Timber
 import java.time.format.DateTimeFormatter
 
+private fun printFramesReference(
+    ref: String,
+    info: String,
+    isOwnFrames: Boolean = false,
+): String {
+    return if (isOwnFrames) {
+        printValue(info)
+    } else {
+        printValue(ref)
+    }
+}
+
 private fun printFramesDescription(value: String, isOwnFrames: Boolean = false): String {
     return if (isOwnFrames) {
         "ARO PRÓPRIO"
@@ -126,8 +138,9 @@ fun buildHtml(
             serviceOrder.framesProducts.design,
             serviceOrder.hasOwnFrames,
         ),
-        framesReference = printFramesDescription(
+        framesReference = printFramesReference(
             serviceOrder.framesProducts.reference,
+            serviceOrder.framesProducts.info,
             serviceOrder.hasOwnFrames,
         ),
         framesColor = printFramesDescription(

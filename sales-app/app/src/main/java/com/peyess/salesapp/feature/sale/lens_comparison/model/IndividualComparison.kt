@@ -17,17 +17,25 @@ data class IndividualComparison(
     val treatmentComparison: TreatmentComparison = TreatmentComparison(),
 ) {
     val finalPriceDifference = lensComparison.priceDifference +
-            coloringComparison.priceDifference +
-            treatmentComparison.priceDifference
+            coloringComparison.priceDifference(
+                lensComparison.addOriginalColoringPrice,
+                lensComparison.addPickedColoringPrice,
+            ) +
+            treatmentComparison.priceDifference(
+                lensComparison.addOriginalTreatmentPrice,
+                lensComparison.addPickedTreatmentPrice,
+            )
 
     val finalPrice = lensComparison.finalPrice +
-            coloringComparison.finalPrice +
-            treatmentComparison.finalPrice
+            coloringComparison.finalPrice(lensComparison.addPickedColoringPrice) +
+            treatmentComparison.finalPrice(lensComparison.addPickedTreatmentPrice)
 
     val isPriceBad = finalPriceDifference < 0
 
-    @RawRes val animationId = animationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
-    @RawRes val bigAnimationId = bigAnimationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
+    @RawRes
+    val animationId = animationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
+    @RawRes
+    val bigAnimationId = bigAnimationFromCategory(lensComparison.pickedLens.materialCategory, prescription)
 }
 
 fun IndividualComparison.toLensComparison(): LensComparisonEntity {

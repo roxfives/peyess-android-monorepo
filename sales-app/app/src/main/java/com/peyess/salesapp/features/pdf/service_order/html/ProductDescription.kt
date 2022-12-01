@@ -193,6 +193,7 @@ private fun buildProductList(
         if (
             set.colorings.nameDisplay.trim() != "Indisponível"
             && set.colorings.nameDisplay.trim() != "Incolor"
+            && !set.colorings.isIncluded
         ) {
             sets.add(
                 productUnitDescription(
@@ -213,6 +214,7 @@ private fun buildProductList(
         if (
             set.treatments.nameDisplay.trim() != "Indisponível"
             && set.treatments.nameDisplay.trim() != "Incolor"
+            && !set.treatments.isIncluded
         ) {
             sets.add(
                 productUnitDescription(

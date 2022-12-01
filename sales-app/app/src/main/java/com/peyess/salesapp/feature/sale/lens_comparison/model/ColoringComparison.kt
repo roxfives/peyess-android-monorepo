@@ -11,4 +11,19 @@ data class ColoringComparison(
     // TODO: update to price instead of suggestedPrice
     val priceDifference = ceil(pickedColoring.suggestedPrice - originalColoring.suggestedPrice)
     val finalPrice = pickedColoring.suggestedPrice
+
+    fun priceDifference(withOriginal: Boolean, withPicked: Boolean): Double {
+        val picked = if (withPicked) { pickedColoring.suggestedPrice } else { 0.0 }
+        val suggested = if (withOriginal) { originalColoring.suggestedPrice } else { 0.0 }
+
+        return ceil(picked - suggested)
+    }
+
+    fun finalPrice(addPrice: Boolean): Double {
+        return if (addPrice) {
+            pickedColoring.suggestedPrice
+        } else {
+            0.0
+        }
+    }
 }

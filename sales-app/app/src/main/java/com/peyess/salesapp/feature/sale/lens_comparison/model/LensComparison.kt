@@ -10,4 +10,13 @@ data class LensComparison(
     val priceDifference = ceil(pickedLens.price - originalLens.price)
     val finalPrice = pickedLens.price
 
+    val addOriginalColoringPrice: Boolean = !originalLens.isColoringIncluded
+            && !originalLens.isColoringDiscounted
+    val addOriginalTreatmentPrice: Boolean = !originalLens.isTreatmentIncluded
+            && !originalLens.isTreatmentDiscounted
+
+    val addPickedColoringPrice: Boolean = !pickedLens.isColoringIncluded
+            && !pickedLens.isColoringDiscounted
+    val addPickedTreatmentPrice: Boolean = !pickedLens.isTreatmentIncluded
+            && !pickedLens.isTreatmentDiscounted
 }

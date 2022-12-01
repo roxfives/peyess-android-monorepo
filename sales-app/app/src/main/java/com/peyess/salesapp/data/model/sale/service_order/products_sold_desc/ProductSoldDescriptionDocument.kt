@@ -12,4 +12,7 @@ data class ProductSoldDescriptionDocument(
 
     val price: Double = 0.0,
     val discount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
+
+    val isDiscounted: Boolean = false,
+    val isIncluded: Boolean = false,
 )

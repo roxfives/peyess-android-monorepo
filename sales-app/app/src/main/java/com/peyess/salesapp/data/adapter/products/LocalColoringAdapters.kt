@@ -5,14 +5,25 @@ import com.peyess.salesapp.dao.products.room.local_coloring.name
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 
-fun LocalColoringEntity.toDescription(): ProductSoldDescriptionDocument {
-
+fun LocalColoringEntity.toDescription(
+    isIncluded: Boolean,
+    isDiscounted: Boolean,
+): ProductSoldDescriptionDocument {
     // TODO: update to local price
+    val price = if (isDiscounted || isIncluded) {
+        0.0
+    } else {
+        suggestedPrice / 2.0
+    }
+
     return ProductSoldDescriptionDocument(
         id = id,
         units = 1,
         nameDisplay = name(),
-        price = suggestedPrice / 2.0,
+        price = price,
         discount = DiscountDescriptionDocument(),
+
+        isIncluded = isIncluded,
+        isDiscounted = isDiscounted,
     )
 }

@@ -26,6 +26,16 @@ data class FSProductSoldDescription(
 
     @Keep
     @JvmField
+    @PropertyName("is_discounted")
+    val isDiscounted: Boolean = false,
+
+    @Keep
+    @JvmField
+    @PropertyName("is_included")
+    val isIncluded: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("price")
     val price: Double = 0.0,
 

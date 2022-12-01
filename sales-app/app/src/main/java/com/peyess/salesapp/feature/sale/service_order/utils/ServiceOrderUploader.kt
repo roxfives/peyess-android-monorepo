@@ -521,13 +521,25 @@ class ServiceOrderUploader constructor(
             hasOwnFrames = !frames.areFramesNew,
             leftProducts = ProductSoldEyeSetDocument(
                 lenses = lens.toDescription(),
-                colorings = coloring.toDescription(),
-                treatments = treatment.toDescription(),
+                colorings = coloring.toDescription(
+                    isDiscounted = lens.isColoringDiscounted,
+                    isIncluded = lens.isColoringIncluded,
+                ),
+                treatments = treatment.toDescription(
+                    isDiscounted = lens.isTreatmentDiscounted,
+                    isIncluded = lens.isTreatmentIncluded,
+                ),
             ),
             rightProducts = ProductSoldEyeSetDocument(
                 lenses = lens.toDescription(),
-                colorings = coloring.toDescription(),
-                treatments = treatment.toDescription(),
+                colorings = coloring.toDescription(
+                    isDiscounted = lens.isColoringDiscounted,
+                    isIncluded = lens.isColoringIncluded,
+                ),
+                treatments = treatment.toDescription(
+                    isDiscounted = lens.isTreatmentDiscounted,
+                    isIncluded = lens.isTreatmentIncluded,
+                ),
             ),
             framesProducts = frames.toDescription(),
             miscProducts = emptyList(),

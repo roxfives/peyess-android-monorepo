@@ -1600,6 +1600,24 @@ private fun ProductsSection(
         val minimumPriceModifier = Modifier
             .minimumWidthModifier(state = minimumPriceWidthState, density = density)
 
+        val coloringPrice = remember {
+            if (lensEntity.isColoringDiscounted || lensEntity.isColoringIncluded) {
+                0.0
+            } else {
+                // TODO: update to se price instead of suggested price
+                coloringEntity.suggestedPrice
+            }
+        }
+
+        val treatmentPrice = remember {
+            if (lensEntity.isTreatmentDiscounted || lensEntity.isTreatmentIncluded) {
+                0.0
+            } else {
+                // TODO: update to se price instead of suggested price
+                treatmentEntity.suggestedPrice
+            }
+        }
+
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_products))
 
@@ -1635,18 +1653,31 @@ private fun ProductsSection(
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
-        Spacer(modifier = Modifier.size(productSpacerSize))
-        ColoringCard(
-            coloringEntity = coloringEntity,
-            minPriceModifier = minimumPriceModifier,
-            minTitleModifier = minimumTitleModifier,
-        )
-        Spacer(modifier = Modifier.size(productSpacerSize))
-        TreatmentCard(
-            treatmentEntity = treatmentEntity,
-            minPriceModifier = minimumPriceModifier,
-            minTitleModifier = minimumTitleModifier,
-        )
+
+        if (!lensEntity.isColoringIncluded) {
+            Spacer(modifier = Modifier.size(productSpacerSize))
+
+            ColoringCard(
+                coloringEntity = coloringEntity.copy(
+                    suggestedPrice = coloringPrice,
+                    price = coloringPrice,
+                ),
+                minPriceModifier = minimumPriceModifier,
+                minTitleModifier = minimumTitleModifier,
+            )
+        }
+
+        if (!lensEntity.isTreatmentIncluded) {
+            Spacer(modifier = Modifier.size(productSpacerSize))
+            TreatmentCard(
+                treatmentEntity = treatmentEntity.copy(
+                    suggestedPrice = treatmentPrice,
+                    price = treatmentPrice,
+                ),
+                minPriceModifier = minimumPriceModifier,
+                minTitleModifier = minimumTitleModifier,
+            )
+        }
 
         Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
@@ -1658,18 +1689,30 @@ private fun ProductsSection(
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
-        Spacer(modifier = Modifier.size(productSpacerSize))
-        ColoringCard(
-            coloringEntity = coloringEntity,
-            minPriceModifier = minimumPriceModifier,
-            minTitleModifier = minimumTitleModifier,
-        )
-        Spacer(modifier = Modifier.size(productSpacerSize))
-        TreatmentCard(
-            treatmentEntity = treatmentEntity,
-            minPriceModifier = minimumPriceModifier,
-            minTitleModifier = minimumTitleModifier,
-        )
+
+        if (!lensEntity.isColoringIncluded) {
+            Spacer(modifier = Modifier.size(productSpacerSize))
+            ColoringCard(
+                coloringEntity = coloringEntity.copy(
+                    suggestedPrice = coloringPrice,
+                    price = coloringPrice,
+                ),
+                minPriceModifier = minimumPriceModifier,
+                minTitleModifier = minimumTitleModifier,
+            )
+        }
+
+        if (!lensEntity.isTreatmentIncluded) {
+            Spacer(modifier = Modifier.size(productSpacerSize))
+            TreatmentCard(
+                treatmentEntity = treatmentEntity.copy(
+                    suggestedPrice = treatmentPrice,
+                    price = treatmentPrice,
+                ),
+                minPriceModifier = minimumPriceModifier,
+                minTitleModifier = minimumTitleModifier,
+            )
+        }
 
         if (framesEntity.areFramesNew) {
             Spacer(modifier = Modifier.size(subsectionSpacerSize))

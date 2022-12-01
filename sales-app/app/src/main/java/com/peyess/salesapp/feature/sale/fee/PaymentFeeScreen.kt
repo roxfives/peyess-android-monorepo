@@ -136,8 +136,6 @@ private fun PaymentFeeScreenImpl(
     onChangeFeeMethod: (method: PaymentFeeCalcMethod) -> Unit = {},
     onDone: () -> Unit = {},
 ) {
-    Timber.d("Current value: $feeValue")
-
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -395,7 +393,7 @@ private fun FeeMethodButton(
 
     isSelected: Boolean = false,
     icon: ImageVector = Icons.Filled.Percent,
-    method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.None,
+    method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.Percentage,
     onClick: (method: PaymentFeeCalcMethod) -> Unit = {},
 ) {
     Column(

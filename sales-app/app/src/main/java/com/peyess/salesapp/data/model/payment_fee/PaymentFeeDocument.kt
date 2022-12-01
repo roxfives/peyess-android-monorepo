@@ -5,7 +5,7 @@ import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 data class PaymentFeeDocument(
     val saleId: String = "",
 
-    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.None,
+    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.Percentage,
 
     val value: Double = 0.0,
 )

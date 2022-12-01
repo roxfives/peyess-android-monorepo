@@ -14,7 +14,7 @@ data class PaymentFeeEntity(
     val saleId: String = "",
 
     @ColumnInfo(name = "method")
-    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.None,
+    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.Percentage,
     @ColumnInfo(name = "value")
     val value: Double = 0.0,
 ) {

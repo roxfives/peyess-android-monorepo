@@ -5,7 +5,7 @@ import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 private const val defaultDiscountValue = 0.0
 
 data class PaymentFee(
-    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.None,
+    val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.Percentage,
     val percentValue: Double = 0.0,
     val wholeValue: Double = 0.0,
 ) {

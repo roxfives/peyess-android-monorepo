@@ -2,11 +2,13 @@ package com.peyess.salesapp.features.pdf.service_order.html
 
 import android.content.Context
 import androidx.core.os.ConfigurationCompat
+import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -31,7 +33,6 @@ private fun productUnitDescription(
     fee: Double,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
-    System.out.println("Using locale $currentLocale from ${ConfigurationCompat.getLocales(context.resources.configuration)}")
 
     val percentFormat = NumberFormat.getPercentInstance(currentLocale)
     percentFormat.minimumFractionDigits = 2
@@ -47,13 +48,14 @@ private fun productUnitDescription(
 
     val count = integerFormat.format(quantity)
     val priceWithDiscount = priceWithoutDiscount * (1 - discount)
+    val priceWithFee = priceWithDiscount * (1 + fee)
 
-    val priceWithoutDiscountStr = currencyFormat.format(priceWithoutDiscount)
-    val priceWithDiscountStr = currencyFormat.format(priceWithDiscount)
+    val originalPrice = currencyFormat.format(priceWithoutDiscount)
+    val finalPrice = currencyFormat.format(priceWithFee)
     val discountStr = percentFormat.format(discount)
     val feeStr = percentFormat.format(fee)
 
-    val productDescriptionUnit = "<tr class=\"row16\"> <td class=\"column0 style1 s\" colspan=\"1\">${productCode.ifBlank { "-" }}</td><td class=\"column2 style1 s\">$count</td><td class=\"column3 style1 s style61\" colspan=\"5\"> ${description.ifBlank { "-" }} </td><td class=\"column8 style1 n\">$priceWithoutDiscountStr</td><td class=\"column9 style1 n\">$discountStr</td><td class=\"column9 style1 n\">$feeStr</td><td class=\"column10 style1 n\">$priceWithDiscountStr</td></tr>"
+    val productDescriptionUnit = "<tr class=\"row16\"> <td class=\"column0 style1 s\" colspan=\"1\">${productCode.ifBlank { "-" }}</td><td class=\"column2 style1 s\">$count</td><td class=\"column3 style1 s style61\" colspan=\"5\"> ${description.ifBlank { "-" }} </td><td class=\"column8 style1 n\">$originalPrice</td><td class=\"column9 style1 n\">$discountStr</td><td class=\"column9 style1 n\">$feeStr</td><td class=\"column10 style1 n\">$finalPrice</td></tr>"
 
     return productDescriptionUnit
 }
@@ -101,25 +103,89 @@ private fun discountAsPercentage(discount: DiscountDescriptionDocument, totalPri
     }
 }
 
+private fun feeAsPercentage(fee: PaymentFeeDocument, totalPrice: Double): Double {
+    return when (fee.method) {
+        PaymentFeeCalcMethod.None ->
+            0.0
+        PaymentFeeCalcMethod.Percentage ->
+            fee.value
+        PaymentFeeCalcMethod.Whole ->
+            fee.value / totalPrice
+    }
+}
+
 private fun buildProductList(
     context: Context,
 
     eyeSets: List<ProductSoldEyeSetDocument>,
     frames: List<ProductSoldFramesDescriptionDocument>,
     misc: List<ProductSoldDescriptionDocument>,
+
+    isGeneralDiscount: Boolean = false,
+    generalDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
+    generalFee: PaymentFeeDocument = PaymentFeeDocument(),
 ): String {
     val sets: MutableList<String> = mutableListOf()
 
+    var lensDiscount: DiscountDescriptionDocument
+    var coloringsDiscount: DiscountDescriptionDocument
+    var treatmentsDiscount: DiscountDescriptionDocument
+    var framesDiscount: DiscountDescriptionDocument
+    var miscDiscount: DiscountDescriptionDocument
+
+    var lensFee: PaymentFeeDocument
+    var coloringsFee: PaymentFeeDocument
+    var treatmentsFee: PaymentFeeDocument
+    var framesFee: PaymentFeeDocument
+    var miscFee: PaymentFeeDocument
+
     eyeSets.forEach { set ->
+        lensDiscount = if (isGeneralDiscount) {
+            generalDiscount
+        } else {
+            set.lenses.discount
+        }
+        lensFee = if (isGeneralDiscount) {
+            generalFee
+        } else {
+            PaymentFeeDocument()
+        }
+
+
+        coloringsDiscount = if (isGeneralDiscount) {
+            generalDiscount
+        } else {
+            set.colorings.discount
+        }
+        coloringsFee = if (isGeneralDiscount) {
+            generalFee
+        } else {
+            PaymentFeeDocument()
+        }
+
+        treatmentsDiscount = if (isGeneralDiscount) {
+            generalDiscount
+        } else {
+            set.treatments.discount
+        }
+        treatmentsFee = if (isGeneralDiscount) {
+            generalFee
+        } else {
+            PaymentFeeDocument()
+        }
+
         sets.add(
             productUnitDescription(
                 context = context,
                 productCode = "",
                 quantity = set.lenses.units,
                 priceWithoutDiscount = set.lenses.price,
-                discount = discountAsPercentage(set.lenses.discount, set.lenses.price),
+                discount = discountAsPercentage(lensDiscount, set.lenses.price),
                 description = set.lenses.nameDisplay,
-                fee = 0.0,
+                fee = feeAsPercentage(
+                    lensFee,
+                    set.lenses.price * (1 - discountAsPercentage(lensDiscount, set.lenses.price)),
+                ),
             ),
         )
 
@@ -134,9 +200,12 @@ private fun buildProductList(
                     productCode = "",
                     quantity = set.colorings.units,
                     priceWithoutDiscount = set.colorings.price,
-                    discount = discountAsPercentage(set.colorings.discount, set.colorings.price),
+                    discount = discountAsPercentage(coloringsDiscount, set.colorings.price),
                     description = set.colorings.nameDisplay,
-                    fee = 0.0,
+                    fee = feeAsPercentage(
+                        coloringsFee,
+                        set.colorings.price * (1 - discountAsPercentage(coloringsDiscount, set.colorings.price)),
+                    ),
                 ),
             )
         }
@@ -151,38 +220,69 @@ private fun buildProductList(
                     productCode = "",
                     quantity = set.treatments.units,
                     priceWithoutDiscount = set.treatments.price,
-                    discount = discountAsPercentage(set.treatments.discount, set.treatments.price),
+                    discount = discountAsPercentage(treatmentsDiscount, set.treatments.price),
                     description = set.treatments.nameDisplay,
-                    fee = 0.0,
+                    fee = feeAsPercentage(
+                        treatmentsFee,
+                        set.treatments.price * (1 - discountAsPercentage(treatmentsDiscount, set.treatments.price)),
+                    ),
                 ),
             )
         }
     }
 
     frames.forEach {
+        framesDiscount = if (isGeneralDiscount) {
+            generalDiscount
+        } else {
+            it.discount
+        }
+        framesFee = if (isGeneralDiscount) {
+            generalFee
+        } else {
+            PaymentFeeDocument()
+        }
+
         sets.add(
             productUnitDescription(
                 context = context,
                 productCode = "",
                 quantity = it.units,
                 priceWithoutDiscount = it.price,
-                discount = discountAsPercentage(it.discount, it.price),
+                discount = discountAsPercentage(framesDiscount, it.price),
                 description = it.nameDisplay,
-                fee = 0.0,
+                fee = feeAsPercentage(
+                    framesFee,
+                    it.price * (1 - discountAsPercentage(framesDiscount, it.price)),
+                ),
             ),
         )
     }
 
     misc.forEach {
+        miscDiscount = if (isGeneralDiscount) {
+            generalDiscount
+        } else {
+            it.discount
+        }
+        miscFee = if (isGeneralDiscount) {
+            generalFee
+        } else {
+            PaymentFeeDocument()
+        }
+
         sets.add(
             productUnitDescription(
                 context = context,
                 productCode = "",
                 quantity = it.units,
                 priceWithoutDiscount = it.price,
-                discount = discountAsPercentage(it.discount, it.price),
+                discount = discountAsPercentage(miscDiscount, it.price),
                 description = it.nameDisplay,
-                fee = 0.0,
+                fee = feeAsPercentage(
+                    miscFee,
+                    it.price * (1 - discountAsPercentage(miscDiscount, it.price)),
+                ),
             ),
         )
     }
@@ -204,7 +304,27 @@ fun buildProductListDescription(
     discount: Double,
     fee: Double,
 ): String {
-    return productDescriptionHeader +
-            buildProductList(context, eyeSets, frames, misc) +
-            productDescriptionFooter(context, salesPersonName, priceWithoutDiscount, discount, fee)
+    val header = productDescriptionHeader
+
+    val productList = buildProductList(
+        context = context,
+        eyeSets = eyeSets,
+        frames = frames,
+        misc = misc,
+
+        isGeneralDiscount = true,
+        generalDiscount = DiscountDescriptionDocument(
+            method = DiscountCalcMethod.Percentage,
+            value = BigDecimal(discount),
+        ),
+        generalFee = PaymentFeeDocument(
+            saleId = "",
+            method = PaymentFeeCalcMethod.Percentage,
+            value = fee,
+        ),
+    )
+
+    val footer = productDescriptionFooter(context, salesPersonName, priceWithoutDiscount, discount, fee)
+
+    return header + productList + footer
 }

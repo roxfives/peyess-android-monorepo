@@ -28,6 +28,7 @@ import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
@@ -465,6 +466,8 @@ class ServiceOrderUploader constructor(
         var treatment = LocalTreatmentEntity()
         var frames = FramesEntity()
 
+        val misc = mutableListOf<ProductSoldDescriptionDocument>()
+
         saleRepository
             .pickedProduct()
             .filterNotNull()
@@ -494,17 +497,33 @@ class ServiceOrderUploader constructor(
 
                 if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
                     totalToPay += coloring.suggestedPrice
+
+                    if (lens.suggestedPriceAddColoring > 0) {
+                        totalToPay += lens.suggestedPriceAddColoring
+
+                        misc.add(
+                            ProductSoldDescriptionDocument(
+                                units = 1,
+                                nameDisplay = "Adicional por coloração",
+                                price = lens.suggestedPriceAddColoring,
+                            )
+                        )
+                    }
                 }
                 if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
                     totalToPay += treatment.suggestedPrice
-                }
 
-                // TODO: Refactor this set to have the data about being a placeholder only
-                if (coloring.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddColoring
-                }
-                if (treatment.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddTreatment
+                    if (lens.suggestedPriceAddTreatment > 0) {
+                        totalToPay += lens.suggestedPriceAddTreatment
+
+                        misc.add(
+                            ProductSoldDescriptionDocument(
+                                units = 1,
+                                nameDisplay = "Adicional por tratamento",
+                                price = lens.suggestedPriceAddTreatment,
+                            )
+                        )
+                    }
                 }
 
                 totalToPay
@@ -542,7 +561,7 @@ class ServiceOrderUploader constructor(
                 ),
             ),
             framesProducts = frames.toDescription(),
-            miscProducts = emptyList(),
+            miscProducts = misc,
         )
     }
 

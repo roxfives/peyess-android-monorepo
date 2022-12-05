@@ -20,15 +20,25 @@ data class IndividualComparison(
             coloringComparison.priceDifference(
                 lensComparison.addOriginalColoringPrice,
                 lensComparison.addPickedColoringPrice,
+                lensComparison.originalAdditionalColoring,
+                lensComparison.pickedAdditionalColoring,
             ) +
             treatmentComparison.priceDifference(
                 lensComparison.addOriginalTreatmentPrice,
                 lensComparison.addPickedTreatmentPrice,
+                lensComparison.originalAdditionalTreatment,
+                lensComparison.pickedAdditionalTreatment,
             )
 
     val finalPrice = lensComparison.finalPrice +
-            coloringComparison.finalPrice(lensComparison.addPickedColoringPrice) +
-            treatmentComparison.finalPrice(lensComparison.addPickedTreatmentPrice)
+            coloringComparison.finalPrice(
+                lensComparison.addPickedColoringPrice,
+                lensComparison.pickedAdditionalColoring,
+            ) +
+            treatmentComparison.finalPrice(
+                lensComparison.addPickedTreatmentPrice,
+                lensComparison.pickedAdditionalTreatment,
+            )
 
     val isPriceBad = finalPriceDifference < 0
 

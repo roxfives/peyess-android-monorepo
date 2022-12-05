@@ -7,6 +7,13 @@ data class LensComparison(
     val originalLens: LocalLensEntity = LocalLensEntity(),
     val pickedLens: LocalLensEntity = LocalLensEntity(),
 ) {
+    // TODO: use price instead of suggested_price
+    val originalAdditionalColoring = originalLens.suggestedPriceAddColoring
+    val originalAdditionalTreatment = originalLens.suggestedPriceAddTreatment
+
+    val pickedAdditionalColoring = pickedLens.suggestedPriceAddColoring
+    val pickedAdditionalTreatment = pickedLens.suggestedPriceAddTreatment
+
     val priceDifference = ceil(pickedLens.price - originalLens.price)
     val finalPrice = pickedLens.price
 

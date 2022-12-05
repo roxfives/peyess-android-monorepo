@@ -87,6 +87,7 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
@@ -1600,23 +1601,19 @@ private fun ProductsSection(
         val minimumPriceModifier = Modifier
             .minimumWidthModifier(state = minimumPriceWidthState, density = density)
 
-        val coloringPrice = remember {
-            if (lensEntity.isColoringDiscounted || lensEntity.isColoringIncluded) {
+        val coloringPrice = if (lensEntity.isColoringDiscounted || lensEntity.isColoringIncluded) {
                 0.0
             } else {
                 // TODO: update to se price instead of suggested price
                 coloringEntity.suggestedPrice
             }
-        }
 
-        val treatmentPrice = remember {
-            if (lensEntity.isTreatmentDiscounted || lensEntity.isTreatmentIncluded) {
+        val treatmentPrice = if (lensEntity.isTreatmentDiscounted || lensEntity.isTreatmentIncluded) {
                 0.0
             } else {
                 // TODO: update to se price instead of suggested price
                 treatmentEntity.suggestedPrice
             }
-        }
 
         Row(modifier = Modifier.fillMaxWidth()) {
             SectionTitle(title = stringResource(id = R.string.so_section_title_products))
@@ -1720,6 +1717,33 @@ private fun ProductsSection(
             // TODO: use string resource
             SubSectionTitle(title = "Armação")
             FramesCard(framesEntity = framesEntity)
+        }
+
+        if (
+            (lensEntity.suggestedPriceAddColoring > 0 && coloringPrice > 0)
+            || (lensEntity.suggestedPriceAddTreatment > 0 && treatmentPrice > 0)
+        ) {
+            Spacer(modifier = Modifier.size(subsectionSpacerSize))
+
+            // TODO: use string resource
+            SubSectionTitle(title = "Outros")
+
+            if (lensEntity.suggestedPriceAddColoring > 0) {
+                MiscCard(
+                    miscProduct = ProductSoldDescriptionDocument(
+                        nameDisplay = "Adicional por coloração",
+                        price = lensEntity.suggestedPriceAddColoring,
+                    )
+                )
+            }
+            if (lensEntity.suggestedPriceAddTreatment > 0) {
+                MiscCard(
+                    miscProduct = ProductSoldDescriptionDocument(
+                        nameDisplay = "Adicional por tratamento",
+                        price = lensEntity.suggestedPriceAddTreatment,
+                    )
+                )
+            }
         }
     }
 }
@@ -1876,6 +1900,45 @@ private fun FramesCard(
         Text(
             modifier = minPriceModifier,
             text = NumberFormat.getCurrencyInstance().format(framesEntity.value),
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
+        )
+    }
+}
+
+@Composable
+private fun MiscCard(
+    modifier: Modifier = Modifier,
+    minTitleModifier: Modifier = Modifier,
+    minPriceModifier: Modifier = Modifier,
+    miscProduct: ProductSoldDescriptionDocument = ProductSoldDescriptionDocument(),
+) {
+    Row(
+        modifier = modifier.padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+    ) {
+        // TODO: use string resource
+//        Text(
+//            modifier = minTitleModifier,
+//            text = "Outro",
+//            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+//        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.weight(1f),
+            text = miscProduct.nameDisplay,
+            style = MaterialTheme.typography.body1
+                .copy(textAlign = TextAlign.Start)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = minPriceModifier,
+            text = NumberFormat.getCurrencyInstance().format(miscProduct.price),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -2262,7 +2325,16 @@ private fun FramesCardPreview() {
 @Composable
 private fun ProductsSectionPreview() {
     SalesAppTheme {
-        ProductsSection()
+        ProductsSection(
+            lensEntity = LocalLensEntity(
+                suggestedPriceAddColoring = 20.0,
+                suggestedPriceAddTreatment = 20.0,
+            ),
+
+            framesEntity = FramesEntity(
+                areFramesNew = true,
+            )
+        )
     }
 }
 

@@ -1,7 +1,7 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.model
 
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.dao.products.room.local_coloring.name
 import kotlin.math.ceil
 
 data class ColoringComparison(
@@ -12,16 +12,49 @@ data class ColoringComparison(
     val priceDifference = ceil(pickedColoring.suggestedPrice - originalColoring.suggestedPrice)
     val finalPrice = pickedColoring.suggestedPrice
 
-    fun priceDifference(withOriginal: Boolean, withPicked: Boolean): Double {
+    fun priceDifference(
+        withOriginal: Boolean,
+        withPicked: Boolean,
+        additionalOriginal: Double,
+        additionalPicked: Double,
+    ): Double {
         val picked = if (withPicked) { pickedColoring.suggestedPrice } else { 0.0 }
-        val suggested = if (withOriginal) { originalColoring.suggestedPrice } else { 0.0 }
+        val original = if (withOriginal) { originalColoring.suggestedPrice } else { 0.0 }
 
-        return ceil(picked - suggested)
+        // TODO: remove hardcoded string
+        val addOriginal = if(
+            originalColoring.name().trim() == "Indisponível"
+            || originalColoring.name().trim() == "Incolor"
+        ) {
+            0.0
+        } else {
+            additionalOriginal
+        }
+        val addPicked = if(
+            pickedColoring.name().trim() == "Indisponível"
+            || pickedColoring.name().trim() == "Incolor"
+        ) {
+            0.0
+        } else {
+            additionalPicked
+        }
+
+        return ceil(picked + addPicked - original - addOriginal)
     }
 
-    fun finalPrice(addPrice: Boolean): Double {
+    fun finalPrice(addPrice: Boolean, additional: Double): Double {
+        // TODO: remove hardcoded string
+        val add = if(
+            pickedColoring.name().trim() == "Indisponível"
+            || pickedColoring.name().trim() == "Incolor"
+        ) {
+            0.0
+        } else {
+            additional
+        }
+
         return if (addPrice) {
-            pickedColoring.suggestedPrice
+            pickedColoring.suggestedPrice + add
         } else {
             0.0
         }

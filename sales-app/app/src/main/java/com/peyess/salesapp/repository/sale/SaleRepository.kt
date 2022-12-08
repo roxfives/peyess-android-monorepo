@@ -2,7 +2,6 @@ package com.peyess.salesapp.repository.sale
 
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
@@ -13,7 +12,7 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import kotlinx.coroutines.flow.Flow
 
 interface SaleRepository {
@@ -37,7 +36,7 @@ interface SaleRepository {
     fun currentFramesData(): Flow<FramesEntity>
     fun updateFramesData(frames: FramesEntity)
 
-    fun lensTypeCategories(): Flow<List<LensTypeCategory>>
+    fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>>
 
     fun addLensForComparison(comparisonEntity: LensComparisonEntity)
     fun comparisons(): Flow<List<LensComparisonEntity>>

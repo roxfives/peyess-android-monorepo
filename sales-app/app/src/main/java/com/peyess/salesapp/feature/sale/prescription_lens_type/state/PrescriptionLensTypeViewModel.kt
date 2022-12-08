@@ -7,17 +7,14 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
@@ -86,7 +83,7 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
     }
 
     private fun updatePicked() = withState {
-        val category: LensTypeCategory?
+        val category: LensTypeCategoryDocument?
 
         if (it.lensCategories is Success && it.typeIdPicked.isNotEmpty()) {
             category = it.lensCategories.invoke()
@@ -107,7 +104,7 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
     }
 
     fun onPick(name: String) = setState {
-        val picked: LensTypeCategory?
+        val picked: LensTypeCategoryDocument?
         val activeSOEntity = this.activeSO.invoke()
 
         if (this.lensCategories is Success) {

@@ -79,7 +79,7 @@ import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
@@ -89,7 +89,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
-import com.peyess.salesapp.model.products.LensGroup
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.chip.PeyessContentChip
@@ -250,7 +250,7 @@ private fun LensSuggestionScreenImpl(
     onFilterBlueChanged: (Boolean) -> Unit = {},
 
     selectedLensGroup: String = "",
-    lensGroups: Async<List<LensGroup>> = Uninitialized,
+    lensGroups: Async<List<LensGroupDocument>> = Uninitialized,
     onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedSpecialty: String = "",
@@ -274,7 +274,7 @@ private fun LensSuggestionScreenImpl(
     onPickFamily: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
 
     selectedLensDescription: String = "",
-    lensDescriptions: Async<List<LensDescription>> = Uninitialized,
+    lensDescriptions: Async<List<LensDescriptionDocument>> = Uninitialized,
     onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
 
     onPickLens: (lensId: String) -> Unit = {},
@@ -479,10 +479,10 @@ private fun TierSuggestion(
 @Composable
 private fun PickGroupDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    groups: Async<List<LensGroup>> = Uninitialized,
+    groups: Async<List<LensGroupDocument>> = Uninitialized,
     onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 ) {
-    val groupsList: List<LensGroup>
+    val groupsList: List<LensGroupDocument>
 
     if (groups is Success) {
         groupsList = groups.invoke()
@@ -708,10 +708,10 @@ private fun PickFamilyDialog(
 @Composable
 private fun PickDescriptionDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    descriptions: Async<List<LensDescription>> = Uninitialized,
+    descriptions: Async<List<LensDescriptionDocument>> = Uninitialized,
     onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
 ) {
-    val descriptionsList: List<LensDescription>
+    val descriptionsList: List<LensDescriptionDocument>
 
     if (descriptions is Success) {
         descriptionsList = descriptions.invoke()

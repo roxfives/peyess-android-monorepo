@@ -10,7 +10,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
@@ -33,19 +33,16 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
@@ -342,7 +339,7 @@ class SaleRepositoryImpl @Inject constructor(
         prescriptionPictureDao.add(prescriptionPictureEntity)
     }
 
-    override fun lensTypeCategories(): Flow<List<LensTypeCategory>> {
+    override fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>> {
         return lensTypeCategoryDao.categories()
     }
 

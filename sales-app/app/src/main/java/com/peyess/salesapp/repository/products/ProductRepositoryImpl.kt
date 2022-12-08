@@ -8,10 +8,9 @@ import androidx.paging.map
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
-import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDao
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
@@ -40,13 +39,10 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toSuggestionModel
-import com.peyess.salesapp.model.products.LensGroup
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import com.peyess.salesapp.repository.sale.SaleRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -55,7 +51,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.max
@@ -453,7 +448,7 @@ class ProductRepositoryImpl @Inject constructor(
         return@flow
     }
 
-    override fun lensGroups(): Flow<List<LensGroup>> {
+    override fun lensGroups(): Flow<List<LensGroupDocument>> {
         return lensGroupDao.groups()
     }
 
@@ -477,7 +472,7 @@ class ProductRepositoryImpl @Inject constructor(
         return lensFamilyDao.getFamiliesWithSupplier(supplierId)
     }
 
-    override fun lensDescription(familyId: String): Flow<List<LensDescription>> {
+    override fun lensDescription(familyId: String): Flow<List<LensDescriptionDocument>> {
         return lensDescriptionDao.descriptionsFor(familyId)
     }
 

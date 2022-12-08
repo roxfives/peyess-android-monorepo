@@ -1,7 +1,7 @@
 package com.peyess.salesapp.repository.products
 
 import androidx.paging.PagingData
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
@@ -12,8 +12,7 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
-import com.peyess.salesapp.model.products.LensGroup
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import kotlinx.coroutines.flow.Flow
 
 data class LensFilter(
@@ -32,13 +31,13 @@ data class LensFilter(
 interface ProductRepository {
     fun filteredLenses(lensFilter: LensFilter): Flow<PagingData<LensSuggestionModel>>
 
-    fun lensGroups(): Flow<List<LensGroup>>
+    fun lensGroups(): Flow<List<LensGroupDocument>>
     fun lensSpecialties(): Flow<List<FilterLensSpecialtyEntity>>
     fun lensTypes(): Flow<List<FilterLensTypeEntity>>
     fun lensSuppliers(): Flow<List<FilterLensSupplierEntity>>
     fun lensMaterial(supplierId: String): Flow<List<FilterLensMaterialEntity>>
     fun lensFamily(supplierId: String): Flow<List<FilterLensFamilyEntity>>
-    fun lensDescription(familyId: String): Flow<List<LensDescription>>
+    fun lensDescription(familyId: String): Flow<List<LensDescriptionDocument>>
     fun bestLensInGroup(groupId: String): Flow<LensSuggestionModel?>
 
     fun lensById(lensId: String): Flow<LocalLensEntity?>

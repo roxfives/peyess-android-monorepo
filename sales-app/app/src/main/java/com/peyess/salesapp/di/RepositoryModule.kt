@@ -8,9 +8,9 @@ import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
 import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
-import com.peyess.salesapp.dao.products.firestore.lens_categories.LensTypeCategoryDao
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescriptionDao
-import com.peyess.salesapp.dao.products.firestore.lens_groups.LensGroupDao
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDao
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDao
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao

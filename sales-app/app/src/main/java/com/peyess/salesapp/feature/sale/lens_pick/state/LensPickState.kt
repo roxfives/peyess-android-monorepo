@@ -2,19 +2,17 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 
 import androidx.paging.PagingData
 import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.products.firestore.lens_description.LensDescription
+import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
-import com.peyess.salesapp.model.products.LensGroup
-import com.peyess.salesapp.model.products.LensTypeCategory
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import com.peyess.salesapp.repository.products.LensFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -39,18 +37,18 @@ data class LensPickState(
     val familyLensFilterId: String = "",
     val descriptionLensFilterId: String = "",
 
-    val groupsFilter: Async<List<LensGroup>> = Uninitialized,
+    val groupsFilter: Async<List<LensGroupDocument>> = Uninitialized,
     val specialtyFilter: Async<List<FilterLensSpecialtyEntity>> = Uninitialized,
     val typesFilter: Async<List<FilterLensTypeEntity>> = Uninitialized,
     val supplierFilter: Async<List<FilterLensSupplierEntity>> = Uninitialized,
     val materialFilter: Async<List<FilterLensMaterialEntity>> = Uninitialized,
     val familyFilter: Async<List<FilterLensFamilyEntity>> = Uninitialized,
-    val descriptionFilter: Async<List<LensDescription>> = Uninitialized,
+    val descriptionFilter: Async<List<LensDescriptionDocument>> = Uninitialized,
 
     val hasFilterUv: Boolean = false,
     val hasFilterBlue: Boolean = false,
 
-    val groupsList: Async<List<LensGroup>> = Uninitialized,
+    val groupsList: Async<List<LensGroupDocument>> = Uninitialized,
 
     val hasAddedToSuggestion: Boolean = false,
     val isAddingToSuggestion: Boolean = false,

@@ -14,7 +14,6 @@ import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
-import com.peyess.salesapp.data.model.lens.getExplanations
 import com.peyess.salesapp.data.model.lens.toFilterCategory
 import com.peyess.salesapp.data.model.lens.toFilterLensFamily
 import com.peyess.salesapp.data.model.lens.toFilterLensGroup
@@ -23,14 +22,13 @@ import com.peyess.salesapp.data.model.lens.toFilterLensSpecialty
 import com.peyess.salesapp.data.model.lens.toFilterLensSupplier
 import com.peyess.salesapp.data.model.lens.toFilterLensTech
 import com.peyess.salesapp.data.model.lens.toFilterLensType
-import com.peyess.salesapp.data.model.lens.toLocalLensEntity
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringEntity
 import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechEntity
 import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatmentEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.data.adapter.lenses.colorings.extractColoring
 import com.peyess.salesapp.data.adapter.lenses.extractCategory
 import com.peyess.salesapp.data.adapter.lenses.extractDescription
 import com.peyess.salesapp.data.adapter.lenses.extractFamily
@@ -41,7 +39,6 @@ import com.peyess.salesapp.data.adapter.lenses.extractSpecialty
 import com.peyess.salesapp.data.adapter.lenses.extractSupplier
 import com.peyess.salesapp.data.adapter.lenses.extractTech
 import com.peyess.salesapp.data.adapter.lenses.extractType
-import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
@@ -78,37 +75,13 @@ class UpdateProductsWorker @AssistedInject constructor(
     private val localLensesRepository: LocalLensesRepository,
 ): CoroutineWorker(context, workerParams) {
 
-    private fun populateDatabase(docs: List<StoreLensDocument>) {
+    private suspend fun populateDatabase(docs: List<StoreLensDocument>) {
         Timber.i("populateDatabase: Populating database " +
                 "with ${docs.size} documents...")
 
         docs.forEach {
-            Timber.i("populateDatabase: Adding lens ${it.id}...")
-
-            val family = it.extractFamily()
-            val description = it.extractDescription()
-            val supplier = it.extractSupplier()
-            val group = it.extractGroup()
-            val specialty = it.extractSpecialty()
-            val tech = it.extractTech()
-            val type = it.extractType()
-            val category = it.extractCategory()
-            val material = it.extractMaterial()
-            val materialCategory = it.extractMaterialCategory()
-
-            localLensesRepository.addFamily(family)
-            localLensesRepository.addDescription(description)
-            localLensesRepository.addSupplier(supplier)
-            localLensesRepository.addGroup(group)
-            localLensesRepository.addSpecialty(specialty)
-            localLensesRepository.addTech(tech)
-            localLensesRepository.addType(type)
-            localLensesRepository.addCategory(category)
-
-            localLensesRepository.addMaterialCategory(materialCategory)
-            localLensesRepository.addMaterial(material)
-
-            populateColorings(it.colorings)
+            populateLensData(it)
+            populateColoringData(it.id, it.colorings)
         }
 
 //        lenses.forEach {
@@ -167,10 +140,44 @@ class UpdateProductsWorker @AssistedInject constructor(
 //        }
     }
 
-    private fun populateColorings(colorings: List<StoreLensColoringDocument>) {
-//        colorings.forEach {
-//            val
-//        }
+    private fun populateLensData(lens: StoreLensDocument) {
+        Timber.i("populateLens: Adding lens ${lens.id}...")
+
+        val family = lens.extractFamily()
+        val description = lens.extractDescription()
+        val supplier = lens.extractSupplier()
+        val group = lens.extractGroup()
+        val specialty = lens.extractSpecialty()
+        val tech = lens.extractTech()
+        val type = lens.extractType()
+        val category = lens.extractCategory()
+        val material = lens.extractMaterial()
+        val materialCategory = lens.extractMaterialCategory()
+
+        localLensesRepository.addFamily(family)
+        localLensesRepository.addDescription(description)
+        localLensesRepository.addSupplier(supplier)
+        localLensesRepository.addGroup(group)
+        localLensesRepository.addSpecialty(specialty)
+        localLensesRepository.addTech(tech)
+        localLensesRepository.addType(type)
+        localLensesRepository.addCategory(category)
+
+        localLensesRepository.addMaterialCategory(materialCategory)
+        localLensesRepository.addMaterial(material)
+    }
+
+    private suspend fun populateColoringData(lensId: String, colorings: List<StoreLensColoringDocument>) {
+        Timber.i("populateColoringData: Adding ${colorings.size} for lens $lensId...")
+
+        colorings.forEach {
+            Timber.i("populateColoringData: Adding coloring ${it.id}")
+
+            localLensesRepository.addColoringForLens(
+                lensId = lensId,
+                coloring = it.extractColoring(),
+            )
+        }
     }
 
     private fun populateFilters(lens: FSStoreLocalLens) {
@@ -307,7 +314,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
     }
 
-    private fun populateColorings(lens: FSStoreLocalLens) {
+    private fun populateColoringData(lens: FSStoreLocalLens) {
         lens.colorings.forEach { (id, fsColoring) ->
 
             productsDatabase.localColoringDao().add(

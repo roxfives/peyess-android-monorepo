@@ -46,6 +46,8 @@ import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
@@ -338,6 +340,8 @@ object RepositoryModule {
         localLensCategoryDao: LocalLensCategoryDao,
         localLensMaterialDao: LocalLensMaterialDao,
         localLensMaterialCategoryDao: LocalLensMaterialCategoryDao,
+        localLensColoringDao: LocalLensColoringDao,
+        localLensColoringExplanationDao: LocalLensColoringExplanationDao,
     ): LocalLensesRepository {
         return LocalLensesRepositoryImpl(
             localLensFamilyDao = localLensFamilyDao,
@@ -350,6 +354,8 @@ object RepositoryModule {
             localLensCategoryDao = localLensCategoryDao,
             localLensMaterialDao = localLensMaterialDao,
             localLensMaterialCategoryDao = localLensMaterialCategoryDao,
+            localLensColoringDao = localLensColoringDao,
+            localLensColoringExplanationDao = localLensColoringExplanationDao,
         )
     }
 }

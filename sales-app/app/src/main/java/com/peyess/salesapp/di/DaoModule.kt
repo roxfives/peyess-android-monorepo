@@ -68,6 +68,8 @@ import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
@@ -531,5 +533,20 @@ object DaoModule {
         productsDatabase: ProductsDatabase,
     ): LocalLensMaterialCategoryDao {
         return productsDatabase.localLensMaterialCategoryDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLensColoringDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensColoringDao {
+        return productsDatabase.localLensColoringDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensColoringExplanationDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensColoringExplanationDao {
+        return productsDatabase.localLensColoringExplanationDao()
     }
 }

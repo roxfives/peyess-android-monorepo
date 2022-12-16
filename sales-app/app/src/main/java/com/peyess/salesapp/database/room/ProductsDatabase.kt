@@ -61,8 +61,12 @@ import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
+import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductTableStateEntity
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensCategoryEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDescriptionEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensFamilyEntity
@@ -124,8 +128,11 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensCategoryEntity::class,
         LocalLensMaterialEntity::class,
         LocalLensMaterialCategoryEntity::class,
+
+        LocalLensColoringEntity::class,
+        LocalLensColoringExplanationEntity::class,
     ],
-    version = 64,
+    version = 67,
 )
 @TypeConverters(
     ConverterUri::class,
@@ -177,4 +184,7 @@ abstract class ProductsDatabase: RoomDatabase() {
     abstract fun localLensCategoryDao(): LocalLensCategoryDao
     abstract fun localLensMaterialDao(): LocalLensMaterialDao
     abstract fun localLensMaterialCategoryDao(): LocalLensMaterialCategoryDao
+
+    abstract fun localLensColoringDao(): LocalLensColoringDao
+    abstract fun localLensColoringExplanationDao(): LocalLensColoringExplanationDao
 }

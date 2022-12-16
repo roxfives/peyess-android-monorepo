@@ -1,5 +1,7 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
+import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -31,4 +33,6 @@ interface LocalLensesRepository {
     fun addMaterial(material: LocalLensMaterialDocument)
 
     fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument)
+
+    suspend fun addColoringForLens(lensId: String, coloring: LocalLensColoringDocument)
 }

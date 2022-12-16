@@ -1,7 +1,6 @@
 package com.peyess.salesapp.data.model.lens.treatment
 
 import androidx.annotation.Keep
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 
@@ -10,23 +9,8 @@ import com.google.firebase.firestore.PropertyName
 data class FSLensTreatment(
     @Keep
     @JvmField
-    @PropertyName("specialty")
-    val specialty: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("is_coloring_required")
-    val isColoringRequired: Boolean = false,
-
-    @Keep
-    @JvmField
-    @PropertyName("priority")
-    val priority: Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("is_generic")
-    val isGeneric: Boolean = false,
+    @PropertyName("brand")
+    val brand: String = "",
 
     @Keep
     @JvmField
@@ -40,63 +24,18 @@ data class FSLensTreatment(
 
     @Keep
     @JvmField
-    @PropertyName("suggested_price")
-    val suggestedPrice: Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("shipping_time")
-    val shippingTime: Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("observation")
-    val observation: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("warning")
-    val warning: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("brand")
-    val brand: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("brand_id")
-    val brandId: String = "",
-
-    @Keep
-    @JvmField
     @PropertyName("design")
     val design: String = "",
 
     @Keep
     @JvmField
-    @PropertyName("design_id")
-    val designId: String = "",
+    @PropertyName("explanations")
+    val explanations: List<String> = emptyList(),
 
     @Keep
     @JvmField
-    @PropertyName("supplier_picture")
-    val supplierPicture: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("supplier")
-    val supplier: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("supplier_id")
-    val supplierId: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("is_manufacturing_local")
-    val isManufacturingLocal: Boolean = false,
+    @PropertyName("is_coloring_required")
+    val isColoringRequired: Boolean = false,
 
     @Keep
     @JvmField
@@ -105,46 +44,41 @@ data class FSLensTreatment(
 
     @Keep
     @JvmField
-    @PropertyName("reason_disabled")
-    val reasonDisabled: String = "",
+    @PropertyName("is_local_enabled")
+    val isLocalEnabled: Boolean = false,
 
     @Keep
     @JvmField
-    @PropertyName("doc_version")
-    val doc_version: Int = 0,
+    @PropertyName("observation")
+    val observation: String = "",
 
     @Keep
     @JvmField
-    @PropertyName("is_editable")
-    val is_editable: Boolean = false,
+    @PropertyName("priority")
+    val priority: Double = 0.0,
 
     @Keep
     @JvmField
-    @PropertyName("created")
-    val created: Timestamp = Timestamp.now(),
+    @PropertyName("shipping_time")
+    val shippingTime: Double = 0.0,
 
     @Keep
     @JvmField
-    @PropertyName("created_by")
-    val createdBy: String = "",
+    @PropertyName("specialty")
+    val specialty: String = "",
 
     @Keep
     @JvmField
-    @PropertyName("create_allowed_by")
-    val createAllowedBy: String = "",
+    @PropertyName("suggested_price")
+    val suggestedPrice: Double = 0.0,
 
     @Keep
     @JvmField
-    @PropertyName("updated")
-    val updated: Timestamp = Timestamp.now(),
+    @PropertyName("supplier")
+    val supplier: String = "",
 
     @Keep
     @JvmField
-    @PropertyName("updated_by")
-    val updatedBy: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("update_allowed_by")
-    val updateAllowedBy: String = "",
+    @PropertyName("warning")
+    val warning: String = "",
 )

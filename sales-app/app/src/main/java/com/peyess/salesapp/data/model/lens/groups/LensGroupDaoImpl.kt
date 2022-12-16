@@ -20,7 +20,7 @@ class LensGroupDaoImpl @Inject constructor(
 
         val snaps = firestore
             .collection(salesApplication.stringResource(R.string.fs_col_lenses_groups))
-            .orderBy(salesApplication.stringResource(R.string.fs_field_lenses_group_priority))
+            .orderBy(salesApplication.stringResource(R.string.fs_field_lenses_priority))
             .get()
             .await()
 

@@ -27,8 +27,123 @@ import java.util.Date
 data class FSStoreLocalLens(
     @Keep
     @JvmField
+    @PropertyName("priority")
+    val priority: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("brand_priority")
+    val brandPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("design_priority")
+    val designPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("material_priority")
+    val materialPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("tech_priority")
+    val techPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("specialty_priority")
+    val specialtyPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("type_priority")
+    val typePriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("group_priority")
+    val groupPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("supplier_priority")
+    val supplierPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("category_priority")
+    val categoryPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("material_category_priority")
+    val materialCategoryPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_lens_priority")
+    val storeLensPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_brand_priority")
+    val storeBrandPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_design_priority")
+    val storeDesignPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_material_priority")
+    val storeMaterialPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_tech_priority")
+    val storeTechPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_specialty_priority")
+    val storeSpecialtyPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_type_priority")
+    val storeTypePriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_group_priority")
+    val storeGroupPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_supplier_priority")
+    val storeSupplierPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_category_priority")
+    val storeCategoryPriority: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("store_material_category_priority")
+    val storeMaterialCategoryPriority: Int = 0,
+
+    @Keep
+    @JvmField
     @PropertyName("id")
     val id: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("store_id")
+    val storeId: String = "",
 
     @Keep
     @JvmField
@@ -143,6 +258,16 @@ data class FSStoreLocalLens(
 
     @Keep
     @JvmField
+    @PropertyName("has_filter_blue")
+    val hasFilterBlue: Boolean = false,
+
+    @Keep
+    @JvmField
+    @PropertyName("has_filter_uv")
+    val hasFilterUv: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("is_coloring_treatment_mutex")
     val isColoringTreatmentMutex: Boolean = false,
     @Keep
@@ -211,11 +336,6 @@ data class FSStoreLocalLens(
     @JvmField
     @PropertyName("suggested_price_add_treatment")
     val suggestedPriceAddTreatment: Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("priority")
-    val priority: Double = 0.0,
 
     @Keep
     @JvmField
@@ -321,12 +441,12 @@ data class FSStoreLocalLens(
     @Keep
     @JvmField
     @PropertyName("doc_version")
-    val doc_version: Int = 0,
+    val docVersion: Int = 0,
 
     @Keep
     @JvmField
     @PropertyName("is_editable")
-    val is_editable: Boolean = false,
+    val isEditable: Boolean = false,
 
     @Keep
     @JvmField
@@ -337,11 +457,6 @@ data class FSStoreLocalLens(
     @JvmField
     @PropertyName("updated")
     val updated: Timestamp = Timestamp.now(),
-
-    @Keep
-    @JvmField
-    @PropertyName("created_at")
-    val createdAt: Date = Date(),
 
     @Keep
     @JvmField

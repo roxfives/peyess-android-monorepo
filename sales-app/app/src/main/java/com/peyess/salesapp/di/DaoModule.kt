@@ -56,6 +56,18 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
+import com.peyess.salesapp.data.dao.lenses.StoreLensesDaoImpl
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensCategoryDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensDescriptionDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensFamilyDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensGroupDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialCategoryDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
@@ -435,5 +447,89 @@ object DaoModule {
     @Provides
     fun provideProductsTableStateDao(productsDatabase: ProductsDatabase): ProductsTableStateDao {
         return productsDatabase.productsTableStateDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoreLensesDao(
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
+    ): StoreLensesDao {
+        return StoreLensesDaoImpl(
+            salesApplication = salesApplication,
+            firebaseManager = firebaseManager,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLensFamilyDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensFamilyDao {
+       return productsDatabase.localLensFamilyDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLensDescriptionDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensDescriptionDao {
+        return productsDatabase.localLensDescriptionDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensSupplierDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensSupplierDao {
+        return productsDatabase.localLensSupplierDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensGroupDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensGroupDao {
+        return productsDatabase.localLensGroupDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensSpecialtyDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensSpecialtyDao {
+        return productsDatabase.localLensSpecialtyDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensTechDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensTechDao {
+        return productsDatabase.localLensTechDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensTypeDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensTypeDao {
+        return productsDatabase.localLensTypeDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensCategoryDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensCategoryDao {
+        return productsDatabase.localLensCategoryDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensMaterialDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensMaterialDao {
+        return productsDatabase.localLensMaterialDao()
+    }
+    @Singleton
+    @Provides
+    fun provideLocalLensMaterialCategoryDao(
+        productsDatabase: ProductsDatabase,
+    ): LocalLensMaterialCategoryDao {
+        return productsDatabase.localLensMaterialCategoryDao()
     }
 }

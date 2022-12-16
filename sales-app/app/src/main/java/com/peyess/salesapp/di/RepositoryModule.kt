@@ -35,6 +35,17 @@ import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensCategoryDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensDescriptionDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensFamilyDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensGroupDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialCategoryDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
@@ -55,6 +66,10 @@ import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepositoryImpl
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryImpl
+import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
+import com.peyess.salesapp.data.repository.lenses.StoreLensesRepositoryImpl
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
@@ -298,5 +313,43 @@ object RepositoryModule {
     @Provides
     fun provideProductsTableStateRepository(productsTableStateDao: ProductsTableStateDao): ProductsTableStateRepository {
         return ProductsTableStateRepositoryImpl(productsTableStateDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoreLensesRepository(
+        storeLensesDao: StoreLensesDao,
+    ): StoreLensesRepository {
+        return StoreLensesRepositoryImpl(
+            storeLensesDao = storeLensesDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLensesRepository(
+        localLensFamilyDao: LocalLensFamilyDao,
+        localLensDescriptionDao: LocalLensDescriptionDao,
+        localLensSupplierDao: LocalLensSupplierDao,
+        localLensGroupDao: LocalLensGroupDao,
+        localLensSpecialtyDao: LocalLensSpecialtyDao,
+        localLensTechDao: LocalLensTechDao,
+        localLensTypeDao: LocalLensTypeDao,
+        localLensCategoryDao: LocalLensCategoryDao,
+        localLensMaterialDao: LocalLensMaterialDao,
+        localLensMaterialCategoryDao: LocalLensMaterialCategoryDao,
+    ): LocalLensesRepository {
+        return LocalLensesRepositoryImpl(
+            localLensFamilyDao = localLensFamilyDao,
+            localLensDescriptionDao = localLensDescriptionDao,
+            localLensSupplierDao = localLensSupplierDao,
+            localLensGroupDao = localLensGroupDao,
+            localLensSpecialtyDao = localLensSpecialtyDao,
+            localLensTechDao = localLensTechDao,
+            localLensTypeDao = localLensTypeDao,
+            localLensCategoryDao = localLensCategoryDao,
+            localLensMaterialDao = localLensMaterialDao,
+            localLensMaterialCategoryDao = localLensMaterialCategoryDao,
+        )
     }
 }

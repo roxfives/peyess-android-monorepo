@@ -18,13 +18,10 @@ import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.nextState
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.previousStateLeftEye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.previousStateRightEye
 import com.peyess.salesapp.repository.sale.SaleRepository
-import com.squareup.okhttp.Dispatcher
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import kotlin.math.abs

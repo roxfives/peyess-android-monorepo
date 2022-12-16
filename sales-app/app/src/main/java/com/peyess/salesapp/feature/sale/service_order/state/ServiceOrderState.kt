@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
 import android.net.Uri
-import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
@@ -11,7 +10,6 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
@@ -23,11 +21,9 @@ import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
-import timber.log.Timber
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs

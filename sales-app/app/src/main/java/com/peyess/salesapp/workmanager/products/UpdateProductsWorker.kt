@@ -2,30 +2,28 @@ package com.peyess.salesapp.workmanager.products
 
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.database.sqlite.SQLiteConstraintException
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
+import arrow.core.getOrElse
+import arrow.fx.coroutines.Schedule
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
-import com.peyess.salesapp.app.MainActivity
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.dao.products.firestore.lens.FSLocalLens
-import com.peyess.salesapp.dao.products.firestore.lens.getExplanations
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterCategory
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensFamily
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensGroup
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensMaterial
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensSpecialty
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensSupplier
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensTech
-import com.peyess.salesapp.dao.products.firestore.lens.toFilterLensType
-import com.peyess.salesapp.dao.products.firestore.lens.toLocalLensEntity
+import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
+import com.peyess.salesapp.data.model.lens.getExplanations
+import com.peyess.salesapp.data.model.lens.toFilterCategory
+import com.peyess.salesapp.data.model.lens.toFilterLensFamily
+import com.peyess.salesapp.data.model.lens.toFilterLensGroup
+import com.peyess.salesapp.data.model.lens.toFilterLensMaterial
+import com.peyess.salesapp.data.model.lens.toFilterLensSpecialty
+import com.peyess.salesapp.data.model.lens.toFilterLensSupplier
+import com.peyess.salesapp.data.model.lens.toFilterLensTech
+import com.peyess.salesapp.data.model.lens.toFilterLensType
+import com.peyess.salesapp.data.model.lens.toLocalLensEntity
 import com.peyess.salesapp.dao.products.room.join_lens_coloring.JoinLensColoringEntity
 import com.peyess.salesapp.dao.products.room.join_lens_material.JoinLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.join_lens_tech.JoinLensTechEntity
@@ -33,16 +31,36 @@ import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatme
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.data.adapter.lenses.extractCategory
+import com.peyess.salesapp.data.adapter.lenses.extractDescription
+import com.peyess.salesapp.data.adapter.lenses.extractFamily
+import com.peyess.salesapp.data.adapter.lenses.extractGroup
+import com.peyess.salesapp.data.adapter.lenses.extractMaterial
+import com.peyess.salesapp.data.adapter.lenses.extractMaterialCategory
+import com.peyess.salesapp.data.adapter.lenses.extractSpecialty
+import com.peyess.salesapp.data.adapter.lenses.extractSupplier
+import com.peyess.salesapp.data.adapter.lenses.extractTech
+import com.peyess.salesapp.data.adapter.lenses.extractType
+import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
+import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.model.lens.StoreLensDocument
+import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
+import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
+import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
+import com.peyess.salesapp.data.utils.query.PeyessOrderBy
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
+import com.peyess.salesapp.data.utils.query.buildQueryField
+import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.database.room.ProductsDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 
@@ -52,81 +70,110 @@ const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 class UpdateProductsWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    val salesApplication: SalesApplication,
-    val productsDatabase: ProductsDatabase,
-    val productsTableStateRepository: ProductsTableStateRepository,
-    val firebaseManager: FirebaseManager,
+    private val salesApplication: SalesApplication,
+    private val productsDatabase: ProductsDatabase,
+    private val productsTableStateRepository: ProductsTableStateRepository,
+    private val storeLensesRepository: StoreLensesRepository,
+    private val firebaseManager: FirebaseManager,
+    private val localLensesRepository: LocalLensesRepository,
 ): CoroutineWorker(context, workerParams) {
 
-    private fun addAllToLocalProducts(docs: List<DocumentSnapshot>) {
-        val lenses = docs.mapNotNull {
-            try {
-                it.toObject(FSLocalLens::class.java)
-            } catch (err: Throwable) {
-                Timber.e(err, "Failed for lens ${it.id}")
-                null
-            }
+    private fun populateDatabase(docs: List<StoreLensDocument>) {
+        Timber.i("populateDatabase: Populating database " +
+                "with ${docs.size} documents...")
+
+        docs.forEach {
+            Timber.i("populateDatabase: Adding lens ${it.id}...")
+
+            val family = it.extractFamily()
+            val description = it.extractDescription()
+            val supplier = it.extractSupplier()
+            val group = it.extractGroup()
+            val specialty = it.extractSpecialty()
+            val tech = it.extractTech()
+            val type = it.extractType()
+            val category = it.extractCategory()
+            val material = it.extractMaterial()
+            val materialCategory = it.extractMaterialCategory()
+
+            localLensesRepository.addFamily(family)
+            localLensesRepository.addDescription(description)
+            localLensesRepository.addSupplier(supplier)
+            localLensesRepository.addGroup(group)
+            localLensesRepository.addSpecialty(specialty)
+            localLensesRepository.addTech(tech)
+            localLensesRepository.addType(type)
+            localLensesRepository.addCategory(category)
+
+            localLensesRepository.addMaterialCategory(materialCategory)
+            localLensesRepository.addMaterial(material)
+
+            populateColorings(it.colorings)
         }
 
-        Timber.i("Found ${lenses.size} lenses")
-
-        lenses.forEach {
-            Timber.i("Got lens ${it.id}")
-
-            val lens = it.toLocalLensEntity()
-            Timber.i("Adding lens with price ${lens.price}")
-            try {
-                productsDatabase.localLensDao().add(lens)
-            } catch (e: Throwable) {
-                Timber.e("Error while inserting lens ${lens.id}: \n\t $lens")
-            }
-
-            try {
-                val explanations = it.getExplanations()
-
-                for (exp in explanations) {
-                    Timber.i("Adding product exp dao for lens ${it.id}: $exp")
-                    productsDatabase.localProdExpDao().add(exp)
-                    Timber.i("Successfully added exp dao for lens ${it.id}: $exp")
-
-                }
-            } catch (e: SQLiteConstraintException) {
-                // Just ignore this error, collisions will happen
-                Timber.e(e, "Error while inserting explanation")
-            } catch (e: Throwable) {
-                Timber.e(e, "Error while inserting explanation")
-            }
-
-            populateFilters(it)
-            populateTreatments(it)
-            populateColorings(it)
-
-            Timber.i("With disps ${it.disponibilities}")
-            it.disponibilities.forEach { disp ->
-                productsDatabase.localLensDispEntityDao().add(
-                    LocalLensDispEntity(
-                        lensId = it.id,
-                        diam = disp.diam,
-                        maxCyl = disp.maxCyl,
-                        minCyl = disp.minCyl,
-                        maxSph = disp.maxSph,
-                        minSph = disp.minSph,
-                        maxAdd = disp.maxAdd,
-                        minAdd = disp.minAdd,
-                        hasPrism = disp.hasPrism,
-                        prism = disp.prism,
-                        prismPrice = disp.prismPrice,
-                        prismCost = disp.prismCost,
-                        separatePrism = disp.separatePrism,
-                        needsCheck = disp.needsCheck,
-                        sumRule = disp.sumRule,
-                    )
-                )
-            }
-        }
+//        lenses.forEach {
+//            Timber.i("Got lens ${it.id}")
+//
+//            val lens = it.toLocalLensEntity()
+//            Timber.i("Adding lens with price ${lens.price}")
+//            try {
+//                productsDatabase.localLensDao().add(lens)
+//            } catch (e: Throwable) {
+//                Timber.e("Error while inserting lens ${lens.id}: \n\t $lens")
+//            }
+//
+//            try {
+//                val explanations = it.getExplanations()
+//
+//                for (exp in explanations) {
+//                    Timber.i("Adding product exp dao for lens ${it.id}: $exp")
+//                    productsDatabase.localProdExpDao().add(exp)
+//                    Timber.i("Successfully added exp dao for lens ${it.id}: $exp")
+//
+//                }
+//            } catch (e: SQLiteConstraintException) {
+//                // Just ignore this error, collisions will happen
+//                Timber.e(e, "Error while inserting explanation")
+//            } catch (e: Throwable) {
+//                Timber.e(e, "Error while inserting explanation")
+//            }
+//
+//            populateFilters(it)
+//            populateTreatments(it)
+//            populateColorings(it)
+//
+//            Timber.i("With disps ${it.disponibilities}")
+//            it.disponibilities.forEach { disp ->
+//                productsDatabase.localLensDispEntityDao().add(
+//                    LocalLensDispEntity(
+//                        lensId = it.id,
+//                        diam = disp.diam,
+//                        maxCyl = disp.maxCyl,
+//                        minCyl = disp.minCyl,
+//                        maxSph = disp.maxSph,
+//                        minSph = disp.minSph,
+//                        maxAdd = disp.maxAdd,
+//                        minAdd = disp.minAdd,
+//                        hasPrism = disp.hasPrism,
+//                        prism = disp.prism,
+//                        prismPrice = disp.prismPrice,
+//                        prismCost = disp.prismCost,
+//                        separatePrism = disp.separatePrism,
+//                        needsCheck = disp.needsCheck,
+//                        sumRule = disp.sumRule,
+//                    )
+//                )
+//            }
+//        }
     }
 
-    private fun populateFilters(lens: FSLocalLens) {
+    private fun populateColorings(colorings: List<StoreLensColoringDocument>) {
+//        colorings.forEach {
+//            val
+//        }
+    }
+
+    private fun populateFilters(lens: FSStoreLocalLens) {
         Timber.i("Populating lens filters")
 
         try {
@@ -222,32 +269,32 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
     }
 
-    private fun populateTreatments(lens: FSLocalLens) {
+    private fun populateTreatments(lens: FSStoreLocalLens) {
         lens.treatments.forEach { (id, fsTreatment) ->
 
             productsDatabase.localTreatmentDao().add(
                 LocalTreatmentEntity(
-                    id = id,
-                    specialty = fsTreatment.specialty,
-                    isColoringRequired = fsTreatment.isColoringRequired,
-                    priority = fsTreatment.priority,
-                    isGeneric = fsTreatment.isGeneric,
-                    cost = fsTreatment.cost,
-                    price = fsTreatment.price,
-                    suggestedPrice = fsTreatment.suggestedPrice,
-                    shippingTime = fsTreatment.shippingTime,
-                    observation = fsTreatment.observation,
-                    warning = fsTreatment.warning,
-                    brand = fsTreatment.brand,
-                    brandId = fsTreatment.brandId,
-                    design = fsTreatment.design,
-                    designId = fsTreatment.designId,
-                    supplierPicture = fsTreatment.supplierPicture,
-                    supplier = fsTreatment.supplier,
-                    supplierId = fsTreatment.supplierId,
-                    isManufacturingLocal = fsTreatment.isManufacturingLocal,
-                    isEnabled = fsTreatment.isEnabled,
-                    reasonDisabled = fsTreatment.reasonDisabled,
+//                    id = id,
+//                    specialty = fsTreatment.specialty,
+//                    isColoringRequired = fsTreatment.isColoringRequired,
+//                    priority = fsTreatment.priority,
+//                    isGeneric = fsTreatment.isGeneric,
+//                    cost = fsTreatment.cost,
+//                    price = fsTreatment.price,
+//                    suggestedPrice = fsTreatment.suggestedPrice,
+//                    shippingTime = fsTreatment.shippingTime,
+//                    observation = fsTreatment.observation,
+//                    warning = fsTreatment.warning,
+//                    brand = fsTreatment.brand,
+//                    brandId = fsTreatment.brandId,
+//                    design = fsTreatment.design,
+//                    designId = fsTreatment.designId,
+//                    supplierPicture = fsTreatment.supplierPicture,
+//                    supplier = fsTreatment.supplier,
+//                    supplierId = fsTreatment.supplierId,
+//                    isManufacturingLocal = fsTreatment.isManufacturingLocal,
+//                    isEnabled = fsTreatment.isEnabled,
+//                    reasonDisabled = fsTreatment.reasonDisabled,
                 )
             )
 
@@ -260,32 +307,32 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
     }
 
-    private fun populateColorings(lens: FSLocalLens) {
+    private fun populateColorings(lens: FSStoreLocalLens) {
         lens.colorings.forEach { (id, fsColoring) ->
 
             productsDatabase.localColoringDao().add(
                 LocalColoringEntity(
-                    id = id,
-                    specialty = fsColoring.specialty,
-                    isColoringRequired = fsColoring.isColoringRequired,
-                    priority = fsColoring.priority,
-                    isGeneric = fsColoring.isGeneric,
-                    cost = fsColoring.cost,
-                    price = fsColoring.price,
-                    suggestedPrice = fsColoring.suggestedPrice,
-                    shippingTime = fsColoring.shippingTime,
-                    observation = fsColoring.observation,
-                    warning = fsColoring.warning,
-                    brand = fsColoring.brand,
-                    brandId = fsColoring.brandId,
-                    design = fsColoring.design,
-                    designId = fsColoring.designId,
-                    supplierPicture = fsColoring.supplierPicture,
-                    supplier = fsColoring.supplier,
-                    supplierId = fsColoring.supplierId,
-                    isManufacturingLocal = fsColoring.isManufacturingLocal,
-                    isEnabled = fsColoring.isEnabled,
-                    reasonDisabled = fsColoring.reasonDisabled,
+//                    id = id,
+//                    specialty = fsColoring.specialty,
+//                    isColoringRequired = fsColoring.isColoringRequired,
+//                    priority = fsColoring.priority,
+//                    isGeneric = fsColoring.isGeneric,
+//                    cost = fsColoring.cost,
+//                    price = fsColoring.price,
+//                    suggestedPrice = fsColoring.suggestedPrice,
+//                    shippingTime = fsColoring.shippingTime,
+//                    observation = fsColoring.observation,
+//                    warning = fsColoring.warning,
+//                    brand = fsColoring.brand,
+//                    brandId = fsColoring.brandId,
+//                    design = fsColoring.design,
+//                    designId = fsColoring.designId,
+//                    supplierPicture = fsColoring.supplierPicture,
+//                    supplier = fsColoring.supplier,
+//                    supplierId = fsColoring.supplierId,
+//                    isManufacturingLocal = fsColoring.isManufacturingLocal,
+//                    isEnabled = fsColoring.isEnabled,
+//                    reasonDisabled = fsColoring.reasonDisabled,
                 )
             )
 
@@ -336,6 +383,22 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
     }
 
+    private suspend fun downloadAndPopulateProducts(query: PeyessQuery) =
+        Schedule.doWhile<StoreLensResponse> { it.getOrElse { emptyList() }.isNotEmpty() }
+            .repeat {
+                storeLensesRepository.paginateData(
+                    query = query,
+                    config = SimplePaginatorConfig(
+                        initialPageSize = pageLimit,
+                        pageSize = pageLimit,
+                    ),
+                ).tap {
+                    Timber.i("Downloaded ${it.size} lenses: $it")
+
+                    populateDatabase(it)
+                }
+            }
+
     override suspend fun doWork(): Result {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
@@ -357,9 +420,8 @@ class UpdateProductsWorker @AssistedInject constructor(
             .format(storeId)
 
         Timber.i("Starting product update")
-        runBlocking(Dispatchers.IO) {
-            val forceUpdate = inputData
-                .getBoolean(forceUpdateKey, false)
+        val result = runBlocking(Dispatchers.IO) {
+            val forceUpdate = inputData.getBoolean(forceUpdateKey, false)
             Timber.i("Starting Worker with forceUpdate = $forceUpdate")
 
             val productsTableStatus = productsTableStateRepository.getCurrentState()
@@ -367,91 +429,140 @@ class UpdateProductsWorker @AssistedInject constructor(
             val isUpdating = productsTableStatus.isUpdating
             val needsUpdate = !productsTableStatus.hasUpdated
                     || productsTableStatus.hasUpdateFailed
-
             val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
 
-            if (avoidUpdate) {
+            if (false) {
                 return@runBlocking Result.success()
             }
 
-            productsTableStateRepository.update(
-                productsTableStatus.copy(isUpdating = true),
-            )
+            productsTableStateRepository
+                .update(productsTableStatus.copy(isUpdating = true))
 
             createNotification()
 
             Timber.i("Starting products update with path $lensPath")
+            val queryFields = storeLensesRepository.queryFields
 
-            // TODO: use string resource
-            // TODO: update enabled to is_local_enabled
-            val initQuery = firestore
-                .collection(lensPath)
-                .whereEqualTo("is_enabled", true)
-                .orderBy("priority")
-                .limit(1)
-                .get()
-                .await()
-
-            if (initQuery.size() != 1) {
-                Timber.e("Initial query has to be of size 1, but it is ${initQuery.size()}")
-                productsTableStateRepository
-                    .update(
-                        ProductsTableStatus(
-                            hasUpdated = false,
-                            hasUpdateFailed = true,
-                            isUpdating = false,
-                        )
+            val query = PeyessQuery(
+                queryFields = listOf(
+                    buildQueryField(
+                        field = queryFields.isLocalEnabled,
+                        op = PeyessQueryOperation.Equal,
+                        value = true,
                     )
-
-                return@runBlocking Result.retry()
-            }
-
-            clearAllProducts()
-
-            var snaps: QuerySnapshot
-            var currSnapshot = initQuery.documents[0]
-            var totalDownloaded = 0
-            do {
-                Timber.i("Starting page download")
-                // TODO: use string resource
-                // TODO: update enabled to is_local_enabled
-                snaps = firestore
-                    .collection(lensPath)
-                    .whereEqualTo("is_enabled", true)
-                    .orderBy("priority")
-                    .startAfter(currSnapshot)
-                    .limit(pageLimit)
-                    .get()
-                    .await()
-                Timber.i("Downloaded total of ${snaps.size()}")
-
-                if (snaps.isEmpty) {
-                    currSnapshot = null
-                } else {
-                    totalDownloaded += snaps.size()
-                    currSnapshot = snaps.last()
-                    addAllToLocalProducts(snaps.documents)
-                }
-            } while (!snaps.isEmpty)
-
-            Timber.i("Downloaded total of $totalDownloaded")
-            productsTableStateRepository
-                .update(
-                    ProductsTableStatus(
-                        hasUpdated = true,
-                        hasUpdateFailed = false,
-                        isUpdating = false,
-                    )
+                ),
+                orderBy = PeyessOrderBy(
+                    field = queryFields.priority,
+                    order = Order.ASCENDING,
                 )
-            dismissNotification()
-        }
-        Timber.i("Finished product update")
+            )
 
-        return Result.success()
+            val response = downloadAndPopulateProducts(query)
+
+            if (response.isLeft()) {
+                return@runBlocking Result.retry()
+            } else {
+                return@runBlocking Result.success()
+            }
+        }
+
+        return result
+
+//        runBlocking(Dispatchers.IO) {
+//            val forceUpdate = inputData
+//                .getBoolean(forceUpdateKey, false)
+//            Timber.i("Starting Worker with forceUpdate = $forceUpdate")
+//
+//            val productsTableStatus = productsTableStateRepository.getCurrentState()
+//
+//            val isUpdating = productsTableStatus.isUpdating
+//            val needsUpdate = !productsTableStatus.hasUpdated
+//                    || productsTableStatus.hasUpdateFailed
+//
+//            val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
+//
+//            if (false) {
+//                return@runBlocking Result.success()
+//            }
+//
+//            productsTableStateRepository.update(
+//                productsTableStatus.copy(isUpdating = true),
+//            )
+//
+//            createNotification()
+//
+//            Timber.i("Starting products update with path $lensPath")
+//
+//            // TODO: use string resource
+//            // TODO: update enabled to is_local_enabled
+//            val initQuery = firestore
+//                .collection(lensPath)
+//                .whereEqualTo("is_local_enabled", true)
+//                .orderBy("priority")
+//                .limit(20)
+//                .get()
+//                .await()
+
+//            if (initQuery.size() != 1) {
+//                Timber.e("Initial query has to be of size 1, but it is ${initQuery.size()}")
+//                productsTableStateRepository
+//                    .update(
+//                        ProductsTableStatus(
+//                            hasUpdated = false,
+//                            hasUpdateFailed = true,
+//                            isUpdating = false,
+//                        )
+//                    )
+//
+//                return@runBlocking Result.retry()
+//            }
+
+//            clearAllProducts()
+//
+//            var snaps: QuerySnapshot
+//            var currSnapshot = initQuery.documents.last()
+//            var totalDownloaded = 0
+//            do {
+//                Timber.i("Starting page download")
+//                // TODO: use string resource
+//                // TODO: update enabled to is_local_enabled
+//                snaps = firestore
+//                    .collection(lensPath)
+//                    .whereEqualTo("is_local_enabled", true)
+//                    .orderBy("priority")
+//                    .startAfter(currSnapshot)
+//                    .limit(20)
+//                    .get()
+//                    .await()
+//                Timber.i("Downloaded total of ${snaps.size()}")
+//
+//                if (snaps.isEmpty) {
+//                    currSnapshot = null
+//                } else {
+//                    totalDownloaded += snaps.size()
+//                    currSnapshot = snaps.last()
+//                    addAllToLocalProducts(snaps.documents)
+//                }
+//            } while (!snaps.isEmpty)
+//
+//            Timber.i("Downloaded total of $totalDownloaded")
+//            productsTableStateRepository
+//                .update(
+//                    ProductsTableStatus(
+//                        hasUpdated = true,
+//                        hasUpdateFailed = false,
+//                        isUpdating = false,
+//                    )
+//                )
+//            dismissNotification()
+//        }
+//        Timber.i("Finished product update")
+//
+//        return Result.success()
     }
 
     companion object {
-        const val pageLimit = 100L
+        const val pageLimit = 300
 
         const val workerTag = "TAG_UpdateProductsWorker"
     }

@@ -556,6 +556,7 @@
     <string name="fs_doc_client">clients/%1$s</string>
     <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
     <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
+    <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
@@ -567,8 +568,8 @@
     <string name="fs_field_payments_is_enabled">is_enabled</string>
     <string name="fs_field_so_created">created</string>
     <string name="fs_field_card_flag_name">name</string>
-
-    <string name="fs_field_lenses_group_priority">priority</string>
+    <string name="fs_field_lens_enabled">is_local_enabled</string>
+    <string name="fs_field_lenses_priority">priority</string>
 
     <!-- Storage file paths -->
     <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>

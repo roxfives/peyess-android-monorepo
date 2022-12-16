@@ -21,6 +21,7 @@ dependencies {
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
     val hiltVersion = rootProject.extra["hilt_version"]
     val mavericksVersion = rootProject.extra["mavericks_version"]
+    val arrowVersion = rootProject.extra["arrow_version"]
     val lottieVersion = rootProject.extra["lottie_version"]
     val firebaseBOM = rootProject.extra["firebase_bom"]
     val coilVersion = rootProject.ext["coil_version"]
@@ -102,6 +103,12 @@ dependencies {
     implementation("com.airbnb.android:mavericks:$mavericksVersion")
     implementation("com.airbnb.android:mavericks-hilt:$mavericksVersion")
     implementation("com.airbnb.android:mavericks-compose:$mavericksVersion")
+
+    // Arrow-kt
+    implementation(platform("io.arrow-kt:arrow-stack:$arrowVersion"))
+    implementation("io.arrow-kt:arrow-core")
+    implementation("io.arrow-kt:arrow-fx-coroutines")
+    implementation("io.arrow-kt:arrow-fx-stm")
 
     // Work Manager
     implementation("androidx.work:work-runtime-ktx:$workVersion")

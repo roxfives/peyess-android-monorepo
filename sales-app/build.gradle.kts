@@ -12,8 +12,9 @@ buildscript {
         set("hilt_version", "2.43.1")
 
         set("mavericks_version", "2.7.0")
+        set("arrow_version", "1.1.3")
 
-        set("firebase_bom", "30.3.1")
+        set("firebase_bom", "31.1.1")
         set("coil_version", "2.2.0")
         set("data_store", "1.0.0")
         set("android_crypto", "1.0.0")

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.products.room.filter_lens_supplier
+package com.peyess.salesapp.dao.products.room.filter_lens_category
 
 import androidx.room.Dao
 import androidx.room.Insert

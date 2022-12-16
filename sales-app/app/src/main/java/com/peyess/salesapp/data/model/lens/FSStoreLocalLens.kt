@@ -5,9 +5,8 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.lens.disponibility.FSDisponibility
-import com.peyess.salesapp.data.model.lens.alt_height.FSLensAltHeight
-import com.peyess.salesapp.data.model.lens.coloring.FSLensColoring
-import com.peyess.salesapp.data.model.lens.material.FSLensMaterial
+import com.peyess.salesapp.data.model.lens.alt_height.FSStoreLensAltHeight
+import com.peyess.salesapp.data.model.lens.coloring.FSStoreLensColoring
 import com.peyess.salesapp.data.model.lens.treatment.FSLensTreatment
 import com.peyess.salesapp.dao.products.room.filter_lens_category.FilterLensCategoryEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_description.FilterLensDescriptionEntity
@@ -20,11 +19,12 @@ import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEnti
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpEntity
+import com.peyess.salesapp.data.model.lens.material_type.FSMaterialType
 import java.util.Date
 
 @Keep
 @IgnoreExtraProperties
-data class FSLocalLens(
+data class FSStoreLocalLens(
     @Keep
     @JvmField
     @PropertyName("id")
@@ -130,7 +130,7 @@ data class FSLocalLens(
     @Keep
     @JvmField
     @PropertyName("material_types")
-    val materialTypes: Map<String, FSLensMaterial> = emptyMap(),
+    val materialTypes: Map<String, FSMaterialType> = emptyMap(),
     @Keep
     @JvmField
     @PropertyName("material_types_ids")
@@ -169,7 +169,7 @@ data class FSLocalLens(
     @Keep
     @JvmField
     @PropertyName("alt_heights")
-    val altHeights: Map<String, FSLensAltHeight> = emptyMap(),
+    val altHeights: Map<String, FSStoreLensAltHeight> = emptyMap(),
 
     @Keep
     @JvmField
@@ -192,7 +192,7 @@ data class FSLocalLens(
     @Keep
     @JvmField
     @PropertyName("colorings")
-    val colorings: Map<String, FSLensColoring> = emptyMap(),
+    val colorings: Map<String, FSStoreLensColoring> = emptyMap(),
 
     @Keep
     @JvmField
@@ -364,7 +364,7 @@ data class FSLocalLens(
     val updateAllowedBy: String = "",
 )
 
-fun FSLocalLens.getExplanations(): List<LocalProductExpEntity> {
+fun FSStoreLocalLens.getExplanations(): List<LocalProductExpEntity> {
     return explanations.map {
         LocalProductExpEntity(
             productId = id,
@@ -373,7 +373,7 @@ fun FSLocalLens.getExplanations(): List<LocalProductExpEntity> {
     }
 }
 
-fun FSLocalLens.toFilterCategory(): FilterLensCategoryEntity {
+fun FSStoreLocalLens.toFilterCategory(): FilterLensCategoryEntity {
     return FilterLensCategoryEntity(
         id = categoryId,
         lensId = id,
@@ -381,7 +381,7 @@ fun FSLocalLens.toFilterCategory(): FilterLensCategoryEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensCategory(): FilterLensCategoryEntity {
+fun FSStoreLocalLens.toFilterLensCategory(): FilterLensCategoryEntity {
     return FilterLensCategoryEntity(
         id = categoryId,
         lensId = id,
@@ -389,7 +389,7 @@ fun FSLocalLens.toFilterLensCategory(): FilterLensCategoryEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
+fun FSStoreLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
     return FilterLensDescriptionEntity(
         id = designId,
         name = design,
@@ -397,7 +397,7 @@ fun FSLocalLens.toFilterLensDescription(): FilterLensDescriptionEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensFamily(): FilterLensFamilyEntity {
+fun FSStoreLocalLens.toFilterLensFamily(): FilterLensFamilyEntity {
     return FilterLensFamilyEntity(
         id = brandId,
         name = brand,
@@ -405,7 +405,7 @@ fun FSLocalLens.toFilterLensFamily(): FilterLensFamilyEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensGroup(): FilterLensGroupEntity {
+fun FSStoreLocalLens.toFilterLensGroup(): FilterLensGroupEntity {
     return FilterLensGroupEntity(
         id = groupId,
         lensId = id,
@@ -413,7 +413,7 @@ fun FSLocalLens.toFilterLensGroup(): FilterLensGroupEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensMaterial(): FilterLensMaterialEntity {
+fun FSStoreLocalLens.toFilterLensMaterial(): FilterLensMaterialEntity {
     return FilterLensMaterialEntity(
         id = materialId,
         supplierId = supplierId,
@@ -421,35 +421,35 @@ fun FSLocalLens.toFilterLensMaterial(): FilterLensMaterialEntity {
     )
 }
 
-fun FSLocalLens.toFilterLensSpecialty(): FilterLensSpecialtyEntity {
+fun FSStoreLocalLens.toFilterLensSpecialty(): FilterLensSpecialtyEntity {
     return FilterLensSpecialtyEntity(
         id = specialtyId,
         name = specialty,
     )
 }
 
-fun FSLocalLens.toFilterLensSupplier(): FilterLensSupplierEntity {
+fun FSStoreLocalLens.toFilterLensSupplier(): FilterLensSupplierEntity {
     return FilterLensSupplierEntity(
         id = supplierId,
         name = supplier,
     )
 }
 
-fun FSLocalLens.toFilterLensTech(): FilterLensTechEntity {
+fun FSStoreLocalLens.toFilterLensTech(): FilterLensTechEntity {
     return FilterLensTechEntity(
         id = techId,
         name = tech,
     )
 }
 
-fun FSLocalLens.toFilterLensType(): FilterLensTypeEntity {
+fun FSStoreLocalLens.toFilterLensType(): FilterLensTypeEntity {
     return FilterLensTypeEntity(
         id = typeId,
         name = type,
     )
 }
 
-fun FSLocalLens.toLocalLensEntity(): LocalLensEntity {
+fun FSStoreLocalLens.toLocalLensEntity(): LocalLensEntity {
     return LocalLensEntity(
         id = id,
         isLocalEnabled = isLocalEnabled,
@@ -504,4 +504,3 @@ fun FSLocalLens.toLocalLensEntity(): LocalLensEntity {
         reasonDisabled = reasonDisabled,
     )
 }
-

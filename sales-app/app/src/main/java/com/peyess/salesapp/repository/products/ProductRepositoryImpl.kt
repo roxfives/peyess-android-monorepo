@@ -164,7 +164,7 @@ class ProductRepositoryImpl @Inject constructor(
         activeSO: ActiveSOEntity,
         prescriptionData: PrescriptionDataEntity,
         disp: LocalLensDispEntity,
-        mesureLeft: Measuring,
+        measureLeft: Measuring,
         measureRight: Measuring,
     ): LensSupported {
         // TODO: get from lensType conversion
@@ -187,7 +187,7 @@ class ProductRepositoryImpl @Inject constructor(
         }
 
         val maxDiam = max(
-            mesureLeft.diameter,
+            measureLeft.diameter,
             measureRight.diameter,
         )
 

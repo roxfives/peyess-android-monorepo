@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
+
 buildscript {
     extra.apply {
         set("compose_version", "1.2.1")

@@ -21,9 +21,11 @@ import com.peyess.salesapp.data.model.lens.room.dao.LocalLensMaterialTypeEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSpecialtyEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSupplierEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTechEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTypeCategoryEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTypeEntity
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensAltHeightCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensColoringCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDetailsCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibilityManufacturerCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
@@ -35,9 +37,6 @@ import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExpl
 interface LocalLensDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLensCategory(entity: LocalLensCategoryEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addLensCategoryCrossRef(entity: LocalLensTypeCategoryCrossRef)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addDescription(entity: LocalLensDescriptionEntity)
@@ -73,13 +72,19 @@ interface LocalLensDao {
     suspend fun addType(entity: LocalLensTypeEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addTypeCategory(entity: LocalLensTypeCategoryEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addTypeCategoryCrossRef(entity: LocalLensTypeCategoryCrossRef)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLensExplanation(entity: LocalLensExplanationEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLensBase(entity: LocalLensBaseEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addLensDisponibility(entity: LocalLensDisponibilityEntity)
+    suspend fun addLensDisponibility(entity: LocalLensDisponibilityEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLensDisponibilityManufacturer(
@@ -117,4 +122,7 @@ interface LocalLensDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLens(entity: LocalLensEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addLensDetails(entity: LocalLensDetailsCrossRef)
 }

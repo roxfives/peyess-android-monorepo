@@ -10,4 +10,8 @@ data class LocalLensColoringCrossRef(
 
     @ColumnInfo(name = "coloring_id")
     val coloringId: String = "",
-)
+) {
+    companion object {
+        const val tableName = "local_lenses_coloring_cross_ref"
+    }
+}

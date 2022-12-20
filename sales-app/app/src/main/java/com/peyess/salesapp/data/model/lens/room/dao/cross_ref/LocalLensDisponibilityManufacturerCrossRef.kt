@@ -3,11 +3,18 @@ package com.peyess.salesapp.data.model.lens.room.dao.cross_ref
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 
-@Entity(primaryKeys = ["disp_id", "manufacturer_id"])
+@Entity(
+    primaryKeys = ["disp_id", "manufacturer_id"],
+    tableName = LocalLensDisponibilityManufacturerCrossRef.tableName,
+)
 data class LocalLensDisponibilityManufacturerCrossRef(
     @ColumnInfo(name = "disp_id")
-    val dispId: String = "",
+    val dispId: Long = 0L,
 
     @ColumnInfo(name = "manufacturer_id")
     val manufacturerId: String = "",
-)
+) {
+    companion object {
+        const val tableName = "local_lenses_disponibility_manufacturer_cross_ref"
+    }
+}

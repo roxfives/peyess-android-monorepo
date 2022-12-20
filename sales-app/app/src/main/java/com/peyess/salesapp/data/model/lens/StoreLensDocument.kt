@@ -6,6 +6,8 @@ import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.disponibility.DisponibilityDocument
 import com.peyess.salesapp.data.model.lens.material_type.StoreLensMaterialTypeDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensDisponibilityDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.type_category.LensTypeCategoryDocument
 import java.util.Date
@@ -39,8 +41,7 @@ data class StoreLensDocument(
 
     val bases: List<Double> = emptyList(),
 
-    val disponibilities: List<DisponibilityDocument> = emptyList(),
-    val dispManufacturers: List<String> = emptyList(),
+    val disponibilities: List<StoreLensDisponibilityDocument> = emptyList(),
     val height: Double = 0.0,
 
     val group: String = "",
@@ -54,9 +55,7 @@ data class StoreLensDocument(
 
     val type: String = "",
     val typeId: String = "",
-
-    val typeCategoriesIds: List<String> = emptyList(),
-    val typeCategories: List<LensTypeCategoryDocument> = emptyList(),
+    val typeCategories: List<StoreLensTypeCategoryDocument> = emptyList(),
 
     val category: String = "",
     val categoryId: String = "",
@@ -80,14 +79,11 @@ data class StoreLensDocument(
     val isTreatmentIncluded: Boolean = false,
     val isGeneric: Boolean = false,
 
-    val altHeightsIds: List<String> = emptyList(),
     val altHeights: List<StoreLensAltHeightDocument> = emptyList(),
 
     val defaultTreatment: String = "",
-    val treatmentsIds: List<String> = emptyList(),
     val treatments: List<StoreLensTreatmentDocument> = emptyList(),
 
-    val coloringsIds: List<String> = emptyList(),
     val colorings: List<StoreLensColoringDocument> = emptyList(),
 
     val costAddColoring: Double = 0.0,

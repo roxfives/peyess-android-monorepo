@@ -74,13 +74,13 @@ import java.time.ZonedDateTime
             onDelete = NO_ACTION,
             onUpdate = NO_ACTION,
         ),
-        ForeignKey(
-            entity = LocalLensTreatmentEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["default_treatment_id"],
-            onDelete = NO_ACTION,
-            onUpdate = NO_ACTION,
-        ),
+//        ForeignKey(
+//            entity = LocalLensTreatmentEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["default_treatment_id"],
+//            onDelete = NO_ACTION,
+//            onUpdate = NO_ACTION,
+//        ),
     ]
 )
 data class LocalLensEntity(

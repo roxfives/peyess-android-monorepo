@@ -68,9 +68,11 @@ import com.peyess.salesapp.data.model.lens.room.dao.LocalLensMaterialEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSpecialtyEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSupplierEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTechEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTypeCategoryEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTypeEntity
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensAltHeightCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensColoringCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDetailsCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibilityManufacturerCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
@@ -133,6 +135,7 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensDisponibilityEntity::class,
         LocalLensDisponibilityManufacturerEntity::class,
         LocalLensAltHeightEntity::class,
+        LocalLensTypeCategoryEntity::class,
         com.peyess.salesapp.data.model.lens.room.dao.LocalLensBaseEntity::class,
         com.peyess.salesapp.data.model.lens.room.dao.LocalLensEntity::class,
 
@@ -148,8 +151,9 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensTreatmentCrossRef::class,
         LocalLensTypeCategoryCrossRef::class,
         LocalLensMaterialTypeCrossRef::class,
+        LocalLensDetailsCrossRef::class,
     ],
-    version = 69,
+    version = 71,
 )
 @TypeConverters(
     ConverterUri::class,

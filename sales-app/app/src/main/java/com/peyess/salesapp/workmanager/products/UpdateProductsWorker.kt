@@ -41,8 +41,10 @@ import com.peyess.salesapp.data.adapter.lenses.extractSpecialty
 import com.peyess.salesapp.data.adapter.lenses.extractSupplier
 import com.peyess.salesapp.data.adapter.lenses.extractTech
 import com.peyess.salesapp.data.adapter.lenses.extractType
+import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeCategoryEntity
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
+import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
@@ -86,62 +88,8 @@ class UpdateProductsWorker @AssistedInject constructor(
             populateLensData(it)
             populateColoringData(it.id, it.colorings)
             populateTreatmentData(it.id, it.treatments)
+            populateAlternativeData(it.id, it.altHeights)
         }
-
-//        lenses.forEach {
-//            Timber.i("Got lens ${it.id}")
-//
-//            val lens = it.toLocalLensEntity()
-//            Timber.i("Adding lens with price ${lens.price}")
-//            try {
-//                productsDatabase.localLensDao().add(lens)
-//            } catch (e: Throwable) {
-//                Timber.e("Error while inserting lens ${lens.id}: \n\t $lens")
-//            }
-//
-//            try {
-//                val explanations = it.getExplanations()
-//
-//                for (exp in explanations) {
-//                    Timber.i("Adding product exp dao for lens ${it.id}: $exp")
-//                    productsDatabase.localProdExpDao().add(exp)
-//                    Timber.i("Successfully added exp dao for lens ${it.id}: $exp")
-//
-//                }
-//            } catch (e: SQLiteConstraintException) {
-//                // Just ignore this error, collisions will happen
-//                Timber.e(e, "Error while inserting explanation")
-//            } catch (e: Throwable) {
-//                Timber.e(e, "Error while inserting explanation")
-//            }
-//
-//            populateFilters(it)
-//            populateTreatments(it)
-//            populateColorings(it)
-//
-//            Timber.i("With disps ${it.disponibilities}")
-//            it.disponibilities.forEach { disp ->
-//                productsDatabase.localLensDispEntityDao().add(
-//                    LocalLensDispEntity(
-//                        lensId = it.id,
-//                        diam = disp.diam,
-//                        maxCyl = disp.maxCyl,
-//                        minCyl = disp.minCyl,
-//                        maxSph = disp.maxSph,
-//                        minSph = disp.minSph,
-//                        maxAdd = disp.maxAdd,
-//                        minAdd = disp.minAdd,
-//                        hasPrism = disp.hasPrism,
-//                        prism = disp.prism,
-//                        prismPrice = disp.prismPrice,
-//                        prismCost = disp.prismCost,
-//                        separatePrism = disp.separatePrism,
-//                        needsCheck = disp.needsCheck,
-//                        sumRule = disp.sumRule,
-//                    )
-//                )
-//            }
-//        }
     }
 
     private suspend fun populateLensData(lens: StoreLensDocument) {
@@ -164,11 +112,27 @@ class UpdateProductsWorker @AssistedInject constructor(
         localLensesRepository.addGroup(group)
         localLensesRepository.addSpecialty(specialty)
         localLensesRepository.addTech(tech)
-        localLensesRepository.addType(type)
         localLensesRepository.addCategory(category)
+
+        localLensesRepository.addLensType(type)
+        lens.typeCategories.forEach {
+            localLensesRepository.addLensTypeCategory(it)
+
+            localLensesRepository.addCategoryToType(
+                categoryId = it.id,
+                typeId = lens.typeId,
+            )
+        }
 
         localLensesRepository.addMaterialCategory(materialCategory)
         localLensesRepository.addMaterial(material)
+        lens.materialTypes.forEach {
+            localLensesRepository.addMaterialType(it)
+            localLensesRepository.addTypeToMaterial(
+                typeId = it.id,
+                materialId = lens.materialId,
+            )
+        }
 
         localLensesRepository.addLens(lens)
     }
@@ -182,6 +146,11 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addColoring(
                 coloring = it.extractColoring(),
             )
+
+            localLensesRepository.addColoringToLens(
+                lensId = lensId,
+                coloringId = it.id,
+            )
         }
     }
 
@@ -193,6 +162,27 @@ class UpdateProductsWorker @AssistedInject constructor(
 
             localLensesRepository.addTreatment(
                 treatment = it.extractTreatment(),
+            )
+
+            localLensesRepository.addTreatmentToLens(
+                lensId = lensId,
+                treatmentId = it.id,
+            )
+        }
+    }
+
+    private suspend fun populateAlternativeData(
+        lensId: String, alternatives: List<StoreLensAltHeightDocument>
+    ) {
+        Timber.i("populateAlternativeData: Adding ${alternatives.size} for lens $lensId...")
+
+        alternatives.forEach {
+            Timber.i("populateAlternativeData: Adding alternative ${it.id}")
+
+            localLensesRepository.addAlternativeHeight(it)
+            localLensesRepository.addAlternativeHeightToLens(
+                lensId = lensId,
+                alternativeHeightId = it.id,
             )
         }
     }

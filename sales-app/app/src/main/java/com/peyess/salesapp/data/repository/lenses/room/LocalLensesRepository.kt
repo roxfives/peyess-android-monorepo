@@ -1,8 +1,10 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
-import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
+import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
+import com.peyess.salesapp.data.model.lens.material_type.StoreLensMaterialTypeDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityManufacturerEntity
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -13,6 +15,8 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSpecialtyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensDisponibilityDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 
 interface LocalLensesRepository {
@@ -28,17 +32,32 @@ interface LocalLensesRepository {
 
     suspend fun addTech(tech: LocalLensTechDocument)
 
-    suspend fun addType(type: LocalLensTypeDocument)
+    suspend fun addLensType(type: LocalLensTypeDocument)
+
+    suspend fun addLensTypeCategory(category: StoreLensTypeCategoryDocument)
+
+    suspend fun addCategoryToType(categoryId: String, typeId: String)
 
     suspend fun addCategory(category: LocalLensCategoryDocument)
 
     suspend fun addMaterial(material: LocalLensMaterialDocument)
 
+    suspend fun addMaterialType(material: StoreLensMaterialTypeDocument)
+
+    suspend fun addTypeToMaterial(typeId: String, materialId: String)
+
     suspend fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument)
 
     suspend fun addColoring(coloring: LocalLensColoringDocument)
 
+    suspend fun addColoringToLens(coloringId: String, lensId: String)
+
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
+    suspend fun addTreatmentToLens(treatmentId: String, lensId: String)
+
+    suspend fun addAlternativeHeight(alternativeHeight: StoreLensAltHeightDocument)
+
     suspend fun addLens(lens: StoreLensDocument)
+    suspend fun addAlternativeHeightToLens(alternativeHeightId: String, lensId: String)
 }

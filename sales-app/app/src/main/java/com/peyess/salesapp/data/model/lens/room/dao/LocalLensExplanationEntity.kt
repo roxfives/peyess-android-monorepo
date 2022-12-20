@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.PrimaryKey
-import java.time.ZonedDateTime
 
 @Entity(
     tableName = LocalLensExplanationEntity.tableName,
@@ -25,7 +24,7 @@ data class LocalLensExplanationEntity(
     val id: Long = 0L,
 
     @ColumnInfo(name = "lens_id", index = true)
-    val lens_id: String = "",
+    val lensId: String = "",
 
     @ColumnInfo(name = "explanation")
     val explanation: String = "",

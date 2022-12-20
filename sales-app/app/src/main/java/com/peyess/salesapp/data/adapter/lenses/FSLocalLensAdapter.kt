@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.lenses.material_type.toStoreLensMaterial
 import com.peyess.salesapp.data.adapter.lenses.treatments.toStoreLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.model.lens.type_category.LensTypeCategoryDocument
 
 fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
@@ -41,7 +42,6 @@ fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
         bases = bases,
 
         disponibilities = disponibilities.map { it.toDisponibilityDocument() },
-        dispManufacturers = dispManufacturers,
         height = height,
 
         group = group,
@@ -56,9 +56,8 @@ fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
         type = type,
         typeId = typeId,
 
-        typeCategoriesIds = typeCategoriesIds,
         typeCategories = typeCategories.map {
-            LensTypeCategoryDocument(id = it.key, name = it.value)
+            StoreLensTypeCategoryDocument(id = it.key, name = it.value)
         },
 
         category = category,
@@ -83,14 +82,11 @@ fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
         isTreatmentIncluded = isTreatmentIncluded,
         isGeneric = isGeneric,
 
-        altHeightsIds = altHeightsIds,
         altHeights = altHeights.map { it.value.toStoreLensAltHeightDocument(it.key) },
 
         defaultTreatment = defaultTreatment,
-        treatmentsIds = treatmentsIds,
         treatments = treatments.map { it.value.toStoreLensTreatmentDocument(it.key) },
 
-        coloringsIds = coloringsIds,
         colorings = colorings.map { it.value.toStoreColoringAdapter(it.key) },
 
         costAddColoring = costAddColoring,

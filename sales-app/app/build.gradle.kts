@@ -14,6 +14,10 @@ hilt {
     enableAggregatingTask = true
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
 
     val composeVersion = rootProject.extra["compose_version"]

@@ -5,8 +5,6 @@ import com.peyess.salesapp.data.model.lens.disponibility.FSDisponibility
 
 fun FSDisponibility.toDisponibilityDocument(): DisponibilityDocument {
     return DisponibilityDocument(
-        name = name,
-
         diam = diam,
         maxCyl = maxCyl,
         minCyl = minCyl,
@@ -27,14 +25,5 @@ fun FSDisponibility.toDisponibilityDocument(): DisponibilityDocument {
         manufacturers = manufacturers.mapValues {
             it.value.toDispManufacturerDocument()
         },
-
-        doc_version = doc_version,
-        is_editable = is_editable,
-        created = created,
-        createdBy = createdBy,
-        createAllowedBy = createAllowedBy,
-        updated = updated,
-        updatedBy = updatedBy,
-        updateAllowedBy = updateAllowedBy,
     )
 }

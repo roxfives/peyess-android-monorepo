@@ -37,7 +37,7 @@ data class LocalLensMaterialEntity(
     @ColumnInfo(name = "observation")
     val observation: String = "",
 
-    @ColumnInfo(name = "category_id")
+    @ColumnInfo(name = "category_id", index = true)
     val categoryId: String = "",
 
     @ColumnInfo(name = "category")

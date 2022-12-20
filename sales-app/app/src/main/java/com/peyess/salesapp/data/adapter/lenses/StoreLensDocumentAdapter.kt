@@ -1,8 +1,7 @@
 package com.peyess.salesapp.data.adapter.lenses
 
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
-import com.peyess.salesapp.data.model.lens.room.dao.LocalLensFamilyEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensEntity
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument

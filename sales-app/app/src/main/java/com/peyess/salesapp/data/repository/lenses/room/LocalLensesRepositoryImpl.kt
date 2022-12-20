@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensCategoryEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensDescriptionEntity
@@ -12,19 +11,10 @@ import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensSpecialtyEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensSupplierEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTechEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeEntity
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensDescriptionDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensFamilyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensGroupDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
-import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
+import com.peyess.salesapp.data.adapter.lenses.room.treatment.toLocalLensTreatmentEntity
+import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
+import com.peyess.salesapp.data.dao.lenses.room.LocalLensDao
+import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
@@ -37,97 +27,107 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSpecialtyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
-import kotlinx.coroutines.delay
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 import timber.log.Timber
 import javax.inject.Inject
 
 class LocalLensesRepositoryImpl @Inject constructor(
-    private val localLensFamilyDao: LocalLensFamilyDao,
-    private val localLensDescriptionDao: LocalLensDescriptionDao,
-    private val localLensSupplierDao: LocalLensSupplierDao,
-    private val localLensGroupDao: LocalLensGroupDao,
-    private val localLensSpecialtyDao: LocalLensSpecialtyDao,
-    private val localLensTechDao: LocalLensTechDao,
-    private val localLensTypeDao: LocalLensTypeDao,
-    private val localLensCategoryDao: LocalLensCategoryDao,
-    private val localLensMaterialDao: LocalLensMaterialDao,
-    private val localLensMaterialCategoryDao: LocalLensMaterialCategoryDao,
-    private val localLensColoringDao: LocalLensColoringDao,
-    private val localLensColoringExplanationDao: LocalLensColoringExplanationDao,
+    private val localLensDao: LocalLensDao,
 ): LocalLensesRepository {
-    override fun addFamily(family: LocalLensFamilyDocument) {
+    override suspend fun addFamily(family: LocalLensFamilyDocument) {
         val entity = family.toLocalLensFamilyEntity()
 
-        localLensFamilyDao.add(entity)
+        localLensDao.addFamily(entity)
     }
 
-    override fun addDescription(description: LocalLensDescriptionDocument) {
+    override suspend fun addDescription(description: LocalLensDescriptionDocument) {
         val entity = description.toLocalLensDescriptionEntity()
 
-        localLensDescriptionDao.add(entity)
+        localLensDao.addDescription(entity)
     }
 
-    override fun addSupplier(supplier: LocalLensSupplierDocument) {
+    override suspend fun addSupplier(supplier: LocalLensSupplierDocument) {
         val entity = supplier.toLocalLensSupplierEntity()
 
-        localLensSupplierDao.add(entity)
+        localLensDao.addSupplier(entity)
     }
 
-    override fun addGroup(group: LocalLensGroupDocument) {
+    override suspend fun addGroup(group: LocalLensGroupDocument) {
         val entity = group.toLocalLensGroupEntity()
 
-        localLensGroupDao.add(entity)
+        localLensDao.addGroup(entity)
     }
 
-    override fun addSpecialty(specialty: LocalLensSpecialtyDocument) {
+    override suspend fun addSpecialty(specialty: LocalLensSpecialtyDocument) {
         val entity = specialty.toLocalLensSpecialtyEntity()
 
-        localLensSpecialtyDao.add(entity)
+        localLensDao.addSpecialty(entity)
     }
 
-    override fun addTech(tech: LocalLensTechDocument) {
+    override suspend fun addTech(tech: LocalLensTechDocument) {
         val entity = tech.toLocalLensTechEntity()
 
-        localLensTechDao.add(entity)
+        localLensDao.addTech(entity)
     }
 
-    override fun addType(type: LocalLensTypeDocument) {
+    override suspend fun addType(type: LocalLensTypeDocument) {
         val entity = type.toLocalLensTypeEntity()
 
-        localLensTypeDao.add(entity)
+        localLensDao.addType(entity)
     }
 
-    override fun addCategory(category: LocalLensCategoryDocument) {
+    override suspend fun addCategory(category: LocalLensCategoryDocument) {
         val entity = category.toLocalLensCategoryEntity()
 
-        localLensCategoryDao.add(entity)
+        localLensDao.addLensCategory(entity)
     }
 
-    override fun addMaterial(material: LocalLensMaterialDocument) {
+    override suspend fun addMaterial(material: LocalLensMaterialDocument) {
         val entity = material.toLocalLensMaterialEntity()
 
-        localLensMaterialDao.add(entity)
+        localLensDao.addMaterial(entity)
     }
 
-    override fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument) {
+    override suspend fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument) {
         val entity = materialCategory.toLocalLensMaterialCategoryEntity()
 
-        localLensMaterialCategoryDao.add(entity)
+        localLensDao.addMaterialCategory(entity)
     }
 
-    override suspend fun addColoringForLens(lensId: String, coloring: LocalLensColoringDocument) {
+    override suspend fun addColoring(coloring: LocalLensColoringDocument) {
         val coloringExplanations = coloring.explanations
         val coloringEntity = coloring.toLocalLensColoringEntity()
 
-        localLensColoringDao.add(coloringEntity)
+        localLensDao.addLensColoring(coloringEntity)
         coloringExplanations.forEach {
             Timber.i("Adding explanation for coloring ${coloring.id}")
-            localLensColoringExplanationDao.add(
+            localLensDao.addLensColoringExp(
                 LocalLensColoringExplanationEntity(
                     coloringId = coloring.id,
                     explanation = it,
                 )
             )
         }
+    }
+
+    override suspend fun addTreatment(treatment: LocalLensTreatmentDocument) {
+        val treatmentExplanations = treatment.explanations
+        val treatmentEntity = treatment.toLocalLensTreatmentEntity()
+
+        localLensDao.addLensTreatment(treatmentEntity)
+        treatmentExplanations.forEach {
+            Timber.i("Adding explanation for treatment ${treatment.id}")
+            localLensDao.addLensTreatmentExp(
+                LocalLensTreatmentExplanationEntity(
+                    treatmentId = treatment.id,
+                    explanation = it,
+                )
+            )
+        }
+    }
+
+    override suspend fun addLens(lens: StoreLensDocument) {
+        localLensDao.addLens(lens.toLocalLensEntity())
     }
 }

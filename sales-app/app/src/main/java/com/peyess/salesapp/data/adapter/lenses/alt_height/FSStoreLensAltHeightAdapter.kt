@@ -10,7 +10,7 @@ fun FSStoreLensAltHeight.toStoreLensAltHeightDocument(
         id = id,
 
         name = name,
-        name_display = name_display,
+        nameDisplay = name_display,
         value = value,
         observation = observation,
 

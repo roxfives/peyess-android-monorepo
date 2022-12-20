@@ -6,7 +6,7 @@ data class StoreLensAltHeightDocument(
 
     val name: String = "",
 
-    val name_display: String = "",
+    val nameDisplay: String = "",
 
     val value: Double = 0.0,
 

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
+import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
@@ -12,27 +13,32 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSpecialtyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 
 interface LocalLensesRepository {
-    fun addFamily(family: LocalLensFamilyDocument)
+    suspend fun addFamily(family: LocalLensFamilyDocument)
 
-    fun addDescription(description: LocalLensDescriptionDocument)
+    suspend fun addDescription(description: LocalLensDescriptionDocument)
 
-    fun addSupplier(supplier: LocalLensSupplierDocument)
+    suspend fun addSupplier(supplier: LocalLensSupplierDocument)
 
-    fun addGroup(group: LocalLensGroupDocument)
+    suspend fun addGroup(group: LocalLensGroupDocument)
 
-    fun addSpecialty(specialty: LocalLensSpecialtyDocument)
+    suspend fun addSpecialty(specialty: LocalLensSpecialtyDocument)
 
-    fun addTech(tech: LocalLensTechDocument)
+    suspend fun addTech(tech: LocalLensTechDocument)
 
-    fun addType(type: LocalLensTypeDocument)
+    suspend fun addType(type: LocalLensTypeDocument)
 
-    fun addCategory(category: LocalLensCategoryDocument)
+    suspend fun addCategory(category: LocalLensCategoryDocument)
 
-    fun addMaterial(material: LocalLensMaterialDocument)
+    suspend fun addMaterial(material: LocalLensMaterialDocument)
 
-    fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument)
+    suspend fun addMaterialCategory(materialCategory: LocalLensMaterialCategoryDocument)
 
-    suspend fun addColoringForLens(lensId: String, coloring: LocalLensColoringDocument)
+    suspend fun addColoring(coloring: LocalLensColoringDocument)
+
+    suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
+
+    suspend fun addLens(lens: StoreLensDocument)
 }

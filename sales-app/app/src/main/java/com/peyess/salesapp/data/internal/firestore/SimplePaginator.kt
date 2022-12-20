@@ -26,7 +26,10 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
     private var latestPage: DocumentSnapshot? = null
 
     private fun toDocuments(snaps: QuerySnapshot): Either<Unexpected, List<F>> = Either.catch {
-        snaps.documents.mapNotNull { it.toObject(type.javaObjectType) }
+        val snapshots = snaps.documents.mapNotNull { it.toObject(type.javaObjectType) }
+
+        Timber.i("The snaps are $snapshots")
+        snapshots
     }.mapLeft {
         Unexpected("Failed to parse firestore data into $type object", it)
     }
@@ -98,6 +101,8 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
         }
 
         updatePagingStatus(querySnapshot)
-        toDocuments(querySnapshot).bind()
+        val a = toDocuments(querySnapshot).bind()
+
+        a
     }
 }

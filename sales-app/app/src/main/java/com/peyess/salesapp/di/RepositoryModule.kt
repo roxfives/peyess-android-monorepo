@@ -36,18 +36,6 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensDescriptionDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensFamilyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensGroupDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
@@ -330,32 +318,10 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideLocalLensesRepository(
-        localLensFamilyDao: LocalLensFamilyDao,
-        localLensDescriptionDao: LocalLensDescriptionDao,
-        localLensSupplierDao: LocalLensSupplierDao,
-        localLensGroupDao: LocalLensGroupDao,
-        localLensSpecialtyDao: LocalLensSpecialtyDao,
-        localLensTechDao: LocalLensTechDao,
-        localLensTypeDao: LocalLensTypeDao,
-        localLensCategoryDao: LocalLensCategoryDao,
-        localLensMaterialDao: LocalLensMaterialDao,
-        localLensMaterialCategoryDao: LocalLensMaterialCategoryDao,
-        localLensColoringDao: LocalLensColoringDao,
-        localLensColoringExplanationDao: LocalLensColoringExplanationDao,
+        localLensDao: com.peyess.salesapp.data.dao.lenses.room.LocalLensDao,
     ): LocalLensesRepository {
         return LocalLensesRepositoryImpl(
-            localLensFamilyDao = localLensFamilyDao,
-            localLensDescriptionDao = localLensDescriptionDao,
-            localLensSupplierDao = localLensSupplierDao,
-            localLensGroupDao = localLensGroupDao,
-            localLensSpecialtyDao = localLensSpecialtyDao,
-            localLensTechDao = localLensTechDao,
-            localLensTypeDao = localLensTypeDao,
-            localLensCategoryDao = localLensCategoryDao,
-            localLensMaterialDao = localLensMaterialDao,
-            localLensMaterialCategoryDao = localLensMaterialCategoryDao,
-            localLensColoringDao = localLensColoringDao,
-            localLensColoringExplanationDao = localLensColoringExplanationDao,
+            localLensDao = localLensDao,
         )
     }
 }

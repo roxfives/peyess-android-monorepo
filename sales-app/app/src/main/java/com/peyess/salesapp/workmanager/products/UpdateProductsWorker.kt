@@ -9,6 +9,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import arrow.core.getOrElse
+import arrow.core.left
 import arrow.fx.coroutines.Schedule
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
@@ -29,6 +30,7 @@ import com.peyess.salesapp.dao.products.room.join_lens_treatment.JoinLensTreatme
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.data.adapter.lenses.colorings.extractColoring
+import com.peyess.salesapp.data.adapter.lenses.colorings.extractTreatment
 import com.peyess.salesapp.data.adapter.lenses.extractCategory
 import com.peyess.salesapp.data.adapter.lenses.extractDescription
 import com.peyess.salesapp.data.adapter.lenses.extractFamily
@@ -42,6 +44,7 @@ import com.peyess.salesapp.data.adapter.lenses.extractType
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
+import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
@@ -82,6 +85,7 @@ class UpdateProductsWorker @AssistedInject constructor(
         docs.forEach {
             populateLensData(it)
             populateColoringData(it.id, it.colorings)
+            populateTreatmentData(it.id, it.treatments)
         }
 
 //        lenses.forEach {
@@ -140,7 +144,7 @@ class UpdateProductsWorker @AssistedInject constructor(
 //        }
     }
 
-    private fun populateLensData(lens: StoreLensDocument) {
+    private suspend fun populateLensData(lens: StoreLensDocument) {
         Timber.i("populateLens: Adding lens ${lens.id}...")
 
         val family = lens.extractFamily()
@@ -165,6 +169,8 @@ class UpdateProductsWorker @AssistedInject constructor(
 
         localLensesRepository.addMaterialCategory(materialCategory)
         localLensesRepository.addMaterial(material)
+
+        localLensesRepository.addLens(lens)
     }
 
     private suspend fun populateColoringData(lensId: String, colorings: List<StoreLensColoringDocument>) {
@@ -173,9 +179,20 @@ class UpdateProductsWorker @AssistedInject constructor(
         colorings.forEach {
             Timber.i("populateColoringData: Adding coloring ${it.id}")
 
-            localLensesRepository.addColoringForLens(
-                lensId = lensId,
+            localLensesRepository.addColoring(
                 coloring = it.extractColoring(),
+            )
+        }
+    }
+
+    private suspend fun populateTreatmentData(lensId: String, treatments: List<StoreLensTreatmentDocument>) {
+        Timber.i("populateTreatmentData: Adding ${treatments.size} for lens $lensId...")
+
+        treatments.forEach {
+            Timber.i("populateTreatmentData: Adding treatment ${it.id}")
+
+            localLensesRepository.addTreatment(
+                treatment = it.extractTreatment(),
             )
         }
     }
@@ -409,6 +426,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
+            Timber.e("Firestore instance is null")
             productsTableStateRepository
                 .update(
                     ProductsTableStatus(
@@ -467,6 +485,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             val response = downloadAndPopulateProducts(query)
 
             if (response.isLeft()) {
+                Timber.w("Failed to update products table: ${response.left()}")
                 return@runBlocking Result.retry()
             } else {
                 return@runBlocking Result.success()

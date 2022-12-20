@@ -18,6 +18,7 @@ import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
 import com.peyess.salesapp.data.repository.lenses.internal.StoreLensesQueryFields
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import timber.log.Timber
 import javax.inject.Inject
 
 class StoreLensesRepositoryImpl @Inject constructor(
@@ -45,10 +46,11 @@ class StoreLensesRepositoryImpl @Inject constructor(
                 Unexpected("Failed to initialize paginator", null)
             }
 
-            localPaginator.page()
+            val lenses = localPaginator.page()
                 .mapLeft { FetchPageError(it.description, it.error) }
                 .bind()
-                .map { it.toStoreLensDocument() }
+
+            lenses.map { it.toStoreLensDocument() }
         }
 
     override suspend fun getById(id: String): Either<ReadError, StoreLensDocument> =

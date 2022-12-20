@@ -51,24 +51,16 @@ import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDa
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensDescriptionDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensFamilyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensGroupDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialCategoryDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensMaterialDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSpecialtyDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensSupplierDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTechDao
-import com.peyess.salesapp.data.dao.lenses.room.LocalLensTypeDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringDao
-import com.peyess.salesapp.data.dao.lenses.room.coloring.LocalLensColoringExplanationDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductTableStateEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensCategoryEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDescriptionEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityManufacturerEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensFamilyEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensGroupEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensMaterialCategoryEntity
@@ -77,6 +69,14 @@ import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSpecialtyEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensSupplierEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTechEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensTypeEntity
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensAltHeightCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensColoringCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibilityManufacturerCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 import com.peyess.salesapp.database.room.converters.ConverterLocalDate
 import com.peyess.salesapp.database.room.converters.ConverterUri
 import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
@@ -127,12 +127,29 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensTypeEntity::class,
         LocalLensCategoryEntity::class,
         LocalLensMaterialEntity::class,
+        com.peyess.salesapp.data.model.lens.room.dao.LocalLensMaterialTypeEntity::class,
         LocalLensMaterialCategoryEntity::class,
+        LocalLensExplanationEntity::class,
+        LocalLensDisponibilityEntity::class,
+        LocalLensDisponibilityManufacturerEntity::class,
+        LocalLensAltHeightEntity::class,
+        com.peyess.salesapp.data.model.lens.room.dao.LocalLensBaseEntity::class,
+        com.peyess.salesapp.data.model.lens.room.dao.LocalLensEntity::class,
 
         LocalLensColoringEntity::class,
         LocalLensColoringExplanationEntity::class,
+
+        LocalLensTreatmentEntity::class,
+        LocalLensTreatmentExplanationEntity::class,
+
+        LocalLensAltHeightCrossRef::class,
+        LocalLensDisponibilityManufacturerCrossRef::class,
+        LocalLensColoringCrossRef::class,
+        LocalLensTreatmentCrossRef::class,
+        LocalLensTypeCategoryCrossRef::class,
+        LocalLensMaterialTypeCrossRef::class,
     ],
-    version = 67,
+    version = 69,
 )
 @TypeConverters(
     ConverterUri::class,
@@ -174,17 +191,5 @@ abstract class ProductsDatabase: RoomDatabase() {
 
     abstract fun productsTableStateDao(): ProductsTableStateDao
 
-    abstract fun localLensFamilyDao(): LocalLensFamilyDao
-    abstract fun localLensDescriptionDao(): LocalLensDescriptionDao
-    abstract fun localLensSupplierDao(): LocalLensSupplierDao
-    abstract fun localLensGroupDao(): LocalLensGroupDao
-    abstract fun localLensSpecialtyDao(): LocalLensSpecialtyDao
-    abstract fun localLensTechDao(): LocalLensTechDao
-    abstract fun localLensTypeDao(): LocalLensTypeDao
-    abstract fun localLensCategoryDao(): LocalLensCategoryDao
-    abstract fun localLensMaterialDao(): LocalLensMaterialDao
-    abstract fun localLensMaterialCategoryDao(): LocalLensMaterialCategoryDao
-
-    abstract fun localLensColoringDao(): LocalLensColoringDao
-    abstract fun localLensColoringExplanationDao(): LocalLensColoringExplanationDao
+    abstract fun lensDao(): com.peyess.salesapp.data.dao.lenses.room.LocalLensDao
 }

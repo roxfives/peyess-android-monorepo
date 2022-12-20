@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import java.time.ZonedDateTime
 
 @Entity(
@@ -71,6 +71,13 @@ import java.time.ZonedDateTime
             entity = LocalLensMaterialEntity::class,
             parentColumns = ["id"],
             childColumns = ["material_id"],
+            onDelete = NO_ACTION,
+            onUpdate = NO_ACTION,
+        ),
+        ForeignKey(
+            entity = LocalLensTreatmentEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["default_treatment_id"],
             onDelete = NO_ACTION,
             onUpdate = NO_ACTION,
         ),
@@ -143,53 +150,30 @@ data class LocalLensEntity(
 
     // -------------------
 
-    @ColumnInfo(name = "brand_id")
+    @ColumnInfo(name = "brand_id", index = true)
     val brandId: String = "",
-    @ColumnInfo(name = "design_id")
+    @ColumnInfo(name = "design_id", index = true)
     val designId: String = "",
-    @ColumnInfo(name = "supplier_id")
+    @ColumnInfo(name = "supplier_id", index = true)
     val supplierId: String = "",
-    @ColumnInfo(name = "group_id")
+    @ColumnInfo(name = "group_id", index = true)
     val groupId: String = "",
-    @ColumnInfo(name = "specialty_id")
+    @ColumnInfo(name = "specialty_id", index = true)
     val specialtyId: String = "",
-    @ColumnInfo(name = "tech_id")
+    @ColumnInfo(name = "tech_id", index = true)
     val techId: String = "",
-    @ColumnInfo(name = "type_id")
+    @ColumnInfo(name = "type_id", index = true)
     val typeId: String = "",
-    @ColumnInfo(name = "category_id")
+    @ColumnInfo(name = "category_id", index = true)
     val categoryId: String = "",
-    @ColumnInfo(name = "material_id")
+    @ColumnInfo(name = "material_id", index = true)
     val materialId: String = "",
 
-    // ----
+    @ColumnInfo(name = "default_treatment_id", index = true)
+    val defaultTreatmentId: String = "",
 
-//    @ColumnInfo(name = "explanations")
-//    val explanations: List<String> = emptyList(),
-
-    // -----------------------
-//    val materialTypes: List<StoreLensMaterialTypeDocument> = emptyList(),
-//    val materialTypesIds: List<String> = emptyList(),
-//
-//    val altHeightsIds: List<String> = emptyList(),
-//    val altHeights: List<StoreLensAltHeightDocument> = emptyList(),
-//
-//    val coloringsIds: List<String> = emptyList(),
-//    val colorings: List<StoreLensColoringDocument> = emptyList(),
-//
-//    val defaultTreatment: String = "",
-//    val treatmentsIds: List<String> = emptyList(),
-//    val treatments: List<StoreLensTreatmentDocument> = emptyList(),
-//
-//    val typeCategoriesIds: List<String> = emptyList(),
-//    val typeCategories: List<LensTypeCategoryDocument> = emptyList(),
-//
-//    val bases: List<Double> = emptyList(),
-//
-//    val disponibilities: List<DisponibilityDocument> = emptyList(),
-//    val dispManufacturers: List<String> = emptyList(),
-
-    ) {
+    // add altHeights, colorings and treatments as n-m
+) {
     companion object {
         const val tableName = "local_lenses"
     }

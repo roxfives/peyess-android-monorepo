@@ -1,10 +1,6 @@
 package com.peyess.salesapp.data.model.lens.disponibility
 
-import com.google.firebase.Timestamp
-
 data class DisponibilityDocument(
-
-    val name: String = "",
 
     val diam: Double = 0.0,
 
@@ -35,13 +31,4 @@ data class DisponibilityDocument(
     val sumRule: Boolean = false,
 
     val manufacturers: Map<String, DispManufacturerDocument> = emptyMap(),
-
-    val doc_version: Int = 0,
-    val is_editable: Boolean = false,
-    val created: Timestamp = Timestamp.now(),
-    val createdBy: String = "",
-    val createAllowedBy: String = "",
-    val updated: Timestamp = Timestamp.now(),
-    val updatedBy: String = "",
-    val updateAllowedBy: String = "",
 )

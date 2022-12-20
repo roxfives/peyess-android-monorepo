@@ -41,7 +41,6 @@ import com.peyess.salesapp.data.adapter.lenses.extractSpecialty
 import com.peyess.salesapp.data.adapter.lenses.extractSupplier
 import com.peyess.salesapp.data.adapter.lenses.extractTech
 import com.peyess.salesapp.data.adapter.lenses.extractType
-import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeCategoryEntity
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
@@ -65,7 +64,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
-
 const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 
 @HiltWorker
@@ -86,9 +84,15 @@ class UpdateProductsWorker @AssistedInject constructor(
 
         docs.forEach {
             populateLensData(it)
+
             populateColoringData(it.id, it.colorings)
+            addColoringsToLens(it.id, it.colorings)
+
             populateTreatmentData(it.id, it.treatments)
+            addTreatmentsToLens(it.id, it.treatments)
+
             populateAlternativeData(it.id, it.altHeights)
+            addAlternativeHeightsToLens(it.id, it.altHeights)
         }
     }
 
@@ -146,6 +150,14 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addColoring(
                 coloring = it.extractColoring(),
             )
+        }
+    }
+
+    private suspend fun addColoringsToLens(lensId: String, colorings: List<StoreLensColoringDocument>) {
+        Timber.i("addColoringsToLens: Adding ${colorings.size} for lens $lensId...")
+
+        colorings.forEach {
+            Timber.i("addColoringsToLens: Adding coloring ${it.id}")
 
             localLensesRepository.addColoringToLens(
                 lensId = lensId,
@@ -171,6 +183,22 @@ class UpdateProductsWorker @AssistedInject constructor(
         }
     }
 
+    private suspend fun addTreatmentsToLens(
+        lensId: String,
+        treatments: List<StoreLensTreatmentDocument>,
+    ) {
+        Timber.i("addTreatmentsToLens: Adding ${treatments.size} for lens $lensId...")
+
+        treatments.forEach {
+            Timber.i("addTreatmentsToLens: Adding treatment ${it.id}")
+
+            localLensesRepository.addTreatmentToLens(
+                lensId = lensId,
+                treatmentId = it.id,
+            )
+        }
+    }
+
     private suspend fun populateAlternativeData(
         lensId: String, alternatives: List<StoreLensAltHeightDocument>
     ) {
@@ -180,6 +208,18 @@ class UpdateProductsWorker @AssistedInject constructor(
             Timber.i("populateAlternativeData: Adding alternative ${it.id}")
 
             localLensesRepository.addAlternativeHeight(it)
+        }
+    }
+
+    private suspend fun addAlternativeHeightsToLens(
+        lensId: String,
+        alternativeHeights: List<StoreLensAltHeightDocument>,
+    ) {
+        Timber.i("addAlternativesToLens: Adding ${alternativeHeights.size} for lens $lensId...")
+
+        alternativeHeights.forEach {
+            Timber.i("addAlternativesToLens: Adding alternative ${it.id}")
+
             localLensesRepository.addAlternativeHeightToLens(
                 lensId = lensId,
                 alternativeHeightId = it.id,

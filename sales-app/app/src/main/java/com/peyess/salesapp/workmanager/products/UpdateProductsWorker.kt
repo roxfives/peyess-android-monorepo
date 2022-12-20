@@ -295,10 +295,9 @@ class UpdateProductsWorker @AssistedInject constructor(
                     || productsTableStatus.hasUpdateFailed
             val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
 
-            if (false) {
+            if (avoidUpdate) {
                 return@runBlocking Result.success()
             }
-
 
             Timber.i("doWork: Cleaning up first...")
             clearAllProducts()

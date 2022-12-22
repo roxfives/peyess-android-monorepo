@@ -1,10 +1,11 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
+import arrow.core.Either
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.material_type.StoreLensMaterialTypeDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityManufacturerEntity
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -15,9 +16,12 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSpecialtyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
-import com.peyess.salesapp.data.model.lens.room.repo.StoreLensDisponibilityDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+
+
+typealias LensesResponse = Either<LocalLensRepositoryException, List<LocalLensWithDetails>>
 
 interface LocalLensesRepository {
     suspend fun addFamily(family: LocalLensFamilyDocument)
@@ -58,6 +62,9 @@ interface LocalLensesRepository {
 
     suspend fun addAlternativeHeight(alternativeHeight: StoreLensAltHeightDocument)
 
-    suspend fun addLens(lens: StoreLensDocument)
     suspend fun addAlternativeHeightToLens(alternativeHeightId: String, lensId: String)
+
+    suspend fun addLens(lens: StoreLensDocument)
+
+    suspend fun getUnrestrictedLensesWithDetailsOnly(query: PeyessQuery = PeyessQuery()): LensesResponse
 }

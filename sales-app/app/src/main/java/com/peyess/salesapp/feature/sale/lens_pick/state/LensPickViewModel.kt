@@ -8,6 +8,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -31,6 +32,7 @@ class LensPickViewModel @AssistedInject constructor(
     private val saleRepository: SaleRepository,
     private val lensComparisonDao: LensComparisonDao,
     private val productRepository: ProductRepository,
+    private val lensesRepository: LocalLensesRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
     private var lenses: Flow<PagingData<LensSuggestionModel>> = emptyFlow()
@@ -136,6 +138,16 @@ class LensPickViewModel @AssistedInject constructor(
 
         withState {
             lenses = productRepository.filteredLenses(lensFilter = it.filter)
+        }
+
+        loadLensList()
+    }
+
+    private fun loadLensList() {
+        suspend {
+            lensesRepository.getUnrestrictedLensesWithDetailsOnly()
+        }.execute(Dispatchers.IO) {
+            copy()
         }
     }
 

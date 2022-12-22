@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
+import arrow.core.Either
 import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensAltHeight
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensCategoryEntity
@@ -46,6 +47,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensDisponibilityDocum
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
+import com.peyess.salesapp.data.utils.query.PeyessQuery
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -264,4 +266,17 @@ class LocalLensesRepositoryImpl @Inject constructor(
             )
         )
     }
+
+    override suspend fun getUnrestrictedLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
+        Either.catch {
+            val lenses = localLensDao.getAllLenses()
+
+            lenses
+        }.mapLeft { error: Throwable ->
+            Unexpected(
+                description = error.message ?: "Unknown error",
+                error = error,
+            )
+        }
 }
+

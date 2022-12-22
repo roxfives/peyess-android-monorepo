@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(
-    primaryKeys = ["lens_type_id", "category_id"],
     tableName = LocalLensTypeCategoryCrossRef.tableName,
+    primaryKeys = ["lens_type_id", "category_id"],
 )
 data class LocalLensTypeCategoryCrossRef(
     @ColumnInfo(name = "lens_type_id")

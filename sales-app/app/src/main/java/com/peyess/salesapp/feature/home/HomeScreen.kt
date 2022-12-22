@@ -24,9 +24,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EMobiledata
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.ProductionQuantityLimits
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -108,6 +110,7 @@ fun HomeScreen(
     onStartSale: () -> Unit = {},
     onAddClient: () -> Unit = {},
     onStartVisualAcuity: () -> Unit = {},
+    onOpenProductsTable: () -> Unit = {},
 ) {
     val firstStepViewModel: FirstTimeViewModel = mavericksActivityViewModel()
     val secondStepViewModel: SecondStepViewModel = mavericksActivityViewModel()
@@ -177,6 +180,7 @@ fun HomeScreen(
         },
         onAddClient = onAddClient,
         onStartVisualAcuity = onStartVisualAcuity,
+        onOpenProductsTable = onOpenProductsTable,
     )
 }
 
@@ -199,6 +203,7 @@ private fun HomeScreenImpl(
     onStartSale: () -> Unit = {},
     onAddClient: () -> Unit = {},
     onStartVisualAcuity: () -> Unit = {},
+    onOpenProductsTable: () -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -227,6 +232,7 @@ private fun HomeScreenImpl(
             onStartSale = onStartSale,
             onAddClient = onAddClient,
             onStartVisualAcuity = onStartVisualAcuity,
+            onOpenProductsTable = onOpenProductsTable,
         )
 
         Spacer(modifier = Modifier.height(sectionSpacerHeight))
@@ -383,6 +389,7 @@ private fun ButtonsPanel(
     onStartSale: () -> Unit = {},
     onAddClient: () -> Unit = {},
     onStartVisualAcuity: () -> Unit = {},
+    onOpenProductsTable: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -488,6 +495,51 @@ private fun ButtonsPanel(
                 },
 
                 onClick = onStartVisualAcuity,
+            )
+
+            Spacer(modifier = Modifier.width(buttonPanelSpacerWidth))
+
+            HomeScreenButton(
+                modifier = Modifier.minimumWidthModifier(
+                    state = minimumWidthState,
+                    density = density,
+                ),
+                title = if (hasProductsTableUpdateFailed) {
+                    stringResource(id = R.string.home_btn_products_title_failed)
+                } else if (isUpdatingProductsTable) {
+                    stringResource(id = R.string.home_btn_products_title_updating)
+                } else {
+                    stringResource(id = R.string.home_btn_products_title)
+                },
+
+                subtitle = if (hasProductsTableUpdateFailed) {
+                    stringResource(id = R.string.home_btn_products_subtitle_failed)
+                } else if (isUpdatingProductsTable) {
+                    stringResource(id = R.string.home_btn_products_subtitle_updating)
+                } else {
+                    stringResource(id = R.string.home_btn_products_subtitle)
+                },
+
+                icon = {
+                    if (hasProductsTableUpdateFailed) {
+                        Icon(
+                            modifier = Modifier.size(buttonIconSize),
+                            imageVector = Icons.Filled.Error,
+                            contentDescription = "",
+                        )
+                    } else if (isUpdatingProductsTable) {
+                        CircularProgressIndicator()
+                    } else {
+                        Icon(
+                            modifier = Modifier.size(buttonIconSize),
+                            imageVector = Icons.Filled.Inventory,
+                            contentDescription = "",
+                        )
+                    }
+                },
+
+                enabled = !isUpdatingProductsTable,
+                onClick = onOpenProductsTable,
             )
         }
     }

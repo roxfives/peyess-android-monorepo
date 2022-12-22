@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 @Entity(
-    primaryKeys = ["lens_id", "alt_height_id"],
     tableName = LocalLensAltHeightCrossRef.tableName,
+    primaryKeys = ["lens_id", "alt_height_id"],
 )
 data class LocalLensAltHeightCrossRef(
     @ColumnInfo(name = "lens_id")

@@ -42,6 +42,8 @@ fun buildHomeNavGraph(
 
                 navHostController.navigate(formatBasicInfoRoute(scenario))
             },
+
+            onOpenProductsTable = { navHostController.navigate("${SalesAppScreens.LensSuggestion.name}/false") },
         )
     }
 

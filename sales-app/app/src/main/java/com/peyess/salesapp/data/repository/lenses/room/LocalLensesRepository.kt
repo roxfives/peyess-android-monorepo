@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
+import androidx.paging.PagingSource
 import arrow.core.Either
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
@@ -17,11 +18,15 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 
 
-typealias LensesResponse = Either<LocalLensRepositoryException, List<LocalLensWithDetails>>
+typealias LensesResponse = Either<
+        LocalLensRepositoryException,
+        PagingSource<Int, StoreLensWithDetailsDocument>
+    >
 
 interface LocalLensesRepository {
     suspend fun addFamily(family: LocalLensFamilyDocument)
@@ -66,5 +71,5 @@ interface LocalLensesRepository {
 
     suspend fun addLens(lens: StoreLensDocument)
 
-    suspend fun getUnrestrictedLensesWithDetailsOnly(query: PeyessQuery = PeyessQuery()): LensesResponse
+    suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery = PeyessQuery()): LensesResponse
 }

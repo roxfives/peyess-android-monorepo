@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.airbnb.lottie.compose.LottieAnimation
@@ -90,6 +91,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
 import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.chip.PeyessContentChip
@@ -103,7 +105,10 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
+import java.math.BigDecimal
 
 private val frontLayerheight = 360.dp
 
@@ -126,6 +131,8 @@ fun LensSuggestionScreen(
     val viewModel: LensPickViewModel = mavericksViewModel()
 
     val lazyLenses = viewModel.filteredLenses().collectAsLazyPagingItems()
+
+    val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 
     val isFamilyLensFilterEnabled by
         viewModel.collectAsState(LensPickState::isFamilyLensFilterEnabled)
@@ -186,7 +193,7 @@ fun LensSuggestionScreen(
         modifier = modifier,
 
         lensSuggestion = lensSuggestions,
-        lensesSearch = lazyLenses,
+        lensesTableStream = lensesTableStream,
 
         isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
         isDescriptionLensFilterEnabled = isDescriptionLensFilterEnabled,
@@ -238,7 +245,7 @@ private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
 
     lensSuggestion: List<LensSuggestionModel?> = listOf(),
-    lensesSearch: LazyPagingItems<LensSuggestionModel>,
+    lensesTableStream: Flow<PagingData<LensPickModel>>,
 
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,
@@ -352,7 +359,7 @@ private fun LensSuggestionScreenImpl(
             exit = slideOutVertically { 0 },
         ) {
             LensSuggestionList(
-                lenses = lensesSearch,
+                lensesTableStream = lensesTableStream,
 
                 onPickLens = onPickLens,
 
@@ -422,9 +429,11 @@ private fun TierSuggestion(
                     lenses[index].let {
                         LensSuggestionCard(
                             modifier = Modifier
-                                .width(screenWidth
-                                    .div(2)
-                                    .minus(cardSeparationPadding).dp)
+                                .width(
+                                    screenWidth
+                                        .div(2)
+                                        .minus(cardSeparationPadding).dp
+                                )
                                 .minimumHeightModifier(
                                     state = minimumHeightState,
                                     density = density,
@@ -752,7 +761,7 @@ private fun LensSuggestionList(
     onPickLens: (lensId: String) -> Unit,
     onHideSearchScreen: () -> Unit = {},
 
-    lenses: LazyPagingItems<LensSuggestionModel>,
+    lensesTableStream: Flow<PagingData<LensPickModel>> = emptyFlow(),
 
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,
@@ -1031,6 +1040,8 @@ private fun LensSuggestionList(
             }
         },
         frontLayerContent = {
+            val lensesTable = lensesTableStream.collectAsLazyPagingItems()
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -1065,10 +1076,10 @@ private fun LensSuggestionList(
                     modifier = Modifier.fillMaxSize(),
                     state = listState,
                 ) {
-                    items(lenses.itemCount) { index ->
-                        Timber.i("Displaying $index for ${lenses.itemCount}")
+                    items(lensesTable.itemCount) { index ->
+                        Timber.i("Displaying $index for ${lensesTable.itemCount}")
 
-                        lenses[index].let {
+                        lensesTable[index].let {
                             LensCard(
                                 lens = it!!,
                                 onPickLens = onPickLens,
@@ -1078,10 +1089,10 @@ private fun LensSuggestionList(
                         }
                     }
 
-                    lenses.apply {
+                    lensesTable.apply {
                         when {
                             loadState.refresh is LoadState.NotLoading -> {
-                                if (lenses.itemCount == 0) {
+                                if (lensesTable.itemCount == 0) {
                                     item {
                                         Column(
                                             modifier = Modifier.fillMaxWidth(),
@@ -1129,7 +1140,7 @@ private fun LensSuggestionList(
                             }
 
                             loadState.refresh is LoadState.Error -> {
-                                val e = lenses.loadState.refresh as LoadState.Error
+                                val e = lensesTable.loadState.refresh as LoadState.Error
 
                                 item {
                                     ErrorItem(
@@ -1141,7 +1152,7 @@ private fun LensSuggestionList(
                             }
 
                             loadState.append is LoadState.Error -> {
-                                val e = lenses.loadState.append as LoadState.Error
+                                val e = lensesTable.loadState.append as LoadState.Error
 
                                 item {
                                     ErrorItem(
@@ -1209,7 +1220,7 @@ private fun FilterButton(
 @Composable
 private fun LensCard(
     modifier: Modifier = Modifier,
-    lens: LensSuggestionModel = LensSuggestionModel(),
+    lens: LensPickModel = LensPickModel(),
     onPickLens: (lensId: String) -> Unit = {},
 ) {
     ExpandableCard(
@@ -1234,24 +1245,25 @@ private fun LensCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     LensCircle(
-                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
-                            if (lens.needsCheck) {
-                                Color.Yellow
-                            } else {
-                                Color.Green
-                            }
-                        } else {
-                            Color.Gray
-                        }
+                        color = Color.Green
+//                        color = if (lens.isAvailable) {
+//                            if (lens.needsCheck) {
+//                                Color.Yellow
+//                            } else {
+//                                Color.Green
+//                            }
+//                        } else {
+//                            Color.Gray
+//                        }
                     )
 
                     Spacer(modifier = Modifier.width(32.dp))
 
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = lens.name(),
+                        text = lens.name,
                         style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        color = if (lens.isAvailable) {
                             MaterialTheme.colors.primary
                         } else {
                             Color.Gray
@@ -1268,7 +1280,7 @@ private fun LensCard(
             ) {
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary.copy(alpha = 0.3f)
                     } else {
                         Color.Gray
@@ -1280,7 +1292,7 @@ private fun LensCard(
                     text = lens.supplier,
                     style = MaterialTheme.typography.body1
                         .copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary
                     } else {
                         Color.Gray
@@ -1292,7 +1304,7 @@ private fun LensCard(
                     text = lens.observation,
                     style = MaterialTheme.typography.body1
                         .copy(textAlign = TextAlign.Center),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary
                     } else {
                         Color.Gray
@@ -1303,7 +1315,7 @@ private fun LensCard(
                 Spacer(modifier = Modifier.height(24.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 120.dp),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary.copy(alpha = 0.3f)
                     } else {
                         Color.Gray
@@ -1323,7 +1335,7 @@ private fun LensCard(
                                 .padding(8.dp),
                             text = lens.explanations[0],
                             style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            color = if (lens.isAvailable) {
                                 MaterialTheme.colors.primary
                             } else {
                                 Color.Gray
@@ -1338,7 +1350,7 @@ private fun LensCard(
                                 .padding(8.dp),
                             text = lens.explanations[1],
                             style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            color = if (lens.isAvailable) {
                                 MaterialTheme.colors.primary
                             } else {
                                 Color.Gray
@@ -1353,7 +1365,7 @@ private fun LensCard(
                         modifier = Modifier.fillMaxWidth(),
                         text = lens.explanations[2],
                         style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        color = if (lens.isAvailable) {
                             MaterialTheme.colors.primary
                         } else {
                             Color.Gray
@@ -1364,7 +1376,7 @@ private fun LensCard(
                 Spacer(modifier = Modifier.height(24.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 120.dp),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary.copy(alpha = 0.3f)
                     } else {
                         Color.Gray
@@ -1385,7 +1397,7 @@ private fun LensCard(
                             Icons.Filled.WbSunny
                         },
                         tint = if (
-                            lens.supportedDisponibilitites.isEmpty()
+                            lens.isNotAvailable
                             || !lens.hasFilterUv
                         ) {
                             Color.Gray
@@ -1404,7 +1416,7 @@ private fun LensCard(
                             Icons.Filled.FlashlightOff
                         },
                         tint = if (
-                            lens.supportedDisponibilitites.isEmpty()
+                            lens.isNotAvailable
                             || !lens.hasFilterBlue
                         ) {
                             Color.Gray
@@ -1418,7 +1430,7 @@ private fun LensCard(
                 Spacer(modifier = Modifier.height(16.dp))
                 Divider(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                    color = if (lens.isAvailable) {
                         MaterialTheme.colors.primary.copy(alpha = 0.3f)
                     } else {
                         Color.Gray.copy(alpha = 0.3f)
@@ -1433,8 +1445,8 @@ private fun LensCard(
                     // TODO: add installments from store config data
                     LensPrice(
                         price = lens.price,
-                        installments = 10.0,
-                        color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                        installments = BigDecimal(10.0),
+                        color = if (lens.isAvailable) {
                             MaterialTheme.colors.primary
                         } else {
                             Color.Gray
@@ -1444,12 +1456,12 @@ private fun LensCard(
                     Spacer(modifier = Modifier.weight(1f))
 
                     TextButton(
-                        enabled = lens.supportedDisponibilitites.isNotEmpty(),
+                        enabled = lens.isAvailable,
                         onClick = { onPickLens(lens.id) }
                     ) {
                         Text(
                             text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
-                            color = if (lens.supportedDisponibilitites.isNotEmpty()) {
+                            color = if (lens.isAvailable) {
                                 MaterialTheme.colors.primary
                             } else {
                                 Color.Gray
@@ -1459,8 +1471,8 @@ private fun LensCard(
                 }
 
                 if (
-                    lens.supportedDisponibilitites.isEmpty()
-                    && lens.reasonsNotAvailable.isNotEmpty()
+                    lens.isNotAvailable
+                    && lens.reasonsUnavailable.isNotEmpty()
                 ) {
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -1470,7 +1482,7 @@ private fun LensCard(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = lens.reasonsNotAvailable[0],
+                            text = lens.reasonsUnavailable[0],
                             color = MaterialTheme.colors.error
                         )
                     }
@@ -1701,8 +1713,8 @@ private fun LensSuggestionCard(
 
                 // TODO: get installments from store settings
                 LensPrice(
-                    price = lens.price,
-                    installments = 10.0,
+                    price = BigDecimal(lens.price),
+                    installments = BigDecimal(10.0),
                     style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1833,12 +1845,12 @@ private fun LensCardPreview() {
     SalesAppTheme {
         LensCard(
             modifier = Modifier.fillMaxWidth(),
-            lens = LensSuggestionModel(
+            lens = LensPickModel(
                 supplier = "Zeiss",
-                brand = "Acabadas",
-                design = "DuraVIsion BlueProtect",
+                family = "Acabadas",
+                description = "DuraVIsion BlueProtect",
                 material = "1.60",
-                price = 10500.0,
+                price = BigDecimal(10500.0),
                 observation = "As lentes ZEISS EnergizeMe foram feitas para usuários de lentes de contato",
                 explanations = listOf(
                     "Evitam o aumento da tensão ocular",
@@ -1846,8 +1858,7 @@ private fun LensCardPreview() {
                     "Alta tecnologia aliada a uma Visão mais nítida",
                 ),
 
-                isEnabled = true,
-                isLocalEnabled = true,
+                isAvailable = true,
                 hasFilterBlue = true,
                 hasFilterUv = true,
             ),
@@ -1861,8 +1872,8 @@ private fun LensPrice(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.primary,
     style: TextStyle = MaterialTheme.typography.h6,
-    price: Double = 2500.0,
-    installments: Double = 10.0,
+    price: BigDecimal = BigDecimal(2500.0),
+    installments: BigDecimal = BigDecimal(10.0),
 ) {
     Box(modifier = modifier) {
         Text(

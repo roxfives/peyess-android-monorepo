@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.lens_pick.state
 
 import androidx.paging.PagingData
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
@@ -13,8 +14,11 @@ import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupp
 import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.repository.products.LensFilter
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 
 data class LensPickState(
@@ -52,6 +56,9 @@ data class LensPickState(
 
     val hasAddedToSuggestion: Boolean = false,
     val isAddingToSuggestion: Boolean = false,
+
+    val lensesTableResponse: Async<TableLensesResponse> = Uninitialized,
+    val lensesTableStream: Flow<PagingData<LensPickModel>> = emptyFlow(),
 ): MavericksState {
     val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
     val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()
@@ -62,3 +69,6 @@ data class LensPickState(
             && supplierFilter is Success
             && specialtyFilter is Success
 }
+
+typealias TableLensesResponse =
+        Either<LocalLensRepositoryException, Flow<PagingData<LensPickModel>>>

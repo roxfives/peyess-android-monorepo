@@ -1,6 +1,11 @@
 package com.peyess.salesapp.feature.sale.lens_pick.state
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
+import arrow.core.Either
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -8,7 +13,10 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensPickModel
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -26,6 +34,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+private const val lensesTablePageSize = 20
+private const val lensesTablePrefetchDistance = 5
 
 class LensPickViewModel @AssistedInject constructor(
     @Assisted initialState: LensPickState,
@@ -136,18 +147,57 @@ class LensPickViewModel @AssistedInject constructor(
             }
         }
 
+        onAsync(LensPickState::lensesTableResponse) { response ->
+            response.fold(
+                ifLeft = {
+                    setState {
+                        copy(
+                            lensesTableStream = emptyFlow(),
+                            lensesTableResponse = Fail(Throwable()),
+                        )
+                    }
+                },
+                ifRight = {
+                    setState {
+                        copy(lensesTableStream = it)
+                    }
+                }
+            )
+        }
+
         withState {
             lenses = productRepository.filteredLenses(lensFilter = it.filter)
         }
 
-        loadLensList()
+        viewModelScope.launch(Dispatchers.IO) { updateLensTablePaging() }
     }
 
-    private fun loadLensList() {
+    private suspend fun getUpdatedLensesTableStream(): TableLensesResponse {
+        return lensesRepository
+            .paginateLensesWithDetailsOnly()
+            .map { pagingSource ->
+                val pagingSourceFactory = { pagingSource }
+
+                val pager = Pager(
+                    pagingSourceFactory = pagingSourceFactory,
+                    config = PagingConfig(
+                        pageSize = lensesTablePageSize,
+                        enablePlaceholders = true,
+                        prefetchDistance = lensesTablePrefetchDistance,
+                    ),
+                )
+
+                pager.flow.map {
+                    it.map { lens -> lens.toLensPickModel() }
+                }
+            }
+    }
+
+    private fun updateLensTablePaging() {
         suspend {
-            lensesRepository.getUnrestrictedLensesWithDetailsOnly()
+            getUpdatedLensesTableStream()
         }.execute(Dispatchers.IO) {
-            copy()
+            copy(lensesTableResponse = it)
         }
     }
 

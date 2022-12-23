@@ -5,8 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.data.model.lens.disponibility.DispManufacturerDocument
-import java.time.ZonedDateTime
 
 @Entity(
     tableName = LocalLensDisponibilityEntity.tableName,

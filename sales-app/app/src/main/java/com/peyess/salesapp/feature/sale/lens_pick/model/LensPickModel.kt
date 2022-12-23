@@ -16,7 +16,7 @@ data class LensPickModel(
 
     val price: BigDecimal = BigDecimal(0.0),
 
-    val explanations: String = "",
+    val explanations: List<String> = emptyList(),
     val observation: String = "",
     val warning: String = "",
 
@@ -26,7 +26,9 @@ data class LensPickModel(
     val needsCheck: Boolean = false,
 
     val isAvailable: Boolean = false,
-    val reasonUnavailable: String = "",
+    val reasonsUnavailable: List<String> = emptyList(),
 ) {
     val name = "$family $description $tech $material"
+
+    val isNotAvailable = !isAvailable
 }

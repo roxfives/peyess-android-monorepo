@@ -44,6 +44,7 @@ private const val materialTable = LocalLensMaterialEntity.tableName
             lenses.shipping_time AS shippingTime,
             lenses.observation AS observation,
             lenses.warning AS warning,
+            lenses.needs_check as needsCheck,
             lenses.is_manufacturing_local AS isManufacturingLocal,
             lenses.is_enabled AS isEnabled,
             lenses.reason_disabled AS reasonDisabled,
@@ -120,6 +121,7 @@ data class LocalLensWithDetailsDBView(
     val observation: String = "",
     val warning: String = "",
 
+    val needsCheck: Boolean = false,
     val isManufacturingLocal: Boolean = false,
     val isEnabled: Boolean = false,
     val reasonDisabled: String = "",

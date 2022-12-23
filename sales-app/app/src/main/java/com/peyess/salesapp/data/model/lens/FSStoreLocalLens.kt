@@ -253,6 +253,11 @@ data class FSStoreLocalLens(
 
     @Keep
     @JvmField
+    @PropertyName("needs_check")
+    val needsCheck: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("has_addition")
     val hasAddition: Boolean = false,
 

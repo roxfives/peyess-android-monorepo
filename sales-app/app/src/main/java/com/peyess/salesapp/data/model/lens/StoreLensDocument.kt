@@ -69,6 +69,7 @@ data class StoreLensDocument(
     val materialTypes: List<StoreLensMaterialTypeDocument> = emptyList(),
     val materialTypesIds: List<String> = emptyList(),
 
+    val needsCheck: Boolean = false,
     val hasAddition: Boolean = false,
     val hasFilterBlue: Boolean = false,
     val hasFilterUv: Boolean = false,

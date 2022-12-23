@@ -28,6 +28,7 @@ fun StoreLensDocument.toLocalLensEntity(): LocalLensEntity {
         typeId = typeId,
         categoryId = categoryId,
         materialId = materialId,
+        needsCheck = needsCheck,
         hasAddition = hasAddition,
         hasFilterBlue = hasFilterBlue,
         hasFilterUv = hasFilterUv,

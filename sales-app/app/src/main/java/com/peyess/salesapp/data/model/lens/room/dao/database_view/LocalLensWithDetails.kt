@@ -5,11 +5,19 @@ import androidx.room.Junction
 import androidx.room.Relation
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensAltHeightCrossRef
 
 data class LocalLensWithDetails(
     @Embedded
     val lens: LocalLensWithDetailsDBView = LocalLensWithDetailsDBView(),
+
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "lens_id",
+        entity = LocalLensExplanationEntity::class
+    )
+    val explanations: List<LocalLensExplanationEntity> = emptyList(),
 
     @Relation(
         parentColumn = "id",

@@ -19,6 +19,7 @@ import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeEntity
 import com.peyess.salesapp.data.adapter.lenses.room.treatment.toLocalLensTreatmentEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensMaterialTypeEntity
+import com.peyess.salesapp.data.adapter.lenses.toStoreLensWithDetailsDocument
 import com.peyess.salesapp.data.dao.lenses.room.LocalLensDao
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
@@ -48,6 +49,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocume
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.utils.room.MappingPagingSource
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -267,16 +269,18 @@ class LocalLensesRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getUnrestrictedLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
+    override suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
         Either.catch {
-            val lenses = localLensDao.getAllLenses()
+            val lensesPagingSource = localLensDao.getAllLenses()
 
-            lenses
-        }.mapLeft { error: Throwable ->
+            MappingPagingSource(
+                originalSource = lensesPagingSource,
+                mapper = { it.toStoreLensWithDetailsDocument() }
+            )
+        }.mapLeft {
             Unexpected(
-                description = error.message ?: "Unknown error",
-                error = error,
+                description = "Unexpected error: ${it.message}",
+                error = it,
             )
         }
 }
-

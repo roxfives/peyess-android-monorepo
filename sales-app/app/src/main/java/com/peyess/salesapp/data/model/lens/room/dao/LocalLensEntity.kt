@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.NO_ACTION
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import java.time.ZonedDateTime
 
 @Entity(
@@ -96,6 +95,8 @@ data class LocalLensEntity(
     @ColumnInfo(name = "height")
     val height: Double = 0.0,
 
+    @ColumnInfo(name = "needs_check")
+    val needsCheck: Boolean = false,
     @ColumnInfo(name = "has_addition")
     val hasAddition: Boolean = false,
     @ColumnInfo(name = "has_filter_blue")

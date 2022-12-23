@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.dao.lenses.room
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -136,7 +137,7 @@ interface LocalLensDao {
 
     @Transaction
     @Query("SELECT * FROM ${LocalLensWithDetailsDBView.viewName}")
-    suspend fun getAllLenses(): List<LocalLensWithDetails>
+    fun getAllLenses(): PagingSource<Int, LocalLensWithDetails>
 
     @Query(
         """

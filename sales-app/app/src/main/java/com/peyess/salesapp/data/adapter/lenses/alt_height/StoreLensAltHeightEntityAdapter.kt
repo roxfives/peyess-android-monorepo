@@ -1,15 +1,18 @@
 package com.peyess.salesapp.data.adapter.lenses.alt_height
 
+import com.peyess.salesapp.data.model.lens.alt_height.FSStoreLensAltHeight
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
-import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 
-fun LocalLensAltHeightEntity.toStoreLensAltHeightDocument(): StoreLensAltHeightDocument {
+fun FSStoreLensAltHeight.toStoreLensAltHeightDocument(
+    id: String,
+): StoreLensAltHeightDocument {
     return StoreLensAltHeightDocument(
         id = id,
 
         name = name,
-        nameDisplay = nameDisplay,
+        nameDisplay = name_display,
         value = value,
         observation = observation,
+
     )
 }

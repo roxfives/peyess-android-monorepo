@@ -72,6 +72,7 @@ fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
         materialTypes = materialTypes.map { it.value.toStoreLensMaterialTypeDocument(it.key) },
         materialTypesIds = materialTypesIds,
 
+        needsCheck = needsCheck,
         hasAddition = hasAddition,
         hasFilterBlue = hasFilterBlue,
         hasFilterUv = hasFilterUv,

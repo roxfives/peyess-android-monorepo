@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.internal.query
+package com.peyess.salesapp.data.internal.firestore.query
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

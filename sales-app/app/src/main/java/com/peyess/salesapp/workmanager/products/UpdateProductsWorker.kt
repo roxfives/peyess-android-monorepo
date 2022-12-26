@@ -274,9 +274,12 @@ class UpdateProductsWorker @AssistedInject constructor(
                     value = true,
                 )
             ),
-            orderBy = PeyessOrderBy(
-                field = queryFields.priority,
-                order = Order.ASCENDING,
+
+            orderBy = listOf(
+                PeyessOrderBy(
+                    field = queryFields.priority,
+                    order = Order.ASCENDING,
+                ),
             )
         )
     }

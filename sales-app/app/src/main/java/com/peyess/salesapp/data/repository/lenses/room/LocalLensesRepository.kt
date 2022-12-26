@@ -51,7 +51,7 @@ interface LocalLensesRepository {
 
     suspend fun addMaterial(material: LocalLensMaterialDocument)
 
-    suspend fun addMaterialType(material: StoreLensMaterialTypeDocument)
+    suspend fun addMaterialType(materialType: StoreLensMaterialTypeDocument)
 
     suspend fun addTypeToMaterial(typeId: String, materialId: String)
 

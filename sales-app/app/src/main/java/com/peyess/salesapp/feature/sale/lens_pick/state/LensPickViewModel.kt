@@ -14,7 +14,12 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.utils.query.PeyessOrderBy
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.buildQueryField
+import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
@@ -150,6 +155,8 @@ class LensPickViewModel @AssistedInject constructor(
         onAsync(LensPickState::lensesTableResponse) { response ->
             response.fold(
                 ifLeft = {
+                    Timber.e("Failed to load lenses table: ${it.description}", it.error)
+
                     setState {
                         copy(
                             lensesTableStream = emptyFlow(),
@@ -172,9 +179,43 @@ class LensPickViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) { updateLensTablePaging() }
     }
 
+    private fun buildLensSearchOrderBy(): List<PeyessOrderBy> {
+        return listOf(
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.SupplierPriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.Supplier.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensTypePriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensType.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensMaterialPriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensMaterial.name(),
+                order = Order.ASCENDING,
+            ),
+        )
+    }
+
     private suspend fun getUpdatedLensesTableStream(): TableLensesResponse {
+        val query = PeyessQuery(
+            queryFields = emptyList(),
+            orderBy = buildLensSearchOrderBy(),
+        )
+
         return lensesRepository
-            .paginateLensesWithDetailsOnly()
+            .paginateLensesWithDetailsOnly(query)
             .map { pagingSource ->
                 val pagingSourceFactory = { pagingSource }
 

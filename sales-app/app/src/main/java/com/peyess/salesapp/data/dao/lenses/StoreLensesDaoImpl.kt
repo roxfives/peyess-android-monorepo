@@ -9,7 +9,7 @@ import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
 import com.peyess.salesapp.data.internal.firestore.error.Unexpected
-import com.peyess.salesapp.data.internal.firestore.query.toFirestoreCollectionQuery
+import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import javax.inject.Inject

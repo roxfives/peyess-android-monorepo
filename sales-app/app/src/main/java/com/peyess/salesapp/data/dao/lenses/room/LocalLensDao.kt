@@ -5,7 +5,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RawQuery
 import androidx.room.Transaction
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.embedded.LocalLensColoringWithExplanationsEntity
@@ -138,6 +140,10 @@ interface LocalLensDao {
     @Transaction
     @Query("SELECT * FROM ${LocalLensWithDetailsDBView.viewName}")
     fun getAllLenses(): PagingSource<Int, LocalLensWithDetails>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensWithDetailsDBView::class])
+    fun getFilteredLenses(query: SimpleSQLiteQuery): PagingSource<Int, LocalLensWithDetails>
 
     @Query(
         """

@@ -34,6 +34,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibi
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -49,6 +50,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocume
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.adapter.toSqlQuery
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import timber.log.Timber
 import javax.inject.Inject
@@ -125,8 +127,8 @@ class LocalLensesRepositoryImpl @Inject constructor(
         localLensDao.addMaterial(entity)
     }
 
-    override suspend fun addMaterialType(type: StoreLensMaterialTypeDocument) {
-        val entity = type.toLocalLensMaterialTypeEntity()
+    override suspend fun addMaterialType(materialType: StoreLensMaterialTypeDocument) {
+        val entity = materialType.toLocalLensMaterialTypeEntity()
 
         localLensDao.addMaterialType(entity)
     }
@@ -166,7 +168,6 @@ class LocalLensesRepositoryImpl @Inject constructor(
             )
         }
     }
-
 
     override suspend fun addColoring(coloring: LocalLensColoringDocument) {
         val coloringExplanations = coloring.explanations
@@ -271,7 +272,10 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
         Either.catch {
-            val lensesPagingSource = localLensDao.getAllLenses()
+            val selectQuery = "SELECT * FROM ${LocalLensWithDetailsDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectQuery)
+
+            val lensesPagingSource = localLensDao.getFilteredLenses(sqlQuery)
 
             MappingPagingSource(
                 originalSource = lensesPagingSource,

@@ -538,6 +538,26 @@ class LensPickViewModel @AssistedInject constructor(
             )
         }
 
+        if (filter.withFilterBlue) {
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesQueryFields.LensBlueLightFilter.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = true,
+                )
+            )
+        }
+
+        if (filter.withFilterUv) {
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesQueryFields.LensUVLightFilter.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = true,
+                )
+            )
+        }
+
         return queryFields
     }
 

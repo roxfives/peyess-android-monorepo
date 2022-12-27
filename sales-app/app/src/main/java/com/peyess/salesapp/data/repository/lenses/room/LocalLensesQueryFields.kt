@@ -29,6 +29,10 @@ sealed class LocalLensesQueryFields {
     object LensGroup: LocalLensesQueryFields()
     object LensGroupId: LocalLensesQueryFields()
 
+    object LensUVLightFilter: LocalLensesQueryFields()
+    object LensBlueLightFilter: LocalLensesQueryFields()
+
+
     fun name(): String {
         return when (this) {
             is LensType -> "typeName"
@@ -52,6 +56,8 @@ sealed class LocalLensesQueryFields {
             is LensGroup -> "groupName"
             is LensGroupPriority -> "groupPriority"
             is LensGroupId -> "groupId"
+            is LensBlueLightFilter -> "hasFilterBlue"
+            is LensUVLightFilter -> "hasFilterUv"
         }
     }
 }

@@ -20,6 +20,12 @@ private data class PeyessQueryFieldInt(
     override val value: Int,
 ): PeyessQueryField
 
+private data class PeyessQueryFieldBoolean(
+    override val field: String,
+    override val op: PeyessQueryOperation,
+    override val value: Boolean,
+): PeyessQueryField
+
 private data class PeyessQueryFieldString(
     override val field: String,
     override val op: PeyessQueryOperation,
@@ -31,9 +37,7 @@ fun buildQueryField(field: String, op: PeyessQueryOperation, value: Int): Peyess
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: Boolean): PeyessQueryField {
-    val actualValue = if (value) 1 else 0
-
-    return PeyessQueryFieldInt(field, op, actualValue)
+    return PeyessQueryFieldBoolean(field, op, value)
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: Double): PeyessQueryField {

@@ -543,7 +543,7 @@ class LensPickViewModel @AssistedInject constructor(
                 buildQueryField(
                     field = LocalLensesQueryFields.LensBlueLightFilter.name(),
                     op = PeyessQueryOperation.Equal,
-                    value = true,
+                    value = 1,
                 )
             )
         }
@@ -553,7 +553,7 @@ class LensPickViewModel @AssistedInject constructor(
                 buildQueryField(
                     field = LocalLensesQueryFields.LensUVLightFilter.name(),
                     op = PeyessQueryOperation.Equal,
-                    value = true,
+                    value = 1,
                 )
             )
         }

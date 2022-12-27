@@ -8,12 +8,6 @@ sealed interface PeyessQueryField {
     val value: Any
 }
 
-private data class PeyessQueryFieldBigDecimal(
-    override val field: String,
-    override val op: PeyessQueryOperation,
-    override val value: BigDecimal,
-): PeyessQueryField
-
 private data class PeyessQueryFieldDouble(
     override val field: String,
     override val op: PeyessQueryOperation,
@@ -24,12 +18,6 @@ private data class PeyessQueryFieldInt(
     override val field: String,
     override val op: PeyessQueryOperation,
     override val value: Int,
-): PeyessQueryField
-
-private data class PeyessQueryFieldBoolean(
-    override val field: String,
-    override val op: PeyessQueryOperation,
-    override val value: Boolean,
 ): PeyessQueryField
 
 private data class PeyessQueryFieldString(
@@ -43,7 +31,9 @@ fun buildQueryField(field: String, op: PeyessQueryOperation, value: Int): Peyess
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: Boolean): PeyessQueryField {
-    return PeyessQueryFieldBoolean(field, op, value)
+    val actualValue = if (value) 1 else 0
+
+    return PeyessQueryFieldInt(field, op, actualValue)
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: Double): PeyessQueryField {
@@ -51,7 +41,7 @@ fun buildQueryField(field: String, op: PeyessQueryOperation, value: Double): Pey
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: BigDecimal): PeyessQueryField {
-    return PeyessQueryFieldBigDecimal(field, op, value)
+    return PeyessQueryFieldDouble(field, op, value.toDouble())
 }
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: String): PeyessQueryField {

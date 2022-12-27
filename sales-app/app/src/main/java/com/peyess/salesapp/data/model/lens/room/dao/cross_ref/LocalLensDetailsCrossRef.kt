@@ -13,6 +13,8 @@ import androidx.room.Entity
         "specialty_id",
         "tech_id",
         "type_id",
+        "category_id",
+        "material_id",
     ],
 )
 data class LocalLensDetailsCrossRef(

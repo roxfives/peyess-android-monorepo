@@ -171,7 +171,7 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensesSpecialtyDBView::class,
         LocalLensesSupplierDBView::class,
     ],
-    version = 78,
+    version = 79,
 )
 @TypeConverters(
     ConverterUri::class,

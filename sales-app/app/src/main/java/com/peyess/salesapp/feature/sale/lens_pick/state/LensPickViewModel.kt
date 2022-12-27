@@ -232,24 +232,12 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateFilterForUvLight(hasFilterUv: Boolean) = withState { state ->
-        if (state.filter.withFilterUv != hasFilterUv) {
-            setState {
-                copy(
-                    filter = filter.copy(withFilterUv = hasFilterUv)
-                )
-            }
-        }
+    private fun updateFilterForUvLight(hasFilterUv: Boolean) = setState {
+        copy(filter = filter.copy(withFilterUv = hasFilterUv))
     }
 
-    private fun updateFilterForBlueLight(hasFilterBlue: Boolean) = withState { state ->
-        if (state.filter.withFilterBlue != hasFilterBlue) {
-            setState {
-                copy(
-                    filter = filter.copy(withFilterBlue = hasFilterBlue)
-                )
-            }
-        }
+    private fun updateFilterForBlueLight(hasFilterBlue: Boolean) = setState {
+        copy(filter = filter.copy(withFilterBlue = hasFilterBlue))
     }
 
     private fun shouldFilterByType(filter: ListFilter): Boolean {

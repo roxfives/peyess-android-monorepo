@@ -2,7 +2,6 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.paging.map
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -14,8 +13,12 @@ import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.lenses.room.SimplifiedQueryFields
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.PeyessQueryField
+import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
+import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensGroupModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensDescriptionModel
@@ -25,6 +28,8 @@ import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSpecialtyModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSupplierModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensTypeModel
+import com.peyess.salesapp.feature.sale.lens_pick.constant.ListFilter
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -54,88 +59,23 @@ class LensPickViewModel @AssistedInject constructor(
     private val lensesRepository: LocalLensesRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
-    private var lenses: Flow<PagingData<LensSuggestionModel>> = emptyFlow()
     private var suggestionList: Flow<List<LensSuggestionModel?>> = emptyFlow()
 
     init {
-        onEach(LensPickState::filter) { filter ->
-            withState { state ->
-                if (state.hasLoadedAllBasicFilters) {
-                    lenses = productRepository.filteredLenses(lensFilter = filter)
-                }
-            }
-        }
-
-        onEach(LensPickState::groupLensFilterId) {
-            setState { copy(filter = filter.copy(groupId = it)) }
-        }
-
-        onEach(LensPickState::specialtyLensFilterId) {
-            setState { copy(filter = filter.copy(specialtyId = it)) }
-        }
-
-        onEach(LensPickState::typeLensFilterId) {
-            setState { copy(filter = filter.copy(lensTypeId = it)) }
-        }
-
-        onEach(LensPickState::materialLensFilterId) {
-            setState { copy(filter = filter.copy(materialId = it)) }
-        }
-
-        onEach(LensPickState::familyLensFilterId) {
-            setState { copy(filter = filter.copy(familyId = it)) }
-        }
-
-        onEach(LensPickState::descriptionLensFilterId) {
-            setState { copy(filter = filter.copy(descriptionId = it)) }
-        }
+        onEach(LensPickState::typeLensFilterId) { updateFilterForType(it) }
+        onEach(LensPickState::supplierLensFilterId) { updateFilterForSupplier(it) }
+        onEach(LensPickState::familyLensFilterId) { updateFilterForFamily(it) }
+        onEach(LensPickState::descriptionLensFilterId) { updateFilterForDescription(it) }
+        onEach(LensPickState::materialLensFilterId) { updateFilterForMaterial(it) }
+        onEach(LensPickState::specialtyLensFilterId) { updateFilterForSpecialty(it) }
+        onEach(LensPickState::groupLensFilterId) { updateFilterForGroup(it) }
 
         onEach(LensPickState::hasFilterUv) {
-            setState { copy(filter = filter.copy(hasFilterUv = it)) }
+            setState { copy(filter = filter.copy(withFilterUv = it)) }
         }
 
         onEach(LensPickState::hasFilterBlue) {
-            setState { copy(filter = filter.copy(hasFilterBlue = it)) }
-        }
-
-        onEach(LensPickState::familyLensFilterId) { familyId ->
-            withState {
-                productRepository.lensDescription(familyId).execute(Dispatchers.IO) { descriptions ->
-                    copy(descriptionFilter = descriptions)
-                }
-            }
-        }
-
-        onEach(LensPickState::supplierLensFilterId) { supplierId ->
-            setState {
-                copy(
-                    filter = filter.copy(
-                        supplierId = supplierId,
-                        materialId = "",
-                        familyId = "",
-                        descriptionId = "",
-                    ),
-
-                    materialLensFilter = "",
-                    materialLensFilterId = "",
-
-                    familyLensFilter = "",
-                    familyLensFilterId = "",
-
-                    descriptionLensFilter = "",
-                    descriptionLensFilterId = "",
-                )
-            }
-
-//            if (supplierId.isNotEmpty()) {
-//                productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
-//                    copy(materialFilter = materials)
-//                }
-//
-//                productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
-//                    copy(lensesFamiliesResponse = families)
-//                }
-//            }
+            setState { copy(filter = filter.copy(withFilterBlue = it)) }
         }
 
         onAsync(LensPickState::groupsList) { groupList ->
@@ -150,27 +90,7 @@ class LensPickViewModel @AssistedInject constructor(
             }
         }
 
-        onAsync(LensPickState::lensesTableResponse) { response ->
-            response.fold(
-                ifLeft = {
-                    Timber.e("Failed to load lenses table: ${it.description}", it.error)
-
-                    setState {
-                        copy(
-                            lensesTableStream = emptyFlow(),
-                            lensesTableResponse = Fail(
-                                error = it.error ?: Throwable(it.description)
-                            ),
-                        )
-                    }
-                },
-                ifRight = {
-                    setState {
-                        copy(lensesTableStream = it)
-                    }
-                }
-            )
-        }
+        onAsync(LensPickState::lensesTableResponse) { processLensTableResponse(it) }
 
         onAsync(LensPickState::lensesTypesResponseAsync) { processLensTypes(it) }
         onAsync(LensPickState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
@@ -180,14 +100,257 @@ class LensPickViewModel @AssistedInject constructor(
         onAsync(LensPickState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
         onAsync(LensPickState::lensesGroupsResponseAsync) { processLensGroups(it) }
 
-        withState {
-            lenses = productRepository.filteredLenses(lensFilter = it.filter)
-        }
-
         viewModelScope.launch(Dispatchers.IO) { updateLensTablePaging() }
     }
 
-    private fun buildLensSearchOrderBy(): List<PeyessOrderBy> {
+    private fun updateFilterForType(typeId: String) = setState {
+        copy(filter = filter.copy(lensTypeId = typeId))
+    }
+
+    private fun updateFilterForSupplier(supplierId: String)  = withState { state ->
+        if (state.filter.supplierId != supplierId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        supplierId = supplierId,
+                        familyId = "",
+                        descriptionId = "",
+                        materialId = "",
+                        specialtyId = "",
+                        groupId = "",
+                    ),
+
+                    familyLensFilter = "",
+                    familyLensFilterId = "",
+
+                    descriptionLensFilter = "",
+                    descriptionLensFilterId = "",
+
+                    materialLensFilter = "",
+                    materialLensFilterId = "",
+
+                    specialtyLensFilter = "",
+                    specialtyLensFilterId = "",
+
+                    groupLensFilter = "",
+                    groupLensFilterId = "",
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForFamily(familyId: String) = withState { state ->
+        if (state.filter.familyId != familyId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        familyId = familyId,
+                        descriptionId = "",
+                        materialId = "",
+                        specialtyId = "",
+                        groupId = "",
+                    ),
+
+                    descriptionLensFilter = "",
+                    descriptionLensFilterId = "",
+
+                    materialLensFilter = "",
+                    materialLensFilterId = "",
+
+                    specialtyLensFilter = "",
+                    specialtyLensFilterId = "",
+
+                    groupLensFilter = "",
+                    groupLensFilterId = "",
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForDescription(descriptionId: String) = withState { state ->
+        if (state.filter.descriptionId != descriptionId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        descriptionId = descriptionId,
+                        materialId = "",
+                        specialtyId = "",
+                        groupId = "",
+                    ),
+
+                    materialLensFilter = "",
+                    materialLensFilterId = "",
+
+                    specialtyLensFilter = "",
+                    specialtyLensFilterId = "",
+
+                    groupLensFilter = "",
+                    groupLensFilterId = "",
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForMaterial(materialId: String) = withState { state ->
+        if (state.filter.materialId != materialId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        materialId = materialId,
+                        specialtyId = "",
+                        groupId = "",
+                    ),
+
+                    specialtyLensFilter = "",
+                    specialtyLensFilterId = "",
+
+                    groupLensFilter = "",
+                    groupLensFilterId = "",
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForSpecialty(specialtyId: String) = withState { state ->
+        if (state.filter.specialtyId != specialtyId) {
+            setState {
+                copy(
+                    filter = filter.copy(
+                        specialtyId = specialtyId,
+                        groupId = "",
+                    ),
+
+                    groupLensFilter = "",
+                    groupLensFilterId = "",
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForGroup(groupId: String) = withState { state ->
+        if (state.filter.groupId != groupId) {
+            setState {
+                copy(
+                    filter = filter.copy(groupId = groupId)
+                )
+            }
+        }
+    }
+
+    private fun shouldFilterByType(filter: ListFilter): Boolean {
+        return false
+    }
+
+    private fun shouldFilterBySupplier(filter: ListFilter): Boolean {
+        return filter == ListFilter.LensFamily
+                || filter == ListFilter.LensDescription
+                || filter == ListFilter.LensMaterial
+                || filter == ListFilter.LensSpecialty
+                || filter == ListFilter.LensGroup
+    }
+
+    private fun shouldFilterByFamily(filter: ListFilter): Boolean {
+        return filter == ListFilter.LensDescription
+                || filter == ListFilter.LensMaterial
+                || filter == ListFilter.LensSpecialty
+                || filter == ListFilter.LensGroup
+    }
+
+    private fun shouldFilterByDescription(filter: ListFilter): Boolean {
+        return filter == ListFilter.LensMaterial
+                || filter == ListFilter.LensSpecialty
+                || filter == ListFilter.LensGroup
+    }
+
+    private fun shouldFilterByMaterial(filter: ListFilter): Boolean {
+        return filter == ListFilter.LensSpecialty
+                || filter == ListFilter.LensGroup
+    }
+
+    private fun shouldFilterBySpecialty(filter: ListFilter): Boolean {
+        return filter == ListFilter.LensGroup
+    }
+
+    private fun buildFilterQueryFields(
+        filter: ListFilter,
+        activeListFilter: LensListFilter,
+    ): List<PeyessQueryField> {
+        val queryFields = mutableListOf<PeyessQueryField>()
+
+
+        if (shouldFilterByType(filter) && activeListFilter.lensTypeId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensType.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.lensTypeId,
+                )
+            )
+        }
+
+        if (shouldFilterBySupplier(filter) && activeListFilter.supplierId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensSupplier.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.supplierId,
+                )
+            )
+        }
+
+        if (shouldFilterByFamily(filter) && activeListFilter.familyId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensFamily.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.familyId,
+                )
+            )
+        }
+
+        if (shouldFilterByDescription(filter) && activeListFilter.descriptionId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensDescription.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.descriptionId,
+                )
+            )
+        }
+
+        if (shouldFilterByMaterial(filter) && activeListFilter.materialId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensMaterial.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.materialId,
+                )
+            )
+        }
+
+        if (shouldFilterBySpecialty(filter) && activeListFilter.specialtyId.isNotEmpty()) {
+            queryFields.add(
+                buildQueryField(
+                    field = SimplifiedQueryFields.LensSpecialty.name(),
+                    op = PeyessQueryOperation.Equal,
+                    value = activeListFilter.specialtyId,
+                )
+            )
+        }
+
+        return queryFields
+    }
+
+    private fun buildFilterQueryOrderBy(): List<PeyessOrderBy> {
+        return listOf(
+            PeyessOrderBy(
+                field = SimplifiedQueryFields.Name.name(),
+                order = Order.ASCENDING,
+            )
+        )
+    }
+
+    private fun buildLensListQueryOrderBy(): List<PeyessOrderBy> {
         return listOf(
             PeyessOrderBy(
                 field = LocalLensesQueryFields.SupplierPriority.name(),
@@ -219,7 +382,7 @@ class LensPickViewModel @AssistedInject constructor(
     private suspend fun getUpdatedLensesTableStream(): TableLensesResponse {
         val query = PeyessQuery(
             queryFields = emptyList(),
-            orderBy = buildLensSearchOrderBy(),
+            orderBy = buildLensListQueryOrderBy(),
         )
 
         return lensesRepository
@@ -240,6 +403,28 @@ class LensPickViewModel @AssistedInject constructor(
                     it.map { lens -> lens.toLensPickModel() }
                 }
             }
+    }
+
+    private fun processLensTableResponse(response: TableLensesResponse) {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses table: ${it.description}", it.error)
+
+                setState {
+                    copy(
+                        lensesTableStream = emptyFlow(),
+                        lensesTableResponse = Fail(
+                            error = it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+            ifRight = {
+                setState {
+                    copy(lensesTableStream = it)
+                }
+            }
+        )
     }
 
     private fun updateLensTablePaging() {
@@ -364,8 +549,14 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensesTypes() = withState {
         suspend {
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = emptyList(),
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredTypes()
+                .getFilteredTypes(query)
                 .map { it.map { type -> type.toLensTypeModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesTypesResponseAsync = it)
@@ -374,8 +565,14 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensSuppliers() = withState {
         suspend {
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = emptyList(),
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredSuppliers()
+                .getFilteredSuppliers(query)
                 .map { it.map { supplier -> supplier.toLensSupplierModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesSuppliersResponseAsync = it)
@@ -384,8 +581,18 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensFamilies() = withState {
         suspend {
+            val queryFields = buildFilterQueryFields(
+                filter = ListFilter.LensFamily,
+                activeListFilter = it.filter,
+            )
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredFamilies()
+                .getFilteredFamilies(query)
                 .map { it.map { family -> family.toLensFamilyModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesFamiliesResponseAsync = it)
@@ -394,8 +601,18 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensDescriptions() = withState {
         suspend {
+            val queryFields = buildFilterQueryFields(
+                filter = ListFilter.LensDescription,
+                activeListFilter = it.filter,
+            )
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredDescriptions()
+                .getFilteredDescriptions(query)
                 .map { it.map { description -> description.toLensDescriptionModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesDescriptionsResponseAsync = it)
@@ -404,8 +621,18 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensMaterials() = withState {
         suspend {
+            val queryFields = buildFilterQueryFields(
+                filter = ListFilter.LensMaterial,
+                activeListFilter = it.filter,
+            )
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredMaterials()
+                .getFilteredMaterials(query)
                 .map { it.map { material -> material.toLensMaterialModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesMaterialsResponseAsync = it)
@@ -414,8 +641,18 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensSpecialties() = withState {
         suspend {
+            val queryFields = buildFilterQueryFields(
+                filter = ListFilter.LensSpecialty,
+                activeListFilter = it.filter,
+            )
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredSpecialties()
+                .getFilteredSpecialties(query)
                 .map { it.map { specialty -> specialty.toLensSpecialtyModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesSpecialtiesResponseAsync = it)
@@ -424,8 +661,18 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensGroups() = withState {
         suspend {
+            val queryFields = buildFilterQueryFields(
+                filter = ListFilter.LensGroup,
+                activeListFilter = it.filter,
+            )
+            val queryOrderBy = buildFilterQueryOrderBy()
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                orderBy = queryOrderBy,
+            )
+
             lensesRepository
-                .getFilteredGroups()
+                .getFilteredGroups(query)
                 .map { it.map { group -> group.toLensGroupModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesGroupsResponseAsync = it)

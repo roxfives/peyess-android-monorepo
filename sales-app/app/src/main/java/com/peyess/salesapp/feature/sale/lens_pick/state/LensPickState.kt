@@ -22,6 +22,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSpecialtyImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSupplierImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterTypeImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
 import com.peyess.salesapp.repository.products.LensFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -52,8 +53,8 @@ typealias LensesGroupsResponse =
         Either<LocalLensRepositoryException, List<LensFilterGroupImpl>>
 
 data class LensPickState(
+    val filter: LensListFilter = LensListFilter(),
     val lenses: Flow<PagingData<LensSuggestionModel>> = flowOf(),
-    val filter: LensFilter = LensFilter(),
 
     val groupLensFilter: String = "",
     val specialtyLensFilter: String = "",
@@ -70,11 +71,6 @@ data class LensPickState(
     val materialLensFilterId: String = "",
     val familyLensFilterId: String = "",
     val descriptionLensFilterId: String = "",
-
-    val groupsFilter: Async<List<LensGroupDocument>> = Uninitialized,
-    val specialtyFilter: Async<List<FilterLensSpecialtyEntity>> = Uninitialized,
-    val materialFilter: Async<List<FilterLensMaterialEntity>> = Uninitialized,
-    val descriptionFilter: Async<List<LensDescriptionDocument>> = Uninitialized,
 
     val hasFilterUv: Boolean = false,
     val hasFilterBlue: Boolean = false,
@@ -129,12 +125,14 @@ data class LensPickState(
     val areGroupsLoading = lensesGroupsResponseAsync is Loading
     val hasGroupsLoadingFailed = lensesGroupsResponseAsync is Fail
 
-    val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
-    val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty() && familyLensFilter.isNotEmpty()
-    val isMaterialLensFilterEnabled = supplierLensFilter.isNotEmpty()
+    val isLensListStreamLoading = lensesTableResponse is Loading
 
-    val hasLoadedAllBasicFilters = groupsFilter is Success
-            && lensesTypesResponseAsync is Success
-            && lensesSuppliersResponseAsync is Success
-            && specialtyFilter is Success
+    val isFamilyLensFilterEnabled = supplierLensFilter.isNotEmpty()
+            && lensesSuppliersResponseAsync !is Loading
+    val isDescriptionLensFilterEnabled = supplierLensFilter.isNotEmpty()
+            && familyLensFilter.isNotEmpty()
+            && lensesSuppliersResponseAsync !is Loading
+            && lensesFamiliesResponseAsync !is Loading
+    val isMaterialLensFilterEnabled = supplierLensFilter.isNotEmpty()
+            && lensesSuppliersResponseAsync !is Loading
 }

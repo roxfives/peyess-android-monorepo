@@ -9,12 +9,12 @@ import timber.log.Timber
 fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
     var query = "$selectStatement "
 
-    var whereClause = ""
+    var whereClause: String
     queryFields.forEach { peyessQuery ->
-        if (query.contains("WHERE")) {
-            whereClause += " AND "
+        whereClause = if (query.contains("WHERE")) {
+            " AND "
         } else {
-            whereClause = " WHERE "
+            " WHERE "
         }
 
         when (peyessQuery.op) {

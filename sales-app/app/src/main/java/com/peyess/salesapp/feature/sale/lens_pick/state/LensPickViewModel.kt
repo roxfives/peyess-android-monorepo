@@ -69,14 +69,18 @@ class LensPickViewModel @AssistedInject constructor(
         onEach(LensPickState::materialLensFilterId) { updateFilterForMaterial(it) }
         onEach(LensPickState::specialtyLensFilterId) { updateFilterForSpecialty(it) }
         onEach(LensPickState::groupLensFilterId) { updateFilterForGroup(it) }
+        onEach(LensPickState::hasFilterUv) { updateFilterForUvLight(it) }
+        onEach(LensPickState::hasFilterBlue) { updateFilterForBlueLight(it) }
 
-        onEach(LensPickState::hasFilterUv) {
-            setState { copy(filter = filter.copy(withFilterUv = it)) }
-        }
+        onAsync(LensPickState::lensesTypesResponseAsync) { processLensTypes(it) }
+        onAsync(LensPickState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
+        onAsync(LensPickState::lensesFamiliesResponseAsync) { processLensFamilies(it) }
+        onAsync(LensPickState::lensesDescriptionsResponseAsync) { processLensDescriptions(it) }
+        onAsync(LensPickState::lensesMaterialsResponseAsync) { processLensMaterials(it) }
+        onAsync(LensPickState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
+        onAsync(LensPickState::lensesGroupsResponseAsync) { processLensGroups(it) }
 
-        onEach(LensPickState::hasFilterBlue) {
-            setState { copy(filter = filter.copy(withFilterBlue = it)) }
-        }
+        onAsync(LensPickState::lensesTableResponse) { processLensTableResponse(it) }
 
         onAsync(LensPickState::groupsList) { groupList ->
             viewModelScope.launch(Dispatchers.IO) {
@@ -89,16 +93,6 @@ class LensPickViewModel @AssistedInject constructor(
                 suggestionList = combine(lensesByGroup) { it.asList() }
             }
         }
-
-        onAsync(LensPickState::lensesTableResponse) { processLensTableResponse(it) }
-
-        onAsync(LensPickState::lensesTypesResponseAsync) { processLensTypes(it) }
-        onAsync(LensPickState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
-        onAsync(LensPickState::lensesFamiliesResponseAsync) { processLensFamilies(it) }
-        onAsync(LensPickState::lensesDescriptionsResponseAsync) { processLensDescriptions(it) }
-        onAsync(LensPickState::lensesMaterialsResponseAsync) { processLensMaterials(it) }
-        onAsync(LensPickState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
-        onAsync(LensPickState::lensesGroupsResponseAsync) { processLensGroups(it) }
 
         viewModelScope.launch(Dispatchers.IO) { updateLensTablePaging() }
     }
@@ -237,6 +231,26 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
+    private fun updateFilterForUvLight(hasFilterUv: Boolean) = withState { state ->
+        if (state.filter.withFilterUv != hasFilterUv) {
+            setState {
+                copy(
+                    filter = filter.copy(withFilterUv = hasFilterUv)
+                )
+            }
+        }
+    }
+
+    private fun updateFilterForBlueLight(hasFilterBlue: Boolean) = withState { state ->
+        if (state.filter.withFilterBlue != hasFilterBlue) {
+            setState {
+                copy(
+                    filter = filter.copy(withFilterBlue = hasFilterBlue)
+                )
+            }
+        }
+    }
+
     private fun shouldFilterByType(filter: ListFilter): Boolean {
         return false
     }
@@ -350,91 +364,6 @@ class LensPickViewModel @AssistedInject constructor(
         )
     }
 
-    private fun buildLensListQueryOrderBy(): List<PeyessOrderBy> {
-        return listOf(
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.SupplierPriority.name(),
-                order = Order.ASCENDING,
-            ),
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.Supplier.name(),
-                order = Order.ASCENDING,
-            ),
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.LensTypePriority.name(),
-                order = Order.ASCENDING,
-            ),
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.LensType.name(),
-                order = Order.ASCENDING,
-            ),
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.LensMaterialPriority.name(),
-                order = Order.ASCENDING,
-            ),
-            PeyessOrderBy(
-                field = LocalLensesQueryFields.LensMaterial.name(),
-                order = Order.ASCENDING,
-            ),
-        )
-    }
-
-    private suspend fun getUpdatedLensesTableStream(): TableLensesResponse {
-        val query = PeyessQuery(
-            queryFields = emptyList(),
-            orderBy = buildLensListQueryOrderBy(),
-        )
-
-        return lensesRepository
-            .paginateLensesWithDetailsOnly(query)
-            .map { pagingSource ->
-                val pagingSourceFactory = { pagingSource }
-
-                val pager = Pager(
-                    pagingSourceFactory = pagingSourceFactory,
-                    config = PagingConfig(
-                        pageSize = lensesTablePageSize,
-                        enablePlaceholders = true,
-                        prefetchDistance = lensesTablePrefetchDistance,
-                    ),
-                )
-
-                pager.flow.map {
-                    it.map { lens -> lens.toLensPickModel() }
-                }
-            }
-    }
-
-    private fun processLensTableResponse(response: TableLensesResponse) {
-        response.fold(
-            ifLeft = {
-                Timber.e("Failed to load lenses table: ${it.description}", it.error)
-
-                setState {
-                    copy(
-                        lensesTableStream = emptyFlow(),
-                        lensesTableResponse = Fail(
-                            error = it.error ?: Throwable(it.description)
-                        ),
-                    )
-                }
-            },
-            ifRight = {
-                setState {
-                    copy(lensesTableStream = it)
-                }
-            }
-        )
-    }
-
-    private fun updateLensTablePaging() {
-        suspend {
-            getUpdatedLensesTableStream()
-        }.execute(Dispatchers.IO) {
-            copy(lensesTableResponse = it)
-        }
-    }
-
     private fun processLensTypes(response: LensesTypesResponse) = setState {
         response.fold(
             ifLeft = {
@@ -545,6 +474,99 @@ class LensPickViewModel @AssistedInject constructor(
             },
             ifRight = { copy(lensesGroupsResponse = it) }
         )
+    }
+
+
+
+    private fun buildLensListQueryOrderBy(): List<PeyessOrderBy> {
+        return listOf(
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.SupplierPriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.Supplier.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensTypePriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensType.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensMaterialPriority.name(),
+                order = Order.ASCENDING,
+            ),
+            PeyessOrderBy(
+                field = LocalLensesQueryFields.LensMaterial.name(),
+                order = Order.ASCENDING,
+            ),
+        )
+    }
+
+    private suspend fun getUpdatedLensesTableStream(): TableLensesResponse {
+        val query = PeyessQuery(
+            queryFields = emptyList(),
+            orderBy = buildLensListQueryOrderBy(),
+        )
+
+        return lensesRepository
+            .paginateLensesWithDetailsOnly(query)
+            .map { pagingSource ->
+                val pagingSourceFactory = { pagingSource }
+
+                val pager = Pager(
+                    pagingSourceFactory = pagingSourceFactory,
+                    config = PagingConfig(
+                        pageSize = lensesTablePageSize,
+                        enablePlaceholders = true,
+                        prefetchDistance = lensesTablePrefetchDistance,
+                    ),
+                )
+
+                pager.flow.map {
+                    it.map { lens -> lens.toLensPickModel() }
+                }
+            }
+    }
+
+    private fun processLensTableResponse(response: TableLensesResponse) {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses table: ${it.description}", it.error)
+
+                setState {
+                    copy(
+                        lensesTableStream = emptyFlow(),
+                        lensesTableResponse = Fail(
+                            error = it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+            ifRight = {
+                setState {
+                    copy(lensesTableStream = it)
+                }
+            }
+        )
+    }
+
+    private fun updateLensTablePaging() {
+        suspend {
+            getUpdatedLensesTableStream()
+        }.execute(Dispatchers.IO) {
+            copy(lensesTableResponse = it)
+        }
+    }
+    
+    private fun bestLensForGroup(groupId: String): Flow<LensSuggestionModel?> {
+        return productRepository
+            .bestLensInGroup(groupId)
+            .flowOn(Dispatchers.IO)
     }
 
     fun loadLensesTypes() = withState {
@@ -677,12 +699,6 @@ class LensPickViewModel @AssistedInject constructor(
         }.execute(Dispatchers.IO) {
             copy(lensesGroupsResponseAsync = it)
         }
-    }
-
-    private fun bestLensForGroup(groupId: String): Flow<LensSuggestionModel?> {
-        return productRepository
-            .bestLensInGroup(groupId)
-            .flowOn(Dispatchers.IO)
     }
 
     fun suggestions(): Flow<List<LensSuggestionModel?>> {

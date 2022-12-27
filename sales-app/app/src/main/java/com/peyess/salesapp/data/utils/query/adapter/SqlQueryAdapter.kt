@@ -6,8 +6,8 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.types.Order
 import timber.log.Timber
 
-fun PeyessQuery.toSqlQuery(selectClause: String): SimpleSQLiteQuery {
-    var query = "$selectClause "
+fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
+    var query = "$selectStatement "
 
     var whereClause = ""
     queryFields.forEach { peyessQuery ->

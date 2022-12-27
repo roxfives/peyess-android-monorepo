@@ -4,7 +4,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -13,15 +12,19 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
-import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensGroupModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensDescriptionModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensFamilyModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensMaterialModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensPickModel
-import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSpecialtyModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSupplierModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensTypeModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -55,11 +58,6 @@ class LensPickViewModel @AssistedInject constructor(
     private var suggestionList: Flow<List<LensSuggestionModel?>> = emptyFlow()
 
     init {
-        loadLensGroups()
-        loadLensSpecialties()
-        loadLensTypes()
-        loadLensSuppliers()
-
         onEach(LensPickState::filter) { filter ->
             withState { state ->
                 if (state.hasLoadedAllBasicFilters) {
@@ -129,15 +127,15 @@ class LensPickViewModel @AssistedInject constructor(
                 )
             }
 
-            if (supplierId.isNotEmpty()) {
-                productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
-                    copy(materialFilter = materials)
-                }
-
-                productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
-                    copy(familyFilter = families)
-                }
-            }
+//            if (supplierId.isNotEmpty()) {
+//                productRepository.lensMaterial(supplierId).execute(Dispatchers.IO) { materials ->
+//                    copy(materialFilter = materials)
+//                }
+//
+//                productRepository.lensFamily(supplierId).execute(Dispatchers.IO) { families ->
+//                    copy(lensesFamiliesResponse = families)
+//                }
+//            }
         }
 
         onAsync(LensPickState::groupsList) { groupList ->
@@ -160,7 +158,9 @@ class LensPickViewModel @AssistedInject constructor(
                     setState {
                         copy(
                             lensesTableStream = emptyFlow(),
-                            lensesTableResponse = Fail(Throwable()),
+                            lensesTableResponse = Fail(
+                                error = it.error ?: Throwable(it.description)
+                            ),
                         )
                     }
                 },
@@ -171,6 +171,14 @@ class LensPickViewModel @AssistedInject constructor(
                 }
             )
         }
+
+        onAsync(LensPickState::lensesTypesResponseAsync) { processLensTypes(it) }
+        onAsync(LensPickState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
+        onAsync(LensPickState::lensesFamiliesResponseAsync) { processLensFamilies(it) }
+        onAsync(LensPickState::lensesDescriptionsResponseAsync) { processLensDescriptions(it) }
+        onAsync(LensPickState::lensesMaterialsResponseAsync) { processLensMaterials(it) }
+        onAsync(LensPickState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
+        onAsync(LensPickState::lensesGroupsResponseAsync) { processLensGroups(it) }
 
         withState {
             lenses = productRepository.filteredLenses(lensFilter = it.filter)
@@ -242,30 +250,185 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadLensGroups() = withState {
-        productRepository.lensGroups().execute(Dispatchers.IO) {
-            copy(
-                groupsFilter = it,
-                groupsList = it,
-            )
+    private fun processLensTypes(response: LensesTypesResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses types: ${it.description}", it.error)
+
+                copy(
+                    lensesTypesResponse = emptyList(),
+                    lensesTypesResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesTypesResponse = it) }
+        )
+    }
+
+    private fun processLensSuppliers(response: LensesSuppliersResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses suppliers: ${it.description}", it.error)
+
+                copy(
+                    lensesSuppliersResponse = emptyList(),
+                    lensesSuppliersResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesSuppliersResponse = it) }
+        )
+    }
+
+    private fun processLensFamilies(response: LensesFamiliesResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses families: ${it.description}", it.error)
+
+                copy(
+                    lensesFamiliesResponse = emptyList(),
+                    lensesFamiliesResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesFamiliesResponse = it) }
+        )
+    }
+
+    private fun processLensDescriptions(response: LensesDescriptionsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses descriptions: ${it.description}", it.error)
+
+                copy(
+                    lensesDescriptionsResponse = emptyList(),
+                    lensesDescriptionsResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesDescriptionsResponse = it) }
+        )
+    }
+
+    private fun processLensMaterials(response: LensesMaterialsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses materials: ${it.description}", it.error)
+
+                copy(
+                    lensesMaterialsResponse = emptyList(),
+                    lensesMaterialsResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesMaterialsResponse = it) }
+        )
+    }
+
+    private fun processLensSpecialties(response: LensesSpecialtiesResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses specialties: ${it.description}", it.error)
+
+                copy(
+                    lensesSpecialtiesResponse = emptyList(),
+                    lensesSpecialtiesResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesSpecialtiesResponse = it) }
+        )
+    }
+
+    private fun processLensGroups(response: LensesGroupsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Failed to load lenses groups: ${it.description}", it.error)
+
+                copy(
+                    lensesGroupsResponse = emptyList(),
+                    lensesGroupsResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+            ifRight = { copy(lensesGroupsResponse = it) }
+        )
+    }
+
+    fun loadLensesTypes() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredTypes()
+                .map { it.map { type -> type.toLensTypeModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesTypesResponseAsync = it)
         }
     }
 
-    private fun loadLensSpecialties() = withState {
-        productRepository.lensSpecialties().execute(Dispatchers.IO) {
-            copy(specialtyFilter = it)
+    fun loadLensSuppliers() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredSuppliers()
+                .map { it.map { supplier -> supplier.toLensSupplierModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesSuppliersResponseAsync = it)
         }
     }
 
-    private fun loadLensTypes() = withState {
-        productRepository.lensTypes().execute(Dispatchers.IO) {
-            copy(typesFilter = it)
+    fun loadLensFamilies() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredFamilies()
+                .map { it.map { family -> family.toLensFamilyModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesFamiliesResponseAsync = it)
         }
     }
 
-    private fun loadLensSuppliers() = withState {
-        productRepository.lensSuppliers().execute(Dispatchers.IO) {
-            copy(supplierFilter = it)
+    fun loadLensDescriptions() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredDescriptions()
+                .map { it.map { description -> description.toLensDescriptionModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesDescriptionsResponseAsync = it)
+        }
+    }
+
+    fun loadLensMaterials() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredMaterials()
+                .map { it.map { material -> material.toLensMaterialModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesMaterialsResponseAsync = it)
+        }
+    }
+
+    fun loadLensSpecialties() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredSpecialties()
+                .map { it.map { specialty -> specialty.toLensSpecialtyModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesSpecialtiesResponseAsync = it)
+        }
+    }
+
+    fun loadLensGroups() = withState {
+        suspend {
+            lensesRepository
+                .getFilteredGroups()
+                .map { it.map { group -> group.toLensGroupModel() } }
+        }.execute(Dispatchers.IO) {
+            copy(lensesGroupsResponseAsync = it)
         }
     }
 
@@ -273,10 +436,6 @@ class LensPickViewModel @AssistedInject constructor(
         return productRepository
             .bestLensInGroup(groupId)
             .flowOn(Dispatchers.IO)
-    }
-
-    fun filteredLenses(): Flow<PagingData<LensSuggestionModel>> {
-        return lenses.flowOn(Dispatchers.IO)
     }
 
     fun suggestions(): Flow<List<LensSuggestionModel?>> {

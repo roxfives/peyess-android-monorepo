@@ -1,15 +1,11 @@
-package com.peyess.salesapp.feature.sale.lens_pick
+package com.peyess.salesapp.feature.sale.lens_pick.ui
 
-import android.icu.text.NumberFormat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,20 +18,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.FlashlightOff
@@ -58,7 +50,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,50 +58,40 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
-import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_type.FilterLensTypeEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
-import com.peyess.salesapp.feature.sale.lens_pick.model.name
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
-import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterDescriptionImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterFamilyImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterGroupImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterMaterialImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSpecialtyImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSupplierImpl
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterTypeImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
-import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.component.chip.PeyessContentChip
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import com.peyess.salesapp.ui.theme.Shapes
-import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
-import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import com.vanpra.composematerialdialogs.title
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
 import java.math.BigDecimal
 
-private val frontLayerheight = 360.dp
+private val frontLayerHeight = 360.dp
 
 
 private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
@@ -130,8 +111,6 @@ fun LensSuggestionScreen(
 
     val viewModel: LensPickViewModel = mavericksViewModel()
 
-    val lazyLenses = viewModel.filteredLenses().collectAsLazyPagingItems()
-
     val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 
     val isFamilyLensFilterEnabled by
@@ -141,26 +120,40 @@ fun LensSuggestionScreen(
     val isMaterialLensFilterEnabled by
         viewModel.collectAsState(LensPickState::isMaterialLensFilterEnabled)
 
-    val lensGroups by viewModel.collectAsState(LensPickState::groupsFilter)
-    val lensGroupsFilter by viewModel.collectAsState(LensPickState::groupLensFilter)
-
-    val specialties by viewModel.collectAsState(LensPickState::specialtyFilter)
-    val lensSpecialtiesFilter by viewModel.collectAsState(LensPickState::specialtyLensFilter)
-
-    val lensTypes by viewModel.collectAsState(LensPickState::typesFilter)
+    val lensTypes by viewModel.collectAsState(LensPickState::lensesTypesResponse)
+    val isFilterTypesLoading by viewModel.collectAsState(LensPickState::areTypesLoading)
+    val hasFilterTypesFailed by viewModel.collectAsState(LensPickState::hasTypesLoadingFailed)
     val lensTypesFilter by viewModel.collectAsState(LensPickState::typeLensFilter)
 
-    val lensSupplier by viewModel.collectAsState(LensPickState::supplierFilter)
-    val lensSupplierFilter by viewModel.collectAsState(LensPickState::supplierLensFilter)
+    val lensSuppliers by viewModel.collectAsState(LensPickState::lensesSuppliersResponse)
+    val isFilterSuppliersLoading by viewModel.collectAsState(LensPickState::areSuppliersLoading)
+    val hasFilterSuppliersFailed by viewModel.collectAsState(LensPickState::hasSuppliersLoadingFailed)
+    val lensSuppliersFilter by viewModel.collectAsState(LensPickState::supplierLensFilter)
 
-    val lensMaterial by viewModel.collectAsState(LensPickState::materialFilter)
-    val lensMaterialFilter by viewModel.collectAsState(LensPickState::materialLensFilter)
+    val lensFamilies by viewModel.collectAsState(LensPickState::lensesFamiliesResponse)
+    val isFilterFamiliesLoading by viewModel.collectAsState(LensPickState::areFamiliesLoading)
+    val hasFilterFamiliesFailed by viewModel.collectAsState(LensPickState::hasFamiliesLoadingFailed)
+    val lensFamiliesFilter by viewModel.collectAsState(LensPickState::familyLensFilter)
 
-    val lensFamily by viewModel.collectAsState(LensPickState::familyFilter)
-    val lensFamilyFilter by viewModel.collectAsState(LensPickState::familyLensFilter)
+    val lensDescriptions by viewModel.collectAsState(LensPickState::lensesDescriptionsResponse)
+    val isFilterDescriptionsLoading by viewModel.collectAsState(LensPickState::areDescriptionsLoading)
+    val hasFilterDescriptionsFailed by viewModel.collectAsState(LensPickState::hasDescriptionsLoadingFailed)
+    val lensDescriptionsFilter by viewModel.collectAsState(LensPickState::descriptionLensFilter)
 
-    val lensDescription by viewModel.collectAsState(LensPickState::descriptionFilter)
-    val lensDescriptionFilter by viewModel.collectAsState(LensPickState::descriptionLensFilter)
+    val lensMaterials by viewModel.collectAsState(LensPickState::lensesMaterialsResponse)
+    val isFilterMaterialsLoading by viewModel.collectAsState(LensPickState::areMaterialsLoading)
+    val hasFilterMaterialsFailed by viewModel.collectAsState(LensPickState::hasMaterialsLoadingFailed)
+    val lensMaterialsFilter by viewModel.collectAsState(LensPickState::materialLensFilter)
+
+    val lensSpecialties by viewModel.collectAsState(LensPickState::lensesSpecialtiesResponse)
+    val isFilterSpecialtiesLoading by viewModel.collectAsState(LensPickState::areSpecialtiesLoading)
+    val hasFilterSpecialtiesFailed by viewModel.collectAsState(LensPickState::hasSpecialtiesLoadingFailed)
+    val lensSpecialtiesFilter by viewModel.collectAsState(LensPickState::specialtyLensFilter)
+
+    val lensGroups by viewModel.collectAsState(LensPickState::lensesGroupsResponse)
+    val isFilterGroupsLoading by viewModel.collectAsState(LensPickState::areGroupsLoading)
+    val hasFilterGroupsFailed by viewModel.collectAsState(LensPickState::hasGroupsLoadingFailed)
+    val lensGroupsFilter by viewModel.collectAsState(LensPickState::groupLensFilter)
 
     val hasFilterUv by viewModel.collectAsState(LensPickState::hasFilterUv)
     val hasFilterBlue by viewModel.collectAsState(LensPickState::hasFilterBlue)
@@ -204,33 +197,54 @@ fun LensSuggestionScreen(
         hasFilterBlue = hasFilterBlue,
         onFilterBlueChanged = viewModel::onFilterBlueChanged,
 
-        selectedLensGroup = lensGroupsFilter,
-        lensGroups = lensGroups,
-        onPickGroup = viewModel::onPickGroup,
-
-        selectedSpecialty = lensSpecialtiesFilter,
-        lensSpecialties = specialties,
-        onPickSpecialty = viewModel::onPickSpecialty,
-
         selectedLensType = lensTypesFilter,
-        lensTypes = lensTypes,
-        onPickType = viewModel::onPickType,
+        lensFilterTypes = lensTypes,
+        isFilterTypesLoading = isFilterTypesLoading,
+        hasFilterTypesFailed = hasFilterTypesFailed,
+        onLoadFilterTypes = viewModel::loadLensesTypes,
+        onFilterType = viewModel::onPickType,
 
-        selectedLensSupplier = lensSupplierFilter,
-        lensSuppliers = lensSupplier,
-        onPickSupplier = viewModel::onPickSupplier,
+        selectedLensSupplier = lensSuppliersFilter,
+        lensFilterSuppliers = lensSuppliers,
+        isFilterSuppliersLoading = isFilterSuppliersLoading,
+        hasFilterSuppliersFailed = hasFilterSuppliersFailed,
+        onLoadFilterSuppliers = viewModel::loadLensSuppliers,
+        onFilterSupplier = viewModel::onPickSupplier,
 
-        selectedLensMaterial = lensMaterialFilter,
-        lensMaterials = lensMaterial,
-        onPickMaterial = viewModel::onPickMaterial,
+        selectedLensFamily = lensFamiliesFilter,
+        lensFilterFamilies = lensFamilies,
+        isFilterFamiliesLoading = isFilterFamiliesLoading,
+        hasFilterFamiliesFailed = hasFilterFamiliesFailed,
+        onLoadFilterFamilies = viewModel::loadLensFamilies,
+        onFilterFamily = viewModel::onPickFamily,
 
-        selectedLensFamily = lensFamilyFilter,
-        lensFamilies = lensFamily,
-        onPickFamily = viewModel::onPickFamily,
+        selectedLensDescription = lensDescriptionsFilter,
+        lensFilterDescriptions = lensDescriptions,
+        isFilterDescriptionsLoading = isFilterDescriptionsLoading,
+        hasFilterDescriptionsFailed = hasFilterDescriptionsFailed,
+        onLoadFilterDescriptions = viewModel::loadLensDescriptions,
+        onFilterDescription = viewModel::onPickDescription,
 
-        selectedLensDescription = lensDescriptionFilter,
-        lensDescriptions = lensDescription,
-        onPickDescription = viewModel::onPickDescription,
+        selectedLensMaterial = lensMaterialsFilter,
+        lensFilterMaterials = lensMaterials,
+        isFilterMaterialsLoading = isFilterMaterialsLoading,
+        hasFilterMaterialsFailed = hasFilterMaterialsFailed,
+        onLoadFilterMaterials = viewModel::loadLensMaterials,
+        onFilterMaterial = viewModel::onPickMaterial,
+
+        selectedLensSpecialty = lensSpecialtiesFilter,
+        lensFilterSpecialties = lensSpecialties,
+        isFilterSpecialtiesLoading = isFilterSpecialtiesLoading,
+        hasFilterSpecialtiesFailed = hasFilterSpecialtiesFailed,
+        onLoadFilterSpecialties = viewModel::loadLensSpecialties,
+        onFilterSpecialty = viewModel::onPickSpecialty,
+
+        selectedLensGroup = lensGroupsFilter,
+        lensFilterGroups = lensGroups,
+        isFilterGroupsLoading = isFilterGroupsLoading,
+        hasFilterGroupsFailed = hasFilterGroupsFailed,
+        onLoadFilterGroups = viewModel::loadLensGroups,
+        onFilterGroup = viewModel::onPickGroup,
 
         onPickLens = {
             viewModel.onPickLens(it)
@@ -256,33 +270,68 @@ private fun LensSuggestionScreenImpl(
     hasFilterBlue: Boolean = false,
     onFilterBlueChanged: (Boolean) -> Unit = {},
 
-    selectedLensGroup: String = "",
-    lensGroups: Async<List<LensGroupDocument>> = Uninitialized,
-    onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
-
-    selectedSpecialty: String = "",
-    lensSpecialties: Async<List<FilterLensSpecialtyEntity>> = Uninitialized,
-    onPickSpecialty: (specialtyId: String, specialtyName: String) -> Unit = { _, _ -> },
-
     selectedLensType: String = "",
-    lensTypes: Async<List<FilterLensTypeEntity>> = Uninitialized,
-    onPickType: (groupId: String, groupName: String) -> Unit = { _, _ -> },
+    lensFilterTypes: List<LensFilterTypeImpl> = emptyList(),
+    isFilterTypesEnabled: Boolean = true,
+    isFilterTypesLoading: Boolean = false,
+    hasFilterTypesFailed: Boolean = false,
+    onLoadFilterTypes: () -> Unit = {},
+    onRetryFilterTypes: () -> Unit = {},
+    onFilterType: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensSupplier: String = "",
-    lensSuppliers: Async<List<FilterLensSupplierEntity>> = Uninitialized,
-    onPickSupplier: (groupId: String, groupName: String) -> Unit = { _, _ -> },
-
-    selectedLensMaterial: String = "",
-    lensMaterials: Async<List<FilterLensMaterialEntity>> = Uninitialized,
-    onPickMaterial: (materialId: String, materialName: String) -> Unit = { _, _ -> },
+    lensFilterSuppliers: List<LensFilterSupplierImpl> = emptyList(),
+    isFilterSuppliersEnabled: Boolean = true,
+    isFilterSuppliersLoading: Boolean = false,
+    hasFilterSuppliersFailed: Boolean = false,
+    onLoadFilterSuppliers: () -> Unit = {},
+    onRetryFilterSuppliers: () -> Unit = {},
+    onFilterSupplier: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensFamily: String = "",
-    lensFamilies: Async<List<FilterLensFamilyEntity>> = Uninitialized,
-    onPickFamily: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
+    lensFilterFamilies: List<LensFilterFamilyImpl> = emptyList(),
+    isFilterFamiliesEnabled: Boolean = true,
+    isFilterFamiliesLoading: Boolean = false,
+    hasFilterFamiliesFailed: Boolean = false,
+    onLoadFilterFamilies: () -> Unit = {},
+    onRetryFilterFamilies: () -> Unit = {},
+    onFilterFamily: (familyId: String, familyName: String) -> Unit = { _, _ -> },
 
     selectedLensDescription: String = "",
-    lensDescriptions: Async<List<LensDescriptionDocument>> = Uninitialized,
-    onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
+    lensFilterDescriptions: List<LensFilterDescriptionImpl> = emptyList(),
+    isFilterDescriptionsEnabled: Boolean = true,
+    isFilterDescriptionsLoading: Boolean = false,
+    hasFilterDescriptionsFailed: Boolean = false,
+    onLoadFilterDescriptions: () -> Unit = {},
+    onRetryFilterDescriptions: () -> Unit = {},
+    onFilterDescription: (groupId: String, groupName: String) -> Unit = { _, _ -> },
+
+    selectedLensMaterial: String = "",
+    lensFilterMaterials: List<LensFilterMaterialImpl> = emptyList(),
+    isFilterMaterialsEnabled: Boolean = true,
+    isFilterMaterialsLoading: Boolean = false,
+    hasFilterMaterialsFailed: Boolean = false,
+    onLoadFilterMaterials: () -> Unit = {},
+    onRetryFilterMaterials: () -> Unit = {},
+    onFilterMaterial: (groupId: String, groupName: String) -> Unit = { _, _ -> },
+
+    selectedLensSpecialty: String = "",
+    lensFilterSpecialties: List<LensFilterSpecialtyImpl> = emptyList(),
+    isFilterSpecialtiesEnabled: Boolean = true,
+    isFilterSpecialtiesLoading: Boolean = true,
+    hasFilterSpecialtiesFailed: Boolean = false,
+    onLoadFilterSpecialties: () -> Unit = {},
+    onRetryFilterSpecialties: () -> Unit = {},
+    onFilterSpecialty: (groupId: String, groupName: String) -> Unit = { _, _ -> },
+
+    selectedLensGroup: String = "",
+    lensFilterGroups: List<LensFilterGroupImpl> = emptyList(),
+    isFilterGroupsEnabled: Boolean = true,
+    isFilterGroupsLoading: Boolean = false,
+    hasFilterGroupsFailed: Boolean = false,
+    onLoadFilterGroups: () -> Unit = {},
+    onRetryFilterGroups: () -> Unit = {},
+    onFilterGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     onPickLens: (lensId: String) -> Unit = {},
     isAddingSuggestion: Boolean = false,
@@ -291,53 +340,88 @@ private fun LensSuggestionScreenImpl(
 ) {
     val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
 
-    val groupDialogState = rememberMaterialDialogState()
-    PickGroupDialog(
-        dialogState = groupDialogState,
-        groups = lensGroups,
-        onPickGroup = onPickGroup,
-    )
-
-    val specialtyDialogState = rememberMaterialDialogState()
-    PickSpecialtyDialog(
-        dialogState = specialtyDialogState,
-        specialties = lensSpecialties,
-        onPickSpecialty = onPickSpecialty,
-    )
-
     val typeDialogState = rememberMaterialDialogState()
-    PickTypeDialog(
+    FilterLensDialog(
         dialogState = typeDialogState,
-        types = lensTypes,
-        onPickType = onPickType,
+        filterTitleRes = R.string.lens_suggestion_filter_type,
+        filterList = lensFilterTypes,
+        isEnabled = isFilterTypesEnabled,
+        isLoading = isFilterTypesLoading,
+        hasFailed = hasFilterTypesFailed,
+        onPick = onFilterType,
+        onRetry = onRetryFilterTypes,
     )
 
     val supplierDialogState = rememberMaterialDialogState()
-    PickSupplierDialog(
+    FilterLensDialog(
         dialogState = supplierDialogState,
-        suppliers = lensSuppliers,
-        onPickSupplier = onPickSupplier,
-    )
-
-    val materialDialogState = rememberMaterialDialogState()
-    PickMaterialDialog(
-        dialogState = materialDialogState,
-        materials = lensMaterials,
-        onPickMaterial = onPickMaterial,
+        filterTitleRes = R.string.lens_suggestion_filter_supplier,
+        filterList = lensFilterSuppliers,
+        isEnabled = isFilterSuppliersEnabled,
+        isLoading = isFilterSuppliersLoading,
+        hasFailed = hasFilterSuppliersFailed,
+        onPick = onFilterSupplier,
+        onRetry = onRetryFilterSuppliers,
     )
 
     val familyDialogState = rememberMaterialDialogState()
-    PickFamilyDialog(
+    FilterLensDialog(
         dialogState = familyDialogState,
-        families = lensFamilies,
-        onPickFamily = onPickFamily,
+        filterTitleRes = R.string.lens_suggestion_filter_family,
+        filterList = lensFilterFamilies,
+        isEnabled = isFilterFamiliesEnabled,
+        isLoading = isFilterFamiliesLoading,
+        hasFailed = hasFilterFamiliesFailed,
+        onPick = onFilterFamily,
+        onRetry = onRetryFilterFamilies,
     )
 
     val descriptionDialogState = rememberMaterialDialogState()
-    PickDescriptionDialog(
+    FilterLensDialog(
         dialogState = descriptionDialogState,
-        descriptions = lensDescriptions,
-        onPickDescription = onPickDescription,
+        filterTitleRes = R.string.lens_suggestion_filter_description,
+        filterList = lensFilterDescriptions,
+        isEnabled = isFilterDescriptionsEnabled,
+        isLoading = isFilterDescriptionsLoading,
+        hasFailed = hasFilterDescriptionsFailed,
+        onPick = onFilterDescription,
+        onRetry = onRetryFilterDescriptions,
+    )
+
+    val materialDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = materialDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_material,
+        filterList = lensFilterMaterials,
+        isEnabled = isFilterMaterialsEnabled,
+        isLoading = isFilterMaterialsLoading,
+        hasFailed = hasFilterMaterialsFailed,
+        onPick = onFilterMaterial,
+        onRetry = onRetryFilterMaterials,
+    )
+
+    val specialtyDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = specialtyDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_specialty,
+        filterList = lensFilterSpecialties,
+        isEnabled = isFilterSpecialtiesEnabled,
+        isLoading = isFilterSpecialtiesLoading,
+        hasFailed = hasFilterSpecialtiesFailed,
+        onPick = onFilterSpecialty,
+        onRetry = onRetryFilterSpecialties,
+    )
+
+    val groupDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = groupDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_group,
+        filterList = lensFilterGroups,
+        isEnabled = isFilterGroupsEnabled,
+        isLoading = isFilterGroupsLoading,
+        hasFailed = hasFilterGroupsFailed,
+        onPick = onFilterGroup,
+        onRetry = onRetryFilterGroups,
     )
 
     if (isAddingSuggestion) {
@@ -372,26 +456,33 @@ private fun LensSuggestionScreenImpl(
                 hasFilterBlue = hasFilterBlue,
                 onFilterBlueChanged = onFilterBlueChanged,
 
-                selectedLensGroup = selectedLensGroup,
-                groupsDialogState = groupDialogState,
-
-                selectedLensSpecialty = selectedSpecialty,
-                specialtiesDialogState = specialtyDialogState,
-
                 selectedLensType = selectedLensType,
+                onLoadFilterTypes = onLoadFilterTypes,
                 typesDialogState = typeDialogState,
 
                 selectedLensSupplier = selectedLensSupplier,
+                onLoadFilterSuppliers = onLoadFilterSuppliers,
                 suppliersDialogState = supplierDialogState,
 
-                selectedLensMaterial = selectedLensMaterial,
-                materialsDialogState = materialDialogState,
-
                 selectedLensFamily = selectedLensFamily,
+                onLoadFilterFamilies = onLoadFilterFamilies,
                 familiesDialogState = familyDialogState,
 
                 selectedLensDescription = selectedLensDescription,
+                onLoadFilterDescriptions = onLoadFilterDescriptions,
                 descriptionsDialogState = descriptionDialogState,
+
+                selectedLensMaterial = selectedLensMaterial,
+                onLoadFilterMaterials = onLoadFilterMaterials,
+                materialsDialogState = materialDialogState,
+
+                selectedLensSpecialty = selectedLensSpecialty,
+                onLoadFilterSpecialties = onLoadFilterSpecialties,
+                specialtiesDialogState = specialtyDialogState,
+
+                selectedLensGroup = selectedLensGroup,
+                onLoadFilterGroups = onLoadFilterGroups,
+                groupsDialogState = groupDialogState,
 
                 onHideSearchScreen = { showSearchScreen.value = false },
             )
@@ -485,273 +576,6 @@ private fun TierSuggestion(
     }
 }
 
-@Composable
-private fun PickGroupDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    groups: Async<List<LensGroupDocument>> = Uninitialized,
-    onPickGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
-) {
-    val groupsList: List<LensGroupDocument>
-
-    if (groups is Success) {
-        groupsList = groups.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_group_none))
-            val options = noneOption + groupsList.map { it.name }
-
-
-            // TODO: use string resource
-            title("Selecione a categoria")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickGroup("", "")
-                } else {
-                    onPickGroup(groupsList[index - 1].id, groupsList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickSpecialtyDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    specialties: Async<List<FilterLensSpecialtyEntity>> = Uninitialized,
-    onPickSpecialty: (groupId: String, groupName: String) -> Unit = { _, _ -> },
-) {
-    val specialtiesList: List<FilterLensSpecialtyEntity>
-
-    if (specialties is Success) {
-        specialtiesList = specialties.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_group_none))
-            val options = noneOption + specialtiesList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione a especialidade")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickSpecialty("", "")
-                } else {
-                    onPickSpecialty(specialtiesList[index - 1].id, specialtiesList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickTypeDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    types: Async<List<FilterLensTypeEntity>> = Uninitialized,
-    onPickType: (typeId: String, typeName: String) -> Unit = { _, _ -> },
-) {
-    val typesList: List<FilterLensTypeEntity>
-
-    if (types is Success) {
-        typesList = types.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_type_none))
-            val options = noneOption + typesList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione o tipo")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickType("", "")
-                } else {
-                    onPickType(typesList[index - 1].id, typesList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickSupplierDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    suppliers: Async<List<FilterLensSupplierEntity>> = Uninitialized,
-    onPickSupplier: (typeId: String, typeName: String) -> Unit = { _, _ -> },
-) {
-    val suppliersList: List<FilterLensSupplierEntity>
-
-    if (suppliers is Success) {
-        suppliersList = suppliers.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
-            val options = noneOption + suppliersList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione o fornecedor")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickSupplier("", "")
-                } else {
-                    onPickSupplier(suppliersList[index - 1].id, suppliersList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickMaterialDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    materials: Async<List<FilterLensMaterialEntity>> = Uninitialized,
-    onPickMaterial: (materialId: String, materialName: String) -> Unit = { _, _ -> },
-) {
-    val materialsList: List<FilterLensMaterialEntity>
-
-    if (materials is Success) {
-        materialsList = materials.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
-            val options = noneOption + materialsList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione o material")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickMaterial("", "")
-                } else {
-                    onPickMaterial(materialsList[index - 1].id, materialsList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickFamilyDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    families: Async<List<FilterLensFamilyEntity>> = Uninitialized,
-    onPickFamily: (familyId: String, familyName: String) -> Unit = { _, _ -> },
-) {
-    val familiesList: List<FilterLensFamilyEntity>
-
-    if (families is Success) {
-        familiesList = families.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
-            val options = noneOption + familiesList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione a família")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickFamily("", "")
-                } else {
-                    onPickFamily(familiesList[index - 1].id, familiesList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PickDescriptionDialog(
-    dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    descriptions: Async<List<LensDescriptionDocument>> = Uninitialized,
-    onPickDescription: (descriptionId: String, descriptionName: String) -> Unit = { _, _ -> },
-) {
-    val descriptionsList: List<LensDescriptionDocument>
-
-    if (descriptions is Success) {
-        descriptionsList = descriptions.invoke()
-
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
-            },
-        ) {
-            val noneOption = listOf(stringResource(id = R.string.lens_suggestion_pick_supplier_none))
-            val options = noneOption + descriptionsList.map { it.name }
-
-            // TODO: use string resource
-            title("Selecione a descrição")
-
-            listItems(
-                list = options
-            ) { index, item ->
-                if (item == noneOption[0]) {
-                    onPickDescription("", "")
-                } else {
-                    onPickDescription(descriptionsList[index - 1].id, descriptionsList[index - 1].name)
-                }
-
-                dialogState.hide()
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -772,28 +596,37 @@ private fun LensSuggestionList(
     hasFilterBlue: Boolean = false,
     onFilterBlueChanged: (Boolean) -> Unit = {},
 
-    selectedLensGroup: String = "",
-    groupsDialogState: MaterialDialogState = rememberMaterialDialogState(),
-
-    selectedLensSpecialty: String = "",
-    specialtiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
-
     selectedLensType: String = "",
+    onLoadFilterTypes: () -> Unit = {},
     typesDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
     selectedLensSupplier: String = "",
+    onLoadFilterSuppliers: () -> Unit = {},
     suppliersDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
-    selectedLensMaterial: String = "",
-    materialsDialogState: MaterialDialogState = rememberMaterialDialogState(),
-
     selectedLensFamily: String = "",
+    onLoadFilterFamilies: () -> Unit = {},
     familiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
 
     selectedLensDescription: String = "",
+    onLoadFilterDescriptions: () -> Unit = {},
     descriptionsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    selectedLensMaterial: String = "",
+    onLoadFilterMaterials: () -> Unit = {},
+    materialsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    selectedLensSpecialty: String = "",
+    onLoadFilterSpecialties: () -> Unit = {},
+    specialtiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
+
+    selectedLensGroup: String = "",
+    onLoadFilterGroups: () -> Unit = {},
+    groupsDialogState: MaterialDialogState = rememberMaterialDialogState(),
 ) {
-    val scaffoldState = rememberBackdropScaffoldState(initialValue = BackdropValue.Revealed)
+    val scaffoldState = rememberBackdropScaffoldState(
+        initialValue = BackdropValue.Revealed,
+    )
 
     val headerHeight = 60.dp
 
@@ -838,27 +671,29 @@ private fun LensSuggestionList(
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
-                        title = if (selectedLensType.isEmpty()) {
+                        title = selectedLensType.ifEmpty {
                             stringResource(id = R.string.lens_suggestion_filter_type)
-                        } else {
-                            selectedLensType
                         },
-                        onClick = { typesDialogState.show() },
+                        onClick = {
+                            onLoadFilterTypes()
+                            typesDialogState.show()
+                        },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     FilterButton(
-                            modifier = Modifier
-                                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                                .width(240.dp)
-                                .padding(horizontal = 16.dp),
-                    title = if (selectedLensSupplier.isEmpty()) {
-                        stringResource(id = R.string.lens_suggestion_filter_supplier)
-                    } else {
-                        selectedLensSupplier
-                    },
-                    onClick = { suppliersDialogState.show() },
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        title = selectedLensSupplier.ifEmpty {
+                            stringResource(id = R.string.lens_suggestion_filter_supplier)
+                        },
+                        onClick = {
+                            onLoadFilterSuppliers()
+                            suppliersDialogState.show()
+                        },
                     )
                 }
 
@@ -870,36 +705,35 @@ private fun LensSuggestionList(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     FilterButton(
-                            modifier = Modifier
-                                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                                .width(240.dp)
-                                .padding(horizontal = 16.dp),
-                    enabled = isFamilyLensFilterEnabled,
-                    title = if (selectedLensFamily.isEmpty()) {
-                        stringResource(id = R.string.lens_suggestion_filter_family)
-                    } else {
-                        selectedLensFamily
-                    },
-                    onClick = { familiesDialogState.show() },
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        enabled = isFamilyLensFilterEnabled,
+                        title = selectedLensFamily.ifEmpty {
+                            stringResource(id = R.string.lens_suggestion_filter_family)
+                        },
+                        onClick = {
+                            onLoadFilterFamilies()
+                            familiesDialogState.show()
+                        },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     FilterButton(
-                            modifier = Modifier
-                                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                                .width(240.dp)
-                                .padding(horizontal = 16.dp),
-                    enabled = isDescriptionLensFilterEnabled,
-                    title = if (selectedLensDescription.isEmpty()) {
-                        stringResource(id = R.string.lens_suggestion_filter_description)
-                    } else {
-                        selectedLensDescription
-                    },
-                    onClick = {
-                        Timber.i("Showing description dialog")
-                        descriptionsDialogState.show()
-                    },
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        enabled = isDescriptionLensFilterEnabled,
+                        title = selectedLensDescription.ifEmpty {
+                            stringResource(id = R.string.lens_suggestion_filter_description)
+                        },
+                        onClick = {
+                            onLoadFilterDescriptions()
+                            descriptionsDialogState.show()
+                        },
                     )
                 }
 
@@ -911,17 +745,18 @@ private fun LensSuggestionList(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     FilterButton(
-                            modifier = Modifier
-                                .height(SalesAppTheme.dimensions.minimum_touch_target)
-                                .width(240.dp)
-                                .padding(horizontal = 16.dp),
-                    enabled = isMaterialLensFilterEnabled,
-                    title = if (selectedLensMaterial.isEmpty()) {
-                        stringResource(id = R.string.lens_suggestion_filter_material)
-                    } else {
-                        selectedLensMaterial
-                    },
-                    onClick = { materialsDialogState.show() },
+                        modifier = Modifier
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .width(240.dp)
+                            .padding(horizontal = 16.dp),
+                        enabled = isMaterialLensFilterEnabled,
+                        title = selectedLensMaterial.ifEmpty {
+                            stringResource(id = R.string.lens_suggestion_filter_material)
+                        },
+                        onClick = {
+                            onLoadFilterMaterials()
+                            materialsDialogState.show()
+                        },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -934,7 +769,10 @@ private fun LensSuggestionList(
                         title = selectedLensSpecialty.ifEmpty {
                             stringResource(id = R.string.lens_suggestion_filter_specialty)
                         },
-                        onClick = { specialtiesDialogState.show() },
+                        onClick = {
+                            onLoadFilterSpecialties()
+                            specialtiesDialogState.show()
+                        },
                     )
                 }
 
@@ -950,12 +788,13 @@ private fun LensSuggestionList(
                             .height(SalesAppTheme.dimensions.minimum_touch_target)
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
-                        title = if (selectedLensGroup.isEmpty()) {
+                        title = selectedLensGroup.ifEmpty {
                             stringResource(id = R.string.lens_suggestion_filter_group)
-                        } else {
-                            selectedLensGroup
                         },
-                        onClick = { groupsDialogState.show() }
+                        onClick = {
+                            onLoadFilterGroups()
+                            groupsDialogState.show()
+                        }
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -966,18 +805,6 @@ private fun LensSuggestionList(
                             .width(240.dp)
                             .padding(horizontal = 16.dp),
                     )
-//                    FilterButton(
-//                        modifier = Modifier
-//                            .height(SalesAppTheme.dimensions.minimum_touch_target)
-//                            .width(240.dp)
-//                            .padding(horizontal = 16.dp),
-//                        title = if (selectedLensGroup.isEmpty()) {
-//                            stringResource(id = R.string.lens_suggestion_filter_group)
-//                        } else {
-//                            selectedLensGroup
-//                        },
-//                        onClick = { groupsDialogState.show() }
-//                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -1129,7 +956,7 @@ private fun LensSuggestionList(
                                         PeyessProgressIndicatorInfinite(
                                             modifier = Modifier
                                                 .padding(vertical = 16.dp)
-                                                .height(frontLayerheight)
+                                                .height(frontLayerHeight)
                                         )
                                     }
                                 }
@@ -1167,7 +994,7 @@ private fun LensSuggestionList(
             }
         },
         peekHeight = 40.dp,
-        headerHeight = frontLayerheight,
+        headerHeight = frontLayerHeight,
         gesturesEnabled = true,
     )
 }
@@ -1193,320 +1020,6 @@ private fun ErrorItem(
 
         Spacer(modifier = Modifier.height(16.dp))
     }
-}
-
-@Composable
-private fun FilterButton(
-    modifier: Modifier = Modifier,
-    title: String = "",
-    onClick: () -> Unit = {},
-    enabled: Boolean = true,
-) {
-    OutlinedButton(
-        modifier = modifier,
-        border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.onPrimary),
-        colors = ButtonDefaults
-            .buttonColors(
-                backgroundColor = MaterialTheme.colors.primary,
-                disabledBackgroundColor = Color.Gray.copy(alpha = 0.5f),
-            ),
-        enabled = enabled,
-        onClick = onClick,
-    ) {
-        Text(text = title, color = MaterialTheme.colors.onPrimary)
-    }
-}
-
-@Composable
-private fun LensCard(
-    modifier: Modifier = Modifier,
-    lens: LensPickModel = LensPickModel(),
-    onPickLens: (lensId: String) -> Unit = {},
-) {
-    ExpandableCard(
-        modifier = modifier.border(
-            width = 1.dp,
-            color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-            shape = Shapes.medium,
-        ),
-
-        visibleContent = {
-            Column(
-                modifier = Modifier
-                    .height(60.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    LensCircle(
-                        color = Color.Green
-//                        color = if (lens.isAvailable) {
-//                            if (lens.needsCheck) {
-//                                Color.Yellow
-//                            } else {
-//                                Color.Green
-//                            }
-//                        } else {
-//                            Color.Gray
-//                        }
-                    )
-
-                    Spacer(modifier = Modifier.width(32.dp))
-
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = lens.name,
-                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                        color = if (lens.isAvailable) {
-                            MaterialTheme.colors.primary
-                        } else {
-                            Color.Gray
-                        }
-                    )
-                }
-            }
-        },
-
-        expandableContent = {
-            Column(
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Divider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    } else {
-                        Color.Gray
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-                Text(
-                    text = lens.supplier,
-                    style = MaterialTheme.typography.body1
-                        .copy(textAlign = TextAlign.Center, fontWeight = FontWeight.Bold),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray
-                    },
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = lens.observation,
-                    style = MaterialTheme.typography.body1
-                        .copy(textAlign = TextAlign.Center),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray
-                    }
-                )
-
-
-                Spacer(modifier = Modifier.height(24.dp))
-                Divider(
-                    modifier = Modifier.padding(horizontal = 120.dp),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    } else {
-                        Color.Gray
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    if (lens.explanations.isNotEmpty()) {
-                        Text(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(8.dp),
-                            text = lens.explanations[0],
-                            style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                            color = if (lens.isAvailable) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                Color.Gray
-                            },
-                        )
-                    }
-
-                    if (lens.explanations.size >= 2) {
-                        Text(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(8.dp),
-                            text = lens.explanations[1],
-                            style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                            color = if (lens.isAvailable) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                Color.Gray
-                            },
-                        )
-                    }
-                }
-
-                if (lens.explanations.size >= 3) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = lens.explanations[2],
-                        style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-                        color = if (lens.isAvailable) {
-                            MaterialTheme.colors.primary
-                        } else {
-                            Color.Gray
-                        },
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-                Divider(
-                    modifier = Modifier.padding(horizontal = 120.dp),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    } else {
-                        Color.Gray
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = if (lens.hasFilterUv) {
-                            Icons.Filled.WbTwilight
-                        } else {
-                            Icons.Filled.WbSunny
-                        },
-                        tint = if (
-                            lens.isNotAvailable
-                            || !lens.hasFilterUv
-                        ) {
-                            Color.Gray
-                        } else {
-                            withFilterColor
-                        },
-                        contentDescription = "",
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Icon(
-                        imageVector = if (lens.hasFilterBlue) {
-                            Icons.Filled.FlashlightOn
-                        } else {
-                            Icons.Filled.FlashlightOff
-                        },
-                        tint = if (
-                            lens.isNotAvailable
-                            || !lens.hasFilterBlue
-                        ) {
-                            Color.Gray
-                        } else {
-                            withFilterColor
-                        },
-                        contentDescription = "",
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Divider(
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary.copy(alpha = 0.3f)
-                    } else {
-                        Color.Gray.copy(alpha = 0.3f)
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // TODO: add installments from store config data
-                    LensPrice(
-                        price = lens.price,
-                        installments = BigDecimal(10.0),
-                        color = if (lens.isAvailable) {
-                            MaterialTheme.colors.primary
-                        } else {
-                            Color.Gray
-                        }
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    TextButton(
-                        enabled = lens.isAvailable,
-                        onClick = { onPickLens(lens.id) }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
-                            color = if (lens.isAvailable) {
-                                MaterialTheme.colors.primary
-                            } else {
-                                Color.Gray
-                            }
-                        )
-                    }
-                }
-
-                if (
-                    lens.isNotAvailable
-                    && lens.reasonsUnavailable.isNotEmpty()
-                ) {
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = lens.reasonsUnavailable[0],
-                            color = MaterialTheme.colors.error
-                        )
-                    }
-                }
-            }
-        }
-    )
-}
-
-@Composable
-private fun LensCircle(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.primary,
-) {
-    Box(
-        modifier = modifier
-            .background(color = color, shape = CircleShape)
-            .border(
-                border = BorderStroke(width = 2.dp, color = color),
-                shape = CircleShape,
-            )
-            .width(10.dp)
-            .height(10.dp),
-    )
 }
 
 @Composable
@@ -1712,11 +1225,11 @@ private fun LensSuggestionCard(
                 )
 
                 // TODO: get installments from store settings
-                LensPrice(
-                    price = BigDecimal(lens.price),
-                    installments = BigDecimal(10.0),
-                    style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
-                )
+//                LensPrice(
+//                    price = BigDecimal(lens.price),
+//                    installments = BigDecimal(10.0),
+//                    style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
+//                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -1825,22 +1338,6 @@ private fun LensSuggestionCardPreview() {
 
 @Preview
 @Composable
-private fun FilterButtonPreview() {
-    SalesAppTheme {
-        FilterButton(modifier = Modifier.width(120.dp), title = "Fornecedor")
-    }
-}
-
-@Preview
-@Composable
-private fun LensCirclePreview() {
-    SalesAppTheme {
-        LensCircle()
-    }
-}
-
-@Preview
-@Composable
 private fun LensCardPreview() {
     SalesAppTheme {
         LensCard(
@@ -1866,37 +1363,7 @@ private fun LensCardPreview() {
     }
 }
 
-@Preview
-@Composable
-private fun LensPrice(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.primary,
-    style: TextStyle = MaterialTheme.typography.h6,
-    price: BigDecimal = BigDecimal(2500.0),
-    installments: BigDecimal = BigDecimal(10.0),
-) {
-    Box(modifier = modifier) {
-        Text(
-            modifier = Modifier
-                .padding(
-                    horizontal = 28.dp,
-                    vertical = 12.dp,
-                )
-                .align(Alignment.Center),
-            // TODO: localize price symbol
-            text = NumberFormat.getCurrencyInstance().format(price / installments),
-            style = MaterialTheme.typography.h6,
-            color = color,
-        )
 
-        Text(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            text = "$installments X",
-            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
-            color = color,
-        )
-    }
-}
 
 @Preview
 @Composable

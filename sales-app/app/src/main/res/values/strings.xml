@@ -3,6 +3,9 @@
     <string name="error_msg_default">Algo inesperado aconteceu, por favor tente novamente</string>
     <string name="empty_string" />
 
+    <string name="error_generic">Infelizmente algo deu errado :(</string>
+    <string name="error_generic_retry">Tentar novamente</string>
+
     <string name="channel_name_products_table">Atualização de produtos</string>
     <string name="channel_description_products_table">Notificações sobre atualizações de produtos</string>
 
@@ -251,6 +254,9 @@
 
     <string name="lens_suggestion_filter_none_found">Infelizmente não encontramos nenhuma lente compatível com as restrições do cliente</string>
     <string name="lens_suggestion_filter_title">Filtre e encontre mais lentes</string>
+
+    <string name="lens_filter_action_cancel">Cancelar</string>
+    <string name="lens_filter_action_pick">Selecionar</string>
 
     <string name="lens_incompatible_reason_compatible">A lente é compatível com as exigências do cliente</string>
     <string name="lens_incompatible_reason_required_mono">A lente é monofocal, mas o cliente precisa de uma multifocal</string>

@@ -16,6 +16,13 @@ import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensSupplierEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTechEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeCategoryEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensTypeEntity
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensGroupDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensDescriptionDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensFamilyDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensMaterialDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensSpecialtyDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensSupplierDocument
+import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensTypeDocument
 import com.peyess.salesapp.data.adapter.lenses.room.treatment.toLocalLensTreatmentEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensMaterialTypeEntity
@@ -35,6 +42,13 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialT
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesDescriptionDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesFamilyDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesGroupDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesMaterialDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSpecialtyDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSupplierDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesTypeDBView
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -272,8 +286,8 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
         Either.catch {
-            val selectQuery = "SELECT * FROM ${LocalLensWithDetailsDBView.viewName}"
-            val sqlQuery = query.toSqlQuery(selectQuery)
+            val selectStatement = "SELECT * FROM ${LocalLensWithDetailsDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
 
             val lensesPagingSource = localLensDao.getFilteredLenses(sqlQuery)
 
@@ -281,6 +295,111 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 originalSource = lensesPagingSource,
                 mapper = { it.toStoreLensWithDetailsDocument() }
             )
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredTypes(query: PeyessQuery): LensesTypesResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesTypeDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredTypes(sqlQuery)
+                .map { it.toStoreLensTypeDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredSuppliers(query: PeyessQuery): LensesSuppliersResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesSupplierDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredSuppliers(sqlQuery)
+                .map { it.toStoreLensSupplierDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredFamilies(query: PeyessQuery): LensesFamiliesResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesFamilyDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredFamilies(sqlQuery)
+                .map { it.toStoreLensFamilyDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredDescriptions(query: PeyessQuery): LensesDescriptionsResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesDescriptionDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredDescriptions(sqlQuery)
+                .map { it.toStoreLensDescriptionDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredMaterials(query: PeyessQuery): LensesMaterialsResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesMaterialDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredMaterials(sqlQuery)
+                .map { it.toStoreLensMaterialDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredSpecialties(query: PeyessQuery): LensesSpecialtiesResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesSpecialtyDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredSpecialties(sqlQuery)
+                .map { it.toStoreLensSpecialtyDocument() }
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getFilteredGroups(query: PeyessQuery): LensesGroupsResponse =
+        Either.catch {
+            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesGroupDBView.viewName}"
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao
+                .getFilteredGroups(sqlQuery)
+                .map { it.toStoreLensGroupDocument() }
         }.mapLeft {
             Unexpected(
                 description = "Unexpected error: ${it.message}",

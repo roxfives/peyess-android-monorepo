@@ -38,6 +38,20 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatment
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesGroupDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesDescriptionDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesFamilyDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesMaterialDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSpecialtyDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSupplierDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesTypeDBView
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesGroupSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesDescriptionSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesFamilySimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesMaterialSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesSpecialtySimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesSupplierSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTypeSimplified
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 
@@ -138,12 +152,36 @@ interface LocalLensDao {
     suspend fun addLensDetails(entity: LocalLensDetailsCrossRef)
 
     @Transaction
-    @Query("SELECT * FROM ${LocalLensWithDetailsDBView.viewName}")
-    fun getAllLenses(): PagingSource<Int, LocalLensWithDetails>
-
-    @Transaction
     @RawQuery(observedEntities = [LocalLensWithDetailsDBView::class])
     fun getFilteredLenses(query: SimpleSQLiteQuery): PagingSource<Int, LocalLensWithDetails>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesTypeDBView::class])
+    fun getFilteredTypes(query: SimpleSQLiteQuery): List<LocalLensesTypeSimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesSupplierDBView::class])
+    fun getFilteredSuppliers(query: SimpleSQLiteQuery): List<LocalLensesSupplierSimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesFamilyDBView::class])
+    fun getFilteredFamilies(query: SimpleSQLiteQuery): List<LocalLensesFamilySimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesDescriptionDBView::class])
+    fun getFilteredDescriptions(query: SimpleSQLiteQuery): List<LocalLensesDescriptionSimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesMaterialDBView::class])
+    fun getFilteredMaterials(query: SimpleSQLiteQuery): List<LocalLensesMaterialSimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesSpecialtyDBView::class])
+    fun getFilteredSpecialties(query: SimpleSQLiteQuery): List<LocalLensesSpecialtySimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensesGroupDBView::class])
+    fun getFilteredGroups(query: SimpleSQLiteQuery): List<LocalLensesGroupSimplified>
 
     @Query(
         """

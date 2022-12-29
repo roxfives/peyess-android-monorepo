@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -206,7 +207,7 @@ class HtmlGeneratorKtTest {
                 price = faker.number().randomDouble(2, 1000, 2000),
                 discount = DiscountDescriptionDocument(
                     method = DiscountCalcMethod.None,
-                    value = 0.0,
+                    value = BigDecimal(0.0),
                 ),
             ),
             treatments = ProductSoldDescriptionDocument(
@@ -216,7 +217,7 @@ class HtmlGeneratorKtTest {
                 price = faker.number().randomDouble(2, 1000, 2000),
                 discount = DiscountDescriptionDocument(
                     method = DiscountCalcMethod.None,
-                    value = 0.0,
+                    value = BigDecimal(0.0),
                 ),
             ),
             colorings = ProductSoldDescriptionDocument(
@@ -226,7 +227,7 @@ class HtmlGeneratorKtTest {
                 price = faker.number().randomDouble(2, 1000, 2000),
                 discount = DiscountDescriptionDocument(
                     method = DiscountCalcMethod.None,
-                    value = 0.0,
+                    value = BigDecimal(0.0),
                 ),
             ),
         )
@@ -241,7 +242,10 @@ class HtmlGeneratorKtTest {
             type = FramesType.MetalEnclosed,
             units = 1,
             price = faker.number().randomDouble(2, 1000, 5000),
-            discount = DiscountDescriptionDocument(method = DiscountCalcMethod.None, value = 0.0),
+            discount = DiscountDescriptionDocument(
+                method = DiscountCalcMethod.None,
+                value = BigDecimal(0.0),
+            ),
         )
 
         val miscProducts = emptyList<ProductSoldDescriptionDocument>()

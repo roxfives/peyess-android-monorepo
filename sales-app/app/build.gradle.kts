@@ -182,4 +182,5 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.9")
     testImplementation("net.datafaker:datafaker:1.6.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.5.4")
 }

@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import arrow.core.Either
+import arrow.core.leftIfNull
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
@@ -25,16 +27,23 @@ import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import com.peyess.salesapp.repository.sale.error.ActiveSaleError
+import com.peyess.salesapp.repository.sale.error.ActiveSaleNotFound
+import com.peyess.salesapp.repository.sale.error.ActiveSaleNotRegistered
+import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
+import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotFound
+import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotRegistered
+import com.peyess.salesapp.repository.sale.error.Unexpected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +51,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
@@ -79,9 +89,9 @@ class SaleRepositoryImpl @Inject constructor(
             .dataStoreCurrentSale
             .data
             .flatMapLatest { prefs ->
-                val saleId = prefs[currentSOKey]
+                val soId = prefs[currentSOKey]
 
-                activeSODao.getById(saleId ?: "")
+                activeSODao.getById(soId ?: "")
             }.retryWhen { _ , attempt ->
                 attempt < currentSOThreshold
             }.shareIn(
@@ -263,12 +273,70 @@ class SaleRepositoryImpl @Inject constructor(
         return currentSale
     }
 
+    override suspend fun currentSale(): ActiveSaleResponse = Either.catch {
+        salesApplication
+            .dataStoreCurrentSale
+            .data
+            .map { it[currentSaleKey] }
+            .first()
+    }.leftIfNull {
+        ActiveSaleNotRegistered(message = "No active sale registered on data source")
+    }.map {
+        activeSalesDao.getSaleById(it)
+    }.leftIfNull {
+        ActiveSaleNotFound(message = "No active sale found on database")
+    }.mapLeft {
+        when (it) {
+            is ActiveSaleError -> {
+                it
+            }
+
+            else -> {
+                val error = if (it is Throwable) { it } else { null }
+
+                Unexpected(
+                    message = "Unexpected error while getting active sale: ${error?.message}",
+                    error = error,
+                )
+            }
+        }
+    }
+
     override fun updateActiveSO(activeSOEntity: ActiveSOEntity) {
         activeSODao.update(activeSOEntity)
     }
 
     override fun activeSO(): Flow<ActiveSOEntity?> {
         return currentSO
+    }
+
+    override suspend fun currentServiceOrder(): ActiveServiceOrderResponse = Either.catch {
+        salesApplication
+            .dataStoreCurrentSale
+            .data
+            .map { it[currentSOKey] }
+            .first()
+    }.leftIfNull {
+        ActiveServiceOrderNotRegistered(message = "No active service order registered on data source")
+    }.map {
+        activeSODao.getServiceOrderById(it)
+    }.leftIfNull {
+        ActiveServiceOrderNotFound(message = "No active sale found on database")
+    }.mapLeft {
+        when (it) {
+            is ActiveServiceOrderError -> {
+                it
+            }
+
+            else -> {
+                val error = if (it is Throwable) { it } else { null }
+
+                Unexpected(
+                    message = "Unexpected error while getting active sale: ${error?.message}",
+                    error = error,
+                )
+            }
+        }
     }
 
     override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {

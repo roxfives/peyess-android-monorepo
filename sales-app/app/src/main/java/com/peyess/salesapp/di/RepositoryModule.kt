@@ -62,6 +62,8 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryImpl
+import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
+import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepositoryImpl
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
@@ -348,6 +350,16 @@ object RepositoryModule {
     ): LocalFramesRepository {
         return LocalFramesRepositoryImpl(
             framesDataDao = framesDataDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalMeasuringRepository(
+        positioningDao: PositioningDao,
+    ): LocalMeasuringRepository {
+        return LocalMeasuringRepositoryImpl(
+            positioningDao = positioningDao,
         )
     }
 }

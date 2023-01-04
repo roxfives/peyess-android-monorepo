@@ -14,4 +14,7 @@ interface PositioningDao {
 
     @Query("SELECT * FROM ${PositioningEntity.tableName} as p WHERE p.so_id = :soId AND p.eye = :eye ")
     fun getById(soId: String, eye: Eye): Flow<PositioningEntity?>
+
+    @Query("SELECT * FROM ${PositioningEntity.tableName} as p WHERE p.so_id = :soId AND p.eye = :eye ")
+    suspend fun getPositioningForServiceOrder(soId: String, eye: Eye): PositioningEntity?
 }

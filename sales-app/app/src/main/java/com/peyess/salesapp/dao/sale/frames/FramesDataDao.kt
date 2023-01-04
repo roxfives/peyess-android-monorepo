@@ -16,4 +16,7 @@ interface FramesDataDao {
 
     @Query("SELECT * FROM ${FramesEntity.tableName} as p WHERE p.so_id = :soId ")
     fun getById(soId: String): Flow<FramesEntity?>
+
+    @Query("SELECT * FROM ${FramesEntity.tableName} as p WHERE p.so_id = :soId ")
+    suspend fun getFramesForServiceOrder(soId: String): FramesEntity?
 }

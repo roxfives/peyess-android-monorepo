@@ -74,17 +74,25 @@ sealed class FramesType {
 //    ]
 )
 data class FramesEntity(
-    @PrimaryKey @ColumnInfo(name = "so_id") val soId: String = "",
+    @PrimaryKey @ColumnInfo(name = "so_id")
+    val soId: String = "",
 
-    @ColumnInfo(name = "is_new") val areFramesNew: Boolean = false,
+    @ColumnInfo(name = "is_new")
+    val areFramesNew: Boolean = false,
 
-    @ColumnInfo(name = "description") val description: String = "",
-    @ColumnInfo(name = "reference") val reference: String = "",
-    @ColumnInfo(name = "value") val value: Double = 0.0,
-    @ColumnInfo(name = "tag_code") val tagCode: String = "",
-    @ColumnInfo(name = "type") val type: FramesType = FramesType.None,
+    @ColumnInfo(name = "description")
+    val description: String = "",
+    @ColumnInfo(name = "reference")
+    val reference: String = "",
+    @ColumnInfo(name = "value")
+    val value: Double = 0.0,
+    @ColumnInfo(name = "tag_code")
+    val tagCode: String = "",
+    @ColumnInfo(name = "type")
+    val type: FramesType = FramesType.None,
 
-    @ColumnInfo(name = "info") val framesInfo: String = "",
+    @ColumnInfo(name = "info")
+    val framesInfo: String = "",
 ) {
     companion object {
         const val tableName = "frames_data"

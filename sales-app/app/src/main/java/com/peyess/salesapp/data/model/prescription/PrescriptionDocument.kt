@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.prescription
 
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
+import com.peyess.salesapp.typing.prescription.PrismPosition
 import java.time.ZonedDateTime
 
 data class PrescriptionDocument(

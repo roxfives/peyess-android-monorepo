@@ -6,8 +6,8 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.typing.prescription.PrismPosition
 
 data class PrescriptionDataState(
     val clientName: Async<String> = Uninitialized,

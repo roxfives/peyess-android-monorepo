@@ -1,6 +1,6 @@
 package com.peyess.salesapp.feature.sale.prescription_data.state
 
-import androidx.annotation.RawRes
+
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -8,9 +8,27 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.constants.maxAddition
+import com.peyess.salesapp.constants.maxAxis
+import com.peyess.salesapp.constants.maxCylindrical
+import com.peyess.salesapp.constants.maxPrismAxis
+import com.peyess.salesapp.constants.maxPrismDegree
+import com.peyess.salesapp.constants.maxSpherical
+import com.peyess.salesapp.constants.minAddition
+import com.peyess.salesapp.constants.minAxis
+import com.peyess.salesapp.constants.minCylindrical
+import com.peyess.salesapp.constants.minPrismAxis
+import com.peyess.salesapp.constants.minPrismDegree
+import com.peyess.salesapp.constants.minSpherical
+import com.peyess.salesapp.constants.stepAddition
+import com.peyess.salesapp.constants.stepAxis
+import com.peyess.salesapp.constants.stepCylindrical
+import com.peyess.salesapp.constants.stepPrismAxis
+import com.peyess.salesapp.constants.stepPrismDegree
+import com.peyess.salesapp.constants.stepSpherical
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.typing.prescription.PrismPosition
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -18,32 +36,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-
-private const val defaultStep = 0.25
-
-const val stepSpherical = defaultStep
-const val minSpherical = -30.0
-const val maxSpherical = 25.0
-
-const val stepCylindrical = defaultStep
-const val minCylindrical = -9.0
-const val maxCylindrical = 0.0
-
-const val stepAxis = 5.0 // 10.0
-const val minAxis = 0.0
-const val maxAxis = 180.0
-
-const val stepAddition = defaultStep
-const val minAddition = 0.75
-const val maxAddition = 4.5
-
-const val stepPrismDegree = 1.0
-const val minPrismDegree = 1.0
-const val maxPrismDegree = 45.0
-
-const val stepPrismAxis = 5.0 // 10.0
-const val minPrismAxis = 0.0 // 1.0
-const val maxPrismAxis = 360.0
 
 class PrescriptionDataViewModel @AssistedInject constructor(
     @Assisted initialState: PrescriptionDataState,

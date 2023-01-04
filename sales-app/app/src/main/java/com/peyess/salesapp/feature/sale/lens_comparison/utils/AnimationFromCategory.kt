@@ -1,7 +1,7 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.utils
 
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 
 fun animationFromCategory(categoryName: String, prescription: PrescriptionDataEntity): Int {
     val name = categoryName.lowercase()

@@ -64,11 +64,11 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
+import com.peyess.salesapp.constants.minAddition
+import com.peyess.salesapp.constants.minPrismDegree
+import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataState
 import com.peyess.salesapp.feature.sale.prescription_data.state.PrescriptionDataViewModel
-import com.peyess.salesapp.feature.sale.prescription_data.state.minAddition
-import com.peyess.salesapp.feature.sale.prescription_data.state.minPrismDegree
 import com.peyess.salesapp.navigation.sale.prescription.isUpdatingParam
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
@@ -1042,7 +1042,7 @@ fun TextSelectInput(
             Timber.i("Picking from (${PrismPosition.listOfPositions.size}) ${PrismPosition.listOfPositions}")
             Timber.i("Picking at index $index: ${PrismPosition.listOfPositions[index]}")
 
-            val pick = PrismPosition.listOfPositions[index] ?: PrismPosition.None
+            val pick = PrismPosition.listOfPositions[index]
 
             onPick(pick)
             dialogState.hide()

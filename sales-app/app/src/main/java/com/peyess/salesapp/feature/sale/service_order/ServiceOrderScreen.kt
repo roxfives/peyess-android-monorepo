@@ -84,9 +84,9 @@ import com.peyess.salesapp.dao.products.room.local_treatment.name
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.typing.prescription.PrismPosition
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState

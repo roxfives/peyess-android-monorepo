@@ -1,7 +1,7 @@
 package com.peyess.salesapp.database.room.converters
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
+import com.peyess.salesapp.typing.prescription.PrismPosition
 import timber.log.Timber
 
 class ConverterPrismPosition {

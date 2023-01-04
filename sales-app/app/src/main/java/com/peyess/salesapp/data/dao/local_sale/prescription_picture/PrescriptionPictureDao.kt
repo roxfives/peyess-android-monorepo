@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.sale.prescription_picture
+package com.peyess.salesapp.data.dao.local_sale.prescription_picture
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -13,4 +13,7 @@ interface PrescriptionPictureDao {
 
     @Query("SELECT * FROM ${PrescriptionPictureEntity.tableName} as p WHERE p.so_id = :soId ")
     fun getById(soId: String): Flow<PrescriptionPictureEntity?>
+
+    @Query("SELECT * FROM ${PrescriptionPictureEntity.tableName} as p WHERE p.so_id = :soId ")
+    suspend fun getPrescriptionForServiceOrder(soId: String): PrescriptionPictureEntity?
 }

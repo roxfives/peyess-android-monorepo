@@ -46,8 +46,8 @@ import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl

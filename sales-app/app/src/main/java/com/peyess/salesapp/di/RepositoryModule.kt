@@ -26,8 +26,8 @@ import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
@@ -60,6 +60,8 @@ import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepositoryImpl
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepositoryImpl
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
@@ -322,6 +324,18 @@ object RepositoryModule {
     ): LocalLensesRepository {
         return LocalLensesRepositoryImpl(
             localLensDao = localLensDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalPrescriptionRepository(
+        prescriptionDataDao: PrescriptionDataDao,
+        prescriptionPictureDao: PrescriptionPictureDao,
+    ): LocalPrescriptionRepository {
+        return LocalPrescriptionRepositoryImpl(
+            prescriptionDataDao = prescriptionDataDao,
+            prescriptionPictureDao = prescriptionPictureDao,
         )
     }
 }

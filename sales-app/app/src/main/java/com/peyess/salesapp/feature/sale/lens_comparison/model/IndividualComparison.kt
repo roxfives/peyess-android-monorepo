@@ -2,7 +2,7 @@ package com.peyess.salesapp.feature.sale.lens_comparison.model
 
 import androidx.annotation.RawRes
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.dao.sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.utils.animationFromCategory
 import com.peyess.salesapp.feature.sale.lens_comparison.utils.bigAnimationFromCategory
 

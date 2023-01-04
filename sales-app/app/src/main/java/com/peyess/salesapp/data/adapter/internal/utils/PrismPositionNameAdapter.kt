@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.adapter.internal.utils
 
-import com.peyess.salesapp.dao.sale.prescription_data.PrismPosition
+import com.peyess.salesapp.typing.prescription.PrismPosition
 
 fun prismPositionName(prismPosition: PrismPosition): String {
     return when(prismPosition) {

@@ -12,7 +12,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
-import com.peyess.salesapp.dao.sale.prescription_data.prevalentIdealBase
+import com.peyess.salesapp.data.dao.local_sale.prescription_data.prevalentIdealBase
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.sale.prescription_data
+package com.peyess.salesapp.data.dao.local_sale.prescription_data
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -13,4 +13,7 @@ interface PrescriptionDataDao {
 
     @Query("SELECT * FROM ${PrescriptionDataEntity.tableName} as p WHERE p.so_id = :soId ")
     fun getById(soId: String): Flow<PrescriptionDataEntity?>
+
+    @Query("SELECT * FROM ${PrescriptionDataEntity.tableName} as p WHERE p.so_id = :soId ")
+    suspend fun getPrescriptionForServiceOrder(soId: String): PrescriptionDataEntity?
 }

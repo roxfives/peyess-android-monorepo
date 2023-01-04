@@ -6,7 +6,7 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import java.time.LocalDate
 
 data class PrescriptionPictureState(

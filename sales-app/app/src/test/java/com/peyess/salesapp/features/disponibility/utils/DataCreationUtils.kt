@@ -9,7 +9,6 @@ fun buildPrescription(
     lensType: LensType = LensType.MonofocalFar,
     hasAddition: Boolean = true,
     hasPrism: Boolean = true,
-    sumRule: Boolean = true,
 
     leftSpherical: Double = 1.0,
     rightSpherical: Double = 1.5,
@@ -42,7 +41,6 @@ fun buildPrescription(
     leftPrism = leftPrism,
     rightPrism = rightPrism,
     hasAddition = hasAddition,
-    sumRule = sumRule,
 )
 
 fun buildDisponibility(

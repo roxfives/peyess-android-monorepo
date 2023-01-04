@@ -13,16 +13,16 @@ data class Prescription(
 
     val leftCylindrical: Double = 0.0,
     val leftSpherical: Double = 0.0,
-    val leftAddition: Double = 0.0,
 
     val rightCylindrical: Double = 0.0,
+
     val rightSpherical: Double = 0.0,
-    val rightAddition: Double = 0.0,
 
     val hasPrism: Boolean = false,
     val leftPrism: Double = 0.0,
     val rightPrism: Double = 0.0,
 
     val hasAddition: Boolean = false,
-    val sumRule: Boolean = false,
+    val leftAddition: Double = 0.0,
+    val rightAddition: Double = 0.0,
 )

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.lens.room.dao.database_view
+package com.peyess.salesapp.data.model.lens.room.dao.embedded
 
 import androidx.room.Embedded
 import androidx.room.Junction
@@ -7,6 +7,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDisponibilityEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensExplanationEntity
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensAltHeightCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
 
 data class LocalLensWithDetails(
     @Embedded

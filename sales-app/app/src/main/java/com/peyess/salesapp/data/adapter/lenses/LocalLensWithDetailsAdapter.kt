@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.adapter.lenses
 
 import com.peyess.salesapp.data.adapter.lenses.alt_height.toStoreLensAltHeightDocument
 import com.peyess.salesapp.data.adapter.lenses.disponibilities.toStoreLensDisponibilityDocument
-import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetails
+import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 
 fun LocalLensWithDetails.toStoreLensWithDetailsDocument(): StoreLensWithDetailsDocument {

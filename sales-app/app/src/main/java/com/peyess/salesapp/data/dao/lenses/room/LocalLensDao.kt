@@ -37,7 +37,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialT
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensFullUnionWithHeightAndLensTypeDBView
-import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetails
+import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesGroupDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesDescriptionDBView

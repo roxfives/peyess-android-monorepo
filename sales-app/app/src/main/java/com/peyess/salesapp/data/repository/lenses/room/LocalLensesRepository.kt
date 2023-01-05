@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.material_type.StoreLensMaterialTypeDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
+import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensCompleteWithAltHeight
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
@@ -51,9 +52,13 @@ typealias LensesGroupsResponse =
 
 typealias LensesResponse = Either<
         LocalLensRepositoryException,
-        PagingSource<Int, StoreLensWithDetailsDocument>
+        PagingSource<Int, StoreLensWithDetailsDocument>,
     >
 
+typealias LensFilteredByDisponibilitiesResponse = Either<
+        LocalLensRepositoryException,
+        StoreLensWithDetailsDocument,
+    >
 
 interface LocalLensesRepository {
     suspend fun addFamily(family: LocalLensFamilyDocument)
@@ -99,6 +104,10 @@ interface LocalLensesRepository {
     suspend fun addLens(lens: StoreLensDocument)
 
     suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery = PeyessQuery()): LensesResponse
+
+    suspend fun getLensFilteredByDisponibility(
+        query: PeyessQuery = PeyessQuery(),
+    ): LensFilteredByDisponibilitiesResponse
 
     suspend fun getFilteredTypes(query: PeyessQuery = PeyessQuery()): LensesTypesResponse
 

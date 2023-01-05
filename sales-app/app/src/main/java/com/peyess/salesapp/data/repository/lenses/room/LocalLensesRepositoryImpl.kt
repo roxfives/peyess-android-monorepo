@@ -41,6 +41,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibi
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensFullUnionWithHeightAndLensTypeDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesDescriptionDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesFamilyDBView
@@ -301,6 +302,27 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 error = it,
             )
         }
+
+    override suspend fun getLensFilteredByDisponibility(
+        query: PeyessQuery,
+    ): LensFilteredByDisponibilitiesResponse = Either.catch {
+        val selectStatement =
+            "SELECT * FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}"
+        val sqlQuery = query
+            .copy(withLimit = 1)
+            .toSqlQuery(selectStatement)
+
+        Timber.i("Inferno")
+        localLensDao
+            .getLensFilteredWithDisponibilities(sqlQuery)
+            .toStoreLensWithDetailsDocument()
+    }.mapLeft {
+
+        Unexpected(
+            description = "Unexpected error: ${it.message}",
+            error = it,
+        )
+    }
 
     override suspend fun getFilteredTypes(query: PeyessQuery): LensesTypesResponse =
         Either.catch {

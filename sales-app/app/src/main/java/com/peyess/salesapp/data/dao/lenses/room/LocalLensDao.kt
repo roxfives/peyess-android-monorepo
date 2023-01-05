@@ -36,6 +36,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibi
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensFullUnionWithHeightAndLensTypeDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesGroupDBView
@@ -45,6 +46,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesMat
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSpecialtyDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSupplierDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesTypeDBView
+import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensCompleteWithAltHeight
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesGroupSimplified
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesDescriptionSimplified
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesFamilySimplified
@@ -154,6 +156,12 @@ interface LocalLensDao {
     @Transaction
     @RawQuery(observedEntities = [LocalLensWithDetailsDBView::class])
     fun getFilteredLenses(query: SimpleSQLiteQuery): PagingSource<Int, LocalLensWithDetails>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensFullUnionWithHeightAndLensTypeDBView::class])
+    suspend fun getLensFilteredWithDisponibilities(
+        query: SimpleSQLiteQuery,
+    ): LocalLensCompleteWithAltHeight
 
     @Transaction
     @RawQuery(observedEntities = [LocalLensesTypeDBView::class])

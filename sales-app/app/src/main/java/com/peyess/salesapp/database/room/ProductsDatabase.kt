@@ -77,7 +77,11 @@ import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDisponibi
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensMaterialTypeCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTreatmentCrossRef
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensTypeCategoryCrossRef
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensDetailsWithDisponibilitiesDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensFullUnionDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensFullUnionWithHeightAndLensTypeDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDetailsDBView
+import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensWithDisponibilitiesAndAltHeightDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesGroupDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesDescriptionDBView
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesFamilyDBView
@@ -170,8 +174,12 @@ import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
         LocalLensesMaterialDBView::class,
         LocalLensesSpecialtyDBView::class,
         LocalLensesSupplierDBView::class,
+        LocalLensDetailsWithDisponibilitiesDBView::class,
+        LocalLensWithDisponibilitiesAndAltHeightDBView::class,
+        LocalLensFullUnionDBView::class,
+        LocalLensFullUnionWithHeightAndLensTypeDBView::class,
     ],
-    version = 80,
+    version = 90,
 )
 @TypeConverters(
     ConverterUri::class,

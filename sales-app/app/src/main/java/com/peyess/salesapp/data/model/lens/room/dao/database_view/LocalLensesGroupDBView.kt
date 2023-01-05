@@ -1,18 +1,19 @@
 package com.peyess.salesapp.data.model.lens.room.dao.database_view
 
 import androidx.room.DatabaseView
-import com.peyess.salesapp.data.model.lens.room.dao.LocalLensCategoryEntity
+import com.peyess.salesapp.data.model.lens.room.dao.LocalLensGroupEntity
 import com.peyess.salesapp.data.model.lens.room.dao.cross_ref.LocalLensDetailsCrossRef
 
-private const val lensCategoryTable = LocalLensCategoryEntity.tableName
+private const val lensGroupTable = LocalLensGroupEntity.tableName
 private const val lensesDetailsTable = LocalLensDetailsCrossRef.tableName
 
 @DatabaseView(
     viewName = LocalLensesGroupDBView.viewName,
     value = """
         SELECT
-            lensesCategories.name AS id,
+            lensesCategories.id AS id,
             lensesCategories.name AS name,
+            
             lensesDetails.brand_id AS lensFamilyId,
             lensesDetails.design_id AS lensDescriptionId,
             lensesDetails.supplier_id AS lensSupplierId,
@@ -22,8 +23,8 @@ private const val lensesDetailsTable = LocalLensDetailsCrossRef.tableName
             lensesDetails.type_id AS lensTypeId,
             lensesDetails.category_id AS lensCategoryId,
             lensesDetails.material_id AS lensMaterialId
-         FROM $lensCategoryTable AS lensesCategories
-         JOIN $lensesDetailsTable AS lensesDetails ON lensesCategories.id = lensesDetails.category_id
+         FROM $lensGroupTable AS lensesCategories
+         JOIN $lensesDetailsTable AS lensesDetails ON lensesCategories.id = lensesDetails.group_id
     """
 )
 data class LocalLensesGroupDBView(
@@ -41,6 +42,6 @@ data class LocalLensesGroupDBView(
     val lensMaterialId: String = "",
 ) {
     companion object {
-        const val viewName = "local_lenses_category_db_view"
+        const val viewName = "local_lenses_group_db_view"
     }
 }

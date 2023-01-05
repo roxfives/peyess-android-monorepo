@@ -32,6 +32,20 @@ sealed class LocalLensesQueryFields {
     object LensUVLightFilter: LocalLensesQueryFields()
     object LensBlueLightFilter: LocalLensesQueryFields()
 
+//    val isTypeMono: String = "isLensTypeMono",
+//
+//    val maxSpherical: String = "maxSpherical",
+//    val minSpherical: String = "minSpherical",
+//
+//    val maxCylindrical: String = "maxCylindrical",
+//    val minCylindrical: String = "minCylindrical",
+//
+//    val maxAddition: String = "maxAddition",
+//    val minAddition: String = "minAddition",
+//
+//    val diameter: String = "diameter",
+//    val prism: String = "prism",
+//    val height: String = "heightResult",
 
     fun name(): String {
         return when (this) {

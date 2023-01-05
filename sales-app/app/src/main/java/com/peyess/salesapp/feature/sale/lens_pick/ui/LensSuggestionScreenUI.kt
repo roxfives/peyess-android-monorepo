@@ -201,7 +201,7 @@ fun LensSuggestionScreen(
         lensFilterTypes = lensTypes,
         isFilterTypesLoading = isFilterTypesLoading,
         hasFilterTypesFailed = hasFilterTypesFailed,
-        onLoadFilterTypes = viewModel::loadLensesTypes,
+        onLoadFilterTypes = viewModel::loadLensTypes,
         onFilterType = viewModel::onPickType,
 
         selectedLensSupplier = lensSuppliersFilter,

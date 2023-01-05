@@ -4,7 +4,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.map
 import arrow.core.continuations.either
-import arrow.core.flatMap
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -15,13 +14,10 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.data.model.local_sale.LocalPrescriptionDocument
-import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SimplifiedQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
-import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
@@ -78,7 +74,6 @@ class LensPickViewModel @AssistedInject constructor(
     private val productRepository: ProductRepository,
     private val lensesRepository: LocalLensesRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
-    private val localFramesRepository: LocalFramesRepository,
     private val localMeasuringRepository: LocalMeasuringRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
@@ -263,18 +258,6 @@ class LensPickViewModel @AssistedInject constructor(
         copy(filter = filter.copy(withFilterBlue = hasFilterBlue))
     }
 
-    private fun shouldFilterByType(filter: ListFilter): Boolean {
-        return false
-    }
-
-    private fun shouldFilterBySupplier(filter: ListFilter): Boolean {
-        return filter == ListFilter.LensFamily
-                || filter == ListFilter.LensDescription
-                || filter == ListFilter.LensMaterial
-                || filter == ListFilter.LensSpecialty
-                || filter == ListFilter.LensGroup
-    }
-
     private fun shouldFilterByFamily(filter: ListFilter): Boolean {
         return filter == ListFilter.LensDescription
                 || filter == ListFilter.LensMaterial
@@ -302,27 +285,6 @@ class LensPickViewModel @AssistedInject constructor(
         activeListFilter: LensListFilter,
     ): List<PeyessQueryField> {
         val queryFields = mutableListOf<PeyessQueryField>()
-
-
-        if (shouldFilterByType(filter) && activeListFilter.lensTypeId.isNotEmpty()) {
-            queryFields.add(
-                buildQueryField(
-                    field = SimplifiedQueryFields.LensType.name(),
-                    op = PeyessQueryOperation.Equal,
-                    value = activeListFilter.lensTypeId,
-                )
-            )
-        }
-
-        if (shouldFilterBySupplier(filter) && activeListFilter.supplierId.isNotEmpty()) {
-            queryFields.add(
-                buildQueryField(
-                    field = SimplifiedQueryFields.LensSupplier.name(),
-                    op = PeyessQueryOperation.Equal,
-                    value = activeListFilter.supplierId,
-                )
-            )
-        }
 
         if (shouldFilterByFamily(filter) && activeListFilter.familyId.isNotEmpty()) {
             queryFields.add(
@@ -740,16 +702,10 @@ class LensPickViewModel @AssistedInject constructor(
             .flowOn(Dispatchers.IO)
     }
 
-    fun loadLensesTypes() = withState {
+    fun loadLensTypes() = withState {
         suspend {
-            val queryOrderBy = buildFilterQueryOrderBy()
-            val query = PeyessQuery(
-                queryFields = emptyList(),
-                orderBy = queryOrderBy,
-            )
-
             lensesRepository
-                .getFilteredTypes(query)
+                .getFilteredTypes()
                 .map { it.map { type -> type.toLensTypeModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesTypesResponseAsync = it)
@@ -758,14 +714,8 @@ class LensPickViewModel @AssistedInject constructor(
 
     fun loadLensSuppliers() = withState {
         suspend {
-            val queryOrderBy = buildFilterQueryOrderBy()
-            val query = PeyessQuery(
-                queryFields = emptyList(),
-                orderBy = queryOrderBy,
-            )
-
             lensesRepository
-                .getFilteredSuppliers(query)
+                .getFilteredSuppliers()
                 .map { it.map { supplier -> supplier.toLensSupplierModel() } }
         }.execute(Dispatchers.IO) {
             copy(lensesSuppliersResponseAsync = it)
@@ -973,7 +923,6 @@ class LensPickViewModel @AssistedInject constructor(
                         isAddingToSuggestion = true
                     )
                 }
-
             }
     }
 

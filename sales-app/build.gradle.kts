@@ -2,10 +2,10 @@ import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
 
 buildscript {
     extra.apply {
-        set("compose_version", "1.2.1")
+        set("compose_version", "1.3.1")
         set("compose_accompanist_version", "0.25.1")
         set("compose_nav_version", "2.4.0-rc01")
-        set("compose_compiler_version", "1.3.0")
+        set("compose_compiler_version", "1.3.2")
         set("material_dialogs", "0.8.1-rc")
 
         set("lottie_version", "5.2.0")
@@ -36,11 +36,11 @@ buildscript {
         val hiltVersion = rootProject.extra["hilt_version"]
 
         classpath("com.android.tools.build:gradle:7.3.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
         classpath("com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
-        classpath("com.google.gms:google-services:4.3.13")
+        classpath("com.google.gms:google-services:4.3.14")
         classpath("com.google.firebase:firebase-crashlytics-gradle:2.9.2")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:1.7.10")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.7.20")
     }
 }
 

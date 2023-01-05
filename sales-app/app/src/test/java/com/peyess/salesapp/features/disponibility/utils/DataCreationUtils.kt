@@ -45,7 +45,6 @@ fun buildPrescription(
 
 fun buildDisponibility(
     isLensTypeMono: Boolean = true,
-    hasAddition: Boolean = true,
     hasPrism: Boolean = true,
     sumRule: Boolean = true,
 
@@ -75,7 +74,6 @@ Disponibility(
     minSpherical = minSpherical,
     maxAddition = maxAddition,
     minAddition = minAddition,
-    hasAddition = hasAddition,
     hasPrism = hasPrism,
     prism = prism,
     sumRule = sumRule,

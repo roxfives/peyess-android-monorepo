@@ -29,8 +29,12 @@ class DisponibilityMatchingTest {
     fun `Should return an empty list when passed a prescription and disponibility without alternative heights`() {
         val disponibility = buildDisponibility(
             sumRule = false,
+            height = 30.0,
         )
-        val prescription = buildPrescription()
+        val prescription = buildPrescription(
+            rightHeight = 30.0,
+            leftHeight = 30.0,
+        )
 
         val result = supportsPrescription(disponibility, prescription)
 
@@ -45,10 +49,10 @@ class DisponibilityMatchingTest {
             alternativeHeights = listOf(
                 AlternativeHeight(value = 45.0),
                 AlternativeHeight(value = 50.0),
-                AlternativeHeight(value = 60.0),
+                AlternativeHeight(value = 55.0),
             )
         )
-        val prescription = buildPrescription(leftHeight = 50.0, rightHeight = 50.0)
+        val prescription = buildPrescription(leftHeight = 45.0, rightHeight = 45.0)
 
         val result = supportsPrescription(disponibility, prescription)
 
@@ -244,11 +248,11 @@ class DisponibilityMatchingTest {
     fun `Should return a list containing only the mismatch about exceeding addition for the left eye`() {
         val disponibility = buildDisponibility(
             sumRule = false,
-            hasAddition = true,
             maxAddition = 2.0,
             minAddition = 0.0,
         )
         val prescription = buildPrescription(
+            hasAddition = true,
             leftAddition = 3.0,
             rightAddition = 2.0,
         )
@@ -264,11 +268,11 @@ class DisponibilityMatchingTest {
     fun `Should return a list containing only the mismatch about exceeding addition for the right eye`() {
         val disponibility = buildDisponibility(
             sumRule = false,
-            hasAddition = true,
             maxAddition = 2.0,
             minAddition = 0.0,
         )
         val prescription = buildPrescription(
+            hasAddition = true,
             leftAddition = 2.0,
             rightAddition = 3.0,
         )
@@ -284,11 +288,11 @@ class DisponibilityMatchingTest {
     fun `Should return a list containing only the mismatch about the minimal addition for the left eye`() {
         val disponibility = buildDisponibility(
             sumRule = false,
-            hasAddition = true,
             maxAddition = 2.0,
             minAddition = 1.0,
         )
         val prescription = buildPrescription(
+            hasAddition = true,
             leftAddition = 0.0,
             rightAddition = 1.0,
         )
@@ -304,11 +308,11 @@ class DisponibilityMatchingTest {
     fun `Should return a list containing only the mismatch about the minimal addition for the right eye`() {
         val disponibility = buildDisponibility(
             sumRule = false,
-            hasAddition = true,
             maxAddition = 2.0,
             minAddition = 1.0,
         )
         val prescription = buildPrescription(
+            hasAddition = true,
             leftAddition = 1.0,
             rightAddition = 0.0,
         )
@@ -366,7 +370,7 @@ class DisponibilityMatchingTest {
             height = 10.0,
         )
         val prescription = buildPrescription(
-            leftHeight = 11.0,
+            leftHeight = 9.0,
             rightHeight = 10.0,
         )
 
@@ -386,7 +390,7 @@ class DisponibilityMatchingTest {
         )
         val prescription = buildPrescription(
             leftHeight = 10.0,
-            rightHeight = 11.0,
+            rightHeight = 9.0,
         )
 
         val result = supportsPrescription(disponibility, prescription)
@@ -402,14 +406,14 @@ class DisponibilityMatchingTest {
             sumRule = false,
             hasAlternativeHeight = true,
             alternativeHeights = listOf(
-                AlternativeHeight(value = 10.0),
-                AlternativeHeight(value = 15.0),
-                AlternativeHeight(value = 20.0),
+                AlternativeHeight(value = 22.0),
+                AlternativeHeight(value = 23.0),
+                AlternativeHeight(value = 24.0),
             ),
         )
         val prescription = buildPrescription(
-            leftHeight = 21.0,
-            rightHeight = 20.0,
+            leftHeight = 20.0,
+            rightHeight = 25.0,
         )
 
         val result = supportsPrescription(disponibility, prescription)
@@ -425,14 +429,14 @@ class DisponibilityMatchingTest {
             sumRule = false,
             hasAlternativeHeight = true,
             alternativeHeights = listOf(
-                AlternativeHeight(value = 10.0),
-                AlternativeHeight(value = 15.0),
-                AlternativeHeight(value = 20.0),
+                AlternativeHeight(value = 22.0),
+                AlternativeHeight(value = 23.0),
+                AlternativeHeight(value = 24.0),
             ),
         )
         val prescription = buildPrescription(
-            leftHeight = 20.0,
-            rightHeight = 21.0,
+            leftHeight = 25.0,
+            rightHeight = 20.0,
         )
 
         val result = supportsPrescription(disponibility, prescription)

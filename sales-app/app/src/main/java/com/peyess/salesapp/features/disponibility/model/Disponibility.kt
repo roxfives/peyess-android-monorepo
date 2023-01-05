@@ -12,7 +12,6 @@ data class Disponibility(
     val maxAddition: Double = 0.0,
     val minAddition: Double = 0.0,
 
-    val hasAddition: Boolean = false,
     val hasPrism: Boolean = false,
     val prism: Double = 0.0,
 

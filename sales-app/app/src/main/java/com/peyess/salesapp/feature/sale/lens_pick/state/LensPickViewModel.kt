@@ -3,23 +3,36 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.map
+import arrow.core.continuations.either
+import arrow.core.flatMap
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import com.peyess.salesapp.data.model.local_sale.LocalPrescriptionDocument
+import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SimplifiedQueryFields
+import com.peyess.salesapp.data.repository.lenses.room.Unexpected
+import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
+import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.PeyessQueryField
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
+import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.buildPrescription
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toDisponibility
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensGroupModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensDescriptionModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensFamilyModel
@@ -27,10 +40,16 @@ import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensMaterialModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSpecialtyModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensSupplierModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensType
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensTypeModel
+import com.peyess.salesapp.feature.sale.lens_pick.adapter.toStringResource
 import com.peyess.salesapp.feature.sale.lens_pick.constant.ListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
+import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
+import com.peyess.salesapp.features.disponibility.model.Disponibility
+import com.peyess.salesapp.features.disponibility.model.Prescription
+import com.peyess.salesapp.features.disponibility.supportsPrescription
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -53,10 +72,14 @@ private const val lensesTablePrefetchDistance = 5
 
 class LensPickViewModel @AssistedInject constructor(
     @Assisted initialState: LensPickState,
+    private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
     private val lensComparisonDao: LensComparisonDao,
     private val productRepository: ProductRepository,
     private val lensesRepository: LocalLensesRepository,
+    private val localPrescriptionRepository: LocalPrescriptionRepository,
+    private val localFramesRepository: LocalFramesRepository,
+    private val localMeasuringRepository: LocalMeasuringRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
     private var suggestionList: Flow<List<LensSuggestionModel?>> = emptyFlow()
@@ -590,7 +613,34 @@ class LensPickViewModel @AssistedInject constructor(
         )
     }
 
-    private suspend fun getUpdatedLensesTableStream(filter: LensListFilter): TableLensesResponse {
+    private fun checkLensDisponibilities(
+        lens: StoreLensWithDetailsDocument,
+        prescription: Prescription,
+    ): List<ReasonUnsupported> {
+        val reasonsUnsupported: MutableSet<ReasonUnsupported> = mutableSetOf()
+
+        var disponibility: Disponibility
+        var unsupportedList: List<ReasonUnsupported>
+        for (disp in lens.disponibilities) {
+            disponibility = disp.toDisponibility(
+                height = lens.height,
+                lensType = prescription.lensType,
+                alternativeHeights = lens.altHeights,
+            )
+
+            unsupportedList = supportsPrescription(disponibility, prescription)
+            if (unsupportedList.isEmpty()) {
+                reasonsUnsupported.clear()
+                break
+            } else {
+                reasonsUnsupported.addAll(unsupportedList)
+            }
+        }
+
+        return reasonsUnsupported.toList()
+    }
+
+    private suspend fun getUpdatedLensesTableStream(filter: LensListFilter): TableLensesResponse = either {
         val queryFields = buildLensListQueryFields(filter)
         val queryOrderBy = buildLensListQueryOrderBy()
         val query = PeyessQuery(
@@ -598,7 +648,34 @@ class LensPickViewModel @AssistedInject constructor(
             orderBy = queryOrderBy,
         )
 
-        return lensesRepository
+        val activeServiceOrder = saleRepository
+            .currentServiceOrder()
+            .mapLeft { Unexpected() }
+            .bind()
+
+        val localPrescription = localPrescriptionRepository
+            .getPrescriptionForServiceOrder(activeServiceOrder.id)
+            .mapLeft { Unexpected() }
+            .bind()
+
+        val measuringLeft = localMeasuringRepository
+            .measuringForServiceOrder(activeServiceOrder.id, Eye.Left)
+            .mapLeft { Unexpected() }
+            .bind()
+
+        val measuringRight = localMeasuringRepository
+            .measuringForServiceOrder(activeServiceOrder.id, Eye.Right)
+            .mapLeft { Unexpected() }
+            .bind()
+
+        val prescription = buildPrescription(
+            lensType = activeServiceOrder.lensTypeCategoryName.toLensType(),
+            localPrescriptionDocument = localPrescription,
+            localMeasuringLeft = measuringLeft,
+            localMeasuringRight = measuringRight,
+        )
+
+        lensesRepository
             .paginateLensesWithDetailsOnly(query)
             .map { pagingSource ->
                 val pagingSourceFactory = { pagingSource }
@@ -612,10 +689,19 @@ class LensPickViewModel @AssistedInject constructor(
                     ),
                 )
 
-                pager.flow.map {
-                    it.map { lens -> lens.toLensPickModel() }
+                pager.flow.map { pagingData ->
+                    pagingData.map { lens ->
+                        val reasonsUnsupported = checkLensDisponibilities(
+                            lens = lens,
+                            prescription = prescription,
+                        ).map { reason ->
+                            reason.toStringResource(salesApplication = salesApplication)
+                        }
+
+                        lens.toLensPickModel(reasonsUnsupported)
+                    }
                 }
-            }
+            }.bind()
     }
 
     private fun processLensTableResponse(response: TableLensesResponse) {

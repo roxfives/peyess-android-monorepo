@@ -20,6 +20,7 @@ fun LocalLensWithDetails.toStoreLensWithDetailsDocument(): StoreLensWithDetailsD
         isTreatmentDiscounted = lens.isTreatmentDiscounted,
         isTreatmentIncluded = lens.isTreatmentIncluded,
         isGeneric = lens.isGeneric,
+        needsCheck = lens.needsCheck,
         shippingTime = lens.shippingTime,
         observation = lens.observation,
         warning = lens.warning,

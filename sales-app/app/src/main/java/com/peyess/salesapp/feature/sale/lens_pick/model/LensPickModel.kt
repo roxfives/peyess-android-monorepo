@@ -1,5 +1,8 @@
 package com.peyess.salesapp.feature.sale.lens_pick.model
 
+import androidx.annotation.RawRes
+import androidx.annotation.StringRes
+import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
 import java.math.BigDecimal
 
 data class LensPickModel(
@@ -25,10 +28,10 @@ data class LensPickModel(
 
     val needsCheck: Boolean = false,
 
-    val isAvailable: Boolean = false,
     val reasonsUnavailable: List<String> = emptyList(),
 ) {
     val name = "$family $description $tech $material"
 
+    val isAvailable = reasonsUnavailable.isEmpty()
     val isNotAvailable = !isAvailable
 }

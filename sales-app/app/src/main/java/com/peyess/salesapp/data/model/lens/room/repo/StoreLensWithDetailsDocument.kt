@@ -19,6 +19,7 @@ data class StoreLensWithDetailsDocument(
     val isTreatmentDiscounted: Boolean = false,
     val isTreatmentIncluded: Boolean = false,
     val isGeneric: Boolean = false,
+    val needsCheck: Boolean = false,
 
     val shippingTime: Double = 0.0,
 

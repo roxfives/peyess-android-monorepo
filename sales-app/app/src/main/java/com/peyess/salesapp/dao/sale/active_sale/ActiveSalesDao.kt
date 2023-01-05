@@ -21,6 +21,12 @@ interface ActiveSalesDao {
     )
     fun getById(id: String): Flow<ActiveSalesEntity?>
 
+    @Query(
+        "SELECT * FROM ${ActiveSalesEntity.tableName} as sale " +
+                "WHERE sale.id = :id"
+    )
+    suspend fun getSaleById(id: String): ActiveSalesEntity?
+
     @Insert
     fun add(activeSale: ActiveSalesEntity)
 

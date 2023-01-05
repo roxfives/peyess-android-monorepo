@@ -273,6 +273,13 @@
     <string name="lens_incompatible_reason_sum_rule_failed">A disponibilidade da lente não é compatível com o do cliente</string>
     <string name="lens_incompatible_reason_unknown">Essa lente não é compatível com o cliente</string>
 
+    <string name="lens_incompatible_reason_diameter">O diâmetro do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_height">A altura do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_spherical">O grau esférico do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical">O grau cilíndrico do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_prism">O grau do prisma do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_addition">A adição do cliente não é compatível com essa lente</string>
+
     <!--  UI Component: Lens Comparison  -->
     <string name="lens_comparison_add_another">Adicionar nova lente para comparação</string>
 

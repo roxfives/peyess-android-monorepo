@@ -4,7 +4,9 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocumen
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import java.math.BigDecimal
 
-fun StoreLensWithDetailsDocument.toLensPickModel(): LensPickModel {
+fun StoreLensWithDetailsDocument.toLensPickModel(
+    reasonsUnavailable: List<String> = emptyList(),
+): LensPickModel {
     return LensPickModel(
         id = id,
         family = brandName,
@@ -22,11 +24,7 @@ fun StoreLensWithDetailsDocument.toLensPickModel(): LensPickModel {
 
         explanations = explanations,
 
-//        explanations = explanations,
-//        isAvailable = isAvailable,
-//        reasonsUnavailable = reasonsUnavailable,
-
-//        missing
-//        needsCheck = needsCheck,
+        needsCheck = needsCheck,
+        reasonsUnavailable = reasonsUnavailable,
     )
 }

@@ -1355,7 +1355,6 @@ private fun LensCardPreview() {
                     "Alta tecnologia aliada a uma Visão mais nítida",
                 ),
 
-                isAvailable = true,
                 hasFilterBlue = true,
                 hasFilterUv = true,
             ),

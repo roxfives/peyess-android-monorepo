@@ -138,11 +138,11 @@ private fun checkHeightMatch(
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    if (prescription.leftHeight > disponibility.height) {
+    if (prescription.leftHeight < disponibility.height) {
         reasonsUnsupported.add(ReasonUnsupported.HeightLeft)
     }
 
-    if (prescription.rightHeight > disponibility.height) {
+    if (prescription.rightHeight < disponibility.height) {
         reasonsUnsupported.add(ReasonUnsupported.HeightRight)
     }
 
@@ -159,11 +159,11 @@ private fun checkAlternativeHeights(
     var supportsRight = false
 
     disponibility.alternativeHeights.forEach { alternativeHeight ->
-        if (prescription.leftHeight <= alternativeHeight.value) {
+        if (prescription.leftHeight >= alternativeHeight.value) {
             supportsLeft = true
         }
 
-        if (prescription.rightHeight <= alternativeHeight.value) {
+        if (prescription.rightHeight >= alternativeHeight.value) {
             supportsRight = true
         }
     }

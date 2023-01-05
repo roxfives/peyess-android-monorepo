@@ -1,6 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_pick.adapter
 
-import com.peyess.salesapp.data.model.local_sale.LocalPrescriptionDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.features.disponibility.contants.LensType
 import com.peyess.salesapp.features.disponibility.model.Prescription

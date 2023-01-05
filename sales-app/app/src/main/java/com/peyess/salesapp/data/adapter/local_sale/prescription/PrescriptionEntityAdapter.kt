@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.adapter.local_sale.prescription
 
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
-import com.peyess.salesapp.data.model.local_sale.LocalPrescriptionDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.utils.time.toZonedDateTime
 
 fun toLocalPrescriptionDocument(

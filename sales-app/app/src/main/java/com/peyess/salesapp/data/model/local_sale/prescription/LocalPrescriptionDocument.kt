@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.local_sale
+package com.peyess.salesapp.data.model.local_sale.prescription
 
 import android.net.Uri
 import com.peyess.salesapp.constants.maxAxis

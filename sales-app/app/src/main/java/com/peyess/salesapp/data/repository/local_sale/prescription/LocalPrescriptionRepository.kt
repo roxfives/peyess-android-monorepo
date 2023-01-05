@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.repository.local_sale.prescription
 
 import arrow.core.Either
-import com.peyess.salesapp.data.model.local_sale.LocalPrescriptionDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.LocalPrescriptionResponseError
 
 typealias LocalPrescriptionResponse =

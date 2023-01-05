@@ -11,7 +11,7 @@ private const val lensesDetailsTable = LocalLensDetailsCrossRef.tableName
     viewName = LocalLensesTypeDBView.viewName,
     value = """
         SELECT
-            lensesTypes.name AS id,
+            lensesTypes.id AS id,
             lensesTypes.name AS name,
             lensesDetails.brand_id AS lensFamilyId,
             lensesDetails.design_id AS lensDescriptionId,

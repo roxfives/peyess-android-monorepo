@@ -52,10 +52,22 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
 
         "${peyessOrderBy.field} $order"
     }
-
     if (orderByClause.isNotBlank()) {
         orderByClause = " ORDER BY $orderByClause"
     }
 
-    return SimpleSQLiteQuery("$query $orderByClause")
+    var groupByClause = groupBy.joinToString(separator = ", ") { peyessGroupBy ->
+        peyessGroupBy.field
+    }
+    if (groupByClause.isNotBlank()) {
+        groupByClause = " GROUP BY $groupByClause"
+    }
+
+    val limitClause = if (withLimit != null) {
+        "LIMIT $withLimit"
+    } else {
+        ""
+    }
+
+    return SimpleSQLiteQuery("$query $groupByClause $orderByClause $limitClause")
 }

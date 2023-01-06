@@ -442,7 +442,7 @@ private fun LensSuggestionScreenImpl(
             enter = slideInVertically { it },
             exit = slideOutVertically { 0 },
         ) {
-            LensSuggestionList(
+            LensList(
                 lensesTableStream = lensesTableStream,
 
                 onPickLens = onPickLens,
@@ -579,7 +579,7 @@ private fun TierSuggestion(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun LensSuggestionList(
+private fun LensList(
     modifier: Modifier = Modifier,
 
     onPickLens: (lensId: String) -> Unit,
@@ -1223,13 +1223,6 @@ private fun LensSuggestionCard(
                         .fillMaxWidth(1f),
                     color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
                 )
-
-                // TODO: get installments from store settings
-//                LensPrice(
-//                    price = BigDecimal(lens.price),
-//                    installments = BigDecimal(10.0),
-//                    style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
-//                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 

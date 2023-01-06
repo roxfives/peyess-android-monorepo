@@ -10,6 +10,7 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
     var query = "$selectStatement "
 
     var whereClause: String
+    var value: Any
     queryFields.forEach { peyessQuery ->
         whereClause = if (query.contains("WHERE")) {
             " AND "
@@ -17,24 +18,32 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
             " WHERE "
         }
 
+        value = if (peyessQuery.value is Boolean) {
+            if (peyessQuery.value as Boolean) 1 else 0
+        } else if (peyessQuery.value is String) {
+            "'${peyessQuery.value}'"
+        } else {
+            peyessQuery.value
+        }
+
         when (peyessQuery.op) {
             PeyessQueryOperation.Equal ->
-                query += "$whereClause ${peyessQuery.field} = '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} = $value"
 
             PeyessQueryOperation.Different ->
-                query += "$whereClause ${peyessQuery.field} != '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} != $value"
 
             PeyessQueryOperation.GreaterThan ->
-                query += "$whereClause ${peyessQuery.field} > '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} > $value"
 
             PeyessQueryOperation.GreaterThanOrEqual ->
-                query += "$whereClause ${peyessQuery.field} >= '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} >= $value"
 
             PeyessQueryOperation.LessThan ->
-                query += "$whereClause ${peyessQuery.field} < '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} < $value"
 
             PeyessQueryOperation.LessThanOrEqual ->
-                query += "$whereClause ${peyessQuery.field} <= '${peyessQuery.value}'"
+                query += "$whereClause ${peyessQuery.field} <= $value"
 
             PeyessQueryOperation.Noop -> {
                 Timber.i("Used a noop while building the query")

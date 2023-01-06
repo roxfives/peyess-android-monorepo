@@ -39,63 +39,100 @@ private fun shouldFilterBySpecialty(filter: ListFilter): Boolean {
     return filter == ListFilter.LensGroup
 }
 
-fun buildFilterQueryFields(
+private fun buildQueryFieldsForSupplier(
     filter: ListFilter,
     activeListFilter: LensListFilter,
 ): List<PeyessQueryField> {
-    val queryFields = mutableListOf<PeyessQueryField>()
-
-    if (shouldFilterBySupplier(filter) && activeListFilter.supplierId.isNotEmpty()) {
-        queryFields.add(
+    return if (shouldFilterBySupplier(filter) && activeListFilter.supplierId.isNotEmpty()) {
+        listOf(
             buildQueryField(
                 field = SimplifiedQueryFields.LensSupplier.name(),
                 op = PeyessQueryOperation.Equal,
                 value = activeListFilter.supplierId,
-            )
+            ),
         )
+    } else {
+        emptyList()
     }
+}
 
-    if (shouldFilterByFamily(filter) && activeListFilter.familyId.isNotEmpty()) {
-        queryFields.add(
+private fun buildQueryFieldsForFamily(
+    filter: ListFilter,
+    activeListFilter: LensListFilter,
+): List<PeyessQueryField> {
+    return if (shouldFilterByFamily(filter) && activeListFilter.familyId.isNotEmpty()) {
+        listOf(
             buildQueryField(
                 field = SimplifiedQueryFields.LensFamily.name(),
                 op = PeyessQueryOperation.Equal,
                 value = activeListFilter.familyId,
-            )
+            ),
         )
+    } else {
+        emptyList()
     }
+}
 
-    if (shouldFilterByDescription(filter) && activeListFilter.descriptionId.isNotEmpty()) {
-        queryFields.add(
+private fun buildQueryFieldsForDescription(
+    filter: ListFilter,
+    activeListFilter: LensListFilter,
+): List<PeyessQueryField> {
+    return if (shouldFilterByDescription(filter) && activeListFilter.descriptionId.isNotEmpty()) {
+        listOf(
             buildQueryField(
                 field = SimplifiedQueryFields.LensDescription.name(),
                 op = PeyessQueryOperation.Equal,
                 value = activeListFilter.descriptionId,
-            )
+            ),
         )
+    } else {
+        emptyList()
     }
+}
 
-    if (shouldFilterByMaterial(filter) && activeListFilter.materialId.isNotEmpty()) {
-        queryFields.add(
+private fun buildQueryFieldsForMaterial(
+    filter: ListFilter,
+    activeListFilter: LensListFilter,
+): List<PeyessQueryField> {
+    return if (shouldFilterByMaterial(filter) && activeListFilter.materialId.isNotEmpty()) {
+        listOf(
             buildQueryField(
                 field = SimplifiedQueryFields.LensMaterial.name(),
                 op = PeyessQueryOperation.Equal,
                 value = activeListFilter.materialId,
-            )
+            ),
         )
+    } else {
+        emptyList()
     }
+}
 
-    if (shouldFilterBySpecialty(filter) && activeListFilter.specialtyId.isNotEmpty()) {
-        queryFields.add(
+private fun buildQueryFieldsForSpecialty(
+    filter: ListFilter,
+    activeListFilter: LensListFilter,
+): List<PeyessQueryField> {
+    return if (shouldFilterBySpecialty(filter) && activeListFilter.specialtyId.isNotEmpty()) {
+        listOf(
             buildQueryField(
                 field = SimplifiedQueryFields.LensSpecialty.name(),
                 op = PeyessQueryOperation.Equal,
                 value = activeListFilter.specialtyId,
-            )
+            ),
         )
+    } else {
+        emptyList()
     }
+}
 
-    return queryFields
+fun buildFilterQueryFields(
+    filter: ListFilter,
+    activeListFilter: LensListFilter,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForSupplier(filter, activeListFilter) +
+        buildQueryFieldsForFamily(filter, activeListFilter) +
+        buildQueryFieldsForDescription(filter, activeListFilter) +
+        buildQueryFieldsForMaterial(filter, activeListFilter) +
+        buildQueryFieldsForSpecialty(filter, activeListFilter)
 }
 
 fun buildFilterQueryOrderBy(): List<PeyessOrderBy> {

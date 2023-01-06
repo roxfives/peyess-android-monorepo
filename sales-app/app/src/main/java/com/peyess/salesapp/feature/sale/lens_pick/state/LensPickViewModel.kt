@@ -5,7 +5,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.map
 import arrow.core.Either
 import arrow.core.continuations.either
-import arrow.core.left
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -15,7 +14,6 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
@@ -70,7 +68,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -760,7 +757,7 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
-    private fun buildGroupByForLensGroupId(): List<PeyessGroupBy> {
+    private fun buildGroupByForLensSuggestions(): List<PeyessGroupBy> {
         return listOf(
             PeyessGroupBy(
                 field = LocalLensesUnionQueryFields.LensId.name(),
@@ -768,7 +765,7 @@ class LensPickViewModel @AssistedInject constructor(
         )
     }
 
-    private fun buildOrderByForLensGroupId(): List<PeyessOrderBy> {
+    private fun buildOrderByForLensSuggestions(): List<PeyessOrderBy> {
         return listOf(
             PeyessOrderBy(
                 field = LocalLensesUnionQueryFields.LensPriority.name(),
@@ -777,180 +774,184 @@ class LensPickViewModel @AssistedInject constructor(
         )
     }
 
-    private fun buildQueryForLensGroupId(
-        lensGroupId: String,
-        lensType: LensType,
-        prescription: LocalPrescriptionDocument,
-        measuringLeft: LocalMeasuringDocument,
-        measuringRight: LocalMeasuringDocument,
-    ): List<PeyessQueryField> {
-        val queryFields = mutableListOf<PeyessQueryField>()
-
-        queryFields.add(
+    private fun buildQueryFieldsForLensGroup(lensGroupId: String): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.LensGroupId.name(),
                 op = PeyessQueryOperation.Equal,
                 value = lensGroupId,
             )
         )
+    }
 
-        queryFields.add(
+    private fun buildQueryFieldsForLensType(lensType: LensType): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.IsLensTypeMono.name(),
                 op = PeyessQueryOperation.Equal,
                 value = lensType.isLensTypeMono(),
             )
         )
+    }
 
-        queryFields.add(
+    private fun buildQueryFieldsForSpherical(
+        prescription: LocalPrescriptionDocument
+    ): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MaxSpherical.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.sphericalLeft,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MaxSpherical.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.sphericalRight,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MinSpherical.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.sphericalLeft,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MinSpherical.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.sphericalRight,
-            )
+            ),
         )
+    }
 
-        queryFields.add(
+    private fun buildQueryFieldsForCylindrical(
+        prescription: LocalPrescriptionDocument,
+    ): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.cylindricalLeft,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.cylindricalRight,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MinCylindrical.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.cylindricalLeft,
-            )
-        )
-
-        queryFields.add(
+            ),
             buildQueryField(
                 field = LocalLensesUnionQueryFields.MinCylindrical.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.cylindricalRight,
-            )
+            ),
         )
+    }
 
-        queryFields.add(
+    private fun buildQueryFieldsForHeight(
+        measuringLeft: LocalMeasuringDocument,
+        measuringRight: LocalMeasuringDocument,
+    ): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.Height.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = measuringLeft.fixedHe,
             ),
-        )
 
-        queryFields.add(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.Height.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = measuringRight.fixedHe,
-            )
+            ),
         )
+    }
 
-        queryFields.add(
+    private fun buildQueryFieldsForDiameter(
+        measuringLeft: LocalMeasuringDocument,
+        measuringRight: LocalMeasuringDocument,
+    ): List<PeyessQueryField> {
+        return listOf(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.Diameter.name(),
                 op = PeyessQueryOperation.LessThan,
                 value = measuringLeft.diameter,
             ),
-        )
-
-        queryFields.add(
             buildQueryField(
                 field = LocalLensesUnionQueryFields.Diameter.name(),
                 op = PeyessQueryOperation.LessThan,
                 value = measuringRight.diameter,
-            )
+            ),
         )
+    }
 
-        if (prescription.hasAddition) {
-            queryFields.add(
+    private fun buildQueryFieldsForAddition(
+        prescription: LocalPrescriptionDocument,
+    ): List<PeyessQueryField> {
+        return if (prescription.hasPrism) {
+            listOf(
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.MaxAddition.name(),
                     op = PeyessQueryOperation.GreaterThanOrEqual,
                     value = prescription.additionLeft,
-                )
-            )
-
-            queryFields.add(
+                ),
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.MaxAddition.name(),
                     op = PeyessQueryOperation.GreaterThanOrEqual,
                     value = prescription.additionRight,
-                )
-            )
-
-            queryFields.add(
+                ),
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.MinAddition.name(),
                     op = PeyessQueryOperation.LessThanOrEqual,
                     value = prescription.additionLeft,
-                )
-            )
-
-            queryFields.add(
+                ),
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.MinAddition.name(),
                     op = PeyessQueryOperation.LessThanOrEqual,
                     value = prescription.additionRight,
-                )
+                ),
             )
+        } else {
+            emptyList()
         }
+    }
 
-        if (prescription.hasPrism) {
-            queryFields.add(
+    private fun buildQueryFieldsForPrism(
+        prescription: LocalPrescriptionDocument,
+    ): List<PeyessQueryField> {
+        return if (prescription.hasPrism) {
+            listOf(
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.Prism.name(),
                     op = PeyessQueryOperation.GreaterThanOrEqual,
                     value = prescription.prismDegreeLeft,
-                )
-            )
-
-            queryFields.add(
+                ),
                 buildQueryField(
                     field = LocalLensesUnionQueryFields.Prism.name(),
                     op = PeyessQueryOperation.GreaterThanOrEqual,
                     value = prescription.prismDegreeRight,
-                )
+                ),
             )
+        } else {
+            emptyList()
         }
+    }
 
-        return queryFields
+    private fun buildQueryFieldsForLensSuggestions(
+        lensGroupId: String,
+        lensType: LensType,
+        prescription: LocalPrescriptionDocument,
+        measuringLeft: LocalMeasuringDocument,
+        measuringRight: LocalMeasuringDocument,
+    ): List<PeyessQueryField> {
+        return buildQueryFieldsForLensGroup(lensGroupId) +
+            buildQueryFieldsForLensType(lensType) +
+            buildQueryFieldsForSpherical(prescription) +
+            buildQueryFieldsForCylindrical(prescription) +
+            buildQueryFieldsForAddition(prescription) +
+            buildQueryFieldsForPrism(prescription) +
+            buildQueryFieldsForHeight(measuringLeft, measuringRight) +
+            buildQueryFieldsForDiameter(measuringLeft, measuringRight)
     }
 
     private suspend fun findBestLensForGroup(
@@ -987,7 +988,7 @@ class LensPickViewModel @AssistedInject constructor(
                 )
             }.bind()
 
-        val queryFields = buildQueryForLensGroupId(
+        val queryFields = buildQueryFieldsForLensSuggestions(
             lensGroupId = groupId,
             lensType = activeServiceOrder.lensTypeCategoryName.toLensType(),
             prescription = localPrescription,
@@ -995,8 +996,8 @@ class LensPickViewModel @AssistedInject constructor(
             measuringRight = measuringRight,
         )
 
-        val orderBy = buildOrderByForLensGroupId()
-        val groupBy = buildGroupByForLensGroupId()
+        val orderBy = buildOrderByForLensSuggestions()
+        val groupBy = buildGroupByForLensSuggestions()
         val query = PeyessQuery(
             queryFields = queryFields,
             orderBy = orderBy,

@@ -88,12 +88,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
 import java.math.BigDecimal
+import kotlin.math.min
 
 private val frontLayerHeight = 360.dp
 
-
 private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
 private val withFilterColor = Color.hsv(79f, 1f, 0.77f)
+
+private const val maxExplanationsForSuggestionCard = 3
 
 @Composable
 fun LensSuggestionScreen(
@@ -1244,31 +1246,24 @@ private fun LensSuggestionCard(
                     style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
                 )
 
-                if (lens.explanations.size > 0) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                        text = lens.explanations[0],
-                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
-                    )
-                }
+                if (lens.explanations.isNotEmpty()) {
+                    val lastIndex =
+                        min(lens.explanations.size, maxExplanationsForSuggestionCard)
 
-                if (lens.explanations.size > 1) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                        text = lens.explanations[1],
-                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
-                    )
-                }
+                    lens.explanations
+                        .subList(0, lastIndex)
+                        .forEach {
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                if (lens.explanations.size > 2) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                        text = lens.explanations[2],
-                        style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center),
-                    )
+                            Text(
+                                modifier = Modifier.padding(horizontal = 4.dp),
+                                text = it,
+                                style = MaterialTheme
+                                    .typography
+                                    .body2
+                                    .copy(textAlign = TextAlign.Center),
+                            )
+                        }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))

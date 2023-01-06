@@ -23,6 +23,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
 import kotlin.math.abs
 
@@ -612,9 +613,14 @@ class FramesMeasureViewModel @AssistedInject constructor(
 
         // TODO: move this task to a worker
         try {
-            val file = positioning.picture.toFile()
+            val file = try {
+                positioning.picture.toFile()
+            } catch (e: Exception) {
+                Timber.e("Failed to get file from picture: ${positioning.picture}", e)
+                null
+            }
 
-            if (file.exists()) {
+            if (file?.exists() == true) {
                 file.delete()
             }
         } catch (e: IOException) {

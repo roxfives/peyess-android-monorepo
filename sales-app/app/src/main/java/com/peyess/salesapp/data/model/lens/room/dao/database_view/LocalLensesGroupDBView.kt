@@ -13,6 +13,7 @@ private const val lensesDetailsTable = LocalLensDetailsCrossRef.tableName
         SELECT
             lensesCategories.id AS id,
             lensesCategories.name AS name,
+            lensesCategories.priority AS priority,
             
             lensesDetails.brand_id AS lensFamilyId,
             lensesDetails.design_id AS lensDescriptionId,

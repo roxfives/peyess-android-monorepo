@@ -3,7 +3,9 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.map
+import arrow.core.Either
 import arrow.core.continuations.either
+import arrow.core.left
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -13,13 +15,21 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesGroupsQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesUnionQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.SimplifiedQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.utils.query.PeyessGroupBy
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.PeyessQueryField
@@ -41,7 +51,9 @@ import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensTypeModel
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toStringResource
 import com.peyess.salesapp.feature.sale.lens_pick.constant.ListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
+import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
+import com.peyess.salesapp.features.disponibility.contants.LensType
 import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
 import com.peyess.salesapp.features.disponibility.model.Disponibility
 import com.peyess.salesapp.features.disponibility.model.Prescription
@@ -101,19 +113,71 @@ class LensPickViewModel @AssistedInject constructor(
         onEach(LensPickState::filter) { updateLensTablePaging(it) }
         onAsync(LensPickState::lensesTableResponse) { processLensTableResponse(it) }
 
-        onAsync(LensPickState::groupsList) { groupList ->
-            viewModelScope.launch(Dispatchers.IO) {
-                val lensesByGroup: MutableList<Flow<LensSuggestionModel?>> = mutableListOf()
+        onAsync(LensPickState::groupsListAsync) { processLensGroupListResponse(it) }
+        onEach(LensPickState::groupsList) { updateLensSuggestionsWith(it) }
 
-                for (group in groupList) {
-                    lensesByGroup.add(bestLensForGroup(group.id))
-                }
-
-                suggestionList = combine(lensesByGroup) { it.asList() }
-            }
-        }
+        onAsync(LensPickState::lensSuggestionsResponseAsync) { processLensSuggestionResponse(it) }
 
         viewModelScope.launch(Dispatchers.IO) { updateLensTablePaging() }
+        viewModelScope.launch(Dispatchers.IO) { loadGroups() }
+    }
+
+    private fun loadGroups() = withState {
+        suspend {
+            val query = PeyessQuery(
+                orderBy = listOf(
+                    PeyessOrderBy(
+                        field = LocalLensesGroupsQueryFields.Priority.name(),
+                        order = Order.ASCENDING
+                    ),
+                )
+            )
+
+            lensesRepository.getFilteredGroups(query)
+        }.execute(Dispatchers.IO) {
+            copy(groupsListAsync = it)
+        }
+    }
+
+    private fun processLensGroupListResponse(response: LensesGroupsCompleteResponse) {
+        response.fold(
+            ifLeft = {
+                Timber.e(it.description, it.error)
+                setState{ copy(groupsListAsync = Fail(error = it.error ?: Throwable())) }
+            },
+            ifRight = {
+                setState{ copy(groupsList = it) }
+            }
+        )
+    }
+
+    private fun updateLensSuggestionsWith(list: List<StoreLensGroupDocument>) = withState {
+        suspend {
+            list.map { findBestLensForGroup(it.id) }
+        }.execute {
+            copy(lensSuggestionsResponseAsync = it)
+        }
+    }
+
+    private fun processLensSuggestionResponse(response: LensesSuggestionsResponse) = setState {
+        val lensSuggestions = mutableListOf<LensPickModel?>()
+
+        response.forEach { eitherResponse ->
+            eitherResponse.fold(
+                ifLeft = {
+                    Timber.e(it.description, it.error)
+
+                    setState {
+                        copy(lensSuggestionsResponseAsync = Fail(error = it.error ?: Throwable()))
+                    }
+                },
+                ifRight = {
+                    lensSuggestions.add(it)
+                }
+            )
+        }
+
+        copy(lensSuggestionsResponse = lensSuggestions)
     }
 
     private fun updateFilterForType(typeId: String) = setState {
@@ -696,10 +760,254 @@ class LensPickViewModel @AssistedInject constructor(
         }
     }
 
-    private fun bestLensForGroup(groupId: String): Flow<LensSuggestionModel?> {
-        return productRepository
-            .bestLensInGroup(groupId)
-            .flowOn(Dispatchers.IO)
+    private fun buildGroupByForLensGroupId(): List<PeyessGroupBy> {
+        return listOf(
+            PeyessGroupBy(
+                field = LocalLensesUnionQueryFields.LensId.name(),
+            )
+        )
+    }
+
+    private fun buildOrderByForLensGroupId(): List<PeyessOrderBy> {
+        return listOf(
+            PeyessOrderBy(
+                field = LocalLensesUnionQueryFields.LensPriority.name(),
+                order = Order.ASCENDING,
+            )
+        )
+    }
+
+    private fun buildQueryForLensGroupId(
+        lensGroupId: String,
+        lensType: LensType,
+        prescription: LocalPrescriptionDocument,
+        measuringLeft: LocalMeasuringDocument,
+        measuringRight: LocalMeasuringDocument,
+    ): List<PeyessQueryField> {
+        val queryFields = mutableListOf<PeyessQueryField>()
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.LensGroupId.name(),
+                op = PeyessQueryOperation.Equal,
+                value = lensGroupId,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.IsLensTypeMono.name(),
+                op = PeyessQueryOperation.Equal,
+                value = lensType.isLensTypeMono(),
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MaxSpherical.name(),
+                op = PeyessQueryOperation.GreaterThanOrEqual,
+                value = prescription.sphericalLeft,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MaxSpherical.name(),
+                op = PeyessQueryOperation.GreaterThanOrEqual,
+                value = prescription.sphericalRight,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MinSpherical.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = prescription.sphericalLeft,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MinSpherical.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = prescription.sphericalRight,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
+                op = PeyessQueryOperation.GreaterThanOrEqual,
+                value = prescription.cylindricalLeft,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
+                op = PeyessQueryOperation.GreaterThanOrEqual,
+                value = prescription.cylindricalRight,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MinCylindrical.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = prescription.cylindricalLeft,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.MinCylindrical.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = prescription.cylindricalRight,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.Height.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = measuringLeft.fixedHe,
+            ),
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.Height.name(),
+                op = PeyessQueryOperation.LessThanOrEqual,
+                value = measuringRight.fixedHe,
+            )
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.Diameter.name(),
+                op = PeyessQueryOperation.LessThan,
+                value = measuringLeft.diameter,
+            ),
+        )
+
+        queryFields.add(
+            buildQueryField(
+                field = LocalLensesUnionQueryFields.Diameter.name(),
+                op = PeyessQueryOperation.LessThan,
+                value = measuringRight.diameter,
+            )
+        )
+
+        if (prescription.hasAddition) {
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.MaxAddition.name(),
+                    op = PeyessQueryOperation.GreaterThanOrEqual,
+                    value = prescription.additionLeft,
+                )
+            )
+
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.MaxAddition.name(),
+                    op = PeyessQueryOperation.GreaterThanOrEqual,
+                    value = prescription.additionRight,
+                )
+            )
+
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.MinAddition.name(),
+                    op = PeyessQueryOperation.LessThanOrEqual,
+                    value = prescription.additionLeft,
+                )
+            )
+
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.MinAddition.name(),
+                    op = PeyessQueryOperation.LessThanOrEqual,
+                    value = prescription.additionRight,
+                )
+            )
+        }
+
+        if (prescription.hasPrism) {
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.Prism.name(),
+                    op = PeyessQueryOperation.GreaterThanOrEqual,
+                    value = prescription.prismDegreeLeft,
+                )
+            )
+
+            queryFields.add(
+                buildQueryField(
+                    field = LocalLensesUnionQueryFields.Prism.name(),
+                    op = PeyessQueryOperation.GreaterThanOrEqual,
+                    value = prescription.prismDegreeRight,
+                )
+            )
+        }
+
+        return queryFields
+    }
+
+    private suspend fun findBestLensForGroup(
+        groupId: String,
+    ): Either<LocalLensRepositoryException, LensPickModel?> = either {
+        val activeServiceOrder = saleRepository
+            .currentServiceOrder()
+            .mapLeft { Unexpected("Failed while fetching the current service order") }
+            .bind()
+
+        val localPrescription = localPrescriptionRepository
+            .getPrescriptionForServiceOrder(activeServiceOrder.id)
+            .mapLeft {
+                Unexpected(
+                    "Failed while fetching prescription for SO ${activeServiceOrder.id}"
+                )
+            }.bind()
+
+        val measuringLeft = localMeasuringRepository
+            .measuringForServiceOrder(activeServiceOrder.id, Eye.Left)
+            .mapLeft {
+                Unexpected(
+                    "Failed while fetching measuring for left eye " +
+                            "for SO ${activeServiceOrder.id}"
+                )
+            }.bind()
+
+        val measuringRight = localMeasuringRepository
+            .measuringForServiceOrder(activeServiceOrder.id, Eye.Right)
+            .mapLeft {
+                Unexpected(
+                    "Failed while fetching measuring for right eye " +
+                            "for SO ${activeServiceOrder.id}"
+                )
+            }.bind()
+
+        val queryFields = buildQueryForLensGroupId(
+            lensGroupId = groupId,
+            lensType = activeServiceOrder.lensTypeCategoryName.toLensType(),
+            prescription = localPrescription,
+            measuringLeft = measuringLeft,
+            measuringRight = measuringRight,
+        )
+
+        val orderBy = buildOrderByForLensGroupId()
+        val groupBy = buildGroupByForLensGroupId()
+        val query = PeyessQuery(
+            queryFields = queryFields,
+            orderBy = orderBy,
+            groupBy = groupBy,
+            withLimit = 1,
+        )
+
+        lensesRepository
+            .getLensFilteredByDisponibility(query)
+            .map { it?.toLensPickModel() }
+            .bind()
     }
 
     fun loadLensTypes() = withState {

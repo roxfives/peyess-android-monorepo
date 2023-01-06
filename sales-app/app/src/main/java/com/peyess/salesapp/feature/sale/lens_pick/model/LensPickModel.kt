@@ -1,8 +1,5 @@
 package com.peyess.salesapp.feature.sale.lens_pick.model
 
-import androidx.annotation.RawRes
-import androidx.annotation.StringRes
-import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
 import java.math.BigDecimal
 
 data class LensPickModel(
@@ -13,7 +10,7 @@ data class LensPickModel(
     val tech: String = "",
     val material: String = "",
     val specialty: String = "",
-    val category: String = "",
+    val group: String = "",
 
     val supplier: String = "",
 

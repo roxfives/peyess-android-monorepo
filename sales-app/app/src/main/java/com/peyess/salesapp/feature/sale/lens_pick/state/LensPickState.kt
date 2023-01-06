@@ -6,13 +6,10 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.data.model.lens.description.LensDescriptionDocument
-import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_specialty.FilterLensSpecialtyEntity
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterGroupImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterDescriptionImpl
@@ -23,7 +20,6 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSupplierImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterTypeImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
-import com.peyess.salesapp.repository.products.LensFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -52,6 +48,12 @@ typealias LensesSpecialtiesResponse =
 typealias LensesGroupsResponse =
         Either<LocalLensRepositoryException, List<LensFilterGroupImpl>>
 
+typealias LensesGroupsCompleteResponse =
+        Either<LocalLensRepositoryException, List<StoreLensGroupDocument>>
+
+typealias LensesSuggestionsResponse =
+        List<Either<LocalLensRepositoryException, LensPickModel?>>
+
 data class LensPickState(
     val filter: LensListFilter = LensListFilter(),
     val lenses: Flow<PagingData<LensSuggestionModel>> = flowOf(),
@@ -75,7 +77,11 @@ data class LensPickState(
     val hasFilterUv: Boolean = false,
     val hasFilterBlue: Boolean = false,
 
-    val groupsList: Async<List<LensGroupDocument>> = Uninitialized,
+    val groupsListAsync: Async<LensesGroupsCompleteResponse> = Uninitialized,
+    val groupsList: List<StoreLensGroupDocument> = emptyList(),
+
+    val lensSuggestionsResponseAsync: Async<LensesSuggestionsResponse> = Uninitialized,
+    val lensSuggestionsResponse: List<LensPickModel?> = emptyList(),
 
     val hasAddedToSuggestion: Boolean = false,
     val isAddingToSuggestion: Boolean = false,

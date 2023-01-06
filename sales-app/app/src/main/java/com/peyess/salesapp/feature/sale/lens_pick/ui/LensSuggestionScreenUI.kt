@@ -40,7 +40,6 @@ import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +66,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterDescriptionImpl
@@ -158,7 +156,7 @@ fun LensSuggestionScreen(
     val hasFilterUv by viewModel.collectAsState(LensPickState::hasFilterUv)
     val hasFilterBlue by viewModel.collectAsState(LensPickState::hasFilterBlue)
 
-    val lensSuggestions by viewModel.suggestions().collectAsState(listOf())
+    val lensSuggestions by viewModel.collectAsState(LensPickState::lensSuggestionsResponse)
 
     val isAddingSuggestion by viewModel.collectAsState(LensPickState::isAddingToSuggestion)
     val hasAddedSuggestion by viewModel.collectAsState(LensPickState::hasAddedToSuggestion)
@@ -258,7 +256,7 @@ fun LensSuggestionScreen(
 private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
 
-    lensSuggestion: List<LensSuggestionModel?> = listOf(),
+    lensSuggestion: List<LensPickModel?> = listOf(),
     lensesTableStream: Flow<PagingData<LensPickModel>>,
 
     isFamilyLensFilterEnabled: Boolean = false,
@@ -494,7 +492,7 @@ private fun LensSuggestionScreenImpl(
 @Composable
 private fun TierSuggestion(
     modifier: Modifier = Modifier,
-    lenses: List<LensSuggestionModel?> = listOf(null, null, null, null),
+    lenses: List<LensPickModel?> = listOf(null, null, null, null),
     onShowSearchScreen: () -> Unit = {},
     onPickLens: (lensId: String) -> Unit = {},
 ) {
@@ -1055,7 +1053,7 @@ private fun NoCardFound(
 @Composable
 private fun LensSuggestionCard(
     modifier: Modifier = Modifier,
-    lens: LensSuggestionModel? = null,
+    lens: LensPickModel? = null,
     onPickLens: (lensId: String) -> Unit = {},
 ) {
     Card(
@@ -1087,7 +1085,7 @@ private fun LensSuggestionCard(
                 )
 
                 Text(
-                    text = lens.brand,
+                    text = lens.family,
                     style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1099,7 +1097,7 @@ private fun LensSuggestionCard(
                 )
 
                 Text(
-                    text = lens.design,
+                    text = lens.description,
                     style = MaterialTheme.typography.h5.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1316,14 +1314,14 @@ private fun LensSuggestionCardPreview() {
     SalesAppTheme {
         LensSuggestionCard(
             modifier = Modifier.fillMaxSize(),
-            lens = LensSuggestionModel(
+            lens = LensPickModel(
                 supplier = "Zeiss",
                 group = "Grupo",
-                brand = "Familia",
-                design = "Descrição um pouco longa porque tem umas monstra",
+                family = "Familia",
+                description = "Descrição um pouco longa porque tem umas monstra",
                 tech = "Tecnologia",
                 material = "Material",
-                price = 1526.0,
+                price = BigDecimal(1526.0),
 
                 observation = "Produzidas com o DNA HOYA, o que garante características tecnológicas superiores a diversas outras lentes do mercado",
                 explanations = listOf(

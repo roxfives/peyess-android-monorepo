@@ -340,90 +340,6 @@ private fun LensSuggestionScreenImpl(
 ) {
     val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
 
-    val typeDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = typeDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_type,
-        filterList = lensFilterTypes,
-        isEnabled = isFilterTypesEnabled,
-        isLoading = isFilterTypesLoading,
-        hasFailed = hasFilterTypesFailed,
-        onPick = onFilterType,
-        onRetry = onRetryFilterTypes,
-    )
-
-    val supplierDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = supplierDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_supplier,
-        filterList = lensFilterSuppliers,
-        isEnabled = isFilterSuppliersEnabled,
-        isLoading = isFilterSuppliersLoading,
-        hasFailed = hasFilterSuppliersFailed,
-        onPick = onFilterSupplier,
-        onRetry = onRetryFilterSuppliers,
-    )
-
-    val familyDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = familyDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_family,
-        filterList = lensFilterFamilies,
-        isEnabled = isFilterFamiliesEnabled,
-        isLoading = isFilterFamiliesLoading,
-        hasFailed = hasFilterFamiliesFailed,
-        onPick = onFilterFamily,
-        onRetry = onRetryFilterFamilies,
-    )
-
-    val descriptionDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = descriptionDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_description,
-        filterList = lensFilterDescriptions,
-        isEnabled = isFilterDescriptionsEnabled,
-        isLoading = isFilterDescriptionsLoading,
-        hasFailed = hasFilterDescriptionsFailed,
-        onPick = onFilterDescription,
-        onRetry = onRetryFilterDescriptions,
-    )
-
-    val materialDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = materialDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_material,
-        filterList = lensFilterMaterials,
-        isEnabled = isFilterMaterialsEnabled,
-        isLoading = isFilterMaterialsLoading,
-        hasFailed = hasFilterMaterialsFailed,
-        onPick = onFilterMaterial,
-        onRetry = onRetryFilterMaterials,
-    )
-
-    val specialtyDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = specialtyDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_specialty,
-        filterList = lensFilterSpecialties,
-        isEnabled = isFilterSpecialtiesEnabled,
-        isLoading = isFilterSpecialtiesLoading,
-        hasFailed = hasFilterSpecialtiesFailed,
-        onPick = onFilterSpecialty,
-        onRetry = onRetryFilterSpecialties,
-    )
-
-    val groupDialogState = rememberMaterialDialogState()
-    FilterLensDialog(
-        dialogState = groupDialogState,
-        filterTitleRes = R.string.lens_suggestion_filter_group,
-        filterList = lensFilterGroups,
-        isEnabled = isFilterGroupsEnabled,
-        isLoading = isFilterGroupsLoading,
-        hasFailed = hasFilterGroupsFailed,
-        onPick = onFilterGroup,
-        onRetry = onRetryFilterGroups,
-    )
-
     if (isAddingSuggestion) {
         PeyessProgressIndicatorInfinite()
     } else {
@@ -457,32 +373,67 @@ private fun LensSuggestionScreenImpl(
                 onFilterBlueChanged = onFilterBlueChanged,
 
                 selectedLensType = selectedLensType,
+                lensFilterTypes = lensFilterTypes,
+                isFilterTypesEnabled = isFilterTypesEnabled,
+                isFilterTypesLoading = isFilterTypesLoading,
+                hasFilterTypesFailed = hasFilterTypesFailed,
                 onLoadFilterTypes = onLoadFilterTypes,
-                typesDialogState = typeDialogState,
+                onRetryFilterTypes = onRetryFilterTypes,
+                onFilterType = onFilterType,
 
                 selectedLensSupplier = selectedLensSupplier,
+                lensFilterSuppliers = lensFilterSuppliers,
+                isFilterSuppliersEnabled = isFilterSuppliersEnabled,
+                isFilterSuppliersLoading = isFilterSuppliersLoading,
+                hasFilterSuppliersFailed = hasFilterSuppliersFailed,
                 onLoadFilterSuppliers = onLoadFilterSuppliers,
-                suppliersDialogState = supplierDialogState,
+                onRetryFilterSuppliers = onRetryFilterSuppliers,
+                onFilterSupplier = onFilterSupplier,
 
                 selectedLensFamily = selectedLensFamily,
+                lensFilterFamilies = lensFilterFamilies,
+                isFilterFamiliesEnabled = isFilterFamiliesEnabled,
+                isFilterFamiliesLoading = isFilterFamiliesLoading,
+                hasFilterFamiliesFailed = hasFilterFamiliesFailed,
                 onLoadFilterFamilies = onLoadFilterFamilies,
-                familiesDialogState = familyDialogState,
+                onRetryFilterFamilies = onRetryFilterFamilies,
+                onFilterFamily = onFilterFamily,
 
                 selectedLensDescription = selectedLensDescription,
+                lensFilterDescriptions = lensFilterDescriptions,
+                isFilterDescriptionsEnabled = isFilterDescriptionsEnabled,
+                isFilterDescriptionsLoading = isFilterDescriptionsLoading,
+                hasFilterDescriptionsFailed = hasFilterDescriptionsFailed,
                 onLoadFilterDescriptions = onLoadFilterDescriptions,
-                descriptionsDialogState = descriptionDialogState,
+                onRetryFilterDescriptions = onRetryFilterDescriptions,
+                onFilterDescription = onFilterDescription,
 
                 selectedLensMaterial = selectedLensMaterial,
+                lensFilterMaterials = lensFilterMaterials,
+                isFilterMaterialsEnabled = isFilterMaterialsEnabled,
+                isFilterMaterialsLoading = isFilterMaterialsLoading,
+                hasFilterMaterialsFailed = hasFilterMaterialsFailed,
                 onLoadFilterMaterials = onLoadFilterMaterials,
-                materialsDialogState = materialDialogState,
+                onRetryFilterMaterials = onRetryFilterMaterials,
+                onFilterMaterial = onFilterMaterial,
 
                 selectedLensSpecialty = selectedLensSpecialty,
+                lensFilterSpecialties = lensFilterSpecialties,
+                isFilterSpecialtiesEnabled = isFilterSpecialtiesEnabled,
+                isFilterSpecialtiesLoading = isFilterSpecialtiesLoading,
+                hasFilterSpecialtiesFailed = hasFilterSpecialtiesFailed,
                 onLoadFilterSpecialties = onLoadFilterSpecialties,
-                specialtiesDialogState = specialtyDialogState,
+                onRetryFilterSpecialties = onRetryFilterSpecialties,
+                onFilterSpecialty = onFilterSpecialty,
 
                 selectedLensGroup = selectedLensGroup,
+                lensFilterGroups = lensFilterGroups,
+                isFilterGroupsEnabled = isFilterGroupsEnabled,
+                isFilterGroupsLoading = isFilterGroupsLoading,
+                hasFilterGroupsFailed = hasFilterGroupsFailed,
                 onLoadFilterGroups = onLoadFilterGroups,
-                groupsDialogState = groupDialogState,
+                onRetryFilterGroups = onRetryFilterGroups,
+                onFilterGroup = onFilterGroup,
 
                 onHideSearchScreen = { showSearchScreen.value = false },
             )
@@ -597,38 +548,157 @@ private fun LensList(
     onFilterBlueChanged: (Boolean) -> Unit = {},
 
     selectedLensType: String = "",
+    lensFilterTypes: List<LensFilterTypeImpl> = emptyList(),
+    isFilterTypesEnabled: Boolean = true,
+    isFilterTypesLoading: Boolean = false,
+    hasFilterTypesFailed: Boolean = false,
     onLoadFilterTypes: () -> Unit = {},
-    typesDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterTypes: () -> Unit = {},
+    onFilterType: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensSupplier: String = "",
+    lensFilterSuppliers: List<LensFilterSupplierImpl> = emptyList(),
+    isFilterSuppliersEnabled: Boolean = true,
+    isFilterSuppliersLoading: Boolean = false,
+    hasFilterSuppliersFailed: Boolean = false,
     onLoadFilterSuppliers: () -> Unit = {},
-    suppliersDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterSuppliers: () -> Unit = {},
+    onFilterSupplier: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensFamily: String = "",
+    lensFilterFamilies: List<LensFilterFamilyImpl> = emptyList(),
+    isFilterFamiliesEnabled: Boolean = true,
+    isFilterFamiliesLoading: Boolean = false,
+    hasFilterFamiliesFailed: Boolean = false,
     onLoadFilterFamilies: () -> Unit = {},
-    familiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterFamilies: () -> Unit = {},
+    onFilterFamily: (familyId: String, familyName: String) -> Unit = { _, _ -> },
 
     selectedLensDescription: String = "",
+    lensFilterDescriptions: List<LensFilterDescriptionImpl> = emptyList(),
+    isFilterDescriptionsEnabled: Boolean = true,
+    isFilterDescriptionsLoading: Boolean = false,
+    hasFilterDescriptionsFailed: Boolean = false,
     onLoadFilterDescriptions: () -> Unit = {},
-    descriptionsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterDescriptions: () -> Unit = {},
+    onFilterDescription: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensMaterial: String = "",
+    lensFilterMaterials: List<LensFilterMaterialImpl> = emptyList(),
+    isFilterMaterialsEnabled: Boolean = true,
+    isFilterMaterialsLoading: Boolean = false,
+    hasFilterMaterialsFailed: Boolean = false,
     onLoadFilterMaterials: () -> Unit = {},
-    materialsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterMaterials: () -> Unit = {},
+    onFilterMaterial: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensSpecialty: String = "",
+    lensFilterSpecialties: List<LensFilterSpecialtyImpl> = emptyList(),
+    isFilterSpecialtiesEnabled: Boolean = true,
+    isFilterSpecialtiesLoading: Boolean = true,
+    hasFilterSpecialtiesFailed: Boolean = false,
     onLoadFilterSpecialties: () -> Unit = {},
-    specialtiesDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterSpecialties: () -> Unit = {},
+    onFilterSpecialty: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 
     selectedLensGroup: String = "",
+    lensFilterGroups: List<LensFilterGroupImpl> = emptyList(),
+    isFilterGroupsEnabled: Boolean = true,
+    isFilterGroupsLoading: Boolean = false,
+    hasFilterGroupsFailed: Boolean = false,
     onLoadFilterGroups: () -> Unit = {},
-    groupsDialogState: MaterialDialogState = rememberMaterialDialogState(),
+    onRetryFilterGroups: () -> Unit = {},
+    onFilterGroup: (groupId: String, groupName: String) -> Unit = { _, _ -> },
 ) {
     val scaffoldState = rememberBackdropScaffoldState(
         initialValue = BackdropValue.Revealed,
     )
 
     val headerHeight = 60.dp
+
+    val typeDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = typeDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_type,
+        filterList = lensFilterTypes,
+        isEnabled = isFilterTypesEnabled,
+        isLoading = isFilterTypesLoading,
+        hasFailed = hasFilterTypesFailed,
+        onPick = onFilterType,
+        onRetry = onRetryFilterTypes,
+    )
+
+    val supplierDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = supplierDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_supplier,
+        filterList = lensFilterSuppliers,
+        isEnabled = isFilterSuppliersEnabled,
+        isLoading = isFilterSuppliersLoading,
+        hasFailed = hasFilterSuppliersFailed,
+        onPick = onFilterSupplier,
+        onRetry = onRetryFilterSuppliers,
+    )
+
+    val familyDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = familyDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_family,
+        filterList = lensFilterFamilies,
+        isEnabled = isFilterFamiliesEnabled,
+        isLoading = isFilterFamiliesLoading,
+        hasFailed = hasFilterFamiliesFailed,
+        onPick = onFilterFamily,
+        onRetry = onRetryFilterFamilies,
+    )
+
+    val descriptionDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = descriptionDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_description,
+        filterList = lensFilterDescriptions,
+        isEnabled = isFilterDescriptionsEnabled,
+        isLoading = isFilterDescriptionsLoading,
+        hasFailed = hasFilterDescriptionsFailed,
+        onPick = onFilterDescription,
+        onRetry = onRetryFilterDescriptions,
+    )
+
+    val materialDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = materialDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_material,
+        filterList = lensFilterMaterials,
+        isEnabled = isFilterMaterialsEnabled,
+        isLoading = isFilterMaterialsLoading,
+        hasFailed = hasFilterMaterialsFailed,
+        onPick = onFilterMaterial,
+        onRetry = onRetryFilterMaterials,
+    )
+
+    val specialtyDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = specialtyDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_specialty,
+        filterList = lensFilterSpecialties,
+        isEnabled = isFilterSpecialtiesEnabled,
+        isLoading = isFilterSpecialtiesLoading,
+        hasFailed = hasFilterSpecialtiesFailed,
+        onPick = onFilterSpecialty,
+        onRetry = onRetryFilterSpecialties,
+    )
+
+    val groupDialogState = rememberMaterialDialogState()
+    FilterLensDialog(
+        dialogState = groupDialogState,
+        filterTitleRes = R.string.lens_suggestion_filter_group,
+        filterList = lensFilterGroups,
+        isEnabled = isFilterGroupsEnabled,
+        isLoading = isFilterGroupsLoading,
+        hasFailed = hasFilterGroupsFailed,
+        onPick = onFilterGroup,
+        onRetry = onRetryFilterGroups,
+    )
 
     BackdropScaffold(
         modifier = modifier,
@@ -676,7 +746,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterTypes()
-                            typesDialogState.show()
+                            typeDialogState.show()
                         },
                     )
 
@@ -692,7 +762,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterSuppliers()
-                            suppliersDialogState.show()
+                            supplierDialogState.show()
                         },
                     )
                 }
@@ -715,7 +785,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterFamilies()
-                            familiesDialogState.show()
+                            familyDialogState.show()
                         },
                     )
 
@@ -732,7 +802,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterDescriptions()
-                            descriptionsDialogState.show()
+                            descriptionDialogState.show()
                         },
                     )
                 }
@@ -755,7 +825,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterMaterials()
-                            materialsDialogState.show()
+                            materialDialogState.show()
                         },
                     )
 
@@ -771,7 +841,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterSpecialties()
-                            specialtiesDialogState.show()
+                            specialtyDialogState.show()
                         },
                     )
                 }
@@ -793,7 +863,7 @@ private fun LensList(
                         },
                         onClick = {
                             onLoadFilterGroups()
-                            groupsDialogState.show()
+                            groupDialogState.show()
                         }
                     )
 
@@ -866,6 +936,7 @@ private fun LensList(
                 }
             }
         },
+
         frontLayerContent = {
             val lensesTable = lensesTableStream.collectAsLazyPagingItems()
 

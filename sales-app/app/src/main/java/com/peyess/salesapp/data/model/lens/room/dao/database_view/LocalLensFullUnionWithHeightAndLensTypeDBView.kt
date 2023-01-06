@@ -9,8 +9,11 @@ private const val lensesFullUnionDBView = LocalLensFullUnionDBView.viewName
     viewName = LocalLensFullUnionWithHeightAndLensTypeDBView.viewName,
     value = """
         SELECT *, 
-            IIF(altHeightValue IS NULL, height, altHeightValue) heightResult,
-            IIF(typeName LIKE '%multi%', 0, 1) isLensMono
+            IIF(altHeightValue IS NULL, height, altHeightValue) AS heightResult,
+            IIF(altHeightName IS NULL, "", altHeightName) AS altHeightName,
+            IIF(altHeightNameDisplay IS NULL, "", altHeightNameDisplay) AS altHeightDisplay,
+            IIF(altHeightObservation IS NULL, "", altHeightObservation) AS altHeightObservation,
+            IIF(typeName LIKE '%multi%', 0, 1) AS isLensMono
         FROM $lensesFullUnionDBView
     """,
 )

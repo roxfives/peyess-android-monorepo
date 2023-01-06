@@ -312,12 +312,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
             .copy(withLimit = 1)
             .toSqlQuery(selectStatement)
 
-        Timber.i("Inferno")
-        localLensDao
+        val response = localLensDao
             .getLensFilteredWithDisponibilities(sqlQuery)
-            .toStoreLensWithDetailsDocument()
-    }.mapLeft {
+            ?.toStoreLensWithDetailsDocument()
 
+        response
+    }.mapLeft {
         Unexpected(
             description = "Unexpected error: ${it.message}",
             error = it,

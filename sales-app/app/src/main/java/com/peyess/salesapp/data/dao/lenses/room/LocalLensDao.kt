@@ -161,7 +161,7 @@ interface LocalLensDao {
     @RawQuery(observedEntities = [LocalLensFullUnionWithHeightAndLensTypeDBView::class])
     suspend fun getLensFilteredWithDisponibilities(
         query: SimpleSQLiteQuery,
-    ): LocalLensCompleteWithAltHeight
+    ): LocalLensCompleteWithAltHeight?
 
     @Transaction
     @RawQuery(observedEntities = [LocalLensesTypeDBView::class])

@@ -57,7 +57,7 @@ typealias LensesResponse = Either<
 
 typealias LensFilteredByDisponibilitiesResponse = Either<
         LocalLensRepositoryException,
-        StoreLensWithDetailsDocument,
+        StoreLensWithDetailsDocument?,
     >
 
 interface LocalLensesRepository {

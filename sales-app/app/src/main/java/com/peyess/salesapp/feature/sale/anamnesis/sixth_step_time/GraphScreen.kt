@@ -15,6 +15,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,9 +54,17 @@ val barChartHeight = 480.dp
 fun GraphsScreen(
     modifier: Modifier = Modifier,
 
-    onNext: () -> Unit = {},
+    onNext: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 ) {
     val viewModel: SixthStepViewModel = mavericksActivityViewModel()
+
+    // TODO: remove this when refactoring the anamnesis feature
+    LaunchedEffect(true) {
+        viewModel.loadSale()
+    }
+
+    val serviceOrderId by viewModel.collectAsState(SixthStepState::serviceOrderId)
+    val saleId by viewModel.collectAsState(SixthStepState::saleId)
 
     val farUsage by viewModel.collectAsState(SixthStepState::farUsage)
     val nearUsage by viewModel.collectAsState(SixthStepState::nearUsage)
@@ -93,7 +103,7 @@ fun GraphsScreen(
         externalArea = externalArea,
         internalArea = internalArea,
 
-        onNext = onNext,
+        onNext = { onNext(saleId, serviceOrderId) },
     )
 }
 

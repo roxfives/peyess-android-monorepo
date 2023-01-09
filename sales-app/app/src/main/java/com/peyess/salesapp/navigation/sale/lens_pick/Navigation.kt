@@ -30,15 +30,15 @@ val lensSuggestionNavRoute = SalesAppScreens.LensSuggestion.name +
 fun buildLensSuggestionNavRoute(
     isEditing: Boolean,
     saleId: String = "",
-    soId: String = "",
+    serviceOrderId: String = "",
 ): String {
-    return if (saleId.isBlank() || soId.isBlank()) {
+    return if (saleId.isBlank() || serviceOrderId.isBlank()) {
         "${SalesAppScreens.LensSuggestion.name}/$isEditing"
     } else {
         SalesAppScreens.LensSuggestion.name +
                 "/$isEditing" +
                 "?$saleIdArgumentName=$saleId" +
-                "?$soIdArgumentName=$soId"
+                "?$soIdArgumentName=$serviceOrderId"
     }
 }
 

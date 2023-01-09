@@ -17,6 +17,9 @@ data class SixthStepState(
 
     @PersistState val timeWakeUp: Float = 360f,
     @PersistState val timeGoToBed: Float = 1320f,
+
+    val serviceOrderId: String = "",
+    val saleId: String = "",
 ): MavericksState {
     val reading = readingSlider.toInt() * 30f
     val phone = phoneSlider.toInt() * 30f

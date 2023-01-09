@@ -6,12 +6,17 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.state.SecondStepState
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepState
+import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SixthStepViewModel @AssistedInject constructor(
     @Assisted initialState: SixthStepState,
+    private val saleRepository: SaleRepository,
 ): MavericksViewModel<SixthStepState>(initialState) {
 
     init {
@@ -33,6 +38,41 @@ class SixthStepViewModel @AssistedInject constructor(
                 }
             }
         }
+    }
+
+    private fun loadSaleData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository
+                .currentSale()
+                .fold(
+                    ifLeft = { error ->
+                        Timber.e("Error while fetching active sale", error)
+                    },
+                    ifRight = { sale ->
+                        setState { copy(saleId = sale.id) }
+                    }
+                )
+        }
+    }
+
+    private fun loadServiceOrderData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository
+                .currentServiceOrder()
+                .fold(
+                    ifLeft = { error ->
+                        Timber.e("Error while fetching active service order", error)
+                    },
+                    ifRight = { serviceOrder ->
+                        setState { copy(serviceOrderId = serviceOrder.id) }
+                    }
+                )
+        }
+    }
+
+    fun loadSale() {
+        loadSaleData()
+        loadServiceOrderData()
     }
 
     fun resetState() = setState {

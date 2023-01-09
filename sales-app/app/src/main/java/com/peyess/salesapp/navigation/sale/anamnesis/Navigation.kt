@@ -10,7 +10,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.landing.Landing
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.FifthStepScreen
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.FirstTimeScreen
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.FourthStepScreen
@@ -18,7 +17,6 @@ import com.peyess.salesapp.feature.sale.anamnesis.second_step_glass_usage.Second
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.GraphsScreen
 import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.SixthStepScreen
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.ThirdStepScreen
-import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
 import com.peyess.salesapp.navigation.sale.anamnesis.fifth_step_sports.fifthStepEnterTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.fifth_step_sports.fifthStepExitTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.first_step_first_time.firstStepEnterTransition
@@ -152,11 +150,17 @@ fun buildAnamnesisNavGraph(
             modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(SalesAppTheme.dimensions.screen_offset)
-        ) {
-            val route = buildLensSuggestionNavRoute(isEditing = false)
+                .padding(SalesAppTheme.dimensions.screen_offset),
 
-            navHostController.navigate(route)
-        }
+            onNext = { saleId, serviceOrderId ->
+                val route = buildLensSuggestionNavRoute(
+                    isEditing = false,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                )
+
+                navHostController.navigate(route)
+            }
+        )
     }
 }

@@ -45,7 +45,10 @@ fun buildHomeNavGraph(
             },
 
             onOpenProductsTable = {
-                val route = buildLensSuggestionNavRoute(isEditing = false)
+                val route = buildLensSuggestionNavRoute(
+                    isEditing = false,
+                    showSuggestions = false,
+                )
 
                 navHostController.navigate(route)
             },

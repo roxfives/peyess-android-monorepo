@@ -155,6 +155,7 @@ fun buildAnamnesisNavGraph(
             onNext = { saleId, serviceOrderId ->
                 val route = buildLensSuggestionNavRoute(
                     isEditing = false,
+                    showSuggestions = true,
                     saleId = saleId,
                     serviceOrderId = serviceOrderId,
                 )

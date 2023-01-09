@@ -57,7 +57,10 @@ fun buildServiceOrderNavGraph(
             },
 
             onEditProducts = {
-                val route = buildLensSuggestionNavRoute(isEditing = true)
+                val route = buildLensSuggestionNavRoute(
+                    isEditing = true,
+                    showSuggestions = true,
+                )
 
                 navHostController
                     .navigate(route)

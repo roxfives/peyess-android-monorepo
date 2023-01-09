@@ -27,13 +27,21 @@ val lensSuggestionNavRoute = SalesAppScreens.LensSuggestion.name +
         "?$saleIdArgumentName={$saleIdArgumentName}" +
         "?$soIdArgumentName={$soIdArgumentName}"
 
+// TODO: remove this crap after refactoring the suggestions features into three different ones
+private val lensSuggestionWithoutSuggestionsNavRoute =
+    SalesAppScreens.LensSuggestionWithoutSuggestions.name +
+        "/{$isEditingParam}" +
+        "?$saleIdArgumentName={$saleIdArgumentName}" +
+        "?$soIdArgumentName={$soIdArgumentName}"
+
 fun buildLensSuggestionNavRoute(
     isEditing: Boolean,
+    showSuggestions: Boolean,
     saleId: String = "",
     serviceOrderId: String = "",
 ): String {
-    return if (saleId.isBlank() || serviceOrderId.isBlank()) {
-        "${SalesAppScreens.LensSuggestion.name}/$isEditing"
+    return if (!showSuggestions) {
+        "${SalesAppScreens.LensSuggestionWithoutSuggestions.name}/$isEditing"
     } else {
         SalesAppScreens.LensSuggestion.name +
                 "/$isEditing" +
@@ -55,17 +63,42 @@ fun buildLensSuggestionNavGraph(
             navArgument(saleIdArgumentName) {
                 type = NavType.StringType
                 defaultValue = ""
-             },
+            },
             navArgument(soIdArgumentName) {
                 type = NavType.StringType
                 defaultValue = ""
-             },
+            },
         ),
         enterTransition = lensSuggestionEnterTransition(),
         exitTransition = lensSuggestionExitTransition()
     ) {
         LensSuggestionScreen(
             modifier = modifier,
+            navHostController = navHostController,
+        ) {
+            navHostController.navigate("${SalesAppScreens.LensComparison.name}/$it")
+        }
+    }
+
+    builder.composable(
+        route = lensSuggestionWithoutSuggestionsNavRoute,
+        arguments = listOf(
+            navArgument(isEditingParam) { type = NavType.BoolType },
+            navArgument(saleIdArgumentName) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
+            navArgument(soIdArgumentName) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
+        ),
+        enterTransition = lensSuggestionEnterTransition(),
+        exitTransition = lensSuggestionExitTransition()
+    ) {
+        LensSuggestionScreen(
+            modifier = modifier,
+            showSuggestions = false,
             navHostController = navHostController,
         ) {
             navHostController.navigate("${SalesAppScreens.LensComparison.name}/$it")

@@ -32,6 +32,7 @@ enum class SalesAppScreens {
     AnamnesisSixthStep,
     AnamnesisSeventhStep,
     LensSuggestion,
+    LensSuggestionWithoutSuggestions,
     LensComparison,
     PickClient,
     ServiceOrder,
@@ -85,6 +86,7 @@ enum class SalesAppScreens {
                 AnamnesisSixthStep.name -> AnamnesisSixthStep
                 AnamnesisSeventhStep.name -> AnamnesisSeventhStep
                 LensSuggestion.name -> LensSuggestion
+                LensSuggestionWithoutSuggestions.name -> LensSuggestionWithoutSuggestions
                 LensComparison.name -> LensComparison
                 PickClient.name -> PickClient
                 ServiceOrder.name -> ServiceOrder
@@ -145,6 +147,7 @@ enum class SalesAppScreens {
                 AnamnesisSixthStep.name -> "Anamnese"
                 AnamnesisSeventhStep.name -> "Anamnese"
                 LensSuggestion.name -> "Sugestões de lentes"
+                LensSuggestionWithoutSuggestions.name -> "Tabela de produtos"
                 LensComparison.name -> "Comparação da lente"
                 PickClient.name -> "Selecione o cadastro do cliente"
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"

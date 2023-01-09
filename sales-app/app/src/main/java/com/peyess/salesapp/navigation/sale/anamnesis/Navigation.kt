@@ -33,6 +33,7 @@ import com.peyess.salesapp.navigation.sale.anamnesis.sixth_step_time.sixthStepEn
 import com.peyess.salesapp.navigation.sale.anamnesis.sixth_step_time.sixthStepExitTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepEnterTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepExitTransition
+import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -153,9 +154,9 @@ fun buildAnamnesisNavGraph(
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset)
         ) {
-            val isEditing = false
+            val route = buildLensSuggestionNavRoute(isEditing = false)
 
-            navHostController.navigate("${SalesAppScreens.LensSuggestion.name}/$isEditing")
+            navHostController.navigate(route)
         }
     }
 }

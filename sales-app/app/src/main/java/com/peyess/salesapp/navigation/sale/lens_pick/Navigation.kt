@@ -19,6 +19,28 @@ import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEx
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val isEditingParam = "isEditing"
+const val saleIdArgumentName = "saleId"
+const val soIdArgumentName = "soId"
+
+val lensSuggestionNavRoute = SalesAppScreens.LensSuggestion.name +
+        "/{$isEditingParam}" +
+        "?$saleIdArgumentName={$saleIdArgumentName}" +
+        "?$soIdArgumentName={$soIdArgumentName}"
+
+fun buildLensSuggestionNavRoute(
+    isEditing: Boolean,
+    saleId: String = "",
+    soId: String = "",
+): String {
+    return if (saleId.isBlank() || soId.isBlank()) {
+        "${SalesAppScreens.LensSuggestion.name}/$isEditing"
+    } else {
+        SalesAppScreens.LensSuggestion.name +
+                "/$isEditing" +
+                "?$saleIdArgumentName=$saleId" +
+                "?$soIdArgumentName=$soId"
+    }
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildLensSuggestionNavGraph(
@@ -27,9 +49,17 @@ fun buildLensSuggestionNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = "${SalesAppScreens.LensSuggestion.name}/{$isEditingParam}",
+        route = lensSuggestionNavRoute,
         arguments = listOf(
-            navArgument(isEditingParam) { type = NavType.BoolType }
+            navArgument(isEditingParam) { type = NavType.BoolType },
+            navArgument(saleIdArgumentName) {
+                type = NavType.StringType
+                defaultValue = ""
+             },
+            navArgument(soIdArgumentName) {
+                type = NavType.StringType
+                defaultValue = ""
+             },
         ),
         enterTransition = lensSuggestionEnterTransition(),
         exitTransition = lensSuggestionExitTransition()

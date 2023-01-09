@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
+import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildServiceOrderNavGraph(
@@ -56,10 +57,10 @@ fun buildServiceOrderNavGraph(
             },
 
             onEditProducts = {
-                val isEditing = true
+                val route = buildLensSuggestionNavRoute(isEditing = true)
 
                 navHostController
-                    .navigate("${SalesAppScreens.LensSuggestion}/$isEditing")
+                    .navigate(route)
             },
 
             onAddPayment = {

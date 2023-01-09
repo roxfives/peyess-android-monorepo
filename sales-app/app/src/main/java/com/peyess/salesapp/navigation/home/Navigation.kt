@@ -12,6 +12,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.home.SalesScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
+import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -43,7 +44,11 @@ fun buildHomeNavGraph(
                 navHostController.navigate(formatBasicInfoRoute(scenario))
             },
 
-            onOpenProductsTable = { navHostController.navigate("${SalesAppScreens.LensSuggestion.name}/false") },
+            onOpenProductsTable = {
+                val route = buildLensSuggestionNavRoute(isEditing = false)
+
+                navHostController.navigate(route)
+            },
         )
     }
 

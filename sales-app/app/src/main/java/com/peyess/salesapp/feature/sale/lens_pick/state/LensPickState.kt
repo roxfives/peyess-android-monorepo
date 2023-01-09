@@ -8,7 +8,6 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
-import com.peyess.salesapp.data.model.lens.groups.LensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterGroupImpl
@@ -55,6 +54,10 @@ typealias LensesSuggestionsResponse =
         List<Either<LocalLensRepositoryException, LensPickModel?>>
 
 data class LensPickState(
+    val isEditingParameter: Boolean = false,
+    val serviceOrderId: String = "",
+    val saleId: String = "",
+
     val filter: LensListFilter = LensListFilter(),
     val lenses: Flow<PagingData<LensSuggestionModel>> = flowOf(),
 
@@ -110,6 +113,8 @@ data class LensPickState(
     val lensesGroupsResponseAsync: Async<LensesGroupsResponse> = Uninitialized,
     val lensesGroupsResponse: List<LensFilterGroupImpl> = emptyList(),
 ): MavericksState {
+    val isSale = serviceOrderId.isNotBlank() && saleId.isNotBlank()
+
     val areTypesLoading = lensesTypesResponseAsync is Loading
     val hasTypesLoadingFailed = lensesTypesResponseAsync is Fail
 

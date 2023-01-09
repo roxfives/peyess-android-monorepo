@@ -76,13 +76,12 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSpecialtyImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterSupplierImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterTypeImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
-import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
+import com.peyess.salesapp.feature.sale.lens_pick.utils.parseParameters
 import com.peyess.salesapp.ui.component.chip.PeyessContentChip
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -103,13 +102,20 @@ fun LensSuggestionScreen(
     navHostController: NavHostController = rememberNavController(),
     onLensPicked: (isEditingParam: Boolean) -> Unit = {},
 ) {
-    val isEditingParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getBoolean(isEditingParam)
-        ?: false
-
     val viewModel: LensPickViewModel = mavericksViewModel()
+
+    parseParameters(
+        navController = navHostController,
+        onUpdateIsEditing = viewModel::updateIsEditing,
+        onUpdateSaleId = viewModel::updateSaleId,
+        onUpdateServiceOrderId = viewModel::updateServiceOrderId,
+    )
+
+    val isEditingParameter by viewModel.collectAsState(LensPickState::isEditingParameter)
+//    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
+//    val saleId by viewModel.collectAsState(LensPickState::saleId)
+
+    val isSale by viewModel.collectAsState(LensPickState::isSale)
 
     val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 
@@ -185,6 +191,8 @@ fun LensSuggestionScreen(
     LensSuggestionScreenImpl(
         modifier = modifier,
 
+        isSale = isSale,
+
         lensSuggestion = lensSuggestions,
         lensesTableStream = lensesTableStream,
 
@@ -257,6 +265,8 @@ fun LensSuggestionScreen(
 @Composable
 private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
+
+    isSale: Boolean = false,
 
     lensSuggestion: List<LensPickModel?> = listOf(),
     lensesTableStream: Flow<PagingData<LensPickModel>>,
@@ -338,20 +348,22 @@ private fun LensSuggestionScreenImpl(
 
     onShowSearchScreen: () -> Unit = {},
 ) {
-    val showSearchScreen = remember { mutableStateOf<Boolean>(false)}
+    val showSearchScreen = remember { mutableStateOf(!isSale)}
 
     if (isAddingSuggestion) {
         PeyessProgressIndicatorInfinite()
     } else {
-        TierSuggestion(
-            modifier = modifier,
-            lenses = lensSuggestion,
-            onShowSearchScreen = {
-                showSearchScreen.value = true
-                onShowSearchScreen()
-            },
-            onPickLens = onPickLens,
-        )
+        if (isSale) {
+            TierSuggestion(
+                modifier = modifier,
+                lenses = lensSuggestion,
+                onShowSearchScreen = {
+                    showSearchScreen.value = true
+                    onShowSearchScreen()
+                },
+                onPickLens = onPickLens,
+            )
+        }
 
         AnimatedVisibility(
             visible = showSearchScreen.value,

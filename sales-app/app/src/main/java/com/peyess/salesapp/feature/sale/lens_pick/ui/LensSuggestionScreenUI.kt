@@ -100,6 +100,7 @@ private const val maxExplanationsForSuggestionCard = 3
 fun LensSuggestionScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    showSuggestions: Boolean = true,
     onLensPicked: (isEditingParam: Boolean) -> Unit = {},
 ) {
     val viewModel: LensPickViewModel = mavericksViewModel()
@@ -114,8 +115,6 @@ fun LensSuggestionScreen(
     val isEditingParameter by viewModel.collectAsState(LensPickState::isEditingParameter)
 //    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
 //    val saleId by viewModel.collectAsState(LensPickState::saleId)
-
-    val isSale by viewModel.collectAsState(LensPickState::isSale)
 
     val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 
@@ -191,7 +190,7 @@ fun LensSuggestionScreen(
     LensSuggestionScreenImpl(
         modifier = modifier,
 
-        isSale = isSale,
+        showSuggestions = showSuggestions,
 
         lensSuggestion = lensSuggestions,
         lensesTableStream = lensesTableStream,
@@ -266,7 +265,7 @@ fun LensSuggestionScreen(
 private fun LensSuggestionScreenImpl(
     modifier: Modifier = Modifier,
 
-    isSale: Boolean = false,
+    showSuggestions: Boolean = true,
 
     lensSuggestion: List<LensPickModel?> = listOf(),
     lensesTableStream: Flow<PagingData<LensPickModel>>,
@@ -348,17 +347,17 @@ private fun LensSuggestionScreenImpl(
 
     onShowSearchScreen: () -> Unit = {},
 ) {
-    val showSearchScreen = remember { mutableStateOf(!isSale)}
+    val showLensTableScreen = remember { mutableStateOf(!showSuggestions) }
 
     if (isAddingSuggestion) {
         PeyessProgressIndicatorInfinite()
     } else {
-        if (isSale) {
+        if (showSuggestions) {
             TierSuggestion(
                 modifier = modifier,
                 lenses = lensSuggestion,
                 onShowSearchScreen = {
-                    showSearchScreen.value = true
+                    showLensTableScreen.value = true
                     onShowSearchScreen()
                 },
                 onPickLens = onPickLens,
@@ -366,7 +365,7 @@ private fun LensSuggestionScreenImpl(
         }
 
         AnimatedVisibility(
-            visible = showSearchScreen.value,
+            visible = showLensTableScreen.value,
             enter = slideInVertically { it },
             exit = slideOutVertically { 0 },
         ) {
@@ -447,7 +446,7 @@ private fun LensSuggestionScreenImpl(
                 onRetryFilterGroups = onRetryFilterGroups,
                 onFilterGroup = onFilterGroup,
 
-                onHideSearchScreen = { showSearchScreen.value = false },
+                onHideSearchScreen = { showLensTableScreen.value = false },
             )
         }
     }

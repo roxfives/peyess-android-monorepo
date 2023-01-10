@@ -8,7 +8,7 @@ const val minSpherical = -30.0
 const val maxSpherical = 25.0
 
 const val stepCylindrical = defaultStep
-const val minCylindrical = -9.0
+const val minCylindrical = -12.0
 const val maxCylindrical = 0.0
 
 const val stepAxis = 5.0 // 10.0

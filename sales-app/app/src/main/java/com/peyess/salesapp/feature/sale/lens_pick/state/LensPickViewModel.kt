@@ -12,13 +12,10 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonDao
-import com.peyess.salesapp.dao.sale.lens_comparison.LensComparisonEntity
+import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
+import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
-import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesGroupsQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -44,7 +41,6 @@ import com.peyess.salesapp.feature.sale.lens_pick.adapter.toStringResource
 import com.peyess.salesapp.feature.sale.lens_pick.constant.ListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensListFilter
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensPickModel
-import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildFilterQueryFields
 import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildFilterQueryOrderBy
 import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildGroupByForLensSuggestions
@@ -63,7 +59,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull

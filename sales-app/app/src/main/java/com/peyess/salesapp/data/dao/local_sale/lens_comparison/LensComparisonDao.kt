@@ -1,11 +1,11 @@
-package com.peyess.salesapp.dao.sale.lens_comparison
+package com.peyess.salesapp.data.dao.local_sale.lens_comparison
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
+import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

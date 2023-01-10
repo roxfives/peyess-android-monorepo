@@ -26,10 +26,10 @@ private const val altHeightCrossRef = LocalLensAltHeightCrossRef.tableName
         SELECT 
             lenses.*,
             
-            alt_height.name AS altHeightName,
-            alt_height.name_display AS altHeightNameDisplay, 
-            alt_height.value AS altHeightValue, 
-            alt_height.observation AS altHeightObservation 
+            IIF(alt_height.name IS NULL, "", alt_height.name) AS altHeightName,
+            IIF(alt_height.name_display IS NULL, "", alt_height.name_display) AS altHeightNameDisplay, 
+            IIF(alt_height.value IS NULL, 0, alt_height.value) AS altHeightValue, 
+            IIF(alt_height.observation IS NULL, "", alt_height.observation) AS altHeightObservation 
             
         FROM $lensesTable AS lenses
         LEFT OUTER JOIN $altHeightCrossRef AS _junction ON _junction.lens_id = lenses.id

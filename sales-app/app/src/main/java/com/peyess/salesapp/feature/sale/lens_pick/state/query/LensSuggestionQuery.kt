@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_pick.state.query
 
+import arrow.core.constant
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesUnionQueryFields
@@ -7,6 +8,8 @@ import com.peyess.salesapp.data.utils.query.PeyessGroupBy
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQueryField
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
+import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateExpressionField
+import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.features.disponibility.contants.LensType
@@ -111,12 +114,12 @@ private fun buildQueryFieldsForDiameter(
     return listOf(
         buildQueryField(
             field = LocalLensesUnionQueryFields.Diameter.name(),
-            op = PeyessQueryOperation.LessThan,
+            op = PeyessQueryOperation.GreaterThanOrEqual,
             value = measuringLeft.diameter,
         ),
         buildQueryField(
             field = LocalLensesUnionQueryFields.Diameter.name(),
-            op = PeyessQueryOperation.LessThan,
+            op = PeyessQueryOperation.GreaterThanOrEqual,
             value = measuringRight.diameter,
         ),
     )
@@ -174,6 +177,46 @@ private fun buildQueryFieldsForPrism(
     }
 }
 
+private fun buildQueryFieldsForSumRule(
+    prescription: LocalPrescriptionDocument,
+): List<PeyessQueryField> {
+    return listOf(
+        buildQueryField(
+            op = PeyessQueryPredicateOperation.IFF,
+            expression = buildQueryField(
+                field = LocalLensesUnionQueryFields.HasSumRule.name(),
+                op = PeyessQueryOperation.Equal,
+                value = true,
+            ),
+            ifTrue = buildQueryField(
+                field = LocalLensesUnionQueryFields.MinSpherical.name(),
+                op = PeyessQueryOperation.LessThan,
+                value = prescription.sphericalLeft + prescription.cylindricalLeft,
+            ),
+            ifFalse = buildQueryField(
+                constant = 0.0,
+            ),
+        ),
+
+        buildQueryField(
+            op = PeyessQueryPredicateOperation.IFF,
+            expression = buildQueryField(
+                field = LocalLensesUnionQueryFields.HasSumRule.name(),
+                op = PeyessQueryOperation.Equal,
+                value = true,
+            ),
+            ifTrue = buildQueryField(
+                field = LocalLensesUnionQueryFields.MinSpherical.name(),
+                op = PeyessQueryOperation.LessThan,
+                value = prescription.sphericalRight + prescription.cylindricalRight,
+            ),
+            ifFalse = buildQueryField(
+                constant = 0.0,
+            ),
+        ),
+    )
+}
+
 fun buildQueryFieldsForLensSuggestions(
     lensGroupId: String,
     lensType: LensType,
@@ -188,7 +231,7 @@ fun buildQueryFieldsForLensSuggestions(
             buildQueryFieldsForAddition(prescription) +
             buildQueryFieldsForPrism(prescription) +
             buildQueryFieldsForHeight(measuringLeft, measuringRight) +
-            buildQueryFieldsForDiameter(measuringLeft, measuringRight)
+            buildQueryFieldsForDiameter(measuringLeft, measuringRight) + buildQueryFieldsForSumRule(prescription)
 }
 
 fun buildGroupByForLensSuggestions(): List<PeyessGroupBy> {

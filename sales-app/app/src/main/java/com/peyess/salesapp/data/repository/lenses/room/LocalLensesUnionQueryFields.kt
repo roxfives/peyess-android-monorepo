@@ -45,6 +45,8 @@ sealed class LocalLensesUnionQueryFields {
     object MaxAddition: LocalLensesUnionQueryFields()
     object MinAddition: LocalLensesUnionQueryFields()
 
+    object HasSumRule: LocalLensesUnionQueryFields()
+
     object Diameter: LocalLensesUnionQueryFields()
     object Prism: LocalLensesUnionQueryFields()
     object Height: LocalLensesUnionQueryFields()
@@ -86,6 +88,7 @@ sealed class LocalLensesUnionQueryFields {
             is Prism -> "prism"
             is LensPriority -> "priority"
             is LensId -> "id"
+            is HasSumRule -> "sumRule"
         }
     }
 }

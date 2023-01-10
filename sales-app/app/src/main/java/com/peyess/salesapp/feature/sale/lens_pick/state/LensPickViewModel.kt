@@ -88,8 +88,6 @@ class LensPickViewModel @AssistedInject constructor(
     private val localMeasuringRepository: LocalMeasuringRepository,
 ): MavericksViewModel<LensPickState>(initialState) {
 
-    private var suggestionList: Flow<List<LensSuggestionModel?>> = emptyFlow()
-
     init {
         onEach(LensPickState::typeLensFilterId) { updateFilterForType(it) }
         onEach(LensPickState::supplierLensFilterId) { updateFilterForSupplier(it) }
@@ -441,10 +439,8 @@ class LensPickViewModel @AssistedInject constructor(
         lens: StoreLensWithDetailsDocument,
         prescription: Prescription,
     ): List<ReasonUnsupported> {
-        val reasonsUnsupported: MutableSet<ReasonUnsupported> = mutableSetOf()
-
         var disponibility: Disponibility
-        var unsupportedList: List<ReasonUnsupported>
+        var unsupportedList: List<ReasonUnsupported> = emptyList()
         for (disp in lens.disponibilities) {
             disponibility = disp.toDisponibility(
                 height = lens.height,
@@ -454,14 +450,11 @@ class LensPickViewModel @AssistedInject constructor(
 
             unsupportedList = supportsPrescription(disponibility, prescription)
             if (unsupportedList.isEmpty()) {
-                reasonsUnsupported.clear()
                 break
-            } else {
-                reasonsUnsupported.addAll(unsupportedList)
             }
         }
 
-        return reasonsUnsupported.toList()
+        return unsupportedList
     }
 
     private suspend fun getPrescriptionForFilter():

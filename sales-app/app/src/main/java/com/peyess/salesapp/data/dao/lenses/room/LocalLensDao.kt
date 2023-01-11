@@ -53,6 +53,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesFamily
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesMaterialSimplified
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesSpecialtySimplified
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesSupplierSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTechSimplified
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTypeSimplified
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
@@ -223,4 +224,16 @@ interface LocalLensDao {
 
     @Query("SELECT * FROM $treatmentsTable WHERE id = :treatmentId")
     suspend fun getTreatmentById(treatmentId: String): LocalLensTreatmentWithExplanationsEntity?
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensFullUnionWithHeightAndLensTypeDBView::class])
+    suspend fun lensTechsFilteredByDisponibility(
+        query: SimpleSQLiteQuery,
+    ): List<LocalLensesTechSimplified>
+
+    @Transaction
+    @RawQuery(observedEntities = [LocalLensFullUnionWithHeightAndLensTypeDBView::class])
+    suspend fun lensMaterialsFilteredByDisponibility(
+        query: SimpleSQLiteQuery,
+    ): List<LocalLensesMaterialSimplified>
 }

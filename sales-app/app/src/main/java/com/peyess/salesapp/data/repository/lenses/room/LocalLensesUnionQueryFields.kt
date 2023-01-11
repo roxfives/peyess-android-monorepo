@@ -1,6 +1,9 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
 sealed class LocalLensesUnionQueryFields {
+    object LensTechId: LocalLensesUnionQueryFields()
+    object LensTechPriority: LocalLensesUnionQueryFields()
+
     object LensId: LocalLensesUnionQueryFields()
     object LensPriority: LocalLensesUnionQueryFields()
 
@@ -89,6 +92,8 @@ sealed class LocalLensesUnionQueryFields {
             is LensPriority -> "priority"
             is LensId -> "id"
             is HasSumRule -> "sumRule"
+            is LensTechId -> "techId"
+            is LensTechPriority -> "techName"
         }
     }
 }

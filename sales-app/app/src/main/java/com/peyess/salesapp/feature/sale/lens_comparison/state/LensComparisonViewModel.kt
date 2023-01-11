@@ -16,12 +16,19 @@ import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonD
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
-import com.peyess.salesapp.data.repository.lenses.room.Unexpected
+import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
+import com.peyess.salesapp.data.repository.lenses.room.TechsResponse
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
+import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
+import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toColoring
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLens
+import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLensMaterial
+import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLensTech
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toPrescription
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
@@ -29,7 +36,12 @@ import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparis
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.toLensComparison
-import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickState
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForMaterial
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForTech
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildOrderByForMaterial
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildOrderByForTech
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForMaterials
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForTechs
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -42,12 +54,10 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import timber.log.Timber
 
 typealias IndividualComparisonResponse =
@@ -60,15 +70,24 @@ class LensComparisonViewModel @AssistedInject constructor(
     private val localLensesRepository: LocalLensesRepository,
     private val lensComparisonRepository: LensComparisonRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
+    private val localMeasuringRepository: LocalMeasuringRepository,
 ): MavericksViewModel<LensComparisonState>(initialState) {
 
     init {
         onAsync(LensComparisonState::comparisonsAsync) { updateComparisonList(it) }
         onAsync(LensComparisonState::comparisonListAsync) { processComparisonListResponse(it) }
 
-        onAsync(LensComparisonState::prescriptionDocumentAsync) { processPrescriptionResponse(it) }
+        onAsync(LensComparisonState::availableTechAsync) { processTechResponse(it) }
+        onAsync(LensComparisonState::availableMaterialAsync) { processMaterialResponse(it) }
 
-        onEach(LensComparisonState::serviceOrderId) { loadPrescription(it) }
+        onAsync(LensComparisonState::prescriptionDocumentAsync) { processPrescriptionResponse(it) }
+        onAsync(LensComparisonState::measuringLeftAsync) { processMeasuringLeftResponse(it) }
+        onAsync(LensComparisonState::measuringRightAsync) { processMeasuringRightResponse(it) }
+
+        onEach(LensComparisonState::serviceOrderId) {
+            loadPrescription(it)
+            loadMeasurings(it)
+        }
         onEach(LensComparisonState::prescriptionDocument) { _ ->
             withState { loadComparisons(it.serviceOrderId) }
         }
@@ -152,6 +171,57 @@ class LensComparisonViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadMeasurings(serviceOrderId: String) {
+        loadMeasuringLeft(serviceOrderId)
+        loadMeasuringRight(serviceOrderId)
+    }
+
+    private fun processMeasuringLeftResponse(response: LocalMeasuringResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    measuringLeftAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(measuringLeft = it) }
+        )
+    }
+
+    private fun loadMeasuringLeft(serviceOrderId: String) {
+        suspend {
+            localMeasuringRepository
+                .measuringForServiceOrder(serviceOrderId, Eye.Left)
+        }.execute(Dispatchers.IO) {
+            copy(measuringLeftAsync = it)
+        }
+    }
+
+    private fun processMeasuringRightResponse(response: LocalMeasuringResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    measuringRightAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(measuringRight = it) }
+        )
+    }
+
+    private fun loadMeasuringRight(serviceOrderId: String) {
+        suspend {
+            localMeasuringRepository
+                .measuringForServiceOrder(serviceOrderId, Eye.Right)
+        }.execute(Dispatchers.IO) {
+            copy(measuringRightAsync = it)
+        }
+    }
+
     private fun buildComparisonsFromList(
         comparisons: List<LensComparisonDocument>,
         prescriptionDocument: LocalPrescriptionDocument,
@@ -199,6 +269,38 @@ class LensComparisonViewModel @AssistedInject constructor(
         }
     }
 
+    private fun processTechResponse(response: TechsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    availableTechAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(availableTech = it.map { tech -> tech.toLensTech() })
+            }
+        )
+    }
+
+    private fun processMaterialResponse(response: MaterialsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    availableMaterialAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(availableMaterial = it.map { tech -> tech.toLensMaterial() })
+            }
+        )
+    }
+
     fun onUpdateIsEditing(isEditing: Boolean) = setState {
         copy(isEditing = isEditing)
     }
@@ -215,6 +317,54 @@ class LensComparisonViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             lensComparisonRepository.deleteById(id)
             withState { loadComparisons(it.serviceOrderId) }
+        }
+    }
+
+    fun loadAvailableTechForComparison(lensComparison: IndividualComparison) = withState {
+        suspend {
+            val queryFields = buildQueryFieldsForTechs(
+                lens = lensComparison.lensComparison.originalLens,
+                prescription = it.prescriptionDocument,
+                measuringLeft = it.measuringLeft,
+                measuringRight = it.measuringRight,
+            )
+
+            val groupBy = buildGroupByForTech()
+            val orderBy = buildOrderByForTech()
+
+            localLensesRepository.getTechsFilteredByDisponibilities(
+                query = PeyessQuery(
+                    queryFields = queryFields,
+                    groupBy = groupBy,
+                    orderBy = orderBy,
+                )
+            )
+        }.execute(Dispatchers.IO) {
+            copy(availableTechAsync = it)
+        }
+    }
+
+    fun loadAvailableMaterialForComparison(lensComparison: IndividualComparison) = withState {
+        suspend {
+            val queryFields = buildQueryFieldsForMaterials(
+                lens = lensComparison.lensComparison.originalLens,
+                prescription = it.prescriptionDocument,
+                measuringLeft = it.measuringLeft,
+                measuringRight = it.measuringRight,
+            )
+
+            val groupBy = buildGroupByForMaterial()
+            val orderBy = buildOrderByForMaterial()
+
+            localLensesRepository.getMaterialsFilteredByDisponibilities(
+                query = PeyessQuery(
+                    queryFields = queryFields,
+                    groupBy = groupBy,
+                    orderBy = orderBy,
+                )
+            )
+        }.execute(Dispatchers.IO) {
+            copy(availableMaterialAsync = it)
         }
     }
 

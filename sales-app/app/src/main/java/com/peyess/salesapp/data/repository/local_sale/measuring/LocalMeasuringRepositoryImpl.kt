@@ -17,12 +17,12 @@ class LocalMeasuringRepositoryImpl @Inject constructor(
         positioningDao.getPositioningForServiceOrder(soId, eye)
     }.mapLeft {
         MeasuringDataNotFound(
-            message = "Error while getting measuring data for service order $soId and eye $eye",
+            description = "Error while getting measuring data for service order $soId and eye $eye",
             error = it,
         )
     }.leftIfNull {
         MeasuringDataNotFound(
-            message = "Error while getting measuring data for service order $soId and eye $eye",
+            description = "Error while getting measuring data for service order $soId and eye $eye",
         )
     }.map {
         it.toLocalMeasuringDocument()

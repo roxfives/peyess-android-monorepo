@@ -6,10 +6,10 @@ import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.material_type.StoreLensMaterialTypeDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensCompleteWithAltHeight
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesMaterialSimplified
+import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTechSimplified
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
-import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensMaterialCategoryDocument
@@ -74,6 +74,10 @@ typealias SingleTreatmentResponse =
         Either<LocalLensRepositoryException, LocalLensTreatmentDocument>
 
 typealias SingleLensResponse = Either<LocalLensRepositoryException, StoreLensWithDetailsDocument>
+
+typealias TechsResponse = Either<LocalLensRepositoryException, List<LocalLensesTechSimplified>>
+
+typealias MaterialsResponse = Either<LocalLensRepositoryException, List<LocalLensesMaterialSimplified>>
 
 interface LocalLensesRepository {
     suspend fun addFamily(family: LocalLensFamilyDocument)
@@ -147,4 +151,8 @@ interface LocalLensesRepository {
     suspend fun getFilteredSpecialties(query: PeyessQuery = PeyessQuery()): LensesSpecialtiesResponse
 
     suspend fun getFilteredGroups(query: PeyessQuery = PeyessQuery()): LensesGroupsResponse
+
+    suspend fun getTechsFilteredByDisponibilities(query: PeyessQuery): TechsResponse
+
+    suspend fun getMaterialsFilteredByDisponibilities(query: PeyessQuery): MaterialsResponse
 }

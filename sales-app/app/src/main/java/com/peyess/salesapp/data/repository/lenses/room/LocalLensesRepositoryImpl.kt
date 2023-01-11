@@ -518,4 +518,40 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 error = it,
             )
         }
+
+    override suspend fun getTechsFilteredByDisponibilities(query: PeyessQuery): TechsResponse =
+        Either.catch {
+            val selectStatement = """
+                SELECT
+                    techId as id,
+                    techName as name
+                FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}
+            """.trimIndent()
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao.lensTechsFilteredByDisponibility(sqlQuery)
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error while fetching tech: ${it.message}",
+                error = it,
+            )
+        }
+
+    override suspend fun getMaterialsFilteredByDisponibilities(query: PeyessQuery): MaterialsResponse =
+        Either.catch {
+            val selectStatement = """
+                SELECT
+                    materialId as id,
+                    materialName as name
+                FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}
+            """.trimIndent()
+            val sqlQuery = query.toSqlQuery(selectStatement)
+
+            localLensDao.lensMaterialsFilteredByDisponibility(sqlQuery)
+        }.mapLeft {
+            Unexpected(
+                description = "Unexpected error while fetching material: ${it.message}",
+                error = it,
+            )
+        }
 }

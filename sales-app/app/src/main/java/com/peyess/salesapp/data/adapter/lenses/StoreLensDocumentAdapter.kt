@@ -12,6 +12,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSpecialtyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensSupplierDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTechDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensTypeDocument
+import com.peyess.salesapp.utils.time.toZonedDateTime
 
 fun StoreLensDocument.toLocalLensEntity(): LocalLensEntity {
     return LocalLensEntity(
@@ -48,6 +49,11 @@ fun StoreLensDocument.toLocalLensEntity(): LocalLensEntity {
         isManufacturingLocal = isManufacturingLocal,
         isEnabled = isEnabled,
         reasonDisabled = reasonDisabled,
+        storeLensPriority = storeLensPriority,
+        isEditable = isEditable,
+        created = created.toZonedDateTime(),
+        updated = updated.toZonedDateTime(),
+        defaultTreatmentId = defaultTreatment,
     )
 }
 

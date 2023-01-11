@@ -12,7 +12,6 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.ColoringsResponse
-import com.peyess.salesapp.data.repository.lenses.room.LensFilteredByDisponibilitiesResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
@@ -33,11 +32,12 @@ import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLensTech
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toPrescription
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
-import com.peyess.salesapp.feature.sale.lens_comparison.model.toLensComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForLensPicking
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForMaterial
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForTech
@@ -54,11 +54,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -91,6 +88,12 @@ class LensComparisonViewModel @AssistedInject constructor(
         onAsync(LensComparisonState::availableTreatmentsAsync) { processTreatmentsResponse(it) }
 
         onAsync(LensComparisonState::lensPickResponseAsync) { processLensPickResponse(it) }
+        onAsync(LensComparisonState::coloringPickResponseAsync) {
+            processColoringPickingResponse(it)
+        }
+        onAsync(LensComparisonState::treatmentPickResponseAsync) {
+            processTreatmentPickingResponse(it)
+        }
 
         onEach(LensComparisonState::serviceOrderId) {
             loadPrescription(it)
@@ -103,7 +106,13 @@ class LensComparisonViewModel @AssistedInject constructor(
             withState { buildComparisonsFromList(comparisons, it.prescriptionDocument) }
         }
 
-        onEach(LensComparisonState::lensPickResponse) { updateComparison(it) }
+        onEach(LensComparisonState::lensPickResponse) { updateComparisonForLensResponse(it) }
+        onEach(LensComparisonState::coloringPickResponse) {
+            updateComparisonForColoringResponse(it)
+        }
+        onEach(LensComparisonState::treatmentPickResponse) {
+            updateComparisonForTreatmentResponse(it)
+        }
     }
 
     private suspend fun buildIndividualComparison(
@@ -363,7 +372,7 @@ class LensComparisonViewModel @AssistedInject constructor(
         )
     }
 
-    private fun updateComparison(lensPickResponse: LensPickResponse) {
+    private fun updateComparisonForLensResponse(lensPickResponse: LensPickResponse) {
         viewModelScope.launch(Dispatchers.IO) {
             val individualComparison = lensPickResponse.lensComparison
 
@@ -393,6 +402,103 @@ class LensComparisonViewModel @AssistedInject constructor(
 
             loadComparisons(individualComparison.soId)
         }
+    }
+
+    private fun updateComparisonForColoringResponse(coloringPickResponse: ColoringPickResponse) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val individualComparison = coloringPickResponse.lensComparison
+
+            val originalLens = individualComparison.lensComparison.originalLens
+            val originalColoring = individualComparison.coloringComparison.originalColoring
+            val originalTreatment = individualComparison.treatmentComparison.originalTreatment
+
+            val pickedLens = individualComparison.lensComparison.pickedLens
+            val pickedTreatment = individualComparison.treatmentComparison.pickedTreatment
+
+            val pickedColoring = coloringPickResponse.coloringPicked
+
+            lensComparisonRepository.update(
+                lensComparison = LensComparisonDocument(
+                    id = individualComparison.id,
+                    soId = individualComparison.soId,
+
+                    originalLensId = originalLens.id,
+                    originalColoringId = originalColoring.id,
+                    originalTreatmentId = originalTreatment.id,
+
+                    comparisonLensId = pickedLens.id,
+                    comparisonColoringId = pickedColoring.id,
+                    comparisonTreatmentId = pickedTreatment.id,
+                )
+            )
+
+            loadComparisons(individualComparison.soId)
+        }
+    }
+
+    private fun updateComparisonForTreatmentResponse(treatmentPickResponse: TreatmentPickResponse) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val individualComparison = treatmentPickResponse.lensComparison
+
+            val originalLens = individualComparison.lensComparison.originalLens
+            val originalColoring = individualComparison.coloringComparison.originalColoring
+            val originalTreatment = individualComparison.treatmentComparison.originalTreatment
+
+            val pickedLens = individualComparison.lensComparison.pickedLens
+            val pickedColoring = individualComparison.coloringComparison.pickedColoring
+
+            val pickedTreatment = treatmentPickResponse.treatment
+
+
+            lensComparisonRepository.update(
+                lensComparison = LensComparisonDocument(
+                    id = individualComparison.id,
+                    soId = individualComparison.soId,
+
+                    originalLensId = originalLens.id,
+                    originalColoringId = originalColoring.id,
+                    originalTreatmentId = originalTreatment.id,
+
+                    comparisonLensId = pickedLens.id,
+                    comparisonColoringId = pickedColoring.id,
+                    comparisonTreatmentId = pickedTreatment.id,
+                )
+            )
+
+            loadComparisons(individualComparison.soId)
+        }
+    }
+
+    private fun processColoringPickingResponse(
+        response: ColoringPickingResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    coloringPickResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(coloringPickResponse = it) }
+        )
+    }
+
+    private fun processTreatmentPickingResponse(
+        response: TreatmentPickingResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    treatmentPickResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(treatmentPickResponse = it) }
+        )
     }
 
     fun onUpdateIsEditing(isEditing: Boolean) = setState {
@@ -554,27 +660,33 @@ class LensComparisonViewModel @AssistedInject constructor(
         }
     }
 
-    fun onPickTreatment(treatmentId: String, lensComparison: IndividualComparison) = withState {
-        viewModelScope.launch(Dispatchers.IO) {
-            val comparison = lensComparison
-                .toLensComparison()
-                .copy(
-                    comparisonTreatmentId = treatmentId,
-                )
-
-            saleRepository.updateSaleComparison(comparison)
+    fun onPickTreatment(treatmentId: String, lensComparison: IndividualComparison) {
+        suspend {
+            localLensesRepository
+                .getTreatmentById(treatmentId)
+                .map {
+                    TreatmentPickResponse(
+                        lensComparison = lensComparison,
+                        treatment = it.toTreatment(),
+                    )
+                }
+        }.execute(Dispatchers.IO) {
+            copy(treatmentPickResponseAsync = it)
         }
     }
 
-    fun onPickColoring(coloringId: String, lensComparison: IndividualComparison) = withState {
-        viewModelScope.launch(Dispatchers.IO) {
-            val comparison = lensComparison
-                .toLensComparison()
-                .copy(
-                    comparisonColoringId = coloringId,
-                )
-
-            saleRepository.updateSaleComparison(comparison)
+    fun onPickColoring(coloringId: String, lensComparison: IndividualComparison) {
+        suspend {
+            localLensesRepository
+                .getColoringById(coloringId)
+                .map {
+                    ColoringPickResponse(
+                        lensComparison = lensComparison,
+                        coloringPicked = it.toColoring(),
+                    )
+                }
+        }.execute(Dispatchers.IO) {
+            copy(coloringPickResponseAsync = it)
         }
     }
 

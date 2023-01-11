@@ -7,12 +7,10 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.ColoringsResponse
-import com.peyess.salesapp.data.repository.lenses.room.LensFilteredByDisponibilitiesResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TechsResponse
@@ -21,15 +19,19 @@ import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LocalCompa
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Coloring
+import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensMaterial
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensTech
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Treatment
+import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentPickResponse
 
 typealias LensComparisonResponse = Either<LocalComparisonReadError, List<LensComparisonDocument>>
 
 typealias LensPickingResponse = Either<LocalLensRepositoryException,  LensPickResponse>
+typealias ColoringPickingResponse = Either<LocalLensRepositoryException, ColoringPickResponse>
+typealias TreatmentPickingResponse = Either<LocalLensRepositoryException, TreatmentPickResponse>
 
 data class LensComparisonState(
     val isEditing: Boolean = false,
@@ -65,6 +67,12 @@ data class LensComparisonState(
 
     val lensPickResponseAsync: Async<LensPickingResponse> = Uninitialized,
     val lensPickResponse: LensPickResponse = LensPickResponse(),
+
+    val coloringPickResponseAsync: Async<ColoringPickingResponse> = Uninitialized,
+    val coloringPickResponse: ColoringPickResponse = ColoringPickResponse(),
+
+    val treatmentPickResponseAsync: Async<TreatmentPickingResponse> = Uninitialized,
+    val treatmentPickResponse: TreatmentPickResponse = TreatmentPickResponse(),
 
     val hasPickedProduct: Boolean = false,
 ): MavericksState {

@@ -229,7 +229,7 @@ private fun buildQueryFieldsForSumRule(
             ),
             ifTrue = buildQueryField(
                 field = LocalLensesUnionQueryFields.MinSpherical.name(),
-                op = PeyessQueryOperation.LessThan,
+                op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.sphericalLeft + prescription.cylindricalLeft,
             ),
             ifFalse = buildQueryField(

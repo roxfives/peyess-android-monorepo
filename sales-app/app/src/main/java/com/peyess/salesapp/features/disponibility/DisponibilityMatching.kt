@@ -186,9 +186,9 @@ private fun checkSumRule(
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
     val leftSumRuleChecks =
-        prescription.leftSpherical + prescription.leftCylindrical > disponibility.minSpherical
+        prescription.leftSpherical + prescription.leftCylindrical >= disponibility.minSpherical
     val rightSumRuleChecks =
-        prescription.rightSpherical + prescription.rightCylindrical > disponibility.minSpherical
+        prescription.rightSpherical + prescription.rightCylindrical >= disponibility.minSpherical
 
     if (!leftSumRuleChecks) {
         reasonsUnsupported.add(ReasonUnsupported.SumRuleLeft)

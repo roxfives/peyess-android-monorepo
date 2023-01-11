@@ -85,7 +85,8 @@ private const val materialTable = LocalLensMaterialEntity.tableName
             categories.name AS categoryName,
             categories.priority AS categoryPriority,
             materials.name AS materialName,
-            materials.priority AS materialPriority
+            materials.priority AS materialPriority,
+            materials.category AS materialCategory
             
         FROM $lensesTable AS lenses
         JOIN $brandsTable AS brands ON lenses.brand_id = brands.id
@@ -157,6 +158,8 @@ data class LocalLensWithDetailsDBView(
     val typeName: String = "",
     val categoryName: String = "",
     val materialName: String = "",
+
+    val materialCategory: String = "",
 
     val brandPriority: String = "",
     val designPriority: String = "",

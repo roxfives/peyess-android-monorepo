@@ -292,6 +292,28 @@ fun buildQueryFieldsForMaterials(
     return buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
 }
 
+fun buildQueryFieldsForLensWithTech(
+    lens: Lens,
+    techId: String,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: LocalMeasuringDocument,
+    measuringRight: LocalMeasuringDocument,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForLensTech(techId) +
+            buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
+fun buildQueryFieldsForLensWithMaterial(
+    lens: Lens,
+    materialId: String,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: LocalMeasuringDocument,
+    measuringRight: LocalMeasuringDocument,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForLensMaterial(materialId) +
+            buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
 fun buildGroupByForTech(): List<PeyessGroupBy> {
     return listOf(
         PeyessGroupBy(
@@ -304,6 +326,14 @@ fun buildGroupByForMaterial(): List<PeyessGroupBy> {
     return listOf(
         PeyessGroupBy(
             field = LocalLensesUnionQueryFields.LensMaterialId.name(),
+        )
+    )
+}
+
+fun buildGroupByForLensPicking(): List<PeyessGroupBy> {
+    return listOf(
+        PeyessGroupBy(
+            field = LocalLensesUnionQueryFields.LensId.name(),
         )
     )
 }
@@ -321,6 +351,15 @@ fun buildOrderByForMaterial(): List<PeyessOrderBy> {
     return listOf(
         PeyessOrderBy(
             field = LocalLensesUnionQueryFields.LensMaterialPriority.name(),
+            order = Order.ASCENDING,
+        )
+    )
+}
+
+fun buildOrderByForLensPicking(): List<PeyessOrderBy> {
+    return listOf(
+        PeyessOrderBy(
+            field = LocalLensesUnionQueryFields.LensPriority.name(),
             order = Order.ASCENDING,
         )
     )

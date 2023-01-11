@@ -7,10 +7,13 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.ColoringsResponse
+import com.peyess.salesapp.data.repository.lenses.room.LensFilteredByDisponibilitiesResponse
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TechsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TreatmentsResponse
@@ -20,10 +23,13 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Coloring
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensMaterial
+import com.peyess.salesapp.feature.sale.lens_comparison.model.LensPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensTech
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Treatment
 
 typealias LensComparisonResponse = Either<LocalComparisonReadError, List<LensComparisonDocument>>
+
+typealias LensPickingResponse = Either<LocalLensRepositoryException,  LensPickResponse>
 
 data class LensComparisonState(
     val isEditing: Boolean = false,
@@ -56,6 +62,9 @@ data class LensComparisonState(
 
     val availableTreatmentsAsync: Async<TreatmentsResponse> = Uninitialized,
     val availableTreatments: List<Treatment> = emptyList(),
+
+    val lensPickResponseAsync: Async<LensPickingResponse> = Uninitialized,
+    val lensPickResponse: LensPickResponse = LensPickResponse(),
 
     val hasPickedProduct: Boolean = false,
 ): MavericksState {

@@ -2,24 +2,23 @@ package com.peyess.salesapp.feature.sale.lens_comparison.state
 
 import arrow.core.Either
 import arrow.core.continuations.either
+import arrow.core.leftIfNull
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.ColoringsResponse
+import com.peyess.salesapp.data.repository.lenses.room.LensFilteredByDisponibilitiesResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TechsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TreatmentsResponse
+import com.peyess.salesapp.data.repository.lenses.room.Unexpected
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringResponse
@@ -36,12 +35,17 @@ import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.LensPickResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.toLensComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForLensPicking
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForMaterial
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildGroupByForTech
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildOrderByForLensPicking
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildOrderByForMaterial
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildOrderByForTech
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForLensWithMaterial
+import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForLensWithTech
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForMaterials
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForTechs
 import com.peyess.salesapp.repository.products.ProductRepository
@@ -51,12 +55,10 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -88,6 +90,8 @@ class LensComparisonViewModel @AssistedInject constructor(
         onAsync(LensComparisonState::availableColoringsAsync) { processColoringsResponse(it) }
         onAsync(LensComparisonState::availableTreatmentsAsync) { processTreatmentsResponse(it) }
 
+        onAsync(LensComparisonState::lensPickResponseAsync) { processLensPickResponse(it) }
+
         onEach(LensComparisonState::serviceOrderId) {
             loadPrescription(it)
             loadMeasurings(it)
@@ -98,6 +102,8 @@ class LensComparisonViewModel @AssistedInject constructor(
         onEach(LensComparisonState::comparisonList) { comparisons ->
             withState { buildComparisonsFromList(comparisons, it.prescriptionDocument) }
         }
+
+        onEach(LensComparisonState::lensPickResponse) { updateComparison(it) }
     }
 
     private suspend fun buildIndividualComparison(
@@ -253,6 +259,22 @@ class LensComparisonViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processLensPickResponse(
+        response: LensPickingResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    lensPickResponseAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(lensPickResponse = it) }
+        )
+    }
+
     private fun loadMeasuringRight(serviceOrderId: String) {
         suspend {
             localMeasuringRepository
@@ -341,6 +363,38 @@ class LensComparisonViewModel @AssistedInject constructor(
         )
     }
 
+    private fun updateComparison(lensPickResponse: LensPickResponse) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val individualComparison = lensPickResponse.lensComparison
+
+            val originalLens = individualComparison.lensComparison.originalLens
+            val originalColoring = individualComparison.coloringComparison.originalColoring
+            val originalTreatment = individualComparison.treatmentComparison.originalTreatment
+
+            val pickedColoring = individualComparison.coloringComparison.pickedColoring
+            val pickedTreatment = individualComparison.treatmentComparison.pickedTreatment
+
+            val pickedLens = lensPickResponse.lensPicked
+
+            lensComparisonRepository.update(
+                lensComparison = LensComparisonDocument(
+                    id = individualComparison.id,
+                    soId = individualComparison.soId,
+
+                    originalLensId = originalLens.id,
+                    originalColoringId = originalColoring.id,
+                    originalTreatmentId = originalTreatment.id,
+
+                    comparisonLensId = pickedLens.id,
+                    comparisonColoringId = pickedColoring.id,
+                    comparisonTreatmentId = pickedTreatment.id,
+                )
+            )
+
+            loadComparisons(individualComparison.soId)
+        }
+    }
+
     fun onUpdateIsEditing(isEditing: Boolean) = setState {
         copy(isEditing = isEditing)
     }
@@ -426,105 +480,77 @@ class LensComparisonViewModel @AssistedInject constructor(
         }
     }
 
-    fun techsForComparison(lensComparison: IndividualComparison): Flow<List<FilterLensTechEntity>> {
-        return productRepository
-            .techsForLens(
-                lensComparison.lensComparison.pickedLens.supplierId,
-                lensComparison.lensComparison.pickedLens.brandId,
-                lensComparison.lensComparison.pickedLens.designId,
-            )
-            .flowOn(Dispatchers.IO)
-    }
-
-    fun materialForComparison(lensComparison: IndividualComparison): Flow<List<FilterLensMaterialEntity>> {
-        return productRepository
-            .materialsForLens(
-                lensComparison.lensComparison.pickedLens.supplierId,
-                lensComparison.lensComparison.pickedLens.brandId,
-                lensComparison.lensComparison.pickedLens.designId,
-            )
-            .flowOn(Dispatchers.IO)
-    }
-
-    fun treatmentsFor(lensComparison: IndividualComparison): Flow<List<LocalTreatmentEntity>> {
-        return productRepository
-            .treatmentsForLens(lensComparison.lensComparison.pickedLens.id)
-            .flowOn(Dispatchers.IO)
-    }
-
-    fun coloringsFor(lensComparison: IndividualComparison): Flow<List<LocalColoringEntity>> {
-        return productRepository
-            .coloringsForLens(lensComparison.lensComparison.pickedLens.id)
-            .flowOn(Dispatchers.IO)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun onPickTech(techId: String, lensComparison: IndividualComparison) = withState {
-        viewModelScope.launch(Dispatchers.IO) {
-            val supplierId = lensComparison.lensComparison.pickedLens.supplierId
-            val brandId = lensComparison.lensComparison.pickedLens.brandId
-            val designId = lensComparison.lensComparison.pickedLens.designId
-            val materialId = lensComparison.lensComparison.pickedLens.materialId
+        suspend {
+            val queryFields = buildQueryFieldsForLensWithTech(
+                lens = lensComparison.lensComparison.originalLens,
+                techId = techId,
+                prescription = it.prescriptionDocument,
+                measuringLeft = it.measuringLeft,
+                measuringRight = it.measuringRight,
+            )
 
-            productRepository.lensWith(
-                supplierId = supplierId,
-                brandId = brandId,
-                designId = designId,
-                materialId = materialId,
-                techId = techId
-            ).flatMapLatest {
-                combine(
-                    productRepository.treatmentsForLens(it?.id ?: ""),
-                    productRepository.coloringsForLens(it?.id ?: ""),
-                ) { treatments, colorings ->
-                    lensComparison
-                        .toLensComparison()
-                        .copy(
-                            comparisonLensId = it?.id ?: "",
-                            comparisonTreatmentId = treatments[0].id,
-                            comparisonColoringId = colorings[0].id,
-                        )
+            val groupBy = buildGroupByForLensPicking()
+            val orderBy = buildOrderByForLensPicking()
+
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                groupBy = groupBy,
+                orderBy = orderBy,
+                withLimit = 1,
+            )
+
+            localLensesRepository
+                .getLensFilteredByDisponibility(query)
+                .leftIfNull {
+                    Unexpected(
+                        error = Throwable("No lens found for query: $query")
+                    )
+                }.map {
+                    LensPickResponse(
+                        lensComparison = lensComparison,
+                        lensPicked = it,
+                    )
                 }
-            }.take(1)
-                .onEach {
-                    saleRepository.updateSaleComparison(it)
-                }
+        }.execute(Dispatchers.IO) {
+            copy(lensPickResponseAsync = it)
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun onPickMaterial(materialId: String, lensComparison: IndividualComparison) = withState {
-        viewModelScope.launch(Dispatchers.IO) {
-            val supplierId = lensComparison.lensComparison.pickedLens.supplierId
-            val brandId = lensComparison.lensComparison.pickedLens.brandId
-            val designId = lensComparison.lensComparison.pickedLens.designId
-            val techId = lensComparison.lensComparison.pickedLens.techId
-
-            productRepository.lensWith(
-                supplierId = supplierId,
-                brandId = brandId,
-                designId = designId,
+        suspend {
+            val queryFields = buildQueryFieldsForLensWithMaterial(
+                lens = lensComparison.lensComparison.originalLens,
                 materialId = materialId,
-                techId = techId
-            ).flatMapLatest {
-                combine(
-                    productRepository.treatmentsForLens(it?.id ?: ""),
-                    productRepository.coloringsForLens(it?.id ?: ""),
-                ) { treatments, colorings ->
-                    lensComparison
-                        .toLensComparison()
-                        .copy(
-                            comparisonLensId = it?.id ?: "",
-                            comparisonTreatmentId = treatments[0].id,
-                            comparisonColoringId = colorings[0].id,
-                        )
+                prescription = it.prescriptionDocument,
+                measuringLeft = it.measuringLeft,
+                measuringRight = it.measuringRight,
+            )
+
+            val groupBy = buildGroupByForLensPicking()
+            val orderBy = buildOrderByForLensPicking()
+
+            val query = PeyessQuery(
+                queryFields = queryFields,
+                groupBy = groupBy,
+                orderBy = orderBy,
+                withLimit = 1,
+            )
+
+            localLensesRepository
+                .getLensFilteredByDisponibility(query)
+                .leftIfNull {
+                    Unexpected(
+                        error = Throwable("No lens found for query: $query")
+                    )
+                }.map {
+                    LensPickResponse(
+                        lensComparison = lensComparison,
+                        lensPicked = it,
+                    )
                 }
-            }.take(1)
-                .onEach {
-                    saleRepository.updateSaleComparison(it)
-                }
-                .flowOn(Dispatchers.IO)
-                .collect()
+        }.execute(Dispatchers.IO) {
+            copy(lensPickResponseAsync = it)
         }
     }
 

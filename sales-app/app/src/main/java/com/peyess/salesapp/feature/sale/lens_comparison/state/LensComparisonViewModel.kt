@@ -69,33 +69,6 @@ class LensComparisonViewModel @AssistedInject constructor(
 
         onEach(LensComparisonState::serviceOrderId) { loadComparisons(it) }
     }
-//
-//    data class NTuple4<T1, T2, T3, T4>(val t1: T1, val t2: T2, val t3: T3, val t4: T4)
-//    private fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combineAll(
-//        flow: Flow<T1>,
-//        flow2: Flow<T2>,
-//        flow3: Flow<T3>,
-//        flow4: Flow<T4>,
-//        flow5: Flow<T5>,
-//        flow6: Flow<T6>,
-//        flow7: Flow<T7>,
-//        flow8: Flow<T8>,
-//        transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R
-//    ): Flow<R> = combine(
-//        combine(flow, flow2, flow3, flow4, ::NTuple4),
-//        combine(flow5, flow6, flow7,  flow8, ::NTuple4),
-//    ) { t1, t2 ->
-//        transform(
-//            t1.t1,
-//            t1.t2,
-//            t1.t3,
-//            t1.t4,
-//            t2.t1,
-//            t2.t2,
-//            t2.t3,
-//            t2.t4,
-//        )
-//    }
 
     private suspend fun buildIndividualComparison(
         comparison: LensComparisonDocument,
@@ -198,81 +171,6 @@ class LensComparisonViewModel @AssistedInject constructor(
             copy(comparisonListAsync = it)
         }
     }
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    fun comparisons(): Flow<List<IndividualComparison>> {
-//        return saleRepository
-//            .comparisons()
-//            .flatMapLatest { comparisonsIds ->
-//                val comparisons: MutableList<Flow<IndividualComparison>> = mutableListOf()
-//
-//                comparisonsIds.forEach { comparison ->
-//                    comparisons.add(
-//                        combineAll(
-//                            productRepository.lensById(comparison.originalLensId).take(1),
-//                            productRepository.coloringById(comparison.originalColoringId).take(1),
-//                            productRepository.treatmentById(comparison.originalTreatmentId).take(1),
-//
-//                            productRepository.lensById(comparison.comparisonLensId).take(1),
-//                            productRepository.coloringById(comparison.comparisonColoringId).take(1),
-//                            productRepository.treatmentById(comparison.comparisonTreatmentId).take(1),
-//
-//                            saleRepository.activeSO().filterNotNull().take(1),
-//                            saleRepository.currentPrescriptionData().take(1),
-//                        ) { originalLens, originalColoring, originalTreatment,
-//                            pickedLens, pickedColoring, pickedTreatment, so, prescription ->
-//
-//                            if (
-//                                originalLens == null
-//                                || originalColoring == null
-//                                || originalTreatment == null
-//
-//                                || pickedLens == null
-//                                || pickedColoring == null
-//                                || pickedTreatment == null
-//                            ) {
-//                                error("One of the comparisons is null " +
-//                                        "originalLens: $originalLens \n" +
-//                                        "originalColoring: $originalColoring \n" +
-//                                        "originalTreatment: $originalTreatment \n" +
-//                                        "pickedLens: $pickedLens \n" +
-//                                        "pickedColoring: $pickedColoring \n" +
-//                                        "pickedTreatment: $pickedTreatment \n")
-//                            }
-//
-//                            IndividualComparison(
-//                                id = comparison.id,
-//                                soId = so.id,
-//
-//                                prescription = prescription,
-//
-//                                lensComparison = LensComparison(
-//                                    originalLens = originalLens,
-//                                    pickedLens = pickedLens,
-//                                ),
-//
-//                                treatmentComparison = TreatmentComparison(
-//                                    originalTreatment = originalTreatment,
-//                                    pickedTreatment = pickedTreatment,
-//                                ),
-//
-//                                coloringComparison = ColoringComparison(
-//                                    originalColoring = originalColoring,
-//                                    pickedColoring = pickedColoring,
-//                                )
-//                            )
-//                        }
-//                    )
-//                }
-//
-//                if (comparisons.isEmpty()) {
-//                    flowOf(emptyList())
-//                } else {
-//                    combine(comparisons.map { it }) { it.asList() }
-//                }
-//            }
-//            .flowOn(Dispatchers.IO)
-//    }
 
     fun onUpdateIsEditing(isEditing: Boolean) = setState {
         copy(isEditing = isEditing)

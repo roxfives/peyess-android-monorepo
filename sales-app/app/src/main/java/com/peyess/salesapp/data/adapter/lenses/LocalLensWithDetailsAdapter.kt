@@ -63,6 +63,7 @@ fun LocalLensWithDetails.toStoreLensWithDetailsDocument(): StoreLensWithDetailsD
         typePriority = lens.typePriority,
         categoryPriority = lens.categoryPriority,
         materialPriority = lens.materialPriority,
+        materialCategory = lens.materialCategory,
 
         disponibilities = disponibilities.map { it.toStoreLensDisponibilityDocument() },
         altHeights = altHeights.map { it.toStoreLensAltHeightDocument() },

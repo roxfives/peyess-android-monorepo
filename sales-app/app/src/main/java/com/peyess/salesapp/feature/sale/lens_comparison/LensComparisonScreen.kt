@@ -63,15 +63,17 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
+import com.peyess.salesapp.feature.sale.lens_comparison.model.Coloring
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.Lens
 import com.peyess.salesapp.feature.sale.lens_comparison.model.LensComparison
+import com.peyess.salesapp.feature.sale.lens_comparison.model.Treatment
 import com.peyess.salesapp.feature.sale.lens_comparison.model.TreatmentComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonState
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
-import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
+import com.peyess.salesapp.feature.sale.lens_comparison.utils.parseParameters
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
@@ -102,20 +104,29 @@ fun LensComparisonScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     onAddComparison: () -> Unit = {},
-    onLensPicked: (isEditing: Boolean) -> Unit = {},
+    onLensPicked: (
+        isEditing: Boolean,
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _ -> },
 ) {
-    val isEditingParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getBoolean(isEditingParam)
-        ?: false
-
+    // TODO: Load service order id from navigation and add it to state
     val viewModel: LensComparisonViewModel = mavericksViewModel()
 
-    val comparisons by viewModel.comparisons().collectAsState(emptyList())
+    parseParameters(
+        navController = navHostController,
+        onUpdateIsEditing = viewModel::onUpdateIsEditing,
+        onUpdateSaleId = viewModel::onUpdateSaleId,
+        onUpdateServiceOrderId = viewModel::onUpdateServiceOrderId,
+    )
+
+    val isEditingParameter by viewModel.collectAsState(LensComparisonState::isEditing)
+    val serviceOrderId by viewModel.collectAsState(LensComparisonState::serviceOrderId)
+    val saleId by viewModel.collectAsState(LensComparisonState::saleId)
+
+    val comparisons by viewModel.collectAsState(LensComparisonState::comparisons)
 
     val hasPickedProduct by viewModel.collectAsState(LensComparisonState::hasPickedProduct)
-
     val hasNavigated = remember { mutableStateOf(false) }
     val canNavigate = remember { mutableStateOf(false) }
     if (canNavigate.value && hasPickedProduct) {
@@ -125,7 +136,11 @@ fun LensComparisonScreen(
                 canNavigate.value = false
 
                 viewModel.lensPicked()
-                onLensPicked(isEditingParameter)
+                onLensPicked(
+                    isEditingParameter,
+                    saleId,
+                    serviceOrderId,
+                )
             }
         }
     }
@@ -165,10 +180,10 @@ private fun LensComparisonScreenImpl(
     treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
     coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
 
-    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 
     onRemoveComparison: (id: Int) -> Unit = {},
     onAddComparison: () -> Unit = {},
@@ -210,7 +225,7 @@ private fun AddNewComparisonButton(
     onClick: () -> Unit = {},
 ) {
     OutlinedButton(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(buttonHeight),
         shape = MaterialTheme.shapes.large,
@@ -260,10 +275,10 @@ private fun LensComparisonCard(
     treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
     coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
 
-    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
-    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _, -> },
+    onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
+    onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 
     onRemoveComparison: (id: Int) -> Unit = {},
     onSelectComparison: () -> Unit = {},
@@ -382,9 +397,9 @@ private fun LensComparisonCard(
         ) {
             Text(
                 modifier = Modifier.weight(2f),
-                text = "${lensComparison.originalLens.supplier} " +
-                        "${lensComparison.originalLens.brand} " +
-                        "${lensComparison.originalLens.design}",
+                text = "${lensComparison.originalLens.supplierName} " +
+                        "${lensComparison.originalLens.brandName} " +
+                        lensComparison.originalLens.designName,
                 style = MaterialTheme.typography.body1
                     .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
             )
@@ -458,7 +473,7 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    content = lensComparison.pickedLens.tech,
+                    content = lensComparison.pickedLens.techName,
                     // TODO: use string resource
                     subtitle = "Tecnologia",
                     dialogState = techDialogState,
@@ -472,7 +487,7 @@ private fun LensComparisonCard(
                             density,
                         )
                         .minimumWidthModifier(minimumWidthState, density),
-                    content =  lensComparison.pickedLens.material,
+                    content =  lensComparison.pickedLens.materialName,
                     // TODO: use string resource
                     subtitle = "Material",
                     dialogState = materialDialogState,
@@ -676,32 +691,32 @@ private fun LensComparisonCardPreview() {
             modifier = Modifier.fillMaxWidth(),
             IndividualComparison(
                 lensComparison = LensComparison(
-                    originalLens = LocalLensEntity(
-                        supplier = "Zeiss",
-                        brand = "Acabadas",
-                        design = "DuraVIsion BlueProtect",
-                        material = "1.60",
-                        tech = "SmartLife",
+                    originalLens = Lens(
+                        supplierName = "Zeiss",
+                        brandName = "Acabadas",
+                        designName = "DuraVIsion BlueProtect",
+                        materialName = "1.60",
+                        techName = "SmartLife",
                         price = 1500.0,
                     ),
-                    pickedLens = LocalLensEntity(
-                        supplier = "Zeiss",
-                        brand = "Acabadas",
-                        design = "DuraVIsion BlueProtect",
-                        material = "1.60",
-                        tech = "SmartLife",
+                    pickedLens = Lens(
+                        supplierName = "Zeiss",
+                        brandName = "Acabadas",
+                        designName = "DuraVIsion BlueProtect",
+                        materialName = "1.60",
+                        techName = "SmartLife",
                         price = 1700.8,
                     )
                 ),
 
                 treatmentComparison = TreatmentComparison(
-                    originalTreatment = LocalTreatmentEntity(brand = "Incolor", price = 0.0),
-                    pickedTreatment = LocalTreatmentEntity(brand = "Marrom 85%", price = 100.0),
+                    originalTreatment = Treatment(brand = "Incolor", price = 0.0),
+                    pickedTreatment = Treatment(brand = "Marrom 85%", price = 100.0),
                 ),
 
                 coloringComparison = ColoringComparison(
-                    originalColoring = LocalColoringEntity(brand = "Incolor", price = 0.0),
-                    pickedColoring = LocalColoringEntity(brand = "Antirreflexo", price = 10.0)
+                    originalColoring = Coloring(brand = "Incolor", price = 0.0),
+                    pickedColoring = Coloring(brand = "Antirreflexo", price = 10.0)
                 )
             )
         )

@@ -22,12 +22,18 @@ const val isEditingParam = "isEditing"
 const val saleIdArgumentName = "saleId"
 const val soIdArgumentName = "soId"
 
-val lensSuggestionNavRoute = SalesAppScreens.LensSuggestion.name +
+private val lensSuggestionNavRoute = SalesAppScreens.LensSuggestion.name +
         "/{$isEditingParam}" +
         "?$saleIdArgumentName={$saleIdArgumentName}" +
         "?$soIdArgumentName={$soIdArgumentName}"
 
+private val lensComparisonNavRoute = SalesAppScreens.LensComparison.name +
+        "/{$isEditingParam}" +
+        "/{$saleIdArgumentName}" +
+        "/{$soIdArgumentName}"
+
 // TODO: remove this crap after refactoring the suggestions features into three different ones
+//  (lenses table, lenses suggestion, lenses comparison)
 private val lensSuggestionWithoutSuggestionsNavRoute =
     SalesAppScreens.LensSuggestionWithoutSuggestions.name +
         "/{$isEditingParam}" +
@@ -48,6 +54,17 @@ fun buildLensSuggestionNavRoute(
                 "?$saleIdArgumentName=$saleId" +
                 "?$soIdArgumentName=$serviceOrderId"
     }
+}
+
+fun buildLensComparisonNavRoute(
+    isEditing: Boolean,
+    saleId: String,
+    serviceOrderId: String,
+): String {
+    return SalesAppScreens.LensComparison.name +
+            "/$isEditing" +
+            "/$saleId" +
+            "/$serviceOrderId"
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -75,9 +92,17 @@ fun buildLensSuggestionNavGraph(
         LensSuggestionScreen(
             modifier = modifier,
             navHostController = navHostController,
-        ) {
-            navHostController.navigate("${SalesAppScreens.LensComparison.name}/$it")
-        }
+            showSuggestions = true,
+            onLensPicked = { isEditingParam, saleId, serviceOrderId ->
+                val route = buildLensComparisonNavRoute(
+                    isEditing = isEditingParam,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId
+                )
+
+                navHostController.navigate(route)
+            }
+        )
     }
 
     builder.composable(
@@ -100,36 +125,37 @@ fun buildLensSuggestionNavGraph(
             modifier = modifier,
             showSuggestions = false,
             navHostController = navHostController,
-        ) {
-            navHostController.navigate("${SalesAppScreens.LensComparison.name}/$it")
-        }
+        )
     }
 
     builder.composable(
-        route = "${SalesAppScreens.LensComparison.name}/{$isEditingParam}",
+        route = lensComparisonNavRoute,
         arguments = listOf(
-            navArgument(isEditingParam) { type = NavType.BoolType }
-        ),enterTransition = lensComparisonEnterTransition(),
+            navArgument(isEditingParam) { type = NavType.BoolType },
+            navArgument(saleIdArgumentName) { type = NavType.StringType },
+            navArgument(soIdArgumentName) { type = NavType.StringType },
+        ),
+        enterTransition = lensComparisonEnterTransition(),
         exitTransition = lensComparisonExitTransition()
     ) {
         LensComparisonScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,
-            onAddComparison = { navHostController.popBackStack() }
-        ) { isEditing ->
+            onAddComparison = { navHostController.popBackStack() },
+            onLensPicked = { isEditing, _, _ ->
+                val isPicking = true
+                val pickScenario = PickScenario.ServiceOrder.toName()
 
-            val isPicking = true
-            val pickScenario = PickScenario.ServiceOrder.toName()
-
-            if (isEditing) {
-                navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
-                    popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+                if (isEditing) {
+                    navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
+                        popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+                    }
+                } else {
+                    navHostController
+                        .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
                 }
-            } else {
-                navHostController
-                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
             }
-        }
+        )
     }
 }

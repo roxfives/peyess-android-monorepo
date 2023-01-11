@@ -23,7 +23,7 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
         prescriptionDataDao.getPrescriptionForServiceOrder(soId)
     }.mapLeft {
         PrescriptionDataNotFound(
-            message = "Prescription data not found for service order $soId",
+            description = "Prescription data not found for service order $soId",
             error = it,
         )
     }
@@ -34,7 +34,7 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
         prescriptionPictureDao.getPrescriptionForServiceOrder(soId)
     }.mapLeft {
         PrescriptionPictureNotFound(
-            message = "Prescription picture not found for service order $soId",
+            description = "Prescription picture not found for service order $soId",
             error = it,
         )
     }
@@ -46,13 +46,13 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
 
             ensureNotNull(prescriptionData) {
                 PrescriptionDataNotFound(
-                    message = "Prescription data not found for service order $soId: null response",
+                    description = "Prescription data not found for service order $soId: null response",
                 )
             }
 
             ensureNotNull(prescriptionPicture) {
                 PrescriptionPictureNotFound(
-                    message = "Prescription picture not found for service order $soId: null response",
+                    description = "Prescription picture not found for service order $soId: null response",
                 )
             }
 

@@ -1,6 +1,8 @@
-package com.peyess.salesapp.data.model.lens.room.repo
+package com.peyess.salesapp.feature.sale.lens_comparison.model
 
-data class StoreLensDisponibilityDocument(
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensDisponibilityManufacturerDocument
+
+data class LensDisponibility(
     val diam: Double = 0.0,
     val maxCyl: Double = 0.0,
     val minCyl: Double = 0.0,

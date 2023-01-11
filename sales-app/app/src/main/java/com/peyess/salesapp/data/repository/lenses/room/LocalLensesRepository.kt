@@ -9,6 +9,7 @@ import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocume
 import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensCompleteWithAltHeight
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensCategoryDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDescriptionDocument
+import com.peyess.salesapp.data.model.lens.room.repo.LocalLensDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensFamilyDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.LocalLensMaterialCategoryDocument
@@ -60,6 +61,20 @@ typealias LensFilteredByDisponibilitiesResponse = Either<
         StoreLensWithDetailsDocument?,
     >
 
+typealias ColoringsResponse =
+        Either<LocalLensRepositoryException, List<LocalLensColoringDocument>>
+
+typealias SingleColoringResponse =
+        Either<LocalLensRepositoryException, LocalLensColoringDocument>
+
+typealias TreatmentsResponse =
+        Either<LocalLensRepositoryException, List<LocalLensTreatmentDocument>>
+
+typealias SingleTreatmentResponse =
+        Either<LocalLensRepositoryException, LocalLensTreatmentDocument>
+
+typealias SingleLensResponse = Either<LocalLensRepositoryException, StoreLensWithDetailsDocument>
+
 interface LocalLensesRepository {
     suspend fun addFamily(family: LocalLensFamilyDocument)
 
@@ -93,9 +108,17 @@ interface LocalLensesRepository {
 
     suspend fun addColoringToLens(coloringId: String, lensId: String)
 
+    suspend fun getColoringsForLens(lensId: String): ColoringsResponse
+
+    suspend fun getColoringById(coloringId: String): SingleColoringResponse
+
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
     suspend fun addTreatmentToLens(treatmentId: String, lensId: String)
+
+    suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse
+
+    suspend fun getTreatmentById(treatmentId: String): SingleTreatmentResponse
 
     suspend fun addAlternativeHeight(alternativeHeight: StoreLensAltHeightDocument)
 
@@ -108,6 +131,8 @@ interface LocalLensesRepository {
     suspend fun getLensFilteredByDisponibility(
         query: PeyessQuery = PeyessQuery(),
     ): LensFilteredByDisponibilitiesResponse
+
+    suspend fun getLensById(id: String): SingleLensResponse
 
     suspend fun getFilteredTypes(query: PeyessQuery = PeyessQuery()): LensesTypesResponse
 

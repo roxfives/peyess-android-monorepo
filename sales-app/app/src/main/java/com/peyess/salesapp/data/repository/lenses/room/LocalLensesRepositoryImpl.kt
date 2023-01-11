@@ -1,6 +1,8 @@
 package com.peyess.salesapp.data.repository.lenses.room
 
 import arrow.core.Either
+import arrow.core.leftIfNull
+import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringDocument
 import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensAltHeight
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensCategoryEntity
@@ -23,6 +25,7 @@ import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensMaterialDocument
 import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensSpecialtyDocument
 import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensSupplierDocument
 import com.peyess.salesapp.data.adapter.lenses.room.toStoreLensTypeDocument
+import com.peyess.salesapp.data.adapter.lenses.room.treatment.toLocalLensTreatmentDocument
 import com.peyess.salesapp.data.adapter.lenses.room.treatment.toLocalLensTreatmentEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensEntity
 import com.peyess.salesapp.data.adapter.lenses.toLocalLensMaterialTypeEntity
@@ -209,6 +212,22 @@ class LocalLensesRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getColoringById(coloringId: String): SingleColoringResponse = Either.catch {
+        val entity = localLensDao.getColoringById(coloringId)
+
+        entity?.coloring
+            ?.toLocalLensColoringDocument(
+                explanations = entity.explanations.map { it.explanation },
+            )
+    }.mapLeft {
+        Unexpected(
+            description = "Error while getting coloring by id $coloringId: ${it.message}",
+            error = it,
+        )
+    }.leftIfNull {
+        Unexpected("Coloring with id $coloringId not found")
+    }
+
     override suspend fun addTreatment(treatment: LocalLensTreatmentDocument) {
         val treatmentExplanations = treatment.explanations
         val treatmentEntity = treatment.toLocalLensTreatmentEntity()
@@ -231,6 +250,62 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 lensId = lensId,
                 treatmentId = treatmentId,
             )
+        )
+    }
+
+    override suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse = Either.catch {
+        localLensDao.getTreatmentsForLens(lensId)
+            .map {
+                it.treatment
+                    .toLocalLensTreatmentDocument(
+                        explanations = it.explanations.map { entity ->
+                            entity.explanation
+                        }
+                    )
+            }
+    }.mapLeft {
+        Unexpected(
+            description = "Error while getting treatments for lens $lensId: ${it.message}",
+            error = it,
+        )
+    }
+
+    override suspend fun getTreatmentById(
+        treatmentId: String,
+    ): SingleTreatmentResponse = Either.catch {
+        val entity = localLensDao.getTreatmentById(treatmentId)
+
+        entity?.treatment
+            ?.toLocalLensTreatmentDocument(
+                explanations = entity.explanations.map { exp ->
+                    exp.explanation
+                }
+            )
+    }.mapLeft {
+        Unexpected(
+            description = "Error while getting treatment $treatmentId: ${it.message}",
+            error = it,
+        )
+    }.leftIfNull {
+        Unexpected(
+            description = "Treatment $treatmentId not found",
+        )
+    }
+
+    override suspend fun getColoringsForLens(lensId: String): ColoringsResponse = Either.catch {
+        localLensDao.getColoringsForLens(lensId)
+            .map {
+                it.coloring
+                    .toLocalLensColoringDocument(
+                        explanations = it.explanations.map { entity ->
+                            entity.explanation
+                        }
+                    )
+            }
+    }.mapLeft {
+        Unexpected(
+            description = "Error while getting colorings for lens $lensId: ${it.message}",
+            error = it,
         )
     }
 
@@ -321,6 +396,21 @@ class LocalLensesRepositoryImpl @Inject constructor(
         Unexpected(
             description = "Unexpected error: ${it.message}",
             error = it,
+        )
+    }
+
+    override suspend fun getLensById(id: String): SingleLensResponse = Either.catch {
+        val entity = localLensDao.getLensById(id)
+
+        entity?.toStoreLensWithDetailsDocument()
+    }.mapLeft {
+        Unexpected(
+            description = "Unexpected error: ${it.message}",
+            error = it,
+        )
+    }.leftIfNull {
+        LensNotFound(
+            "Lens with id $id not found",
         )
     }
 

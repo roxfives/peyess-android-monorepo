@@ -101,7 +101,11 @@ fun LensSuggestionScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     showSuggestions: Boolean = true,
-    onLensPicked: (isEditingParam: Boolean) -> Unit = {},
+    onLensPicked: (
+        isEditingParam: Boolean,
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: LensPickViewModel = mavericksViewModel()
 
@@ -113,8 +117,8 @@ fun LensSuggestionScreen(
     )
 
     val isEditingParameter by viewModel.collectAsState(LensPickState::isEditingParameter)
-//    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
-//    val saleId by viewModel.collectAsState(LensPickState::saleId)
+    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
+    val saleId by viewModel.collectAsState(LensPickState::saleId)
 
     val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 
@@ -175,14 +179,18 @@ fun LensSuggestionScreen(
             Timber.i("Trying to navigate: hasNavigated: ${hasNavigated.value} " +
                     "canNavigate: ${canNavigate.value} " +
                     "hasAddedSuggestion: $hasAddedSuggestion ")
+
             if (!hasNavigated.value) {
                 Timber.i("Navigating")
 
                 hasNavigated.value = true
                 canNavigate.value = false
 
-                viewModel.lensPicked()
-                onLensPicked(isEditingParameter)
+                onLensPicked(
+                    isEditingParameter,
+                    saleId,
+                    serviceOrderId,
+                )
             }
         }
     }

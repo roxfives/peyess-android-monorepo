@@ -7,19 +7,19 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
-import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesGroupsQueryFields
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
+import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
+import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
@@ -52,17 +52,12 @@ import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
 import com.peyess.salesapp.features.disponibility.model.Disponibility
 import com.peyess.salesapp.features.disponibility.model.Prescription
 import com.peyess.salesapp.features.disponibility.supportsPrescription
-import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -76,11 +71,10 @@ class LensPickViewModel @AssistedInject constructor(
     @Assisted initialState: LensPickState,
     private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
-    private val lensComparisonDao: LensComparisonDao,
-    private val productRepository: ProductRepository,
     private val lensesRepository: LocalLensesRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
     private val localMeasuringRepository: LocalMeasuringRepository,
+    private val lensComparisonRepository: LensComparisonRepository
 ): MavericksViewModel<LensPickState>(initialState) {
 
     init {
@@ -111,6 +105,8 @@ class LensPickViewModel @AssistedInject constructor(
         onEach(LensPickState::groupsList) { updateLensSuggestionsWith(it) }
 
         onAsync(LensPickState::lensSuggestionsResponseAsync) { processLensSuggestionResponse(it) }
+
+        onAsync(LensPickState::lensComparisonResultAsync) { processPickLensResult(it) }
 
         viewModelScope.launch(Dispatchers.IO) {
             withState { updateLensTablePaging(it.isSale) }
@@ -573,36 +569,32 @@ class LensPickViewModel @AssistedInject constructor(
     }
 
     private suspend fun findBestLensForGroup(groupId: String): BestLensResponse = either {
-        val activeServiceOrder = saleRepository
-            .currentServiceOrder()
-            .mapLeft { Unexpected("Failed while fetching the current service order") }
-            .bind()
+        val activeServiceOrder = saleRepository.currentServiceOrder()
+            .mapLeft { Unexpected("Failed while fetching the current service order") }.bind()
 
-        val localPrescription = localPrescriptionRepository
-            .getPrescriptionForServiceOrder(activeServiceOrder.id)
-            .mapLeft {
-                Unexpected(
-                    "Failed while fetching prescription for SO ${activeServiceOrder.id}"
-                )
-            }.bind()
+        val localPrescription =
+            localPrescriptionRepository.getPrescriptionForServiceOrder(activeServiceOrder.id)
+                .mapLeft {
+                    Unexpected(
+                        "Failed while fetching prescription for SO ${activeServiceOrder.id}"
+                    )
+                }.bind()
 
-        val measuringLeft = localMeasuringRepository
-            .measuringForServiceOrder(activeServiceOrder.id, Eye.Left)
-            .mapLeft {
-                Unexpected(
-                    "Failed while fetching measuring for left eye " +
-                            "for SO ${activeServiceOrder.id}"
-                )
-            }.bind()
+        val measuringLeft =
+            localMeasuringRepository.measuringForServiceOrder(activeServiceOrder.id, Eye.Left)
+                .mapLeft {
+                    Unexpected(
+                        "Failed while fetching measuring for left eye " + "for SO ${activeServiceOrder.id}"
+                    )
+                }.bind()
 
-        val measuringRight = localMeasuringRepository
-            .measuringForServiceOrder(activeServiceOrder.id, Eye.Right)
-            .mapLeft {
-                Unexpected(
-                    "Failed while fetching measuring for right eye " +
-                            "for SO ${activeServiceOrder.id}"
-                )
-            }.bind()
+        val measuringRight =
+            localMeasuringRepository.measuringForServiceOrder(activeServiceOrder.id, Eye.Right)
+                .mapLeft {
+                    Unexpected(
+                        "Failed while fetching measuring for right eye " + "for SO ${activeServiceOrder.id}"
+                    )
+                }.bind()
 
         val queryFields = buildQueryFieldsForLensSuggestions(
             lensGroupId = groupId,
@@ -625,6 +617,21 @@ class LensPickViewModel @AssistedInject constructor(
             .getLensFilteredByDisponibility(query)
             .map { it?.toLensPickModel() }
             .bind()
+    }
+
+    private fun processPickLensResult(response: LensComparisonResult) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    lensComparisonResultAsync =
+                        Fail(error = it.error ?: Throwable(it.description))
+                )
+            },
+
+            ifRight = {
+                copy(lensComparisonResult = it)
+            },
+        )
     }
 
     fun loadLensTypes() = withState {
@@ -816,53 +823,55 @@ class LensPickViewModel @AssistedInject constructor(
         copy(saleId = saleId)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun onPickLens(lensId: String) = withState {
-        saleRepository
-            .activeSO()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(lensId).map { it?.defaultTreatment ?: "" },
-                    productRepository.coloringsForLens(lensId).map { if (it.isNotEmpty()) it[0].id else "" },
-                ) { treatmentId, coloringId ->
-                    LensComparisonEntity(
-                        soId = it.id,
-                        originalLensId = lensId,
-                        originalTreatmentId = treatmentId,
-                        originalColoringId = coloringId,
+    private suspend fun addLensComparisonFor(lensId: String): LensComparisonResult = either {
+        val activeServiceOrder = saleRepository
+            .currentServiceOrder()
+            .mapLeft {
+                Unexpected(
+                    description = "Error while getting current sale while picking lens for comparison",
+                    error = it.error,
+                )
+            }.bind()
 
-                        comparisonLensId = lensId,
-                        comparisonTreatmentId = treatmentId,
-                        comparisonColoringId = coloringId,
-                    )
-                }
-            }
-            .execute(Dispatchers.IO) {
-                Timber.i("Loading adding to comparison: $it")
+        val lens = lensesRepository.getLensById(lensId).bind()
+        val colorings = lensesRepository
+            .getColoringsForLens(lensId)
+            .bind()
 
-                if (it is Success) {
-                    // TODO: Add through repository
-                    lensComparisonDao.add(it.invoke())
+        val index = colorings.indexOfFirst { it.brand == "Incolor" || it.design == "Incolor" }
+        val coloringId = if (index > 0) {
+            colorings[index].id
+        } else if (colorings.isNotEmpty()) {
+            colorings[0].id
+        } else {
+            Timber.e("No coloring found for lens $lensId")
+            ""
+        }
 
-                    Timber.i("Adding comparison of lens $lensId")
+        val treatmentId = lens.defaultTreatmentId
 
-                    copy(
-                        hasAddedToSuggestion = true
-                    )
-                } else {
-                    copy(
-                        isAddingToSuggestion = true
-                    )
-                }
-            }
+        val lensComparison = LensComparisonDocument(
+            soId = activeServiceOrder.id,
+
+            originalLensId = lensId,
+            originalColoringId = coloringId,
+            originalTreatmentId = treatmentId,
+
+            comparisonLensId = lensId,
+            comparisonColoringId = coloringId,
+            comparisonTreatmentId = treatmentId,
+        )
+
+        lensComparisonRepository.add(lensComparison)
+        lensComparison
     }
 
-    fun lensPicked() = setState {
-        copy(
-            hasAddedToSuggestion = false,
-            isAddingToSuggestion = false,
-        )
+    fun onPickLens(lensId: String) {
+        suspend {
+            addLensComparisonFor(lensId)
+        }.execute(Dispatchers.IO) {
+            copy(lensComparisonResultAsync = it)
+        }
     }
 
     @AssistedFactory

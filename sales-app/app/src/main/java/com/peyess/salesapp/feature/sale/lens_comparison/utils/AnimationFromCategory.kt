@@ -2,8 +2,9 @@ package com.peyess.salesapp.feature.sale.lens_comparison.utils
 
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.feature.sale.lens_comparison.model.Prescription
 
-fun animationFromCategory(categoryName: String, prescription: PrescriptionDataEntity): Int {
+fun animationFromCategory(categoryName: String, prescription: Prescription): Int {
     val name = categoryName.lowercase()
 
     // TODO: create name from type
@@ -54,7 +55,7 @@ fun animationFromCategory(categoryName: String, prescription: PrescriptionDataEn
     }
 }
 
-fun bigAnimationFromCategory(categoryName: String, prescription: PrescriptionDataEntity): Int {
+fun bigAnimationFromCategory(categoryName: String, prescription: Prescription): Int {
     val name = categoryName.lowercase()
 
     // TODO: create name from type

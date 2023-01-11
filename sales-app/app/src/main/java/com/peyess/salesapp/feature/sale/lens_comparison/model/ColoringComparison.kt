@@ -5,12 +5,11 @@ import com.peyess.salesapp.dao.products.room.local_coloring.name
 import kotlin.math.ceil
 
 data class ColoringComparison(
-    val originalColoring: LocalColoringEntity = LocalColoringEntity(),
-    val pickedColoring: LocalColoringEntity = LocalColoringEntity(),
+    val originalColoring: Coloring = Coloring(),
+    val pickedColoring: Coloring = Coloring(),
 ) {
-    // TODO: update to price instead of suggestedPrice
-    val priceDifference = ceil(pickedColoring.suggestedPrice - originalColoring.suggestedPrice)
-    val finalPrice = pickedColoring.suggestedPrice
+    val priceDifference = ceil(pickedColoring.price - originalColoring.price)
+    val finalPrice = pickedColoring.price
 
     fun priceDifference(
         withOriginal: Boolean,
@@ -18,21 +17,21 @@ data class ColoringComparison(
         additionalOriginal: Double,
         additionalPicked: Double,
     ): Double {
-        val picked = if (withPicked) { pickedColoring.suggestedPrice } else { 0.0 }
-        val original = if (withOriginal) { originalColoring.suggestedPrice } else { 0.0 }
+        val picked = if (withPicked) { pickedColoring.price } else { 0.0 }
+        val original = if (withOriginal) { originalColoring.price } else { 0.0 }
 
         // TODO: remove hardcoded string
         val addOriginal = if(
-            originalColoring.name().trim() == "Indisponível"
-            || originalColoring.name().trim() == "Incolor"
+            originalColoring.name.trim() == "Indisponível"
+            || originalColoring.name.trim() == "Incolor"
         ) {
             0.0
         } else {
             additionalOriginal
         }
         val addPicked = if(
-            pickedColoring.name().trim() == "Indisponível"
-            || pickedColoring.name().trim() == "Incolor"
+            pickedColoring.name.trim() == "Indisponível"
+            || pickedColoring.name.trim() == "Incolor"
         ) {
             0.0
         } else {
@@ -45,8 +44,8 @@ data class ColoringComparison(
     fun finalPrice(addPrice: Boolean, additional: Double): Double {
         // TODO: remove hardcoded string
         val add = if(
-            pickedColoring.name().trim() == "Indisponível"
-            || pickedColoring.name().trim() == "Incolor"
+            pickedColoring.name.trim() == "Indisponível"
+            || pickedColoring.name.trim() == "Incolor"
         ) {
             0.0
         } else {
@@ -54,7 +53,7 @@ data class ColoringComparison(
         }
 
         return if (addPrice) {
-            pickedColoring.suggestedPrice + add
+            pickedColoring.price + add
         } else {
             0.0
         }

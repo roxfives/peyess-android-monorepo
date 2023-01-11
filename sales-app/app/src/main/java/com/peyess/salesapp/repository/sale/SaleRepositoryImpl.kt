@@ -50,6 +50,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -140,19 +141,6 @@ class SaleRepositoryImpl @Inject constructor(
                 framesDataDao.getById(so.id).map {
                     it ?: FramesEntity(soId = so.id)
                 }
-            }.shareIn(
-                scope = repositoryScope,
-                replay = 1,
-                started = SharingStarted.WhileSubscribed(),
-            )
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val currentComparisons by lazy {
-        currentSO
-            .filterNotNull()
-            .flatMapLatest {
-                comparisonDao.getBySo(it.id)
             }.shareIn(
                 scope = repositoryScope,
                 replay = 1,
@@ -352,7 +340,8 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override fun comparisons(): Flow<List<LensComparisonEntity>> {
-        return currentComparisons
+//        return currentComparisons
+        return emptyFlow()
     }
 
     override fun pickedProduct(): Flow<ProductPickedEntity?> {
@@ -392,7 +381,7 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override fun removeComparison(id: Int) {
-        comparisonDao.deleteById(id)
+//        comparisonDao.deleteById(id)
     }
 
     override fun updatePositioning(positioning: PositioningEntity) {
@@ -412,11 +401,11 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override fun addLensForComparison(comparisonEntity: LensComparisonEntity) {
-        comparisonDao.add(comparisonEntity)
+//        comparisonDao.add(comparisonEntity)
     }
 
     override fun updateSaleComparison(comparison: LensComparisonEntity) {
-        comparisonDao.update(comparison)
+//        comparisonDao.update(comparison)
     }
 
     override fun pickProduct(productPicked: ProductPickedEntity) {

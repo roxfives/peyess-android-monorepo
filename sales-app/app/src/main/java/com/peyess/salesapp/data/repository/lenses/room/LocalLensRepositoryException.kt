@@ -5,6 +5,11 @@ sealed interface LocalLensRepositoryException {
     val error: Throwable?
 }
 
+data class LensNotFound(
+    override val description: String,
+    override val error: Throwable? = null,
+): LocalLensRepositoryException
+
 data class Unexpected(
     override val description: String = "",
     override val error: Throwable? = null,

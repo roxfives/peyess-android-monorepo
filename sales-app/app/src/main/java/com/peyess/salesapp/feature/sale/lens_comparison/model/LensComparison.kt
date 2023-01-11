@@ -1,18 +1,18 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.model
 
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
+import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import kotlin.math.ceil
 
 data class LensComparison(
-    val originalLens: LocalLensEntity = LocalLensEntity(),
-    val pickedLens: LocalLensEntity = LocalLensEntity(),
+    val originalLens: Lens = Lens(),
+    val pickedLens: Lens = Lens(),
 ) {
-    // TODO: use price instead of suggested_price
-    val originalAdditionalColoring = originalLens.suggestedPriceAddColoring
-    val originalAdditionalTreatment = originalLens.suggestedPriceAddTreatment
+    val originalAdditionalColoring = originalLens.priceAddColoring
+    val originalAdditionalTreatment = originalLens.priceAddTreatment
 
-    val pickedAdditionalColoring = pickedLens.suggestedPriceAddColoring
-    val pickedAdditionalTreatment = pickedLens.suggestedPriceAddTreatment
+    val pickedAdditionalColoring = pickedLens.priceAddColoring
+    val pickedAdditionalTreatment = pickedLens.priceAddTreatment
 
     val priceDifference = ceil(pickedLens.price - originalLens.price)
     val finalPrice = pickedLens.price

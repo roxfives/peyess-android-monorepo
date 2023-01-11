@@ -1,23 +1,20 @@
-package com.peyess.salesapp.data.model.lens.room.repo
+package com.peyess.salesapp.feature.sale.lens_comparison.model
 
-import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
-import java.time.ZonedDateTime
-
-data class StoreLensWithDetailsDocument(
+data class Lens(
     val id: String = "",
 
     val priority: Double = 0.0,
     val storeLensPriority: Int = 0,
 
-    val height: Double = 0.0,
-    val hasAddition: Boolean = false,
     val hasFilterBlue: Boolean = false,
     val hasFilterUv: Boolean = false,
+
     val isColoringTreatmentMutex: Boolean = false,
     val isColoringDiscounted: Boolean = false,
     val isColoringIncluded: Boolean = false,
     val isTreatmentDiscounted: Boolean = false,
     val isTreatmentIncluded: Boolean = false,
+
     val isGeneric: Boolean = false,
     val needsCheck: Boolean = false,
 
@@ -26,20 +23,9 @@ data class StoreLensWithDetailsDocument(
     val observation: String = "",
     val warning: String = "",
 
-    val isManufacturingLocal: Boolean = false,
-    val isEnabled: Boolean = false,
-    val reasonDisabled: String = "",
-    val isLocalEnabled: Boolean = true,
-    val reasonLocalDisabled: String = "",
-
     val price: Double = 0.0,
     val priceAddColoring: Double = 0.0,
     val priceAddTreatment: Double = 0.0,
-
-    val isEditable: Boolean = false,
-
-    val created: ZonedDateTime = ZonedDateTime.now(),
-    val updated: ZonedDateTime = ZonedDateTime.now(),
 
     val brandId: String = "",
     val designId: String = "",
@@ -63,19 +49,6 @@ data class StoreLensWithDetailsDocument(
     val materialName: String = "",
 
     val materialCategory: String = "",
-
-    val brandPriority: String = "",
-    val designPriority: String = "",
-    val supplierPriority: String = "",
-    val groupPriority: String = "",
-    val specialtyPriority: String = "",
-    val techPriority: String = "",
-    val typePriority: String = "",
-    val categoryPriority: String = "",
-    val materialPriority: String = "",
-
-    val disponibilities: List<StoreLensDisponibilityWithoutManufacturersDocument> = emptyList(),
-    val altHeights: List<StoreLensAltHeightDocument> = emptyList(),
 
     val explanations: List<String> = emptyList(),
 )

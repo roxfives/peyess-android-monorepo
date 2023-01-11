@@ -6,9 +6,11 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensSuggestionModel
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensGroupDocument
+import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterGroupImpl
 import com.peyess.salesapp.feature.sale.lens_pick.model.LensFilterDescriptionImpl
@@ -53,6 +55,9 @@ typealias LensesGroupsCompleteResponse =
 typealias LensesSuggestionsResponse =
         List<Either<LocalLensRepositoryException, LensPickModel?>>
 
+typealias LensComparisonResult =
+        Either<LocalLensRepositoryException, LensComparisonDocument>
+
 data class LensPickState(
     val isEditingParameter: Boolean = false,
     val serviceOrderId: String = "",
@@ -86,9 +91,6 @@ data class LensPickState(
     val lensSuggestionsResponseAsync: Async<LensesSuggestionsResponse> = Uninitialized,
     val lensSuggestionsResponse: List<LensPickModel?> = emptyList(),
 
-    val hasAddedToSuggestion: Boolean = false,
-    val isAddingToSuggestion: Boolean = false,
-
     val lensesTableResponse: Async<TableLensesResponse> = Uninitialized,
     val lensesTableStream: Flow<PagingData<LensPickModel>> = emptyFlow(),
 
@@ -112,6 +114,9 @@ data class LensPickState(
 
     val lensesGroupsResponseAsync: Async<LensesGroupsResponse> = Uninitialized,
     val lensesGroupsResponse: List<LensFilterGroupImpl> = emptyList(),
+
+    val lensComparisonResultAsync: Async<LensComparisonResult> = Uninitialized,
+    val lensComparisonResult: LensComparisonDocument = LensComparisonDocument(),
 ): MavericksState {
     val isSale = serviceOrderId.isNotBlank() && saleId.isNotBlank()
 
@@ -146,4 +151,9 @@ data class LensPickState(
             && lensesFamiliesResponseAsync !is Loading
     val isMaterialLensFilterEnabled = supplierLensFilter.isNotEmpty()
             && lensesSuppliersResponseAsync !is Loading
+
+    val hasAddedToSuggestion = lensComparisonResultAsync is Success
+            && lensComparisonResultAsync.invoke().isRight()
+    val isAddingToSuggestion = lensComparisonResultAsync is Loading
+    val addingToSuggestionFailed = lensComparisonResultAsync is Fail
 }

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.lens_pick.utils
+package com.peyess.salesapp.feature.sale.lens_comparison.utils
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
@@ -48,6 +48,9 @@ private fun parseParameterSaleId(
     onUpdate(saleId)
 }
 
+
+
+
 @Composable
 fun parseParameters(
     navController: NavHostController,
@@ -57,16 +60,16 @@ fun parseParameters(
 ) {
     parseParameterIsEditing(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateIsEditing
+        onUpdate = onUpdateIsEditing,
     )
 
     parseParameterSaleId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateSaleId
+        onUpdate = onUpdateSaleId,
     )
 
     parseParameterServiceOrderId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateServiceOrderId
+        onUpdate = onUpdateServiceOrderId,
     )
 }

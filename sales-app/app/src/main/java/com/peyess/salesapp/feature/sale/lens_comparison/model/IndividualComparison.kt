@@ -10,7 +10,7 @@ data class IndividualComparison(
     val id: Int = 0,
     val soId: String = "",
 
-    val prescription: PrescriptionDataEntity = PrescriptionDataEntity(),
+    val prescription: Prescription = Prescription(),
 
     val lensComparison: LensComparison = LensComparison(),
     val coloringComparison: ColoringComparison = ColoringComparison(),

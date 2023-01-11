@@ -14,10 +14,12 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
+import com.peyess.salesapp.data.repository.lenses.room.ColoringsResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.MaterialsResponse
 import com.peyess.salesapp.data.repository.lenses.room.TechsResponse
+import com.peyess.salesapp.data.repository.lenses.room.TreatmentsResponse
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringResponse
@@ -83,6 +85,8 @@ class LensComparisonViewModel @AssistedInject constructor(
         onAsync(LensComparisonState::prescriptionDocumentAsync) { processPrescriptionResponse(it) }
         onAsync(LensComparisonState::measuringLeftAsync) { processMeasuringLeftResponse(it) }
         onAsync(LensComparisonState::measuringRightAsync) { processMeasuringRightResponse(it) }
+        onAsync(LensComparisonState::availableColoringsAsync) { processColoringsResponse(it) }
+        onAsync(LensComparisonState::availableTreatmentsAsync) { processTreatmentsResponse(it) }
 
         onEach(LensComparisonState::serviceOrderId) {
             loadPrescription(it)
@@ -213,6 +217,42 @@ class LensComparisonViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processColoringsResponse(response: ColoringsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    availableColoringsAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(
+                    availableColorings = it.map { c -> c.toColoring() }
+                )
+            }
+        )
+    }
+
+    private fun processTreatmentsResponse(response: TreatmentsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    availableTreatmentsAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(
+                    availableTreatments = it.map { t -> t.toTreatment() }
+                )
+            }
+        )
+    }
+
     private fun loadMeasuringRight(serviceOrderId: String) {
         suspend {
             localMeasuringRepository
@@ -280,7 +320,7 @@ class LensComparisonViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                copy(availableTech = it.map { tech -> tech.toLensTech() })
+                copy(availableTechs = it.map { tech -> tech.toLensTech() })
             }
         )
     }
@@ -296,7 +336,7 @@ class LensComparisonViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                copy(availableMaterial = it.map { tech -> tech.toLensMaterial() })
+                copy(availableMaterials = it.map { tech -> tech.toLensMaterial() })
             }
         )
     }
@@ -365,6 +405,24 @@ class LensComparisonViewModel @AssistedInject constructor(
             )
         }.execute(Dispatchers.IO) {
             copy(availableMaterialAsync = it)
+        }
+    }
+
+    fun loadAvailableColorings(lensComparison: IndividualComparison) {
+        suspend {
+            localLensesRepository
+                .getColoringsForLens(lensComparison.lensComparison.pickedLens.id)
+        }.execute(Dispatchers.IO) {
+            copy(availableColoringsAsync = it)
+        }
+    }
+
+    fun loadAvailableTreatments(lensComparison: IndividualComparison) {
+        suspend {
+            localLensesRepository
+                .getTreatmentsForLens(lensComparison.lensComparison.pickedLens.id)
+        }.execute(Dispatchers.IO) {
+            copy(availableTreatmentsAsync = it)
         }
     }
 

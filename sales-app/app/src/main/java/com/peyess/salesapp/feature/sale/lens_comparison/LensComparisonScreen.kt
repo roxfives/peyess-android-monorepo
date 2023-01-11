@@ -36,7 +36,6 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,10 +59,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.products.room.filter_lens_material.FilterLensMaterialEntity
-import com.peyess.salesapp.dao.products.room.filter_lens_tech.FilterLensTechEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Coloring
 import com.peyess.salesapp.feature.sale.lens_comparison.model.ColoringComparison
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
@@ -86,8 +81,6 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
 import kotlin.math.abs
 
@@ -130,11 +123,19 @@ fun LensComparisonScreen(
 
     val isTechLoading by viewModel.collectAsState(LensComparisonState::isTechLoading)
     val hasTechFailed by viewModel.collectAsState(LensComparisonState::hasTechFailed)
-    val availableTechs by viewModel.collectAsState(LensComparisonState::availableTech)
+    val availableTechs by viewModel.collectAsState(LensComparisonState::availableTechs)
 
     val isMaterialLoading by viewModel.collectAsState(LensComparisonState::isMaterialLoading)
     val hasMaterialFailed by viewModel.collectAsState(LensComparisonState::hasMaterialFailed)
-    val availableMaterials by viewModel.collectAsState(LensComparisonState::availableMaterial)
+    val availableMaterials by viewModel.collectAsState(LensComparisonState::availableMaterials)
+
+    val isColoringLoading by viewModel.collectAsState(LensComparisonState::isColoringLoading)
+    val hasColoringFailed by viewModel.collectAsState(LensComparisonState::hasColoringFailed)
+    val availableColorings by viewModel.collectAsState(LensComparisonState::availableColorings)
+
+    val isTreatmentLoading by viewModel.collectAsState(LensComparisonState::isTreatmentLoading)
+    val hasTreatmentFailed by viewModel.collectAsState(LensComparisonState::hasTreatmentFailed)
+    val availableTreatments by viewModel.collectAsState(LensComparisonState::availableTreatments)
 
     val hasPickedProduct by viewModel.collectAsState(LensComparisonState::hasPickedProduct)
     val hasNavigated = remember { mutableStateOf(false) }
@@ -177,9 +178,15 @@ fun LensComparisonScreen(
         hasMaterialListFailed = hasMaterialFailed,
         availableMaterialList = availableMaterials,
 
-        materialsFor = viewModel::materialForComparison,
-        treatmentsFor = viewModel::treatmentsFor,
-        coloringsFor = viewModel::coloringsFor,
+        onLoadColoringsFor = viewModel::loadAvailableColorings,
+        isColoringListLoading = isColoringLoading,
+        hasColoringListFailed = hasColoringFailed,
+        availableColoringList = availableColorings,
+
+        onLoadTreatmentsFor = viewModel::loadAvailableTreatments,
+        isTreatmentListLoading = isTreatmentLoading,
+        hasTreatmentListFailed = hasTreatmentFailed,
+        availableTreatmentList = availableTreatments,
 
         onPickTech = viewModel::onPickTech,
         onPickMaterial = viewModel::onPickMaterial,
@@ -204,9 +211,15 @@ private fun LensComparisonScreenImpl(
     hasMaterialListFailed: Boolean = false,
     availableMaterialList: List<LensMaterial> = emptyList(),
 
-    materialsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensMaterialEntity>> = { emptyFlow() },
-    treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
-    coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
+    onLoadColoringsFor: (comparison: IndividualComparison) -> Unit = {},
+    isColoringListLoading: Boolean = false,
+    hasColoringListFailed: Boolean = false,
+    availableColoringList: List<Coloring> = emptyList(),
+
+    onLoadTreatmentsFor: (comparison: IndividualComparison) -> Unit = {},
+    isTreatmentListLoading: Boolean = false,
+    hasTreatmentListFailed: Boolean = false,
+    availableTreatmentList: List<Treatment> = emptyList(),
 
     onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
     onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
@@ -237,8 +250,15 @@ private fun LensComparisonScreenImpl(
                 hasMaterialListFailed = hasMaterialListFailed,
                 availableMaterialList = availableMaterialList,
 
-                treatmentsFor = treatmentsFor,
-                coloringsFor = coloringsFor,
+                onLoadTreatmentsFor = onLoadTreatmentsFor,
+                isTreatmentListLoading = isTreatmentListLoading,
+                hasTreatmentListFailed = hasTreatmentListFailed,
+                availableTreatmentList = availableTreatmentList,
+
+                onLoadColoringsFor = onLoadColoringsFor,
+                isColoringListLoading = isColoringListLoading,
+                hasColoringListFailed = hasColoringListFailed,
+                availableColoringList = availableColoringList,
 
                 onPickTech = onPickTech,
                 onPickMaterial = onPickMaterial,
@@ -316,9 +336,15 @@ private fun LensComparisonCard(
     hasMaterialListFailed: Boolean = false,
     availableMaterialList: List<LensMaterial> = emptyList(),
 
-    materialsFor: (comparison: IndividualComparison) -> Flow<List<FilterLensMaterialEntity>> = { emptyFlow() },
-    treatmentsFor: (comparison: IndividualComparison) -> Flow<List<LocalTreatmentEntity>> = { emptyFlow() },
-    coloringsFor: (comparison: IndividualComparison) -> Flow<List<LocalColoringEntity>> = { emptyFlow() },
+    onLoadColoringsFor: (comparison: IndividualComparison) -> Unit = {},
+    isColoringListLoading: Boolean = false,
+    hasColoringListFailed: Boolean = false,
+    availableColoringList: List<Coloring> = emptyList(),
+
+    onLoadTreatmentsFor: (comparison: IndividualComparison) -> Unit = {},
+    isTreatmentListLoading: Boolean = false,
+    hasTreatmentListFailed: Boolean = false,
+    availableTreatmentList: List<Treatment> = emptyList(),
 
     onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
     onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
@@ -331,9 +357,6 @@ private fun LensComparisonCard(
     val lensComparison = individualComparison.lensComparison
     val coloringComparison = individualComparison.coloringComparison
     val treatmentComparison = individualComparison.treatmentComparison
-
-    val treatments = treatmentsFor(individualComparison).collectAsState(emptyList())
-    val colorings = coloringsFor(individualComparison).collectAsState(emptyList())
 
     val techDialogState = rememberMaterialDialogState()
     PickTechDialog(
@@ -354,7 +377,7 @@ private fun LensComparisonCard(
     val treatmentDialogState = rememberMaterialDialogState()
     PickTreatmentDialog(
         dialogState = treatmentDialogState,
-        treatments = treatments.value,
+        treatments = availableTreatmentList,
         comparison = individualComparison,
         onPickTreatment = onPickTreatment,
     )
@@ -362,7 +385,7 @@ private fun LensComparisonCard(
     val coloringDialogState = rememberMaterialDialogState()
     PickColoringDialog(
         dialogState = coloringDialogState,
-        colorings = colorings.value,
+        colorings = availableColoringList,
         comparison = individualComparison,
         onPickColoring = onPickColoring,
     )
@@ -571,6 +594,9 @@ private fun LensComparisonCard(
                     // TODO: use string resource
                     subtitle = "Tratamento",
                     dialogState = treatmentDialogState,
+                    onLoadFeatures = {
+                        onLoadTreatmentsFor(individualComparison)
+                    }
                 )
 
                 Timber.i("The picked coloring is ${coloringComparison.pickedColoring}")
@@ -586,6 +612,9 @@ private fun LensComparisonCard(
                     // TODO: use string resource
                     subtitle = "Coloração",
                     dialogState = coloringDialogState,
+                    onLoadFeatures = {
+                        onLoadColoringsFor(individualComparison)
+                    }
                 )
             }
 
@@ -835,7 +864,7 @@ private fun PickMaterialDialog(
 @Composable
 private fun PickTreatmentDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    treatments: List<LocalTreatmentEntity> = emptyList(),
+    treatments: List<Treatment> = emptyList(),
     comparison: IndividualComparison,
     onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {
@@ -867,7 +896,7 @@ private fun PickTreatmentDialog(
 @Composable
 private fun PickColoringDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    colorings: List<LocalColoringEntity> = emptyList(),
+    colorings: List<Coloring> = emptyList(),
     comparison: IndividualComparison,
     onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {

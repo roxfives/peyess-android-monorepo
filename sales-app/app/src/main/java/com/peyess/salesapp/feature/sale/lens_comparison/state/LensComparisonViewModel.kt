@@ -13,11 +13,13 @@ import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensRepositoryException
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toColoring
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLens
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toPrescription
@@ -61,27 +63,24 @@ class LensComparisonViewModel @AssistedInject constructor(
 ): MavericksViewModel<LensComparisonState>(initialState) {
 
     init {
+        onAsync(LensComparisonState::comparisonsAsync) { updateComparisonList(it) }
         onAsync(LensComparisonState::comparisonListAsync) { processComparisonListResponse(it) }
 
-        onAsync(LensComparisonState::comparisonsAsync) { updateComparisonList(it) }
+        onAsync(LensComparisonState::prescriptionDocumentAsync) { processPrescriptionResponse(it) }
 
-        onEach(LensComparisonState::comparisonList) { buildComparisonsFromList(it) }
-
-        onEach(LensComparisonState::serviceOrderId) { loadComparisons(it) }
+        onEach(LensComparisonState::serviceOrderId) { loadPrescription(it) }
+        onEach(LensComparisonState::prescriptionDocument) { _ ->
+            withState { loadComparisons(it.serviceOrderId) }
+        }
+        onEach(LensComparisonState::comparisonList) { comparisons ->
+            withState { buildComparisonsFromList(comparisons, it.prescriptionDocument) }
+        }
     }
 
     private suspend fun buildIndividualComparison(
         comparison: LensComparisonDocument,
-    ): IndividualComparisonResponse = either {localPrescriptionRepository
-        val prescriptionDocument = localPrescriptionRepository
-            .getPrescriptionForServiceOrder(comparison.soId)
-            .mapLeft {
-                Unexpected(
-                    description = it.description,
-                    error = it.error,
-                )
-            }.bind()
-
+        prescriptionDocument: LocalPrescriptionDocument,
+    ): IndividualComparisonResponse = either {
         val originalLens = localLensesRepository
             .getLensById(comparison.originalLensId)
             .bind()
@@ -128,10 +127,38 @@ class LensComparisonViewModel @AssistedInject constructor(
         )
     }
 
-    private fun buildComparisonsFromList(comparisons: List<LensComparisonDocument>) {
+    private fun processPrescriptionResponse(
+        response: LocalPrescriptionResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    prescriptionDocumentAsync = Fail(
+                        error = it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(prescriptionDocument = it) }
+        )
+    }
+
+    private fun loadPrescription(serviceOrderId: String) {
+        suspend {
+            localPrescriptionRepository
+                .getPrescriptionForServiceOrder(serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(prescriptionDocumentAsync = it)
+        }
+    }
+
+    private fun buildComparisonsFromList(
+        comparisons: List<LensComparisonDocument>,
+        prescriptionDocument: LocalPrescriptionDocument,
+    ) {
         suspend {
             comparisons.mapNotNull {
-                buildIndividualComparison(it).fold(
+                buildIndividualComparison(it, prescriptionDocument).fold(
                     ifLeft = { error ->
                         Timber.e("Failed to build comparison $it", error)
                         null

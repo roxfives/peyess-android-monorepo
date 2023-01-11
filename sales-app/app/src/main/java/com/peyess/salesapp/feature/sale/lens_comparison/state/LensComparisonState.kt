@@ -8,7 +8,9 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LocalComparisonReadError
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.feature.sale.lens_comparison.model.IndividualComparison
 
 typealias LensComparisonResponse = Either<LocalComparisonReadError, List<LensComparisonDocument>>
@@ -24,11 +26,23 @@ data class LensComparisonState(
     val comparisonsAsync: Async<List<IndividualComparison>> = Uninitialized,
     val comparisons: List<IndividualComparison> = emptyList(),
 
+    val prescriptionDocumentAsync: Async<LocalPrescriptionResponse> = Uninitialized,
+    val prescriptionDocument: LocalPrescriptionDocument = LocalPrescriptionDocument(),
+
 //    val comparisons: Async<List<IndividualComparison>> = Uninitialized,
 
     val hasPickedProduct: Boolean = false,
 ): MavericksState {
-    val hasLoaded = comparisonListAsync is Success && comparisonListAsync.invoke().isRight()
-    val isLoading = comparisonListAsync is Loading
-    val hasFailed = comparisonListAsync is Fail
+    private val hasPrescriptionLoaded = prescriptionDocumentAsync is Success
+            && prescriptionDocumentAsync.invoke().isRight()
+    private val isPrescriptionLoading = prescriptionDocumentAsync is Loading
+    private val hasPrescriptionFailed = prescriptionDocumentAsync is Fail
+
+    val hasLoaded = hasPrescriptionLoaded
+            && comparisonListAsync is Success
+            && comparisonListAsync.invoke().isRight()
+    val isLoading = isPrescriptionLoading || comparisonListAsync is Loading
+    val hasFailed = hasPrescriptionFailed || comparisonListAsync is Fail
+
+
 }

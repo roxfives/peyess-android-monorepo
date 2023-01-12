@@ -16,6 +16,7 @@ import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEn
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionExitTransition
+import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val isEditingParam = "isEditing"
@@ -97,7 +98,7 @@ fun buildLensSuggestionNavGraph(
                 val route = buildLensComparisonNavRoute(
                     isEditing = isEditingParam,
                     saleId = saleId,
-                    serviceOrderId = serviceOrderId
+                    serviceOrderId = serviceOrderId,
                 )
 
                 navHostController.navigate(route)
@@ -143,13 +144,19 @@ fun buildLensSuggestionNavGraph(
                 .padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,
             onAddComparison = { navHostController.popBackStack() },
-            onLensPicked = { isEditing, _, _ ->
+            onLensPicked = { isEditing, saleId, serviceOrderId ->
                 val isPicking = true
                 val pickScenario = PickScenario.ServiceOrder.toName()
 
+                val route = buildServiceOrderRoute(
+                    isCreating = true,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                )
+
                 if (isEditing) {
-                    navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
-                        popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+                    navHostController.navigate(route) {
+                        popUpTo(route) { inclusive = true }
                     }
                 } else {
                     navHostController

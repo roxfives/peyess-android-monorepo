@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.pick_client.state
 
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -10,6 +11,7 @@ import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.client.room.toEntity
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -26,6 +28,9 @@ class PickClientViewModel @AssistedInject constructor(
 
     init {
         loadClients()
+        loadServiceOrderData()
+
+        onAsync(PickClientState::activeServiceOrderResponseAsync) { processServiceOrderDataResponse(it) }
     }
 
     private fun loadClients() = withState {
@@ -33,6 +38,28 @@ class PickClientViewModel @AssistedInject constructor(
             .execute {
                 copy(clientListAsync = it)
             }
+    }
+
+    private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    activeServiceOrderResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(activeServiceOrderResponse = it) }
+        )
+    }
+
+    private fun loadServiceOrderData() {
+        suspend {
+            saleRepository.currentServiceOrder()
+        }.execute(Dispatchers.IO) {
+            copy(activeServiceOrderResponseAsync = it)
+        }
     }
 
     private fun pickAllForServiceOrder(client: ClientDocument) = withState {

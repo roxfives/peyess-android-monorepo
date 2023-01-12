@@ -121,6 +121,19 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     }
 
+    fun onUpdateIsCreating(isCreating: Boolean) = setState {
+        copy(isCreating = isCreating)
+    }
+
+    fun onUpdateSaleId(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
+    fun onUpdateServiceOrderId(serviceOrderId: String) = setState {
+        copy(serviceOrderId = serviceOrderId)
+    }
+
+
     private fun loadCurrentSale() {
         saleRepository.activeSale().execute {
             copy(saleIdAsync = it)

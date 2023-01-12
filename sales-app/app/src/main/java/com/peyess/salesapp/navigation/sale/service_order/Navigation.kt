@@ -4,6 +4,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.service_order.ServiceOrderScreen
@@ -13,6 +15,26 @@ import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
 
+const val serviceOrderIdParam = "serviceOrderId"
+const val saleIdParam = "saleId"
+const val isCreatingParam = "isCreating"
+
+private val serviceOrderRoute = SalesAppScreens.ServiceOrder.name +
+        "/{$isCreatingParam}" +
+        "/{$saleIdParam}" +
+        "/{$serviceOrderIdParam}"
+
+fun buildServiceOrderRoute(
+    isCreating: Boolean,
+    saleId: String,
+    serviceOrderId: String,
+): String {
+    return SalesAppScreens.ServiceOrder.name +
+            "/$isCreating" +
+            "/$saleId" +
+            "/$serviceOrderId"
+}
+
 @OptIn(ExperimentalAnimationApi::class)
 fun buildServiceOrderNavGraph(
     modifier: Modifier = Modifier,
@@ -20,12 +42,18 @@ fun buildServiceOrderNavGraph(
     builder: NavGraphBuilder,
 ) {
     builder.composable(
-        route = SalesAppScreens.ServiceOrder.name,
+        route = serviceOrderRoute,
+        arguments = listOf(
+            navArgument(isCreatingParam) { type = NavType.BoolType },
+            navArgument(saleIdParam) { type = NavType.StringType },
+            navArgument(serviceOrderIdParam) { type = NavType.StringType },
+        ),
         enterTransition = serviceOrderEnterTransition(),
         exitTransition = serviceOrderExitTransition(),
     ) {
         ServiceOrderScreen(
             modifier = modifier,
+            navHostController = navHostController,
 
             onChangeUser = {
                 val isPicking = true
@@ -56,10 +84,12 @@ fun buildServiceOrderNavGraph(
                     .navigate("${SalesAppScreens.SalePrescriptionPicture}/$isUpdating")
             },
 
-            onEditProducts = {
+            onEditProducts = { saleId, serviceOrderId ->
                 val route = buildLensSuggestionNavRoute(
                     isEditing = true,
                     showSuggestions = true,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
                 )
 
                 navHostController
@@ -89,10 +119,11 @@ fun buildServiceOrderNavGraph(
                     .navigate(buildFeeNavRoute(saleId, fullPrice))
             },
 
-        ) {
-            navHostController.navigate(SalesAppScreens.Home.name) {
-                popUpTo(SalesAppScreens.Home.name) { inclusive = true}
+            onFinishSale = {
+                navHostController.navigate(SalesAppScreens.Home.name) {
+                    popUpTo(SalesAppScreens.Home.name) { inclusive = true}
+                }
             }
-        }
+        )
     }
 }

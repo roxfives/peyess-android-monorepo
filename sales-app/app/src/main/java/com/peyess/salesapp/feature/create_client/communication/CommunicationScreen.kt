@@ -73,13 +73,18 @@ fun CreateClientCommunicationScreen(
         createScenario: CreateScenario,
         clientId: String,
         paymentId: Long,
-    ) -> Unit = { _, _, _ -> },
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _ , _, _-> },
 ) {
     val viewModel: CommunicationViewModel = if (viewModelScope == null) {
         mavericksViewModel()
     } else {
         mavericksViewModel(viewModelScope)
     }
+
+    val saleId by viewModel.collectAsState(CommunicationState::saleId)
+    val serviceOrderId by viewModel.collectAsState(CommunicationState::serviceOrderId)
 
     val createScenarioParam = navHostController
         .currentBackStackEntry
@@ -117,7 +122,7 @@ fun CreateClientCommunicationScreen(
         if (uploadSuccessful && clientId.isNotBlank()) {
             Timber.i("Navigating with client $clientId")
 
-            onDone(scenario, clientId, paymentId)
+            onDone(scenario, clientId, paymentId, saleId, serviceOrderId)
         }
     }
 

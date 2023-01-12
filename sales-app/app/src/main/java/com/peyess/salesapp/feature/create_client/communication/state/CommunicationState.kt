@@ -7,6 +7,7 @@ import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.feature.create_client.communication.util.validateCellphone
 import com.peyess.salesapp.feature.create_client.communication.util.validateEmail
@@ -14,8 +15,12 @@ import com.peyess.salesapp.feature.create_client.communication.util.validatePhon
 import com.peyess.salesapp.feature.create_client.communication.util.validateWhatsapp
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 
 data class CommunicationState(
+    val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
+    val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
+
     private val _clientAsync: Async<ClientModel?> = Uninitialized,
 
     val phoneHasWhatsApp: Boolean = true,
@@ -35,6 +40,9 @@ data class CommunicationState(
     @PersistState val detectWhatsappError: Boolean = false,
     @PersistState val detectPhoneError: Boolean = false,
 ): MavericksState {
+    val saleId: String = activeServiceOrderResponse.saleId
+    val serviceOrderId: String = activeServiceOrderResponse.id
+
     private val _detectWhatsappError: Boolean = detectWhatsappError && phoneHasWhatsApp
     private val _detectPhoneError: Boolean = detectPhoneError && hasPhoneContact
 

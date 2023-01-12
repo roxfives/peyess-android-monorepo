@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.create_client.communication.state
 
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -12,6 +13,7 @@ import com.peyess.salesapp.data.adapter.client.toClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -34,6 +36,7 @@ class CommunicationViewModel @AssistedInject constructor(
 
     init {
         loadClient()
+        loadServiceOrderData()
     }
 
     private fun loadClient() = withState {
@@ -42,6 +45,28 @@ class CommunicationViewModel @AssistedInject constructor(
             .execute {
                 copy(_clientAsync = it)
             }
+    }
+
+    private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    activeServiceOrderResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(activeServiceOrderResponse = it) }
+        )
+    }
+
+    private fun loadServiceOrderData() {
+        suspend {
+            saleRepository.currentServiceOrder()
+        }.execute {
+            copy(activeServiceOrderResponseAsync = it)
+        }
     }
 
     private fun updateClient(client: ClientModel) {
@@ -178,9 +203,7 @@ class CommunicationViewModel @AssistedInject constructor(
         suspend {
             Timber.i("Creating client ${it.client}")
 
-            runBlocking {
-                clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
-            }
+            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
 
             if (
                 it.createScenarioParam != CreateScenario.Home

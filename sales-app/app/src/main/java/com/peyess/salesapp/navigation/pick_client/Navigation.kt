@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
+import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 
 const val isPickingParam = "isPicking"
 const val pickScenarioParam = "pickScenario"
@@ -53,20 +54,29 @@ fun buildPickClientNavGraph(
                 )
 
                 navHostController.navigate(basicInfoRoute)
-            }
-        ) { paymentId, clientId, scenario ->
-            when (scenario) {
-                PickScenario.Payment ->
-                    navHostController
-                        .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$clientId") {
-                            popUpTo("${SalesAppScreens.PickClient.name}/{$isPickingParam}/{$pickScenarioParam}?$paymentIdParam={$paymentIdParam}") {
-                                inclusive = true
+            },
+
+            onClientPicked = { paymentId, clientId, scenario, saleId, serviceOrderId ->
+                when (scenario) {
+                    PickScenario.Payment ->
+                        navHostController
+                            .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$clientId") {
+                                popUpTo("${SalesAppScreens.PickClient.name}/{$isPickingParam}/{$pickScenarioParam}?$paymentIdParam={$paymentIdParam}") {
+                                    inclusive = true
+                                }
                             }
-                        }
-                else ->
-                    navHostController.navigate(SalesAppScreens.ServiceOrder.name)
+                    else -> {
+                        val route = buildServiceOrderRoute(
+                            isCreating = true,
+                            saleId = saleId,
+                            serviceOrderId = serviceOrderId,
+                        )
+
+                        navHostController.navigate(route)
+                    }
+                }
             }
-        }
+        )
     }
 }
 

@@ -82,9 +82,18 @@ fun PickClientScreen(
 
     onCreateNewClient: (paymentId: Long, pickScenario: PickScenario) -> Unit = { _, _ -> },
     onSearchClient: () -> Unit = {},
-    onClientPicked: (paymentId: Long, pickedId: String, pickScenario: PickScenario) -> Unit = { _, _, _ -> },
+    onClientPicked: (
+        paymentId: Long,
+        pickedId: String,
+        pickScenario: PickScenario,
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: PickClientViewModel = mavericksViewModel()
+
+    val saleId by viewModel.collectAsState(PickClientState::saleId)
+    val serviceOrderId by viewModel.collectAsState(PickClientState::serviceOrderId)
 
     val clients by viewModel.collectAsState(PickClientState::clientList)
     val isLoading by viewModel.collectAsState(PickClientState::isLoading)
@@ -122,7 +131,13 @@ fun PickClientScreen(
                 canNavigate.value = false
 
                 viewModel.clientPicked()
-                onClientPicked(paymentId ?: 0L, pickedId, pickScenario)
+                onClientPicked(
+                    paymentId ?: 0L,
+                    pickedId,
+                    pickScenario,
+                    saleId,
+                    serviceOrderId,
+                )
             }
         }
     }

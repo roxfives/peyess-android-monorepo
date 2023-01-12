@@ -5,11 +5,16 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.typing.prescription.PrismPosition
 
 data class PrescriptionDataState(
+    val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
+    val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
+
     val clientName: Async<String> = Uninitialized,
     val currentPrescriptionData: Async<PrescriptionDataEntity> = Uninitialized,
     val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
@@ -18,6 +23,9 @@ data class PrescriptionDataState(
     val animationId: Async<Int> = Uninitialized,
     val generalMessage: Async<String> = Uninitialized,
 ): MavericksState {
+    val saleId: String = activeServiceOrderResponse.saleId
+    val serviceOrderId: String = activeServiceOrderResponse.id
+
     internal val _currentPrescriptionData = currentPrescriptionData.invoke()
     val isLoading = currentPrescriptionData is Success && _currentPrescriptionData == null
     val isMessageLoading = generalMessage is Loading

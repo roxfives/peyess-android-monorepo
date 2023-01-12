@@ -41,7 +41,9 @@ import java.util.Locale
 import kotlin.math.abs
 
 data class ServiceOrderState(
+    val saleId: String = "",
     val serviceOrderId: String = "",
+    val isCreating: Boolean = false,
 
     val userClientAsync: Async<ClientEntity?> = Uninitialized,
     val responsibleClientAsync: Async<ClientEntity?> = Uninitialized,
@@ -93,7 +95,7 @@ data class ServiceOrderState(
 
     val isSOPdfBeingGenerated: Boolean = false,
 ): MavericksState {
-    val saleId = saleIdAsync.invoke()?.id ?: ""
+//    val saleId = saleIdAsync.invoke()?.id ?: ""
 
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {

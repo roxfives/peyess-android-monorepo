@@ -91,7 +91,7 @@ fun PrescriptionDataScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     onShowSymptoms: () -> Unit = {},
-    onNext: (isUpdating: Boolean) -> Unit = {},
+    onNext: (isUpdating: Boolean, saleId: String, serviceOrderId: String) -> Unit = { _, _, _ -> },
 ) {
     val isUpdatingParam = navHostController
         .currentBackStackEntry
@@ -100,6 +100,9 @@ fun PrescriptionDataScreen(
         ?: false
 
     val viewModel: PrescriptionDataViewModel = mavericksViewModel()
+
+    val saleId by viewModel.collectAsState(PrescriptionDataState::saleId)
+    val serviceOrderId by viewModel.collectAsState(PrescriptionDataState::serviceOrderId)
 
     val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
     val isMessageLoading by viewModel.collectAsState(PrescriptionDataState::isMessageLoading)
@@ -137,7 +140,7 @@ fun PrescriptionDataScreen(
     } else {
         PrescriptionScreenDataImpl(
             modifier = modifier,
-            onNext = { onNext(isUpdatingParam) },
+            onNext = { onNext(isUpdatingParam, saleId, serviceOrderId) },
             onShowSymptoms = onShowSymptoms,
 
             isMessageLoading = isMessageLoading,
@@ -943,11 +946,13 @@ fun NumericMeasuring(
         modifier = modifier
             .padding(8.dp)
             .border(
-                BorderStroke(2.dp, if (enabled) {
-                    MaterialTheme.colors.primary
-                } else {
-                    Color.Gray.copy(alpha = 0.5f)
-                }),
+                BorderStroke(
+                    2.dp, if (enabled) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    }
+                ),
                 RoundedCornerShape(36.dp),
             ),
         horizontalArrangement = Arrangement.SpaceBetween,

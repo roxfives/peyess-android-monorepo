@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.prescription_data.state
 
 
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -27,6 +28,8 @@ import com.peyess.salesapp.constants.stepPrismAxis
 import com.peyess.salesapp.constants.stepPrismDegree
 import com.peyess.salesapp.constants.stepSpherical
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import dagger.assisted.Assisted
@@ -50,6 +53,12 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         loadInitPrescriptionData()
         loadClientName()
         loadLensTypeCategory()
+        loadServiceOrderData()
+
+
+        onAsync(PrescriptionDataState::activeServiceOrderResponseAsync) {
+            processServiceOrderDataResponse(it)
+        }
 
         onEach(
             PrescriptionDataState::hasAdditionAsync,
@@ -61,8 +70,28 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             }
         }
 
-        onEach {
-            mikeMessageAmetropie()
+        onEach { mikeMessageAmetropie() }
+    }
+
+    private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    activeServiceOrderResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(activeServiceOrderResponse = it) }
+        )
+    }
+
+    private fun loadServiceOrderData() {
+        suspend {
+            saleRepository.currentServiceOrder()
+        }.execute {
+            copy(activeServiceOrderResponseAsync = it)
         }
     }
 

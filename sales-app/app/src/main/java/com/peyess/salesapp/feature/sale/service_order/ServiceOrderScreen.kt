@@ -62,6 +62,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -75,12 +78,6 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.name
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
-import com.peyess.salesapp.dao.products.room.local_lens.name
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
-import com.peyess.salesapp.dao.products.room.local_treatment.name
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
@@ -94,6 +91,7 @@ import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
+import com.peyess.salesapp.feature.sale.service_order.utils.parseParameters
 import com.peyess.salesapp.ui.annotated_string.pluralResource
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -136,13 +134,15 @@ private val infoTextPadding = 32.dp
 fun ServiceOrderScreen(
     modifier: Modifier = Modifier,
 
+    navHostController: NavHostController = rememberNavController(),
+
     onChangeUser: () -> Unit = {},
     onChangeResponsible: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
 
     onEditPrescription: () -> Unit = {},
 
-    onEditProducts: () -> Unit = {},
+    onEditProducts: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
     onConfirmMeasure: () -> Unit = {},
 
@@ -157,6 +157,16 @@ fun ServiceOrderScreen(
     val context = LocalContext.current
 
     val viewModel: ServiceOrderViewModel = mavericksViewModel()
+
+    parseParameters(
+        navController = navHostController,
+        onUpdateIsCreating = viewModel::onUpdateIsCreating,
+        onUpdateSaleId = viewModel::onUpdateSaleId,
+        onUpdateServiceOrderId = viewModel::onUpdateServiceOrderId,
+    )
+
+    val saleId by viewModel.collectAsState(ServiceOrderState::saleId)
+    val serviceOrderId by viewModel.collectAsState(ServiceOrderState::serviceOrderId)
 
     val user by viewModel.collectAsState(ServiceOrderState::userClient)
     val responsible by viewModel.collectAsState(ServiceOrderState::responsibleClient)
@@ -209,8 +219,6 @@ fun ServiceOrderScreen(
 
     val confirmationMessage by viewModel.collectAsState(ServiceOrderState::confirmationMessage)
 
-    val saleId by viewModel.collectAsState(ServiceOrderState::saleId)
-
     if (isSaleLoading) {
         SaleLoading(modifier = Modifier.fillMaxSize())
     } else if (hasSaleFailed) {
@@ -247,7 +255,7 @@ fun ServiceOrderScreen(
             frames = framesEntity,
             onEditProducts = {
                 viewModel.onEditProducts()
-                onEditProducts()
+                onEditProducts(saleId, serviceOrderId)
             },
 
             isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,

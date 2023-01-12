@@ -22,6 +22,7 @@ import com.peyess.salesapp.navigation.create_client.communication.createClientCo
 import com.peyess.salesapp.navigation.pick_client.isPickingParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
+import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
 
@@ -172,7 +173,7 @@ fun buildCreateClientNavGraph(
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
             viewModelScope = viewModelScope,
-            onDone = { createScenario, clientId, paymentId ->
+            onDone = { createScenario, clientId, paymentId, saleId, serviceOrderId ->
                  when (createScenario) {
                      is CreateScenario.Home ->
                          navHostController.navigate(SalesAppScreens.Clients.name) {
@@ -190,10 +191,14 @@ fun buildCreateClientNavGraph(
                              }
 
                      else -> {
-                         navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
-                             popUpTo(basicInfoRoute) {
-                                 inclusive = true
-                             }
+                         val route = buildServiceOrderRoute(
+                             isCreating = true,
+                             saleId = saleId,
+                             serviceOrderId = serviceOrderId,
+                         )
+
+                         navHostController.navigate(route) {
+                             popUpTo(basicInfoRoute) { inclusive = true }
                          }
                      }
                  }

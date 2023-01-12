@@ -21,6 +21,7 @@ import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSym
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSymptomsScreenExitTransition
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.lens_type.prescriptionLensTypeScreenExitTransition
+import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
 
@@ -82,18 +83,24 @@ fun buildPrescriptionScreenNavGraph(
             navHostController = navHostController,
             onShowSymptoms = {
                 navHostController.navigate(SalesAppScreens.SalePrescriptionDataSymptoms.name)
-            }
-        ) { isUpdating ->
-            Timber.i("Is updating data: $isUpdating")
+            },
 
-            if (isUpdating) {
-                navHostController.navigate(SalesAppScreens.ServiceOrder.name) {
-                    popUpTo(SalesAppScreens.ServiceOrder.name) { inclusive = true }
+            onNext = { isUpdating, saleId, serviceOrderId ->
+                val route = buildServiceOrderRoute(
+                    isCreating = true,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                )
+
+                if (isUpdating) {
+                    navHostController.navigate(route) {
+                        popUpTo(route) { inclusive = true }
+                    }
+                } else {
+                    navHostController.navigate(SalesAppScreens.FramesLanding.name)
                 }
-            } else {
-                navHostController.navigate(SalesAppScreens.FramesLanding.name)
             }
-        }
+        )
     }
 
     builder.composable(

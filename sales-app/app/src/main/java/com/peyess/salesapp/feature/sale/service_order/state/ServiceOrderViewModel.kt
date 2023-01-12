@@ -29,6 +29,9 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.feature.sale.service_order.adapter.toLens
 import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
+import com.peyess.salesapp.feature.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -95,7 +98,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadFrames()
         loadPayments()
         loadTotalPaid()
-        loadTotalToPay()
 
         createUploader()
         createHid()
@@ -119,6 +121,13 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onEach(ServiceOrderState::serviceOrderId) { loadProductPicked(it) }
         onEach(ServiceOrderState::productPicked) { loadProducts(it) }
 
+        onEach(
+            ServiceOrderState::lens,
+            ServiceOrderState::coloring,
+            ServiceOrderState::treatment,
+        ) { lens, coloring, treatment ->
+            updateTotalToPay(lens, coloring, treatment)
+        }
     }
 
     fun onUpdateIsCreating(isCreating: Boolean) = setState {
@@ -406,55 +415,29 @@ class ServiceOrderViewModel @AssistedInject constructor(
             }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadTotalToPay() = withState { state ->
-        saleRepository
-            .pickedProduct()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(it.lensId).filterNotNull().take(1),
-                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
-                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
-                    saleRepository.currentFramesData(),
-                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
-                    ::ProductSet
-                )
-            }
-            .map {
-                val lens = it.lens
-                val coloring = it.coloring
-                val treatment = it.treatment
-                val frames = it.frames
+    private fun updateTotalToPay(
+        lens: Lens,
+        coloring: Coloring,
+        treatment: Treatment,
+    ) = setState {
+        // TODO: load frames from state as well
+        var totalToPay = lens.price // + framesValue
 
-                val framesValue = if (frames.areFramesNew) {
-                    frames.value
-                } else {
-                    0.0
-                }
+        if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
+            totalToPay += coloring.price
+        }
+        if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
+            totalToPay += treatment.price
+        }
 
-                // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price + framesValue
+        if (coloring.price > 0) {
+            totalToPay += lens.priceAddColoring
+        }
+        if (treatment.price > 0) {
+            totalToPay += lens.priceAddTreatment
+        }
 
-                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.suggestedPrice
-                }
-                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatment.suggestedPrice
-                }
-
-                if (coloring.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddColoring
-                }
-                if (treatment.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddTreatment
-                }
-
-                totalToPay
-            }
-            .execute(Dispatchers.IO) {
-                copy(totalToPayAsync = it)
-            }
+        copy(totalToPay = totalToPay)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

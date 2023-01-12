@@ -205,7 +205,6 @@ fun ServiceOrderScreen(
     val payments by viewModel.collectAsState(ServiceOrderState::payments)
 
     val canAddNewPayment by viewModel.collectAsState(ServiceOrderState::canAddNewPayment)
-    val isTotalPaidLoading by viewModel.collectAsState(ServiceOrderState::isTotalPaidLoading)
     val totalPaid by viewModel.collectAsState(ServiceOrderState::totalPaid)
     val totalToPay by viewModel.collectAsState(ServiceOrderState::totalToPay)
     val totalToPayWithDiscount by viewModel.collectAsState(ServiceOrderState::totalToPayWithDiscount)
@@ -263,7 +262,6 @@ fun ServiceOrderScreen(
             measureRight = measureRight,
 
             canAddNewPayment = canAddNewPayment,
-            isTotalPaidLoading = isTotalPaidLoading,
             totalPaid = totalPaid,
             totalToPay = totalToPayWithFee,
             isPaymentLoading = isPaymentsLoading,
@@ -436,7 +434,6 @@ private fun ServiceOrderScreenImpl(
     measureRight: Measuring = Measuring(),
 
     canAddNewPayment: Boolean = false,
-    isTotalPaidLoading: Boolean = false,
     totalPaid: Double = 0.0,
     totalToPay: Double = 0.0,
     isPaymentLoading: Boolean = false,
@@ -518,7 +515,6 @@ private fun ServiceOrderScreenImpl(
                 isLoading = isPaymentLoading,
 
                 canAddNewPayment = canAddNewPayment,
-                isTotalPaidLoading = isTotalPaidLoading, 
                 totalPaid = totalPaid,
                 totalToPay = totalToPay, 
 
@@ -1952,7 +1948,6 @@ private fun PaymentSection(
     modifier: Modifier = Modifier,
 
     canAddNewPayment: Boolean = false,
-    isTotalPaidLoading: Boolean = false,
     totalPaid: Double = 0.0,
     totalToPay: Double = 0.0,
     
@@ -1993,27 +1988,21 @@ private fun PaymentSection(
             color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
         )
 
-        AnimatedVisibility(
-            visible = !isTotalPaidLoading,
-            enter = scaleIn(),
-            exit = scaleOut(),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    text = "$paid / $price",
-                    style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
-                )
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = "$paid / $price",
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold),
+            )
 
-                Divider(
-                    modifier = Modifier.padding(horizontal = 120.dp),
-                    color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                )
-            }
+            Divider(
+                modifier = Modifier.padding(horizontal = 120.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
         }
 
         Spacer(modifier = Modifier.size(subsectionSpacerSize))

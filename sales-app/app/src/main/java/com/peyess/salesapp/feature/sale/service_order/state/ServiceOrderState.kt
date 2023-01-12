@@ -77,7 +77,7 @@ data class ServiceOrderState(
     val discountAsync: Async<OverallDiscountDocument?> = Uninitialized,
     val paymentFeeAsync: Async<PaymentFeeDocument?> = Uninitialized,
 
-    val totalToPayAsync: Async<Double> = Uninitialized,
+    val totalToPay: Double = 0.0,
     val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
     val totalPaidAsync: Async<Double> = Uninitialized,
 
@@ -203,12 +203,6 @@ data class ServiceOrderState(
         emptyList()
     }
 
-    val isTotalPaidLoading = totalPaidAsync is Loading || totalToPayAsync is Loading
-    val totalToPay = if (totalToPayAsync is Success) {
-        totalToPayAsync.invoke()
-    } else {
-        0.0
-    }
     val totalToPayWithDiscount = if (totalToPayWithDiscountAsync is Success) {
         totalToPayWithDiscountAsync.invoke()
     } else {

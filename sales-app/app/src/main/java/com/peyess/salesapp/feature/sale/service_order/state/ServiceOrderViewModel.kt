@@ -14,9 +14,11 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
-import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
+import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
+import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -24,15 +26,18 @@ import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
+import com.peyess.salesapp.feature.sale.service_order.adapter.toLens
+import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.products.ProductRepository
+import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
-import com.peyess.salesapp.typing.products.DiscountCalcMethod
-import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.utils.products.ProductSet
 import dagger.assisted.Assisted
@@ -52,7 +57,6 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -66,6 +70,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val salesDatabase: ActiveSalesDatabase,
     private val clientDao: ClientDao,
     private val authenticationRepository: AuthenticationRepository,
+    private val localLensesRepository: LocalLensesRepository,
     private val positioningRepository: PositioningRepository,
     private val measuringRepository: MeasuringRepository,
     private val prescriptionRepository: PrescriptionRepository,
@@ -76,8 +81,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
-    lateinit var serviceOrderUploader: ServiceOrderUploader
-    lateinit var serviceOrderHid: String
+    private lateinit var serviceOrderUploader: ServiceOrderUploader
+    private lateinit var serviceOrderHid: String
 
     init {
         loadCurrentSale()
@@ -105,6 +110,15 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 loadTotalToPayWithDiscount()
             }
         }
+
+        onAsync(ServiceOrderState::productPickedResponseAsync) { processProductPickedResponse(it) }
+        onAsync(ServiceOrderState::lensResponseAsync) { processLensPickedResponse(it) }
+        onAsync(ServiceOrderState::coloringResponseAsync) { processColoringPickedResponse(it) }
+        onAsync(ServiceOrderState::treatmentResponseAsync) { processTreatmentPickedResponse(it) }
+
+        onEach(ServiceOrderState::serviceOrderId) { loadProductPicked(it) }
+        onEach(ServiceOrderState::productPicked) { loadProducts(it) }
+
     }
 
     private fun loadCurrentSale() {
@@ -219,6 +233,102 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private fun loadPayments() = withState {
         saleRepository.payments().execute(Dispatchers.IO) {
             copy(paymentsAsync = it)
+        }
+    }
+
+    private fun loadProductPicked(serviceOrderId: String) {
+        suspend{
+            saleRepository.productPicked(serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(productPickedResponseAsync = it)
+        }
+    }
+
+    private fun processProductPickedResponse(response: ProductPickedResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    productPickedResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(productPicked = it) }
+        )
+    }
+
+    private fun loadLensPicked(lensId: String) {
+        suspend {
+            localLensesRepository.getLensById(lensId)
+        }.execute(Dispatchers.IO) {
+            copy(lensResponseAsync = it)
+        }
+    }
+
+    private fun processLensPickedResponse(response: SingleLensResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    lensResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(lens = it.toLens()) }
+        )
+    }
+
+    private fun loadColoringPicked(coloringId: String) {
+        suspend {
+            localLensesRepository.getColoringById(coloringId)
+        }.execute(Dispatchers.IO) {
+            copy(coloringResponseAsync = it)
+        }
+    }
+
+    private fun processColoringPickedResponse(response: SingleColoringResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    coloringResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(coloring = it.toColoring()) }
+        )
+    }
+
+    private fun loadTreatmentPicked(treatmentId: String) {
+        suspend {
+            localLensesRepository.getTreatmentById(treatmentId)
+        }.execute(Dispatchers.IO) {
+            copy(treatmentResponseAsync = it)
+        }
+    }
+
+    private fun processTreatmentPickedResponse(response: SingleTreatmentResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    treatmentResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(treatment = it.toTreatment()) }
+        )
+    }
+
+    private fun loadProducts(productsPicked: ProductPickedDocument){
+        viewModelScope.launch(Dispatchers.IO) {
+            loadLensPicked(productsPicked.lensId)
+            loadColoringPicked(productsPicked.coloringId)
+            loadTreatmentPicked(productsPicked.treatmentId)
         }
     }
 
@@ -510,7 +620,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     fun onEditProducts() {
         viewModelScope.launch(Dispatchers.IO) {
-            saleRepository.clearProductComparison()
+//            saleRepository.clearProductComparison()
         }
     }
 

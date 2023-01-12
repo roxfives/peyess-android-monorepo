@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.service_order.state
 
 import android.net.Uri
 import androidx.annotation.StringRes
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -20,15 +21,28 @@ import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
+import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
+import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
+import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.feature.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.Treatment
+import com.peyess.salesapp.repository.sale.ProductPickedResponse
+import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
 
 data class ServiceOrderState(
+    val serviceOrderId: String = "",
+
     val userClientAsync: Async<ClientEntity?> = Uninitialized,
     val responsibleClientAsync: Async<ClientEntity?> = Uninitialized,
     val witnessClientAsync: Async<ClientEntity?> = Uninitialized,
@@ -40,6 +54,18 @@ data class ServiceOrderState(
     val coloringEntityAsync: Async<LocalColoringEntity> = Uninitialized,
     val treatmentEntityAsync: Async<LocalTreatmentEntity> = Uninitialized,
     val framesEntityAsync: Async<FramesEntity> = Uninitialized,
+
+    val productPickedResponseAsync: Async<ProductPickedResponse> = Uninitialized,
+    val productPicked: ProductPickedDocument = ProductPickedDocument(),
+
+    val lensResponseAsync: Async<SingleLensResponse> = Uninitialized,
+    val lens: Lens = Lens(),
+
+    val coloringResponseAsync: Async<SingleColoringResponse> = Uninitialized,
+    val coloring: Coloring = Coloring(),
+
+    val treatmentResponseAsync: Async<SingleTreatmentResponse> = Uninitialized,
+    val treatment: Treatment = Treatment(),
 
     val positioningLeftAsync: Async<PositioningEntity> = Uninitialized,
     val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
@@ -106,26 +132,26 @@ data class ServiceOrderState(
         PrescriptionDataEntity()
     }
 
-    val isLensLoading = lensEntityAsync is Loading
-    val lensEntity = if (lensEntityAsync is Success) {
-        lensEntityAsync.invoke()
-    } else {
-        LocalLensEntity()
-    }
-
-    val isColoringLoading = lensEntityAsync is Loading
-    val coloringEntity = if (coloringEntityAsync is Success) {
-        coloringEntityAsync.invoke()
-    } else {
-        LocalColoringEntity()
-    }
-
-    val isTreatmentLoading = treatmentEntityAsync is Loading
-    val treatmentEntity = if (treatmentEntityAsync is Success) {
-        treatmentEntityAsync.invoke()
-    } else {
-        LocalTreatmentEntity()
-    }
+//    val isLensLoading = lensEntityAsync is Loading
+//    val lensEntity = if (lensEntityAsync is Success) {
+//        lensEntityAsync.invoke()
+//    } else {
+//        LocalLensEntity()
+//    }
+//
+//    val isColoringLoading = lensEntityAsync is Loading
+//    val coloringEntity = if (coloringEntityAsync is Success) {
+//        coloringEntityAsync.invoke()
+//    } else {
+//        LocalColoringEntity()
+//    }
+//
+//    val isTreatmentLoading = treatmentEntityAsync is Loading
+//    val treatmentEntity = if (treatmentEntityAsync is Success) {
+//        treatmentEntityAsync.invoke()
+//    } else {
+//        LocalTreatmentEntity()
+//    }
 
     val isFramesLoading = framesEntityAsync is Loading
     val framesEntity = if (framesEntityAsync is Success) {
@@ -133,6 +159,26 @@ data class ServiceOrderState(
     } else {
         FramesEntity()
     }
+
+    val hasProductLoaded = productPickedResponseAsync is Success
+            && productPickedResponseAsync.invoke().isRight()
+    val hasProductFailed = productPickedResponseAsync is Fail
+    val isProductLoading = productPickedResponseAsync is Loading
+
+    val hasLensLoaded = lensResponseAsync is Success
+            && lensResponseAsync.invoke().isRight()
+    val isLensFailed = lensResponseAsync is Fail
+    val isLensLoading = lensResponseAsync is Loading
+
+    val hasColoringLoaded = coloringResponseAsync is Success
+            && coloringResponseAsync.invoke().isRight()
+    val hasColoringFailed = coloringResponseAsync is Fail
+    val isColoringLoading = coloringResponseAsync is Loading
+
+    val hasTreatmentLoaded = treatmentResponseAsync is Success
+            && treatmentResponseAsync.invoke().isRight()
+    val hasTreatmentFailed = treatmentResponseAsync is Fail
+    val isTreatmentLoading = treatmentResponseAsync is Loading
 
     val isPositioningLeftLoading = positioningLeftAsync is Loading
     val measureLeft = if (positioningLeftAsync is Success) {

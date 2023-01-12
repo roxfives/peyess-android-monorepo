@@ -16,10 +16,14 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
+import com.peyess.salesapp.repository.sale.error.ProductPickedError
+import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import kotlinx.coroutines.flow.Flow
 
 typealias ActiveSaleResponse = Either<ActiveSaleError, ActiveSalesEntity>
 typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOEntity>
+
+typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
 
 interface SaleRepository {
     fun createSale(): Flow<Boolean>
@@ -47,14 +51,10 @@ interface SaleRepository {
 
     fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>>
 
-    fun addLensForComparison(comparisonEntity: LensComparisonEntity)
-    fun comparisons(): Flow<List<LensComparisonEntity>>
-    fun removeComparison(id: Int)
-    fun updateSaleComparison(comparison: LensComparisonEntity)
-    suspend fun clearProductComparison()
-
     fun pickProduct(productPicked: ProductPickedEntity)
     fun pickedProduct(): Flow<ProductPickedEntity?>
+
+    suspend fun productPicked(serviceOrderId: String): ProductPickedResponse
 
     fun pickClient(client: ClientEntity)
     fun clientPicked(role: ClientRole): Flow<ClientEntity?>

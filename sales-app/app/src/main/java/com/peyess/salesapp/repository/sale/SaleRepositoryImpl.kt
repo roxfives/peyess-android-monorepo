@@ -24,7 +24,6 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
-import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
@@ -37,12 +36,14 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import com.peyess.salesapp.repository.sale.adapter.toProductPickedDocument
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotRegistered
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotRegistered
+import com.peyess.salesapp.repository.sale.error.ProductPickedNotFound
 import com.peyess.salesapp.repository.sale.error.Unexpected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.take
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -165,17 +165,6 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val currentPickedProducts by lazy {
-        currentSO
-            .filterNotNull()
-            .flatMapLatest { productPickedDao.getById(it.id) }.shareIn(
-                scope = repositoryScope,
-                replay = 1,
-                started = SharingStarted.WhileSubscribed(),
-            )
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPayments by lazy {
         currentSO
             .filterNotNull()
@@ -268,11 +257,11 @@ class SaleRepositoryImpl @Inject constructor(
             .map { it[currentSaleKey] }
             .first()
     }.leftIfNull {
-        ActiveSaleNotRegistered(message = "No active sale registered on data source")
+        ActiveSaleNotRegistered(description = "No active sale registered on data source")
     }.map {
         activeSalesDao.getSaleById(it)
     }.leftIfNull {
-        ActiveSaleNotFound(message = "No active sale found on database")
+        ActiveSaleNotFound(description = "No active sale found on database")
     }.mapLeft {
         when (it) {
             is ActiveSaleError -> {
@@ -283,7 +272,7 @@ class SaleRepositoryImpl @Inject constructor(
                 val error = if (it is Throwable) { it } else { null }
 
                 Unexpected(
-                    message = "Unexpected error while getting active sale: ${error?.message}",
+                    description = "Unexpected error while getting active sale: ${error?.message}",
                     error = error,
                 )
             }
@@ -305,11 +294,11 @@ class SaleRepositoryImpl @Inject constructor(
             .map { it[currentSOKey] }
             .first()
     }.leftIfNull {
-        ActiveServiceOrderNotRegistered(message = "No active service order registered on data source")
+        ActiveServiceOrderNotRegistered(description = "No active service order registered on data source")
     }.map {
         activeSODao.getServiceOrderById(it)
     }.leftIfNull {
-        ActiveServiceOrderNotFound(message = "No active sale found on database")
+        ActiveServiceOrderNotFound(description = "No active sale found on database")
     }.mapLeft {
         when (it) {
             is ActiveServiceOrderError -> {
@@ -320,7 +309,7 @@ class SaleRepositoryImpl @Inject constructor(
                 val error = if (it is Throwable) { it } else { null }
 
                 Unexpected(
-                    message = "Unexpected error while getting active sale: ${error?.message}",
+                    description = "Unexpected error while getting active sale: ${error?.message}",
                     error = error,
                 )
             }
@@ -339,13 +328,23 @@ class SaleRepositoryImpl @Inject constructor(
         return currentFramesData
     }
 
-    override fun comparisons(): Flow<List<LensComparisonEntity>> {
-//        return currentComparisons
+    override fun pickedProduct(): Flow<ProductPickedEntity?> {
         return emptyFlow()
     }
 
-    override fun pickedProduct(): Flow<ProductPickedEntity?> {
-        return currentPickedProducts
+    override suspend fun productPicked(
+        serviceOrderId: String,
+    ): ProductPickedResponse = Either.catch {
+        productPickedDao.getByServiceOrderId(serviceOrderId)
+    }.map {
+        it?.toProductPickedDocument()
+    }.mapLeft {
+        Unexpected(
+            description = "Unexpected error while getting picked products: ${it.message}",
+            error = it,
+        )
+    }.leftIfNull {
+        ProductPickedNotFound(description = "No picked products found on database")
     }
 
     override fun payments(): Flow<List<SalePaymentEntity>> {
@@ -353,35 +352,17 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override fun currentPositioning(eye: Eye): Flow<PositioningEntity> {
+        // TODO: possible null pointer exception
         return currentPositioningsByEye[eye]!!
-
-//        activeSO().filterNotNull().flatMapLatest { so ->
-//            positioningDao.getById(so.id, eye).map {
-//                it ?: PositioningEntity(soId = so.id, eye = eye)
-//                    .updateInitialPositioningState()
-//            }
-//        }
     }
 
     override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
+        // TODO: possible null pointer exception
         return currentClientsByRole[role]!!
     }
 
     override fun updateFramesData(frames: FramesEntity) {
         framesDataDao.update(frames)
-    }
-
-    override suspend fun clearProductComparison() {
-        activeSO()
-            .filterNotNull()
-            .take(1)
-            .collect {
-                comparisonDao.deleteAllFromSO(it.id)
-            }
-    }
-
-    override fun removeComparison(id: Int) {
-//        comparisonDao.deleteById(id)
     }
 
     override fun updatePositioning(positioning: PositioningEntity) {
@@ -398,14 +379,6 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>> {
         return lensTypeCategoryDao.categories()
-    }
-
-    override fun addLensForComparison(comparisonEntity: LensComparisonEntity) {
-//        comparisonDao.add(comparisonEntity)
-    }
-
-    override fun updateSaleComparison(comparison: LensComparisonEntity) {
-//        comparisonDao.update(comparison)
     }
 
     override fun pickProduct(productPicked: ProductPickedEntity) {

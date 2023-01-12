@@ -12,5 +12,5 @@ interface ProductPickedDao {
     fun add(productPicked: ProductPickedEntity)
 
     @Query("SELECT * FROM ${ProductPickedEntity.tableName} WHERE so_id = :soId ")
-    fun getById(soId: String): Flow<ProductPickedEntity?>
+    suspend fun getByServiceOrderId(soId: String): ProductPickedEntity?
 }

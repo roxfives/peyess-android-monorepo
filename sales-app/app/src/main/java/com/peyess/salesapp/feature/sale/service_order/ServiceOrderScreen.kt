@@ -89,6 +89,9 @@ import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
+import com.peyess.salesapp.feature.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
 import com.peyess.salesapp.ui.annotated_string.pluralResource
@@ -169,10 +172,14 @@ fun ServiceOrderScreen(
     val prescriptionData by viewModel.collectAsState(ServiceOrderState::prescriptionData)
     val isPrescriptionDataLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionDataLoading)
 
-    val lensEntity by viewModel.collectAsState(ServiceOrderState::lensEntity)
-    val coloringEntity by viewModel.collectAsState(ServiceOrderState::coloringEntity)
-    val treatmentEntity by viewModel.collectAsState(ServiceOrderState::treatmentEntity)
+//    val lensEntity by viewModel.collectAsState(ServiceOrderState::lensEntity)
+//    val coloringEntity by viewModel.collectAsState(ServiceOrderState::coloringEntity)
+//    val treatmentEntity by viewModel.collectAsState(ServiceOrderState::treatmentEntity)
     val framesEntity by viewModel.collectAsState(ServiceOrderState::framesEntity)
+
+    val lens by viewModel.collectAsState(ServiceOrderState::lens)
+    val coloring by viewModel.collectAsState(ServiceOrderState::coloring)
+    val treatment by viewModel.collectAsState(ServiceOrderState::treatment)
 
     val isLensLoading by viewModel.collectAsState(ServiceOrderState::isLensLoading)
     val isColoringLoading by viewModel.collectAsState(ServiceOrderState::isColoringLoading)
@@ -234,10 +241,10 @@ fun ServiceOrderScreen(
                     || isColoringLoading
                     || isTreatmentLoading
                     || isFramesLoading,
-            lensEntity = lensEntity,
-            coloringEntity = coloringEntity,
-            treatmentEntity = treatmentEntity,
-            framesEntity = framesEntity,
+            lens = lens,
+            coloring = coloring,
+            treatment = treatment,
+            frames = framesEntity,
             onEditProducts = {
                 viewModel.onEditProducts()
                 onEditProducts()
@@ -409,10 +416,10 @@ private fun ServiceOrderScreenImpl(
     onEditPrescription: () -> Unit = {},
 
     isProductLoading: Boolean = false,
-    lensEntity: LocalLensEntity = LocalLensEntity(),
-    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
-    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
-    framesEntity: FramesEntity = FramesEntity(),
+    lens: Lens = Lens(),
+    coloring: Coloring = Coloring(),
+    treatment: Treatment = Treatment(),
+    frames: FramesEntity = FramesEntity(),
     onEditProducts: () -> Unit = {},
     onAddDiscount: () -> Unit = {},
 
@@ -491,10 +498,10 @@ private fun ServiceOrderScreenImpl(
                 onAddDiscount = onAddDiscount,
                 onEditProducts = onEditProducts,
 
-                lensEntity = lensEntity,
-                coloringEntity = coloringEntity,
-                treatmentEntity = treatmentEntity,
-                framesEntity = framesEntity,
+                lens = lens,
+                coloring = coloring,
+                treatment = treatment,
+                frames = frames,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -868,9 +875,9 @@ private fun PrescriptionSection(
                         .padding(profilePicPadding)
                         .size(prescriptionPictureSize)
                         // Clip image to be shaped as a circle
-                        .border(width = 2.dp,
-                            color = MaterialTheme.colors.primary,
-                            shape = CircleShape)
+                        .border(
+                            width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape
+                        )
                         .clip(CircleShape)
                         .align(Alignment.Center),
                     model = ImageRequest.Builder(LocalContext.current)
@@ -1580,10 +1587,10 @@ private fun ProductsSection(
     onEditProducts: () -> Unit = {},
     onAddDiscount: () -> Unit = {},
 
-    lensEntity: LocalLensEntity = LocalLensEntity(),
-    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
-    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
-    framesEntity: FramesEntity = FramesEntity(),
+    lens: Lens = Lens(),
+    coloring: Coloring = Coloring(),
+    treatment: Treatment = Treatment(),
+    frames: FramesEntity = FramesEntity(),
 ) {
     Column(
         modifier = modifier
@@ -1601,18 +1608,16 @@ private fun ProductsSection(
         val minimumPriceModifier = Modifier
             .minimumWidthModifier(state = minimumPriceWidthState, density = density)
 
-        val coloringPrice = if (lensEntity.isColoringDiscounted || lensEntity.isColoringIncluded) {
+        val coloringPrice = if (lens.isColoringDiscounted || lens.isColoringIncluded) {
                 0.0
             } else {
-                // TODO: update to se price instead of suggested price
-                coloringEntity.suggestedPrice
+                coloring.price
             }
 
-        val treatmentPrice = if (lensEntity.isTreatmentDiscounted || lensEntity.isTreatmentIncluded) {
+        val treatmentPrice = if (lens.isTreatmentDiscounted || lens.isTreatmentIncluded) {
                 0.0
             } else {
-                // TODO: update to se price instead of suggested price
-                treatmentEntity.suggestedPrice
+                treatment.price
             }
 
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -1646,31 +1651,25 @@ private fun ProductsSection(
         SubSectionTitle(title = "Olho esquerdo")
         Spacer(modifier = Modifier.size(productSpacerSize))
         LensCard(
-            lensEntity = lensEntity,
+            lensEntity = lens,
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
 
-        if (!lensEntity.isColoringIncluded) {
+        if (!lens.isColoringIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
 
             ColoringCard(
-                coloringEntity = coloringEntity.copy(
-                    suggestedPrice = coloringPrice,
-                    price = coloringPrice,
-                ),
+                coloringEntity = coloring,
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
         }
 
-        if (!lensEntity.isTreatmentIncluded) {
+        if (!lens.isTreatmentIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
             TreatmentCard(
-                treatmentEntity = treatmentEntity.copy(
-                    suggestedPrice = treatmentPrice,
-                    price = treatmentPrice,
-                ),
+                treatmentEntity = treatment,
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
@@ -1682,65 +1681,59 @@ private fun ProductsSection(
         SubSectionTitle(title = "Olho direito")
         Spacer(modifier = Modifier.size(productSpacerSize))
         LensCard(
-            lensEntity = lensEntity,
+            lensEntity = lens,
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
 
-        if (!lensEntity.isColoringIncluded) {
+        if (!lens.isColoringIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
             ColoringCard(
-                coloringEntity = coloringEntity.copy(
-                    suggestedPrice = coloringPrice,
-                    price = coloringPrice,
-                ),
+                coloringEntity = coloring,
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
         }
 
-        if (!lensEntity.isTreatmentIncluded) {
+        if (!lens.isTreatmentIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
             TreatmentCard(
-                treatmentEntity = treatmentEntity.copy(
-                    suggestedPrice = treatmentPrice,
-                    price = treatmentPrice,
-                ),
+                treatmentEntity = treatment,
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
         }
 
-        if (framesEntity.areFramesNew) {
+        if (frames.areFramesNew) {
             Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
             // TODO: use string resource
             SubSectionTitle(title = "Armação")
-            FramesCard(framesEntity = framesEntity)
+            FramesCard(framesEntity = frames)
         }
 
         if (
-            (lensEntity.suggestedPriceAddColoring > 0 && coloringPrice > 0)
-            || (lensEntity.suggestedPriceAddTreatment > 0 && treatmentPrice > 0)
+            (lens.priceAddColoring > 0 && coloringPrice > 0)
+            || (lens.priceAddTreatment > 0 && treatmentPrice > 0)
         ) {
             Spacer(modifier = Modifier.size(subsectionSpacerSize))
 
             // TODO: use string resource
             SubSectionTitle(title = "Outros")
 
-            if (lensEntity.suggestedPriceAddColoring > 0) {
+            if (lens.priceAddColoring > 0) {
                 MiscCard(
                     miscProduct = ProductSoldDescriptionDocument(
                         nameDisplay = "Adicional por coloração",
-                        price = lensEntity.suggestedPriceAddColoring,
+                        price = lens.priceAddColoring,
                     )
                 )
             }
-            if (lensEntity.suggestedPriceAddTreatment > 0) {
+            if (lens.priceAddTreatment > 0) {
                 MiscCard(
                     miscProduct = ProductSoldDescriptionDocument(
                         nameDisplay = "Adicional por tratamento",
-                        price = lensEntity.suggestedPriceAddTreatment,
+                        price = lens.priceAddTreatment,
                     )
                 )
             }
@@ -1753,7 +1746,7 @@ private fun LensCard(
     modifier: Modifier = Modifier,
     minTitleModifier: Modifier = Modifier,
     minPriceModifier: Modifier = Modifier,
-    lensEntity: LocalLensEntity = LocalLensEntity(),
+    lensEntity: Lens = Lens(),
 ) {
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -1771,7 +1764,7 @@ private fun LensCard(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = lensEntity.name(),
+            text = lensEntity.name,
             style = MaterialTheme.typography.body1
                 .copy(textAlign = TextAlign.Start)
         )
@@ -1792,7 +1785,7 @@ private fun ColoringCard(
     modifier: Modifier = Modifier,
     minTitleModifier: Modifier = Modifier,
     minPriceModifier: Modifier = Modifier,
-    coloringEntity: LocalColoringEntity = LocalColoringEntity(),
+    coloringEntity: Coloring = Coloring(),
 ) {
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -1810,7 +1803,7 @@ private fun ColoringCard(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = coloringEntity.name(),
+            text = coloringEntity.name,
             style = MaterialTheme.typography.body1
                 .copy(textAlign = TextAlign.Start)
         )
@@ -1820,7 +1813,7 @@ private fun ColoringCard(
         // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(coloringEntity.suggestedPrice / 2f),
+            text = NumberFormat.getCurrencyInstance().format(coloringEntity.price / 2f),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1832,7 +1825,7 @@ private fun TreatmentCard(
     modifier: Modifier = Modifier,
     minTitleModifier: Modifier = Modifier,
     minPriceModifier: Modifier = Modifier,
-    treatmentEntity: LocalTreatmentEntity = LocalTreatmentEntity(),
+    treatmentEntity: Treatment = Treatment(),
 ) {
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -1850,7 +1843,7 @@ private fun TreatmentCard(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = treatmentEntity.name(),
+            text = treatmentEntity.name,
             style = MaterialTheme.typography.body1
                 .copy(textAlign = TextAlign.Start)
         )
@@ -1860,7 +1853,7 @@ private fun TreatmentCard(
         // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.suggestedPrice / 2f),
+            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.price / 2f),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -2262,11 +2255,11 @@ private fun LensCardPreview() {
     SalesAppTheme {
         LensCard(
             modifier = Modifier.fillMaxWidth(),
-            lensEntity =  LocalLensEntity(
-                brand = "Família",
-                design = "Descrição",
-                tech = "Tecnologia",
-                material = "Material",
+            lensEntity =  Lens(
+                brandName = "Família",
+                designName = "Descrição",
+                techName = "Tecnologia",
+                materialName = "Material",
                 price = 1250.0,
             )
         )
@@ -2279,11 +2272,10 @@ private fun ColoringCardPreview() {
     SalesAppTheme {
         ColoringCard(
             modifier = Modifier.fillMaxWidth(),
-            coloringEntity = LocalColoringEntity(
+            coloringEntity = Coloring(
                 brand = "Família",
                 design = "Descrição",
                 price = 1250.0,
-                suggestedPrice = 1250.0,
             )
         )
     }
@@ -2295,11 +2287,10 @@ private fun TreatmentCardPreview() {
     SalesAppTheme {
         TreatmentCard(
             modifier = Modifier.fillMaxWidth(),
-            treatmentEntity = LocalTreatmentEntity(
+            treatmentEntity = Treatment(
                 brand = "Família",
                 design = "Descrição",
                 price = 1250.0,
-                suggestedPrice = 1250.0,
             )
         )
     }
@@ -2326,12 +2317,12 @@ private fun FramesCardPreview() {
 private fun ProductsSectionPreview() {
     SalesAppTheme {
         ProductsSection(
-            lensEntity = LocalLensEntity(
-                suggestedPriceAddColoring = 20.0,
-                suggestedPriceAddTreatment = 20.0,
+            lens = Lens(
+                priceAddColoring = 20.0,
+                priceAddTreatment = 20.0,
             ),
 
-            framesEntity = FramesEntity(
+            frames = FramesEntity(
                 areFramesNew = true,
             )
         )

@@ -6,6 +6,7 @@ sealed class DemonstrationShown {
     object Multi: DemonstrationShown()
     object Treatments: DemonstrationShown()
     object Photo: DemonstrationShown()
+    object Polarized: DemonstrationShown()
     object Misc: DemonstrationShown()
 
     fun name(): String {
@@ -18,6 +19,7 @@ sealed class DemonstrationShown {
                 Multi,
                 Treatments,
                 Photo,
+                Polarized,
                 Misc
             )
         }
@@ -28,6 +30,7 @@ sealed class DemonstrationShown {
                 Multi -> "Multifocais"
                 Treatments -> "Antirreflexo"
                 Photo -> "Fotossensíveis"
+                Polarized -> "Polarizada"
                 Misc -> "Outros"
             }
         }
@@ -36,6 +39,7 @@ sealed class DemonstrationShown {
             return when (name) {
                 "Multifocais" -> Multi
                 "Antirreflexo" -> Treatments
+                "Polarizada" -> Polarized
                 "Outros" -> Misc
                 else -> Photo
             }

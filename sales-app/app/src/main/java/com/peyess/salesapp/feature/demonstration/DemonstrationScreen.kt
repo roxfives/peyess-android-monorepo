@@ -108,6 +108,7 @@ fun DemonstrationScreenImpl(
             DemonstrationShown.Multi -> MultiList()
             DemonstrationShown.Treatments -> TreatmentsList()
             DemonstrationShown.Photo -> PhotoList()
+            DemonstrationShown.Polarized -> PolarizedList()
             DemonstrationShown.Misc -> MiscList()
         }
 
@@ -232,6 +233,39 @@ private fun PhotoList(modifier: Modifier = Modifier) {
             animationId = R.raw.lottie_demonstration_transition_green,
 
             infoContent = stringResource(id = R.string.demonstration_transition_green_info_content),
+        )
+    }
+}
+
+@Composable
+private fun PolarizedList(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        LensAnimation(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(id = R.string.demonstration_polarized_gray),
+            animationId = R.raw.lottie_demonstration_polarized_gray,
+
+            infoContent = stringResource(id = R.string.demonstration_polarized_gray_info_content),
+        )
+
+        LensAnimation(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(id = R.string.demonstration_polarized_brown),
+            animationId = R.raw.lottie_demonstration_polarized_brown,
+
+            infoContent = stringResource(id = R.string.demonstration_polarized_brown_info_content),
+        )
+
+        LensAnimation(
+            modifier = Modifier.fillMaxWidth(),
+            title = stringResource(id = R.string.demonstration_polarized_green),
+            animationId = R.raw.lottie_demonstration_polarized_green,
+
+            infoContent = stringResource(id = R.string.demonstration_polarized_green_info_content),
         )
     }
 }

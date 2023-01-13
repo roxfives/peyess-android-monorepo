@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.typing.sale.PaymentMethodType
 
 @Entity(
     tableName = SalePaymentEntity.tableName,
@@ -35,7 +34,6 @@ data class SalePaymentEntity(
     val clientAddress: String = "",
     @ColumnInfo(name = "client_picture")
     val clientPicture: Uri = Uri.EMPTY,
-
 
     @ColumnInfo(name = "method_id")
     val methodId: String = "",

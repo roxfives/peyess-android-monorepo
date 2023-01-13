@@ -77,7 +77,6 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition

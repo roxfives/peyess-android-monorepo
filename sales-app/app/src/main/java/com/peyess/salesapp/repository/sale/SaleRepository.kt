@@ -7,7 +7,6 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
-import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity

@@ -2,7 +2,6 @@ package com.peyess.salesapp.feature.sale.service_order.state
 
 import android.net.Uri
 import androidx.annotation.StringRes
-import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -11,26 +10,16 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
-import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
-import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
-import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring

@@ -5,7 +5,6 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
@@ -14,6 +13,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
+import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
@@ -23,6 +23,7 @@ import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesReposito
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
@@ -30,6 +31,8 @@ import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.feature.sale.service_order.adapter.toFrames
 import com.peyess.salesapp.feature.sale.service_order.adapter.toLens
+import com.peyess.salesapp.feature.sale.service_order.adapter.toOverallDiscount
+import com.peyess.salesapp.feature.sale.service_order.adapter.toPaymentFee
 import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
@@ -76,7 +79,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val clientDao: ClientDao,
     private val authenticationRepository: AuthenticationRepository,
     private val localLensesRepository: LocalLensesRepository,
-    private val framesRespository: LocalFramesRepository,
+    private val framesRepository: LocalFramesRepository,
     private val positioningRepository: PositioningRepository,
     private val measuringRepository: MeasuringRepository,
     private val prescriptionRepository: PrescriptionRepository,
@@ -97,23 +100,11 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadPrescriptionPicture()
         loadPrescriptionData()
         loadPositioning()
-        loadProducts()
         loadPayments()
         loadTotalPaid()
 
         createUploader()
         createHid()
-
-        onAsync(ServiceOrderState::saleIdAsync) {
-            loadDiscount()
-            loadPaymentFee()
-        }
-
-        onAsync(ServiceOrderState::discountAsync) {
-            if (it != null) {
-                loadTotalToPayWithDiscount()
-            }
-        }
 
         onAsync(ServiceOrderState::productPickedResponseAsync) { processProductPickedResponse(it) }
         onAsync(ServiceOrderState::lensResponseAsync) { processLensPickedResponse(it) }
@@ -121,11 +112,18 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onAsync(ServiceOrderState::treatmentResponseAsync) { processTreatmentPickedResponse(it) }
         onAsync(ServiceOrderState::framesResponseAsync) { processFramesResponse(it) }
 
+        onAsync(ServiceOrderState::discountAsync) { processDiscountResponse(it) }
+        onAsync(ServiceOrderState::paymentFeeAsync) { processPaymentFeeResponse(it) }
+
         onEach(ServiceOrderState::serviceOrderId) {
             loadProductPicked(it)
             loadFrames(it)
         }
         onEach(ServiceOrderState::productPicked) { loadProducts(it) }
+        onEach(ServiceOrderState::saleId) {
+            loadPaymentFee(it)
+            loadDiscount(it)
+        }
 
         onEach(
             ServiceOrderState::lens,
@@ -135,9 +133,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         ) { lens, coloring, treatment, frames ->
             updateTotalToPay(lens, coloring, treatment, frames)
         }
-
-        // TODO: refactor payment fee/discount repository to use arrowKt and coroutines
-        // TODO: load paymentFee into the state
 
         // TODO: refactor payments repository to use arrowKt and coroutines
         // TODO: load the payments and the total to be paid into the state
@@ -149,20 +144,20 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadDiscount() = withState {
-        discountRepository
-            .watchDiscountForSale(it.saleId)
-            .execute { discount ->
-                copy(discountAsync = discount)
-            }
+    private fun loadDiscount(saleId: String) {
+        suspend {
+            discountRepository.discountForSale(saleId)
+        }.execute {
+            copy(discountAsync = it)
+        }
     }
 
-    private fun loadPaymentFee() = withState {
-        paymentFeeRepository
-            .watchPaymentFeeForSale(it.saleId)
-            .execute { fee ->
-                copy(paymentFeeAsync = fee)
-            }
+    private fun loadPaymentFee(saleId: String) {
+        suspend {
+            paymentFeeRepository.paymentFeeForSale(saleId)
+        }.execute {
+            copy(paymentFeeAsync = it)
+        }
     }
 
     private fun createHid() {
@@ -254,7 +249,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     private fun loadFrames(serviceOrderId: String) {
         suspend {
-            framesRespository.framesForServiceOrder(serviceOrderId)
+            framesRepository.framesForServiceOrder(serviceOrderId)
         }.execute(Dispatchers.IO) {
             copy(framesResponseAsync = it)
         }
@@ -362,55 +357,40 @@ class ServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processDiscountResponse(response: OverallDiscountRepositoryResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    discountAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(discount = it.toOverallDiscount()) }
+        )
+    }
+
+    private fun processPaymentFeeResponse(response: PaymentFeeRepositoryResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    paymentFeeAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(paymentFee = it.toPaymentFee()) }
+        )
+    }
+
     private fun loadProducts(productsPicked: ProductPickedDocument){
         viewModelScope.launch(Dispatchers.IO) {
             loadLensPicked(productsPicked.lensId)
             loadColoringPicked(productsPicked.coloringId)
             loadTreatmentPicked(productsPicked.treatmentId)
         }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadProducts() = withState {
-        saleRepository
-            .pickedProduct()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(it.lensId).filterNotNull().take(1),
-                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
-                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
-                    ::Triple,
-                )
-            }.execute(Dispatchers.IO) {
-                when(it) {
-                    Uninitialized ->
-                        copy(
-                            lensEntityAsync = Uninitialized,
-                            coloringEntityAsync = Uninitialized,
-                            treatmentEntityAsync = Uninitialized,
-                        )
-                    is Loading ->
-                        copy(
-                            lensEntityAsync = Loading(),
-                            coloringEntityAsync = Loading(),
-                            treatmentEntityAsync = Loading(),
-                        )
-                    is Fail ->
-                        copy(
-                            lensEntityAsync = Fail(it.error),
-                            coloringEntityAsync = Fail(it.error),
-                            treatmentEntityAsync = Fail(it.error),
-                        )
-                    is Success ->
-                        copy(
-                            lensEntityAsync = Success(it.invoke().first),
-                            coloringEntityAsync = Success(it.invoke().second),
-                            treatmentEntityAsync = Success(it.invoke().third),
-                        )
-                }
-            }
-
     }
 
     private fun loadTotalPaid() = withState {
@@ -454,59 +434,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
 
         copy(totalToPay = totalToPay)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun loadTotalToPayWithDiscount() = withState { state ->
-        saleRepository
-            .pickedProduct()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(it.lensId).filterNotNull().take(1),
-                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
-                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
-                    saleRepository.currentFramesData(),
-                    discountRepository.watchDiscountForSale(state.saleId).filterNotNull().take(1),
-                    ::ProductSet
-                )
-            }
-            .map {
-                val lens = it.lens
-                val coloring = it.coloring
-                val treatment = it.treatment
-                val frames = it.frames
-
-                val framesValue = if (frames.areFramesNew) {
-                    frames.value
-                } else {
-                    0.0
-                }
-
-                // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price + framesValue
-
-                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.suggestedPrice
-                }
-                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatment.suggestedPrice
-                }
-
-                if (coloring.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddColoring
-                }
-                if (treatment.suggestedPrice > 0) {
-                    totalToPay += lens.suggestedPriceAddTreatment
-                }
-
-                totalToPay = it.calculateDiscount(totalToPay)
-
-                totalToPay
-            }
-            .execute(Dispatchers.IO) {
-                copy(totalToPayWithDiscountAsync = it)
-            }
     }
 
     fun onUpdateIsCreating(isCreating: Boolean) = setState {
@@ -642,11 +569,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    fun onEditProducts() {
-        viewModelScope.launch(Dispatchers.IO) {
-//            saleRepository.clearProductComparison()
-        }
-    }
+    fun onEditProducts() {}
 
     // hilt
     @AssistedFactory

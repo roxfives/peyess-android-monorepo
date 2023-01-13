@@ -1,8 +1,8 @@
-package com.peyess.salesapp.data.model.payment_fee
+package com.peyess.salesapp.feature.sale.service_order.model
 
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 
-data class PaymentFeeDocument(
+data class PaymentFee(
     val saleId: String = "",
     val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.Percentage,
     val value: Double = 0.0,

@@ -25,19 +25,24 @@ import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocume
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
+import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.OverallDiscount
+import com.peyess.salesapp.feature.sale.service_order.model.PaymentFee
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import java.text.NumberFormat
 import java.util.Locale
@@ -54,11 +59,6 @@ data class ServiceOrderState(
 
     val prescriptionPictureAsync: Async<PrescriptionPictureEntity> = Uninitialized,
     val prescriptionDataAsync: Async<PrescriptionDataEntity> = Uninitialized,
-
-    val lensEntityAsync: Async<LocalLensEntity> = Uninitialized,
-    val coloringEntityAsync: Async<LocalColoringEntity> = Uninitialized,
-    val treatmentEntityAsync: Async<LocalTreatmentEntity> = Uninitialized,
-    val framesEntityAsync: Async<FramesEntity> = Uninitialized,
 
     val productPickedResponseAsync: Async<ProductPickedResponse> = Uninitialized,
     val productPicked: ProductPickedDocument = ProductPickedDocument(),
@@ -80,8 +80,11 @@ data class ServiceOrderState(
 
     val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
 
-    val discountAsync: Async<OverallDiscountDocument?> = Uninitialized,
-    val paymentFeeAsync: Async<PaymentFeeDocument?> = Uninitialized,
+    val discountAsync: Async<OverallDiscountRepositoryResponse> = Uninitialized,
+    val discount: OverallDiscount = OverallDiscount(),
+
+    val paymentFeeAsync: Async<PaymentFeeRepositoryResponse> = Uninitialized,
+    val paymentFee: PaymentFee = PaymentFee(),
 
     val totalToPay: Double = 0.0,
     val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
@@ -101,8 +104,6 @@ data class ServiceOrderState(
 
     val isSOPdfBeingGenerated: Boolean = false,
 ): MavericksState {
-//    val saleId = saleIdAsync.invoke()?.id ?: ""
-
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
         userClientAsync.invoke() ?: ClientEntity()
@@ -119,12 +120,6 @@ data class ServiceOrderState(
 
     val isWitnessLoading = witnessClientAsync is Loading
     val witnessClient = witnessClientAsync.invoke()
-
-    val isDiscountLoading = discountAsync is Loading
-    val discount = discountAsync.invoke()
-
-    val isPaymentFeeLoading = paymentFeeAsync is Loading
-    val paymentFee = paymentFeeAsync.invoke()
 
     val isPrescriptionPictureLoading = prescriptionPictureAsync is Loading
     val prescriptionPicture = if (prescriptionPictureAsync is Success) {
@@ -161,12 +156,10 @@ data class ServiceOrderState(
 //        LocalTreatmentEntity()
 //    }
 
-    val isFramesLoading = framesEntityAsync is Loading
-    val framesEntity = if (framesEntityAsync is Success) {
-        framesEntityAsync.invoke()
-    } else {
-        FramesEntity()
-    }
+    val hasFramesLoaded = framesResponseAsync is Success
+            && framesResponseAsync.invoke().isRight()
+    val hasFramesFailed = framesResponseAsync is Fail
+    val isFramesLoading = framesResponseAsync is Loading
 
     val hasProductLoaded = productPickedResponseAsync is Success
             && productPickedResponseAsync.invoke().isRight()
@@ -209,21 +202,13 @@ data class ServiceOrderState(
         emptyList()
     }
 
-    val totalToPayWithDiscount = if (totalToPayWithDiscountAsync is Success) {
-        totalToPayWithDiscountAsync.invoke()
-    } else {
-        0.0
-    }
+    val totalToPayWithDiscount = calculateTotalToPayWithDiscount(totalToPay, discount)
     val totalPaid = if (totalPaidAsync is Success) {
         totalPaidAsync.invoke()
     } else {
         0.0
     }
-    val totalToPayWithFee = if (paymentFee != null) {
-        calculatePriceWithFee(totalToPayWithDiscount, paymentFee)
-    } else {
-        totalToPayWithDiscount
-    }
+    val totalToPayWithFee = calculatePriceWithFee(totalToPayWithDiscount, paymentFee)
 
     val canAddNewPayment = totalPaid < totalToPayWithFee
 
@@ -255,12 +240,23 @@ data class ServiceOrderState(
 
     private fun calculatePriceWithFee(
         totalToPay: Double,
-        fee: PaymentFeeDocument,
+        fee: PaymentFee,
     ): Double {
         return when (fee.method) {
             PaymentFeeCalcMethod.None -> totalToPay
             PaymentFeeCalcMethod.Percentage -> totalToPay * (1 + fee.value)
             PaymentFeeCalcMethod.Whole -> totalToPay + fee.value
+        }
+    }
+
+    private fun calculateTotalToPayWithDiscount(
+        totalToPay: Double,
+        discount: OverallDiscount,
+    ): Double {
+        return when(discount.discountMethod) {
+            DiscountCalcMethod.None -> totalToPay
+            DiscountCalcMethod.Percentage -> totalToPay * (1.0 - discount.overallDiscountValue)
+            DiscountCalcMethod.Whole -> totalToPay - discount.overallDiscountValue
         }
     }
 }

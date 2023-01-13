@@ -1,9 +1,13 @@
 package com.peyess.salesapp.data.repository.payment_fee
 
+import arrow.core.Either
+import arrow.core.leftIfNull
 import com.peyess.salesapp.data.adapter.payment_fee.toPaymentFeeDocument
 import com.peyess.salesapp.data.adapter.payment_fee.toPaymentFeeEntity
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.repository.payment_fee.error.PaymentFeeNotFound
+import com.peyess.salesapp.data.repository.payment_fee.error.Unexpected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,6 +42,24 @@ class PaymentFeeRepositoryImpl @Inject constructor(
         Timber.i("Updating paymentFee $entity from $paymentFee")
 
         paymentFeeDao.updatePaymentFee(entity)
+    }
+
+    override suspend fun paymentFeeForSale(
+        saleId: String,
+    ): PaymentFeeRepositoryResponse = Either.catch {
+        paymentFeeDao
+            .getPaymentFee(saleId)
+            ?.toPaymentFeeDocument()
+    }.mapLeft {
+        Unexpected(
+            description = it.message
+                ?: "Unexpected error while getting payment fee for sale $saleId",
+            error = it,
+        )
+    }.leftIfNull {
+        PaymentFeeNotFound(
+            description = "PaymentFee for sale $saleId not found",
+        )
     }
 
     private fun createWatcherForSale(saleId: String): Flow<PaymentFeeDocument> {

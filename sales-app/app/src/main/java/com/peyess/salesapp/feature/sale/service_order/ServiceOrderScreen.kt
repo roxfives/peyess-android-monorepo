@@ -1849,7 +1849,6 @@ private fun TreatmentCard(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
             text = NumberFormat.getCurrencyInstance().format(treatmentEntity.price / 2f),

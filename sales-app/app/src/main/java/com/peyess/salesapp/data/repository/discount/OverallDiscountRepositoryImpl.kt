@@ -1,9 +1,13 @@
 package com.peyess.salesapp.data.repository.discount
 
+import arrow.core.Either
+import arrow.core.leftIfNull
 import com.peyess.salesapp.data.adapter.discount.toOverallDiscountDocument
 import com.peyess.salesapp.data.adapter.discount.toOverallDiscountEntity
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.repository.discount.error.OverallDiscountNotFound
+import com.peyess.salesapp.data.repository.discount.error.Unexpected
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,6 +42,24 @@ class OverallDiscountRepositoryImpl @Inject constructor(
         Timber.i("Updating discount $entity from $discount")
 
         discountDao.updateDiscount(entity)
+    }
+
+    override suspend fun discountForSale(
+        saleId: String,
+    ): OverallDiscountRepositoryResponse = Either.catch {
+        discountDao
+            .getDiscount(saleId)
+            ?.toOverallDiscountDocument()
+    }.mapLeft {
+        Unexpected(
+            description = it.message
+                ?: "Unexpected error while getting discount for sale $saleId",
+            error = it,
+        )
+    }.leftIfNull {
+        OverallDiscountNotFound(
+            description = "Discount for sale $saleId not found",
+        )
     }
 
     private fun createWatcherForSale(saleId: String): Flow<OverallDiscountDocument> {

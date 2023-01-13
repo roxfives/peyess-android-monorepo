@@ -14,6 +14,7 @@ import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
+import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 
 const val serviceOrderIdParam = "serviceOrderId"
 const val saleIdParam = "saleId"
@@ -104,11 +105,16 @@ fun buildServiceOrderNavGraph(
                 navHostController
                     .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario?$paymentIdParam=$paymentId")
             },
-            onEditPayment = { paymentId, clientId ->
+            onEditPayment = { paymentId, clientId, saleId, serviceOrderId ->
                 val client = clientId.ifBlank { "-" }
+                val route = buildPaymentNavRoute(
+                    paymentId = paymentId,
+                    clientId = client,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                )
 
-                navHostController
-                    .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$client")
+                navHostController.navigate(route)
             },
             onAddDiscount = { saleId, fullPrice ->
                 navHostController

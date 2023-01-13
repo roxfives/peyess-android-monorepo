@@ -12,6 +12,30 @@ import com.peyess.salesapp.feature.sale.payment.PaymentScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
+const val paymentIdParam = "paymentId"
+const val clientIdParam = "clientId"
+const val serviceOrderIdParam = "serviceOrderId"
+const val saleIdParam = "saleId"
+
+private val paymentNavRoute = SalesAppScreens.SalePayment.name +
+        "/{$paymentIdParam}" +
+        "/{$clientIdParam}" +
+        "/{$serviceOrderIdParam}" +
+        "/{$saleIdParam}"
+
+fun buildPaymentNavRoute(
+    paymentId: Long,
+    clientId: String,
+    serviceOrderId: String,
+    saleId: String,
+): String {
+    return SalesAppScreens.SalePayment.name +
+            "/$paymentId" +
+            "/$clientId" +
+            "/$serviceOrderId" +
+            "/$saleId"
+}
+
 @OptIn(ExperimentalAnimationApi::class)
 fun buildPaymentNavGraph(
     modifier: Modifier = Modifier,
@@ -19,10 +43,12 @@ fun buildPaymentNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = "${SalesAppScreens.SalePayment.name}/{paymentId}/{clientId}",
+        route = paymentNavRoute,
         arguments = listOf(
-            navArgument("paymentId") { type = NavType.LongType },
-            navArgument("clientId") { type = NavType.StringType },
+            navArgument(paymentIdParam) { type = NavType.LongType },
+            navArgument(clientIdParam) { type = NavType.StringType },
+            navArgument(serviceOrderIdParam) { type = NavType.StringType },
+            navArgument(saleIdParam) { type = NavType.StringType },
         ),
         enterTransition = paymentEnterTransition(),
         exitTransition = paymentExitTransition()

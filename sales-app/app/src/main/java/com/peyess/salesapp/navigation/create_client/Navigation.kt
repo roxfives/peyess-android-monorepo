@@ -22,6 +22,7 @@ import com.peyess.salesapp.navigation.create_client.communication.createClientCo
 import com.peyess.salesapp.navigation.pick_client.isPickingParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
+import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
@@ -182,13 +183,20 @@ fun buildCreateClientNavGraph(
                              }
                          }
 
-                     is CreateScenario.Payment ->
-                         navHostController
-                             .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$clientId") {
+                     is CreateScenario.Payment -> {
+                         val paymentRoute = buildPaymentNavRoute(
+                             paymentId = paymentId,
+                             clientId = clientId,
+                             saleId = saleId,
+                             serviceOrderId = serviceOrderId
+                         )
+
+                         navHostController.navigate(paymentRoute) {
                                  popUpTo("${SalesAppScreens.PickClient.name}/{$isPickingParam}/{$pickScenarioParam}?$paymentIdParam={$paymentIdParam}") {
                                      inclusive = true
                                  }
                              }
+                     }
 
                      else -> {
                          val route = buildServiceOrderRoute(

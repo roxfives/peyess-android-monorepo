@@ -145,7 +145,12 @@ fun ServiceOrderScreen(
     onConfirmMeasure: () -> Unit = {},
 
     onAddPayment: (paymentId: Long) -> Unit = {},
-    onEditPayment: (paymentId: Long, clientId: String) -> Unit = { _, _ -> },
+    onEditPayment: (
+        paymentId: Long,
+        clientId: String,
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _, _ -> },
     onAddDiscount: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _, -> },
     onAddPaymentFee: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _, -> },
 
@@ -273,7 +278,7 @@ fun ServiceOrderScreen(
                 )
             },
             onDeletePayment = viewModel::deletePayment,
-            onEditPayment = { onEditPayment(it.id, it.clientId) },
+            onEditPayment = { onEditPayment(it.id, it.clientId, saleId, serviceOrderId) },
             onAddDiscount = {
                 onAddDiscount(
                     saleId,

@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
+import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 
 const val isPickingParam = "isPicking"
@@ -58,13 +59,20 @@ fun buildPickClientNavGraph(
 
             onClientPicked = { paymentId, clientId, scenario, saleId, serviceOrderId ->
                 when (scenario) {
-                    PickScenario.Payment ->
-                        navHostController
-                            .navigate("${SalesAppScreens.SalePayment.name}/$paymentId/$clientId") {
+                    PickScenario.Payment -> {
+                        val paymentRoute = buildPaymentNavRoute(
+                            paymentId = paymentId,
+                            clientId = clientId,
+                            saleId = saleId,
+                            serviceOrderId = serviceOrderId,
+                        )
+
+                        navHostController.navigate(paymentRoute) {
                                 popUpTo("${SalesAppScreens.PickClient.name}/{$isPickingParam}/{$pickScenarioParam}?$paymentIdParam={$paymentIdParam}") {
                                     inclusive = true
                                 }
                             }
+                    }
                     else -> {
                         val route = buildServiceOrderRoute(
                             isCreating = true,

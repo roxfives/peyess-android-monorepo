@@ -1,16 +1,16 @@
 package com.peyess.salesapp.data.repository.local_sale.frames.error
 
 sealed interface LocalFramesRepositoryError {
-    val message: String
+    val description: String
     val error: Throwable?
 }
 
 sealed interface LocalFramesResponseError: LocalFramesRepositoryError
 data class FramesDataNotFound(
-    override val message: String, override val error: Throwable? = null,
+    override val description: String, override val error: Throwable? = null,
 ): LocalFramesResponseError
 
 data class Unexpected(
-    override val message: String,
+    override val description: String,
     override val error: Throwable? = null,
 ): LocalFramesRepositoryError, LocalFramesResponseError

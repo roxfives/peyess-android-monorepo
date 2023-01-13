@@ -74,7 +74,8 @@ sealed class FramesType {
 //    ]
 )
 data class FramesEntity(
-    @PrimaryKey @ColumnInfo(name = "so_id")
+    @PrimaryKey
+    @ColumnInfo(name = "so_id")
     val soId: String = "",
 
     @ColumnInfo(name = "is_new")

@@ -77,6 +77,7 @@ import com.peyess.salesapp.feature.sale.payment.state.PaymentState
 import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentPlaceholder
 import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentTitle
+import com.peyess.salesapp.feature.sale.payment.utils.parseParameters
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
@@ -122,19 +123,13 @@ fun PaymentScreen(
 ) {
     val viewModel: PaymentViewModel = mavericksViewModel()
 
-    val clientId = navHostController.currentBackStackEntry?.arguments?.getString("clientId")
-    val paymentId = navHostController.currentBackStackEntry?.arguments?.getLong("paymentId")
-
-    LaunchedEffect(clientId) {
-        if (clientId != null && clientId.isNotBlank()) {
-            viewModel.loadClient(clientId)
-        }
-    }
-    LaunchedEffect(paymentId) {
-        if (paymentId != null) {
-            viewModel.loadPayment(paymentId)
-        }
-    }
+    parseParameters(
+        navController = navHostController,
+        onUpdatePaymentId = viewModel::onUpdatePaymentId,
+        onUpdateClientId = viewModel::onUpdateClientId,
+        onUpdateSaleId = viewModel::onUpdateSaleId,
+        onUpdateServiceOrderId = viewModel::onUpdateServiceOrderId,
+    )
 
     val isClientLoading by viewModel.collectAsState(PaymentState::isClientLoading)
     val client by viewModel.collectAsState(PaymentState::client)
@@ -792,7 +787,13 @@ private fun LazyImage(
 ) {
     AsyncImage(
         modifier = modifier
-            .width(if (image == Uri.EMPTY) { cardFlagHeight } else { cardFlagWidth })
+            .width(
+                if (image == Uri.EMPTY) {
+                    cardFlagHeight
+                } else {
+                    cardFlagWidth
+                }
+            )
             .height(cardFlagHeight)
             .clip(RoundedCornerShape(8.dp)),
 
@@ -827,11 +828,13 @@ private fun InstallmentsInput(
         modifier = modifier
             .padding(8.dp)
             .border(
-                BorderStroke(2.dp, if (enabled) {
-                    MaterialTheme.colors.primary
-                } else {
-                    Color.Gray.copy(alpha = 0.5f)
-                }),
+                BorderStroke(
+                    2.dp, if (enabled) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    }
+                ),
                 RoundedCornerShape(36.dp),
             ),
         horizontalArrangement = Arrangement.SpaceBetween,

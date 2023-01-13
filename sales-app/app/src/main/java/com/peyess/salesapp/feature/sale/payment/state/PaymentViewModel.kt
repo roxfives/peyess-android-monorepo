@@ -431,6 +431,10 @@ class PaymentViewModel @AssistedInject constructor(
         copy(paymentId = paymentId)
     }
 
+    fun onUpdateClientId(clientId: String) = setState {
+        copy(clientId = clientId)
+    }
+
     fun onUpdateSaleId(saleId: String) = setState {
         copy(saleId = saleId)
     }

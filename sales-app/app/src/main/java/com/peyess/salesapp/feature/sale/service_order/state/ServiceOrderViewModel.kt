@@ -11,7 +11,7 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository

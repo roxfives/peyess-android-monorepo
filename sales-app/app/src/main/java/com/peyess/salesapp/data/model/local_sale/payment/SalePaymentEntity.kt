@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.sale.payment
+package com.peyess.salesapp.data.model.local_sale.payment
 
 import android.net.Uri
 import androidx.room.ColumnInfo

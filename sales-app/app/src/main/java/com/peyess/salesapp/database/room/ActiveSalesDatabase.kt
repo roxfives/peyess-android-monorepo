@@ -15,8 +15,8 @@ import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.dao.sale.payment.SalePaymentDao
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao

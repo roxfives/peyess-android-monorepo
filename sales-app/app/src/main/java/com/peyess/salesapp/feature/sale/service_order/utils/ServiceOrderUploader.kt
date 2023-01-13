@@ -13,7 +13,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntit
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity

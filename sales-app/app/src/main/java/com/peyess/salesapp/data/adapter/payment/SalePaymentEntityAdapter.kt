@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.adapter.payment
 
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType

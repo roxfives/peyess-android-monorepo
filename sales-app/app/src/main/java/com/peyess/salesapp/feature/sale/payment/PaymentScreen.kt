@@ -71,7 +71,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.feature.sale.payment.state.PaymentState
 import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel

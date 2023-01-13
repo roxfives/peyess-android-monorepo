@@ -78,7 +78,7 @@ import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.sale.frames.name
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
@@ -1944,7 +1944,7 @@ private fun PaymentSection(
     canAddNewPayment: Boolean = false,
     totalPaid: Double = 0.0,
     totalToPay: Double = 0.0,
-    
+
     isLoading: Boolean = false,
     payments: List<SalePaymentEntity> = emptyList(),
     onAddPayment: () -> Unit = {},

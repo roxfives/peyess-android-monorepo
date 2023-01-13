@@ -9,7 +9,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import timber.log.Timber
 

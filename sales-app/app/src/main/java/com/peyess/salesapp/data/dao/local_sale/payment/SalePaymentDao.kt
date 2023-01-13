@@ -1,10 +1,11 @@
-package com.peyess.salesapp.dao.sale.payment
+package com.peyess.salesapp.data.dao.local_sale.payment
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

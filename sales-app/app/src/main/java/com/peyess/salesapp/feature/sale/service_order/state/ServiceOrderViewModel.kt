@@ -19,6 +19,7 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -66,14 +67,14 @@ import kotlin.random.asJavaRandom
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
-    val salesApplication: SalesApplication,
-    val saleRepository: SaleRepository,
-    val productRepository: ProductRepository,
+    private val saleRepository: SaleRepository,
+    private val productRepository: ProductRepository,
 
     private val salesDatabase: ActiveSalesDatabase,
     private val clientDao: ClientDao,
     private val authenticationRepository: AuthenticationRepository,
     private val localLensesRepository: LocalLensesRepository,
+    private val framesRespository: LocalFramesRepository,
     private val positioningRepository: PositioningRepository,
     private val measuringRepository: MeasuringRepository,
     private val prescriptionRepository: PrescriptionRepository,
@@ -128,20 +129,15 @@ class ServiceOrderViewModel @AssistedInject constructor(
         ) { lens, coloring, treatment ->
             updateTotalToPay(lens, coloring, treatment)
         }
-    }
 
-    fun onUpdateIsCreating(isCreating: Boolean) = setState {
-        copy(isCreating = isCreating)
-    }
+        // TODO: load frames value as well
 
-    fun onUpdateSaleId(saleId: String) = setState {
-        copy(saleId = saleId)
-    }
+        // TODO: refactor payment fee/discount repository to use arrowKt and coroutines
+        // TODO: load paymentFee into the state
 
-    fun onUpdateServiceOrderId(serviceOrderId: String) = setState {
-        copy(serviceOrderId = serviceOrderId)
+        // TODO: refactor payments repository to use arrowKt and coroutines
+        // TODO: load the payments and the total to be paid into the state
     }
-
 
     private fun loadCurrentSale() {
         saleRepository.activeSale().execute {
@@ -246,15 +242,15 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadFrames() = withState {
-        saleRepository.currentFramesData().execute(Dispatchers.IO) {
-            copy(framesEntityAsync = it)
-        }
-    }
-
     private fun loadPayments() = withState {
         saleRepository.payments().execute(Dispatchers.IO) {
             copy(paymentsAsync = it)
+        }
+    }
+
+    private fun loadFrames() = withState {
+        saleRepository.currentFramesData().execute(Dispatchers.IO) {
+            copy(framesEntityAsync = it)
         }
     }
 
@@ -491,6 +487,18 @@ class ServiceOrderViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(totalToPayWithDiscountAsync = it)
             }
+    }
+
+    fun onUpdateIsCreating(isCreating: Boolean) = setState {
+        copy(isCreating = isCreating)
+    }
+
+    fun onUpdateSaleId(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
+    fun onUpdateServiceOrderId(serviceOrderId: String) = setState {
+        copy(serviceOrderId = serviceOrderId)
     }
 
     fun failedAnimationFinished() = setState {

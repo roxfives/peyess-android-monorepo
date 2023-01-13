@@ -62,7 +62,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -78,7 +77,6 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.dao.sale.frames.name
 import com.peyess.salesapp.dao.sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
@@ -87,6 +85,7 @@ import com.peyess.salesapp.data.dao.local_sale.prescription_picture.Prescription
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
@@ -182,14 +181,10 @@ fun ServiceOrderScreen(
     val prescriptionData by viewModel.collectAsState(ServiceOrderState::prescriptionData)
     val isPrescriptionDataLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionDataLoading)
 
-//    val lensEntity by viewModel.collectAsState(ServiceOrderState::lensEntity)
-//    val coloringEntity by viewModel.collectAsState(ServiceOrderState::coloringEntity)
-//    val treatmentEntity by viewModel.collectAsState(ServiceOrderState::treatmentEntity)
-    val framesEntity by viewModel.collectAsState(ServiceOrderState::framesEntity)
-
     val lens by viewModel.collectAsState(ServiceOrderState::lens)
     val coloring by viewModel.collectAsState(ServiceOrderState::coloring)
     val treatment by viewModel.collectAsState(ServiceOrderState::treatment)
+    val frames by viewModel.collectAsState(ServiceOrderState::frames)
 
     val isLensLoading by viewModel.collectAsState(ServiceOrderState::isLensLoading)
     val isColoringLoading by viewModel.collectAsState(ServiceOrderState::isColoringLoading)
@@ -251,7 +246,7 @@ fun ServiceOrderScreen(
             lens = lens,
             coloring = coloring,
             treatment = treatment,
-            frames = framesEntity,
+            frames = frames,
             onEditProducts = {
                 viewModel.onEditProducts()
                 onEditProducts(saleId, serviceOrderId)
@@ -425,7 +420,7 @@ private fun ServiceOrderScreenImpl(
     lens: Lens = Lens(),
     coloring: Coloring = Coloring(),
     treatment: Treatment = Treatment(),
-    frames: FramesEntity = FramesEntity(),
+    frames: Frames = Frames(),
     onEditProducts: () -> Unit = {},
     onAddDiscount: () -> Unit = {},
 
@@ -1594,7 +1589,7 @@ private fun ProductsSection(
     lens: Lens = Lens(),
     coloring: Coloring = Coloring(),
     treatment: Treatment = Treatment(),
-    frames: FramesEntity = FramesEntity(),
+    frames: Frames = Frames(),
 ) {
     Column(
         modifier = modifier
@@ -1713,7 +1708,7 @@ private fun ProductsSection(
 
             // TODO: use string resource
             SubSectionTitle(title = "Armação")
-            FramesCard(framesEntity = frames)
+            FramesCard(frames = frames)
         }
 
         if (
@@ -1869,7 +1864,7 @@ private fun FramesCard(
     modifier: Modifier = Modifier,
     minTitleModifier: Modifier = Modifier,
     minPriceModifier: Modifier = Modifier,
-    framesEntity: FramesEntity = FramesEntity(),
+    frames: Frames = Frames(),
 ) {
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -1887,7 +1882,7 @@ private fun FramesCard(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = framesEntity.name(),
+            text = frames.name,
             style = MaterialTheme.typography.body1
                 .copy(textAlign = TextAlign.Start)
         )
@@ -1896,7 +1891,7 @@ private fun FramesCard(
 
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(framesEntity.value),
+            text = NumberFormat.getCurrencyInstance().format(frames.value),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -2299,7 +2294,7 @@ private fun FramesCardPreview() {
     SalesAppTheme {
         FramesCard(
             modifier = Modifier.fillMaxWidth(),
-            framesEntity = FramesEntity(
+            frames = Frames(
                 description = "Descrição",
                 reference = "Referência",
                 tagCode = "XXXXXX",
@@ -2319,7 +2314,7 @@ private fun ProductsSectionPreview() {
                 priceAddTreatment = 20.0,
             ),
 
-            frames = FramesEntity(
+            frames = Frames(
                 areFramesNew = true,
             )
         )

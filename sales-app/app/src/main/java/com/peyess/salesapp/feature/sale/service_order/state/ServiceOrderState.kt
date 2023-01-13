@@ -28,9 +28,12 @@ import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
+import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
@@ -59,6 +62,9 @@ data class ServiceOrderState(
 
     val productPickedResponseAsync: Async<ProductPickedResponse> = Uninitialized,
     val productPicked: ProductPickedDocument = ProductPickedDocument(),
+
+    val framesResponseAsync: Async<LocalFramesRepositoryResponse> = Uninitialized,
+    val frames: Frames = Frames(),
 
     val lensResponseAsync: Async<SingleLensResponse> = Uninitialized,
     val lens: Lens = Lens(),

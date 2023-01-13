@@ -1,6 +1,6 @@
 package com.peyess.salesapp.feature.sale.service_order.model
 
-import com.peyess.salesapp.dao.sale.frames.FramesType
+import com.peyess.salesapp.typing.frames.FramesType
 
 data class Frames(
     val soId: String = "",

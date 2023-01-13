@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.local_sale.frames
 
-import com.peyess.salesapp.dao.sale.frames.FramesType
+import com.peyess.salesapp.typing.frames.FramesType
 
 data class LocalFramesDocument(
     val soId: String = "",

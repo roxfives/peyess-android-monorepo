@@ -2,7 +2,7 @@ package com.peyess.salesapp.features.pdf.service_order
 
 import androidx.test.core.app.ApplicationProvider
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
-import com.peyess.salesapp.dao.sale.frames.FramesType
+import com.peyess.salesapp.typing.frames.FramesType
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument

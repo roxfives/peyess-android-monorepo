@@ -1,7 +1,7 @@
 package com.peyess.salesapp.database.room.converters
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.dao.sale.frames.FramesType
+import com.peyess.salesapp.typing.frames.FramesType
 import timber.log.Timber
 
 class ConverterFramesType {

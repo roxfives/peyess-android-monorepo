@@ -1,8 +1,8 @@
 package com.peyess.salesapp.repository.payments
 
 import arrow.core.Either
-import com.peyess.salesapp.dao.payment_methods.PaymentMethod
-import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
+import com.peyess.salesapp.data.model.payment_method.PaymentMethod
+import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

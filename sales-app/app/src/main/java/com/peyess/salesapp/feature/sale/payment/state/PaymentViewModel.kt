@@ -6,7 +6,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.payment_methods.PaymentMethod
+import com.peyess.salesapp.data.model.payment_method.PaymentMethod
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository

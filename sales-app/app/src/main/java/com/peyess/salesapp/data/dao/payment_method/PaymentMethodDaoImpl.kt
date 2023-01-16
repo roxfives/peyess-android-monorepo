@@ -1,7 +1,10 @@
-package com.peyess.salesapp.dao.payment_methods
+package com.peyess.salesapp.data.dao.payment_method
 
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.model.payment_method.FSPaymentMethod
+import com.peyess.salesapp.data.model.payment_method.PaymentMethod
+import com.peyess.salesapp.data.model.payment_method.toDocument
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -7,7 +7,7 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.room.ClientPickedDao
-import com.peyess.salesapp.dao.payment_methods.PaymentMethodDao
+import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.data.model.lens.description.LensDescriptionDao
 import com.peyess.salesapp.data.model.lens.groups.LensGroupDao

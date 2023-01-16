@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.payment_methods
+package com.peyess.salesapp.data.model.payment_method
 
 data class PaymentMethod(
     val id: String = "",

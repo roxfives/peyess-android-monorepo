@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.payment_methods
+package com.peyess.salesapp.data.model.payment_method
 
 import androidx.annotation.Keep
 import com.google.firebase.firestore.PropertyName

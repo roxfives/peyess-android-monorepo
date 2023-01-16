@@ -1,8 +1,8 @@
-package com.peyess.salesapp.repository.payments
+package com.peyess.salesapp.data.dao.payment_method
 
 import com.peyess.salesapp.data.model.payment_method.PaymentMethod
 import kotlinx.coroutines.flow.Flow
 
-interface PaymentMethodRepository {
+interface PaymentMethodDao {
     fun payments(): Flow<List<PaymentMethod>>
 }

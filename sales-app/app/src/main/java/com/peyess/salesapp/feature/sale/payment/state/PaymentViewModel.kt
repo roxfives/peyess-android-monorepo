@@ -3,18 +3,10 @@ package com.peyess.salesapp.feature.sale.payment.state
 import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentEntity
-import com.peyess.salesapp.dao.sale.frames.FramesEntity
-import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
-import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
@@ -26,8 +18,9 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
+import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.payment.adapter.toColoring
@@ -36,26 +29,21 @@ import com.peyess.salesapp.feature.sale.payment.adapter.toLens
 import com.peyess.salesapp.feature.sale.payment.adapter.toOverallDiscount
 import com.peyess.salesapp.feature.sale.payment.adapter.toPayment
 import com.peyess.salesapp.feature.sale.payment.adapter.toPaymentFee
+import com.peyess.salesapp.feature.sale.payment.adapter.toSalePaymentDocument
 import com.peyess.salesapp.feature.sale.payment.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.payment.model.Coloring
 import com.peyess.salesapp.feature.sale.payment.model.Frames
 import com.peyess.salesapp.feature.sale.payment.model.Lens
 import com.peyess.salesapp.feature.sale.payment.model.Treatment
-import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
-import com.peyess.salesapp.typing.products.DiscountCalcMethod
-import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -77,38 +65,33 @@ class PaymentViewModel @AssistedInject constructor(
 ): MavericksViewModel<PaymentState>(initialState) {
 
     init {
-        loadCurrentSale()
-
-        loadPaymentMethods()
+//        loadPaymentMethods()
 
         loadCardFlagsRepository()
 
-        onEach(PaymentState::paymentAsync, PaymentState::clientAsync) { payment, client ->
-            val pay = payment.invoke()
-            val payer = client.invoke()
-
-            if (
-                payment is Success
-                && client is Success
-                && pay != null
-                && (payer != null && payer.id.isNotBlank())
-            ) {
-                viewModelScope.launch(Dispatchers.IO) {
-                    Timber.i("UPDATING: with pay $pay")
-                    Timber.i("UPDATING: with payer $payer")
-
-                    saleRepository.updatePayment(
-                        pay.copy(
-                            clientId = payer.id,
-                            clientDocument = payer.document,
-                            clientName = payer.name,
-                            clientAddress = payer.shortAddress,
-                            clientPicture = payer.picture,
-                        )
-                    )
-                }
-            }
-        }
+//        onEach(PaymentState::paymentAsync, PaymentState::clientAsync) { payment, client ->
+//            val pay = payment.invoke()
+//            val payer = client.invoke()
+//
+//            if (
+//                payment is Success
+//                && client is Success
+//                && pay != null
+//                && (payer != null && payer.id.isNotBlank())
+//            ) {
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    saleRepository.updatePayment(
+//                        pay.copy(
+//                            clientId = payer.id,
+//                            clientDocument = payer.document,
+//                            clientName = payer.name,
+//                            clientAddress = payer.shortAddress,
+//                            clientPicture = payer.picture,
+//                        )
+//                    )
+//                }
+//            }
+//        }
 
         onAsync(PaymentState::productPickedResponseAsync) { processProductPickedResponse(it) }
         onAsync(PaymentState::lensResponseAsync) { processLensPickedResponse(it) }
@@ -120,28 +103,35 @@ class PaymentViewModel @AssistedInject constructor(
         onAsync(PaymentState::paymentFeeAsync) { processPaymentFeeResponse(it) }
 
         onAsync(PaymentState::totalPaymentResponseAsync) { processTotalPaymentResponse(it) }
+        onAsync(PaymentState::paymentResponseAsync) { processPaymentResponse(it) }
+
+        onAsync(PaymentState::paymentUpdateResponseAsync) { processPaymentUpdateResponse(it) }
+
+        onEach(PaymentState::activePaymentMethod) { updatePaymentWithMethod(it) }
 
         onEach(PaymentState::totalToPay, PaymentState::totalPaid) { totalToPay, totalPaid ->
             updateTotalLeftToPay(totalToPay, totalPaid)
         }
 
+        onEach(PaymentState::paymentId) { watchPaymentDataStream(it) }
+
         onEach(PaymentState::payment) { payment ->
             withState {
                 val minInstallments = 1
-                val maxInstallments = it.activePaymentMethod?.maxInstallments ?: minInstallments
-                val installments = if (it.activePaymentMethod?.hasInstallments == true) {
+                val maxInstallments = it.activePaymentMethod.maxInstallments
+                val installments = if (it.activePaymentMethod.hasInstallments) {
                     payment.installments.coerceAtMost(maxInstallments)
                 } else {
                     minInstallments
                 }
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    saleRepository.updatePayment(
-                        payment.copy(
-                            installments = installments
-                        )
-                    )
-                }
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    saleRepository.updatePayment(
+//                        payment.copy(
+//                            installments = installments
+//                        )
+//                    )
+//                }
             }
         }
 
@@ -168,43 +158,40 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadCurrentSale() {
-        saleRepository.activeSale().execute {
-            copy(saleIdAsync = it)
-        }
-    }
+    // Load payment method using coroutines
+    // Load the client using coroutines
 
-    private fun loadPaymentMethods() = withState {
-        paymentMethodRepository
-            .payments()
-            .execute(Dispatchers.IO) {
-                Timber.i("Loading payment methods $it")
-                val payments = it.invoke() ?: emptyList()
-
-                if (it is Success) {
-                    copy(
-                        paymentMethodsAsync = it,
-                        activePaymentMethod = if (payments.isNotEmpty()) {
-                            val method = payments[0]
-
-                            saleRepository.updatePayment(
-                                this.payment.copy(
-                                    methodId = method.id,
-                                    methodType = method.type,
-                                    methodName = method.name,
-                                )
-                            )
-
-                            method
-                        } else {
-                            null
-                        }
-                    )
-                } else {
-                    copy(paymentMethodsAsync = it)
-                }
-            }
-    }
+//    private fun loadPaymentMethods() = withState {
+//        paymentMethodRepository
+//            .payments()
+//            .execute(Dispatchers.IO) {
+//                Timber.i("Loading payment methods $it")
+//                val payments = it.invoke() ?: emptyList()
+//
+//                if (it is Success) {
+//                    copy(
+//                        paymentMethodsAsync = it,
+//                        activePaymentMethod = if (payments.isNotEmpty()) {
+//                            val method = payments[0]
+//
+//                            saleRepository.updatePayment(
+//                                this.payment.copy(
+//                                    methodId = method.id,
+//                                    methodType = method.type,
+//                                    methodName = method.name,
+//                                )
+//                            )
+//
+//                            method
+//                        } else {
+//                            null
+//                        }
+//                    )
+//                } else {
+//                    copy(paymentMethodsAsync = it)
+//                }
+//            }
+//    }
 
     private fun loadTotalPaid(saleId: String) = withState {
         suspend {
@@ -382,6 +369,36 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
+    private fun processPaymentResponse(response: SinglePaymentResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    paymentResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = { copy(payment = it.toPayment()) }
+        )
+    }
+
+    private fun processPaymentUpdateResponse(response: SalePaymentUpdateResult) {
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        paymentUpdateResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = { }
+        )
+    }
+
     private fun updateTotalToPay(
         lens: Lens,
         coloring: Coloring,
@@ -427,6 +444,30 @@ class PaymentViewModel @AssistedInject constructor(
         copy(totalLeftToPay = totalToPay - totalPaid)
     }
 
+    private fun watchPaymentDataStream(paymentId: Long) {
+        salePaymentRepository
+            .watchPayment(paymentId)
+            .execute(Dispatchers.IO) {
+                copy(paymentResponseAsync = it)
+            }
+    }
+
+    private fun updatePaymentWithMethod(method: PaymentMethod)  = withState {
+        suspend {
+            val payment = it.payment
+                .copy(
+                    methodId = method.id,
+                    methodType = method.type,
+                    methodName = method.name,
+                )
+                .toSalePaymentDocument()
+
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
+    }
+
     fun onUpdatePaymentId(paymentId: Long) = setState {
         copy(paymentId = paymentId)
     }
@@ -453,62 +494,88 @@ class PaymentViewModel @AssistedInject constructor(
             }
     }
 
-    fun loadPayment(paymentId: Long) = withState {
-        saleRepository
-            .paymentById(paymentId)
-            .execute(Dispatchers.IO) {
-                copy(paymentAsync = it)
-            }
-    }
-
     fun onTotalPaidChange(value: Double) = withState {
-        val paid = value.coerceAtMost(it.payment.value + it.totalLeftToPay)
+        suspend {
+            val paid = value.coerceAtMost(it.totalLeftToPay)
+                .coerceAtLeast(0.0)
 
-        saleRepository.updatePayment(it.payment.copy(value = paid))
+            val payment = it.payment
+                .copy(value = paid)
+                .toSalePaymentDocument()
+
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
     }
 
     fun onMethodPaymentChanged(document: String) = withState {
-        saleRepository.updatePayment(it.payment.copy(document = document))
+        suspend {
+            val payment = it.payment
+                .copy(document = document)
+                .toSalePaymentDocument()
+
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
     }
 
     fun onCardFlagChanged(cardFlagIcon: Uri, cardFlagName: String) = withState {
-        saleRepository.updatePayment(
-            it.payment.copy(
-                cardFlagIcon = cardFlagIcon,
-                cardFlagName = cardFlagName,
-            )
-        )
+        suspend {
+            val payment = it.payment
+                .copy(
+                    cardFlagIcon = cardFlagIcon,
+                    cardFlagName = cardFlagName,
+                )
+                .toSalePaymentDocument()
+
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
     }
 
     fun onIncreaseInstallments(value: Int) = withState {
-        val maxInstallments = it.activePaymentMethod?.maxInstallments ?: 1
-        val newValue = (value + 1).coerceAtMost(maxInstallments)
+        suspend {
+            val maxInstallments = it.activePaymentMethod?.maxInstallments ?: 1
+            val newValue = (value + 1).coerceAtMost(maxInstallments)
+            val payment = it.payment
+                .copy(installments = newValue)
+                .toSalePaymentDocument()
 
-        saleRepository.updatePayment(it.payment.copy(installments = newValue))
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
     }
 
     fun onDecreaseInstallments(value: Int) = withState {
-        val minInstallments = 1
-        val newValue = (value - 1).coerceAtLeast(minInstallments)
+        suspend {
+            val minInstallments = 1
+            val newValue = (value - 1).coerceAtLeast(minInstallments)
+            val payment = it.payment
+                .copy(installments = newValue)
+                .toSalePaymentDocument()
 
-        saleRepository.updatePayment(it.payment.copy(installments = newValue))
+            salePaymentRepository.updatePayment(payment)
+        }.execute(Dispatchers.IO) {
+            copy(paymentUpdateResponseAsync = it)
+        }
     }
 
-    fun onPaymentMethodChanged(method: PaymentMethod) = setState {
-        saleRepository.updatePayment(
-            this.payment.copy(
-                methodId = method.id,
-                methodType = method.type,
-                methodName = method.name,
-            )
-        )
-
+    fun onPaymentMethodChanged(method: PaymentMethod)  = setState {
         copy(activePaymentMethod = method)
     }
 
     fun cancelPayment() = withState {
         viewModelScope.launch(Dispatchers.IO) {
-            saleRepository.deletePayment(it.payment)
+            val payment = it.payment.toSalePaymentDocument()
+
+            val deleteResponse = salePaymentRepository.deletePayment(payment)
+            if (deleteResponse.isLeft()) {
+                Timber.e("Error deleting payment: $payment")
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.payment.state
 
 import com.airbnb.mvrx.Async
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
@@ -18,6 +19,8 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
+import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.payment.model.Coloring
 import com.peyess.salesapp.feature.sale.payment.model.Frames
@@ -60,11 +63,14 @@ data class PaymentState(
     val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
 
     val paymentMethodsAsync: Async<List<PaymentMethod>> = Uninitialized,
-    val activePaymentMethod: PaymentMethod? = null,
+    val activePaymentMethod: PaymentMethod = PaymentMethod(),
 
     val clientAsync: Async<ClientDocument?> = Uninitialized,
 
-    val paymentAsync: Async<SalePaymentEntity?> = Uninitialized,
+    val paymentUpdateResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,
+
+    val paymentResponseAsync: Async<SinglePaymentResponse> = Uninitialized,
+    val payment: Payment = Payment(),
 
     val cardFlagsAsync: Async<List<CardFlagDocument>> = Uninitialized,
 
@@ -75,6 +81,8 @@ data class PaymentState(
 
     val totalLeftToPay: Double = 0.0,
 ): MavericksState {
+    val hasPaymentUpdateFailed = paymentUpdateResponseAsync is Fail
+
     val arePaymentsLoading = paymentMethodsAsync is Loading
     val paymentMethods = if (paymentMethodsAsync is Success) {
         Timber.i("Setting payment methods ${paymentMethodsAsync.invoke()}")
@@ -92,12 +100,5 @@ data class PaymentState(
         clientAsync.invoke()!!
     } else {
         ClientDocument()
-    }
-
-    val isPaymentLoading = paymentAsync is Loading
-    val payment = if (paymentAsync is Success && paymentAsync.invoke() != null) {
-        paymentAsync.invoke()!!
-    } else {
-        SalePaymentEntity()
     }
 }

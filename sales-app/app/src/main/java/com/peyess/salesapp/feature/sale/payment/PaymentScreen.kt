@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -71,8 +70,8 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.payment_methods.PaymentMethod
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
+import com.peyess.salesapp.feature.sale.payment.model.Payment
 import com.peyess.salesapp.feature.sale.payment.state.PaymentState
 import com.peyess.salesapp.feature.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.feature.sale.payment.utils.methodDocumentPlaceholder
@@ -211,17 +210,14 @@ private fun PaymentScreenImpl(
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
     activePaymentMethod: PaymentMethod? = null,
-    payment: SalePaymentEntity = SalePaymentEntity(),
+    payment: Payment = Payment(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 
     onDone: () -> Unit = {},
     onCancel: () -> Unit = {},
 ) {
-    Column(
-        modifier = modifier,
-
-    ) {
+    Column(modifier = modifier) {
         ClientView(
             modifier = Modifier.fillMaxWidth(),
 
@@ -382,7 +378,7 @@ private fun PaymentView(
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
 
-    payment: SalePaymentEntity = SalePaymentEntity(),
+    payment: Payment = Payment(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 ) {

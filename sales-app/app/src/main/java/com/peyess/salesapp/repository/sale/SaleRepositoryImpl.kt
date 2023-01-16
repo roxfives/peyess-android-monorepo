@@ -403,7 +403,7 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override fun paymentById(paymentId: Long): Flow<SalePaymentEntity?> {
-        return salePaymentDao.getById(paymentId)
+        return emptyFlow()
     }
 
     companion object {

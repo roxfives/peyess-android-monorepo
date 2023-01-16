@@ -4,18 +4,28 @@ import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
 import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentReadError
 import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentWriteError
+import kotlinx.coroutines.flow.Flow
 
+typealias SalePaymentFlowResponse = Flow<Either<SalePaymentReadError, SalePaymentDocument>>
 typealias SalePaymentResponse = Either<SalePaymentReadError, List<SalePaymentDocument>>
+typealias SinglePaymentResponse = Either<SalePaymentReadError, SalePaymentDocument>
 typealias SalePaymentTotalResponse = Either<SalePaymentReadError, Double>
 typealias SalePaymentWriteResult = Either<SalePaymentWriteError, Long>
 typealias SalePaymentUpdateResult = Either<SalePaymentWriteError, Unit>
+typealias SalePaymentDeleteResult = Either<SalePaymentWriteError, Unit>
 
 interface SalePaymentRepository {
-    fun paymentForSale(saleId: String): SalePaymentResponse
+    suspend fun paymentForSale(saleId: String): SalePaymentResponse
 
-    fun totalPaymentForSale(saleId: String): SalePaymentTotalResponse
+    fun watchPayment(paymentId: Long): SalePaymentFlowResponse
 
-    fun addPaymentToSale(paymentDocument: SalePaymentDocument): SalePaymentWriteResult
+    suspend fun payment(paymentId: Long): SinglePaymentResponse
 
-    fun updatePayment(paymentDocument: SalePaymentDocument): SalePaymentUpdateResult
+    suspend fun totalPaymentForSale(saleId: String): SalePaymentTotalResponse
+
+    suspend fun addPaymentToSale(paymentDocument: SalePaymentDocument): SalePaymentWriteResult
+
+    suspend fun updatePayment(paymentDocument: SalePaymentDocument): SalePaymentUpdateResult
+
+    suspend fun deletePayment(paymentDocument: SalePaymentDocument): SalePaymentDeleteResult
 }

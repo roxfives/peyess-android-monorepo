@@ -29,5 +29,8 @@ interface SalePaymentDao {
     fun totalPaymentForSale(saleId: String): Double
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE id = :id ")
-    fun getById(id: Long): Flow<SalePaymentEntity?>
+    fun watchPayment(id: Long): Flow<SalePaymentEntity?>
+
+    @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE id = :id ")
+    suspend fun payment(id: Long): SalePaymentEntity?
 }

@@ -8,16 +8,16 @@ sealed interface SalePaymentRepositoryError {
 sealed interface SalePaymentReadError: SalePaymentRepositoryError
 data class SalePaymentNotFound(
     override val description: String,
-    override val error: Throwable?,
+    override val error: Throwable? = null,
 ): SalePaymentReadError
 
 sealed interface SalePaymentWriteError: SalePaymentRepositoryError
 data class SalePaymentWriteFailed(
     override val description: String,
-    override val error: Throwable?,
+    override val error: Throwable? = null,
 ): SalePaymentWriteError
 
 data class Unexpected(
     override val description: String,
-    override val error: Throwable?,
+    override val error: Throwable? = null,
 ): SalePaymentRepositoryError, SalePaymentReadError, SalePaymentWriteError

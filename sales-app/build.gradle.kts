@@ -20,7 +20,7 @@ buildscript {
         set("android_crypto", "1.0.0")
         set("room_version", "2.4.3")
         set("work_version", "2.7.1")
-        set("camerax_version", "1.1.0-rc01")
+        set("camerax_version", "1.2.0")
 
         set("zoom_layout_version", "1.9.0")
     }

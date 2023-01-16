@@ -162,7 +162,7 @@ fun TakePictureScreenImpl(
 
     eye: Eye = Eye.None,
 
-    onImageSaved: (Uri?, Int) -> Unit = { _, _ -> Unit },
+    onImageSaved: (Uri?, Int) -> Unit = { _, _ -> },
     onCancelImageCapture: () -> Unit = {},
 
     helperZoomState: HelperZoomState = HelperZoomState.ZoomNormal,

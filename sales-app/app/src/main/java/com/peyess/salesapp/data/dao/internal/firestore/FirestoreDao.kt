@@ -16,13 +16,9 @@ import com.peyess.salesapp.data.utils.query.PeyessQuery
 import kotlinx.coroutines.tasks.await
 import kotlin.reflect.KClass
 
-interface ReadOnlyFirestoreDao<F: Any> {
-    suspend fun simpleCollectionPaginator(
-        query: PeyessQuery,
-        config: SimplePaginatorConfig,
-    ): Either<Unexpected, StoreLensCollectionPaginator>
+typealias FetchCollectionResponse<T> = Either<FirestoreError, List<T>>
 
-    suspend fun getById(id: String): Either<FirestoreError, F>
+interface ReadOnlyFirestoreDao<F: Any> {
 
     private suspend fun fetch(docRef: DocumentReference): Either<FirestoreError, DocumentSnapshot> =
         Either.catch { docRef.get().await() }
@@ -44,6 +40,8 @@ interface ReadOnlyFirestoreDao<F: Any> {
             ensureNotNull(obj) { NotFound("Document doesn't exist", null) }
         }
 
+    suspend fun getById(id: String): Either<FirestoreError, F>
+
     suspend fun fetchDocument(
         docType: KClass<F>,
         docRef: DocumentReference,
@@ -54,4 +52,14 @@ interface ReadOnlyFirestoreDao<F: Any> {
 
             obj
         }
+
+    suspend fun simpleCollectionPaginator(
+        query: PeyessQuery,
+        config: SimplePaginatorConfig,
+    ): Either<Unexpected, StoreLensCollectionPaginator>
+
+    suspend fun fetchCollection(
+        query: PeyessQuery,
+        config: SimplePaginatorConfig,
+    ): FetchCollectionResponse<F>
 }

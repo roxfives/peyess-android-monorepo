@@ -10,4 +10,5 @@ data class FramesDocument(
     val value: Double = 0.0,
     val tagCode: String = "",
     val type: FramesType = FramesType.None,
+    val framesInfo: String = "",
 )

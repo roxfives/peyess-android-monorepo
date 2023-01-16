@@ -77,3 +77,4 @@ data class LocalLensDocument(
 //    val disponibilities: List<DisponibilityDocument> = emptyList(),
 //    val dispManufacturers: List<String> = emptyList(),
 )
+

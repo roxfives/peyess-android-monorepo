@@ -9,9 +9,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import arrow.core.Either
 import arrow.core.leftIfNull
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.client.room.ClientPickedDao
-import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
@@ -35,6 +34,7 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.adapter.toProductPickedDocument
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
@@ -358,7 +358,7 @@ class SaleRepositoryImpl @Inject constructor(
         return currentPositioningsByEye[eye]!!
     }
 
-    override fun clientPicked(role: ClientRole): Flow<ClientEntity?> {
+    override fun clientPicked(role: ClientRole): Flow<ClientPickedEntity?> {
         // TODO: possible null pointer exception
         return currentClientsByRole[role]!!
     }
@@ -387,7 +387,7 @@ class SaleRepositoryImpl @Inject constructor(
         productPickedDao.add(productPicked)
     }
 
-    override fun pickClient(client: ClientEntity) {
+    override fun pickClient(client: ClientPickedEntity) {
         Timber.i("Adding client $client")
         clientPickedDao.add(client)
     }

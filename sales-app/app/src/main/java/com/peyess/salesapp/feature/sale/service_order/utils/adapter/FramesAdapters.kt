@@ -1,10 +1,11 @@
-package com.peyess.salesapp.data.adapter.products
+package com.peyess.salesapp.feature.sale.service_order.utils.adapter
 
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
+import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 
-fun FramesEntity.toDescription(): ProductSoldFramesDescriptionDocument {
+fun FramesDocument.toDescription(): ProductSoldFramesDescriptionDocument {
     // TODO: update to local price
     return ProductSoldFramesDescriptionDocument(
         id = "ref: $reference",

@@ -1,8 +1,7 @@
 package com.peyess.salesapp.repository.sale
 
 import arrow.core.Either
-import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
@@ -13,6 +12,7 @@ import com.peyess.salesapp.data.dao.local_sale.prescription_picture.Prescription
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
 import com.peyess.salesapp.repository.sale.error.ProductPickedError
@@ -55,8 +55,8 @@ interface SaleRepository {
 
     suspend fun productPicked(serviceOrderId: String): ProductPickedResponse
 
-    fun pickClient(client: ClientEntity)
-    fun clientPicked(role: ClientRole): Flow<ClientEntity?>
+    fun pickClient(client: ClientPickedEntity)
+    fun clientPicked(role: ClientRole): Flow<ClientPickedEntity?>
 
     fun payments(): Flow<List<SalePaymentEntity>>
     fun paymentById(paymentId: Long): Flow<SalePaymentEntity?>

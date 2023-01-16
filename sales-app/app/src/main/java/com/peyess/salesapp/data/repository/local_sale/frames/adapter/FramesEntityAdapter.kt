@@ -12,5 +12,6 @@ fun FramesEntity.toFramesDocument(): FramesDocument {
         value = value,
         tagCode = tagCode,
         type = type,
+        framesInfo = framesInfo,
     )
 }

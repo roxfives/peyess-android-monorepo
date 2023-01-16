@@ -15,4 +15,6 @@ data class LocalLensTreatmentDocument(
     val supplier: String = "",
     val warning: String = "",
     val explanations: List<String> = emptyList(),
-)
+) {
+    val name = "$brand $design"
+}

@@ -2,10 +2,11 @@ package com.peyess.salesapp.feature.sale.service_order.utils
 
 import android.content.Context
 import android.net.Uri
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.flatMap
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
-import com.peyess.salesapp.dao.client.firestore.ClientDao
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
 import com.peyess.salesapp.dao.products.room.local_lens.LocalLensEntity
@@ -22,6 +23,7 @@ import com.peyess.salesapp.data.adapter.payment.toPaymentDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
+import com.peyess.salesapp.feature.sale.service_order.utils.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
@@ -29,7 +31,13 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
+import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
+import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -37,6 +45,17 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.feature.sale.service_order.utils.error.AddClientError
+import com.peyess.salesapp.feature.sale.service_order.utils.error.AddProductError
+import com.peyess.salesapp.feature.sale.service_order.utils.error.ColoringNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.FramesNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.LensNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.ResponsibleNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.ServiceOrderUnexpected
+import com.peyess.salesapp.feature.sale.service_order.utils.error.ServiceOrderUploaderError
+import com.peyess.salesapp.feature.sale.service_order.utils.error.TreatmentNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.UserNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.WitnessNotFound
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.users.CollaboratorDocument
@@ -48,12 +67,7 @@ import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -67,17 +81,11 @@ import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
-private data class ProductSet(
-    val lens: LocalLensEntity = LocalLensEntity(),
-    val coloring: LocalColoringEntity = LocalColoringEntity(),
-    val treatment: LocalTreatmentEntity = LocalTreatmentEntity(),
-    val frames: FramesEntity = FramesEntity(),
-)
+typealias SaleData = Pair<ServiceOrderDocument, PurchaseDocument>
+typealias SaleDataGenerationResponse = Either<ServiceOrderUploaderError, SaleData>
 
 class ServiceOrderUploader constructor(
     private val salesDatabase: ActiveSalesDatabase,
-    private val productRepository: ProductRepository,
-    private val clientDao: ClientDao,
     private val authenticationRepository: AuthenticationRepository,
     private val saleRepository: SaleRepository,
     private val positioningRepository: PositioningRepository,
@@ -87,6 +95,10 @@ class ServiceOrderUploader constructor(
     private val serviceOrderRepository: ServiceOrderRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
+    private val localLensesRepository: LocalLensesRepository,
+    private val framesRepository: LocalFramesRepository,
+    private val clientRepository: ClientRepository,
+    private val clientPickedRepository: ClientPickedRepository,
     private val firebaseManager: FirebaseManager,
 ) {
     var purchaseId = ""
@@ -344,79 +356,61 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun addClientData(so: ServiceOrderDocument): ServiceOrderDocument {
-        var user: ClientDocument? = null
-        var responsible: ClientDocument? = null
-        var witness: ClientDocument? = null
+    private suspend fun addClientData(
+        so: ServiceOrderDocument,
+    ): Either<AddClientError, ServiceOrderDocument> = either {
+        val user = clientPickedRepository
+            .getClientForServiceOrder(role = ClientRole.User, soId = so.id)
+            .mapLeft { ClientNotFound(it.description, it.error) }
+            .flatMap { clientRepository.clientById(it.id) }
+            .mapLeft { UserNotFound(it.description, it.error) }
+            .bind()
 
-        salesDatabase
-            .clientPickedDao()
-            .getClientForSO(ClientRole.User, so.id)
-            .map {
-//                clientDao.clientById(it?.id ?: "")
-                ClientDocument()
-            }
-            .take(1)
-            .collect { user = it }
+        val responsible = clientPickedRepository
+            .getClientForServiceOrder(role = ClientRole.Responsible, soId = so.id)
+            .mapLeft { ClientNotFound(it.description, it.error) }
+            .flatMap { clientRepository.clientById(it.id) }
+            .mapLeft { ResponsibleNotFound(it.description, it.error) }
+            .bind()
 
-        salesDatabase
-            .clientPickedDao()
-            .getClientForSO(ClientRole.Responsible, so.id)
-            .map {
-//                clientDao.clientById(it?.id ?: "")
-                ClientDocument()
-            }
-            .take(1)
-            .collect { responsible = it }
+        val witness = clientPickedRepository
+            .getClientForServiceOrder(role = ClientRole.Witness, soId = so.id)
+            .mapLeft { ClientNotFound(it.description, it.error) }
+            .flatMap { clientRepository.clientById(it.id) }
+            .mapLeft { WitnessNotFound(it.description, it.error) }
+            .fold(
+                ifLeft = { null },
+                ifRight = { it },
+            )
 
-        salesDatabase
-            .clientPickedDao()
-            .getClientForSO(ClientRole.Witness, so.id)
-            .map {
-//                if (it != null) {
-//                    clientDao.clientById(it.id)
-//                } else {
-//                    flowOf(null)
-//                }
-                ClientDocument()
-            }
-            .take(1)
-            .collect { witness = it }
+        so.copy(
+            clientDocument = user.document,
+            clientName = user.name,
+            clientPicture = user.picture.toString(),
+            clientUid = user.id,
+            clientBirthday = user.birthday,
+            clientPhone = user.phone,
+            clientCellphone = user.cellphone,
+            clientNeighborhood = user.neighborhood,
+            clientStreet = user.street,
+            clientCity = user.city,
+            clientState = user.state,
+            clientHouseNumber = user.houseNumber,
+            clientZipcode = user.zipCode,
 
-        if (user == null || responsible == null) {
-            error("User (${user?.id}) or responsible (${responsible?.id}) is null: " +
-                    "user == $user and responsible == $responsible")
-        }
-
-        return so.copy(
-            clientDocument = user!!.document,
-            clientName = user!!.name,
-            clientPicture = user!!.picture.toString(),
-            clientUid = user!!.id,
-            clientBirthday = user!!.birthday,
-            clientPhone = user!!.phone,
-            clientCellphone = user!!.cellphone,
-            clientNeighborhood = user!!.neighborhood,
-            clientStreet = user!!.street,
-            clientCity = user!!.city,
-            clientState = user!!.state,
-            clientHouseNumber = user!!.houseNumber,
-            clientZipcode = user!!.zipCode,
-
-            responsibleDocument = responsible!!.document,
-            responsibleName = responsible!!.name,
-            responsiblePicture = responsible!!.picture.toString(),
-            responsibleUid = responsible!!.id,
-            responsibleBirthday = responsible!!.birthday,
-            responsiblePhone = responsible!!.phone,
-            responsibleCellphone = responsible!!.cellphone,
-            responsibleNeighborhood = responsible!!.neighborhood,
-            responsibleStreet = responsible!!.street,
-            responsibleCity = responsible!!.city,
-            responsibleState = responsible!!.state,
-            responsibleHouseNumber = responsible!!.houseNumber,
-            responsibleZipcode = responsible!!.zipCode,
+            responsibleDocument = responsible.document,
+            responsibleName = responsible.name,
+            responsiblePicture = responsible.picture.toString(),
+            responsibleUid = responsible.id,
+            responsibleBirthday = responsible.birthday,
+            responsiblePhone = responsible.phone,
+            responsibleCellphone = responsible.cellphone,
+            responsibleNeighborhood = responsible.neighborhood,
+            responsibleStreet = responsible.street,
+            responsibleCity = responsible.city,
+            responsibleState = responsible.state,
+            responsibleHouseNumber = responsible.houseNumber,
+            responsibleZipcode = responsible.zipCode,
 
             witnessDocument = witness?.document ?: "",
             witnessName = witness?.name ?: "",
@@ -464,83 +458,79 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun addProductsData(so: ServiceOrderDocument): ServiceOrderDocument {
-        var total = 0.0
+    private suspend fun addProductsData(
+        so: ServiceOrderDocument,
+    ): Either<AddProductError, ServiceOrderDocument> = either {
+        val productPicked = saleRepository
+            .productPicked(so.id)
+            .mapLeft {
+                ServiceOrderUnexpected("Comparison for so ${so.id} not found", it.error)
+            }
+            .bind()
 
-        var lens = LocalLensEntity()
-        var coloring = LocalColoringEntity()
-        var treatment = LocalTreatmentEntity()
-        var frames = FramesEntity()
+        val lens = localLensesRepository
+            .getLensById(productPicked.lensId)
+            .mapLeft { LensNotFound(it.description, it.error) }
+            .bind()
+
+        val coloring = localLensesRepository
+            .getColoringById(productPicked.coloringId)
+            .mapLeft { ColoringNotFound(it.description, it.error) }
+            .bind()
+
+        val treatment = localLensesRepository
+            .getTreatmentById(productPicked.treatmentId)
+            .mapLeft { TreatmentNotFound(it.description, it.error) }
+            .bind()
+
+        val frames = framesRepository
+            .framesForServiceOrder(so.id)
+            .mapLeft { FramesNotFound(it.description, it.error) }
+            .bind()
 
         val misc = mutableListOf<ProductSoldDescriptionDocument>()
 
-        saleRepository
-            .pickedProduct()
-            .filterNotNull()
-            .flatMapLatest {
-                combine(
-                    productRepository.lensById(it.lensId).filterNotNull().take(1),
-                    productRepository.coloringById(it.coloringId).filterNotNull().take(1),
-                    productRepository.treatmentById(it.treatmentId).filterNotNull().take(1),
-                    saleRepository.currentFramesData(),
-                    ::ProductSet
+        val framesValue = if (frames.areFramesNew) {
+            frames.value
+        } else {
+            0.0
+        }
+
+        var total = lens.price + framesValue
+
+        if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
+            total += coloring.price
+
+            if (lens.priceAddColoring > 0) {
+                total += lens.priceAddColoring
+
+                misc.add(
+                    ProductSoldDescriptionDocument(
+                        units = 1,
+                        nameDisplay = "Adicional por coloração",
+                        price = lens.priceAddColoring,
+                    )
                 )
             }
-            .map {
-                lens = it.lens
-                coloring = it.coloring
-                treatment = it.treatment
-                frames = it.frames
+        }
 
-                val framesValue = if (frames.areFramesNew) {
-                    frames.value
-                } else {
-                    0.0
-                }
+        if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
+            total += treatment.price
 
-                // TODO: Update coloring and treatment to use price instead of suggested price
-                var totalToPay = lens.price + framesValue
+            if (lens.priceAddTreatment > 0) {
+                total += lens.priceAddTreatment
 
-                if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
-                    totalToPay += coloring.suggestedPrice
-
-                    if (lens.suggestedPriceAddColoring > 0) {
-                        totalToPay += lens.suggestedPriceAddColoring
-
-                        misc.add(
-                            ProductSoldDescriptionDocument(
-                                units = 1,
-                                nameDisplay = "Adicional por coloração",
-                                price = lens.suggestedPriceAddColoring,
-                            )
-                        )
-                    }
-                }
-                if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
-                    totalToPay += treatment.suggestedPrice
-
-                    if (lens.suggestedPriceAddTreatment > 0) {
-                        totalToPay += lens.suggestedPriceAddTreatment
-
-                        misc.add(
-                            ProductSoldDescriptionDocument(
-                                units = 1,
-                                nameDisplay = "Adicional por tratamento",
-                                price = lens.suggestedPriceAddTreatment,
-                            )
-                        )
-                    }
-                }
-
-                totalToPay
+                misc.add(
+                    ProductSoldDescriptionDocument(
+                        units = 1,
+                        nameDisplay = "Adicional por tratamento",
+                        price = lens.priceAddTreatment,
+                    )
+                )
             }
-            .take(1)
-            .collect {
-                total = it
-            }
+        }
 
-        return so.copy(
+        so.copy(
             samePurchaseSo = listOf(so.id),
 
             total = total,
@@ -576,7 +566,6 @@ class ServiceOrderUploader constructor(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
     ): ServiceOrderDocument {
-
         val discount = discountRepository.getDiscountForSale(saleId)
         val totalDiscount = when (discount?.discountMethod) {
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
@@ -745,7 +734,7 @@ class ServiceOrderUploader constructor(
         serviceOrderId: String,
         localSaleId: String,
         uploadPartialData: Boolean,
-    ): Pair<ServiceOrderDocument, PurchaseDocument> {
+    ): SaleDataGenerationResponse = either {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
             error("Firestore instance for store is null")
@@ -768,32 +757,20 @@ class ServiceOrderUploader constructor(
             updated = now,
         )
 
-        serviceOrder = runBlocking {
-            addClientData(serviceOrder)
-        }
+        serviceOrder = addClientData(serviceOrder).bind()
 
-        serviceOrder = runBlocking {
-            addSalespersonData(serviceOrder)
-        }
+        serviceOrder = addSalespersonData(serviceOrder)
 
-        serviceOrder = runBlocking {
-            addPrescriptionData(serviceOrder, uploadPartialData)
-        }
+        serviceOrder = addPrescriptionData(serviceOrder, uploadPartialData)
 
-        serviceOrder = runBlocking {
-            addPositioningData(serviceOrder, uploadPartialData)
-        }
+        serviceOrder = addPositioningData(serviceOrder, uploadPartialData)
 
-        serviceOrder = runBlocking {
-            addProductsData(serviceOrder)
-        }
+        serviceOrder = addProductsData(serviceOrder).bind()
 
         serviceOrder = addDiscountData(localSaleId, serviceOrder)
         serviceOrder = addFeeData(localSaleId, serviceOrder)
 
-        val purchase = runBlocking {
-            createPurchase(context, serviceOrder)
-        }
+        val purchase = createPurchase(context, serviceOrder)
 
         val totalPaid = if (purchase.payments.isEmpty()) {
             0.0
@@ -815,7 +792,7 @@ class ServiceOrderUploader constructor(
             leftToPay = totalLeft,
         )
 
-        return Pair(serviceOrder, purchase)
+        Pair(serviceOrder, purchase)
     }
 
     suspend fun emitServiceOrder(

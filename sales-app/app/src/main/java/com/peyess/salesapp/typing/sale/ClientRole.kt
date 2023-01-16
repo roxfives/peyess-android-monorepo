@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.client.room
+package com.peyess.salesapp.typing.sale
 
 sealed class ClientRole {
     object User: ClientRole()

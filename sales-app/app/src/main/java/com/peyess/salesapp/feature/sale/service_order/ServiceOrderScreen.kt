@@ -76,10 +76,10 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
@@ -408,9 +408,9 @@ private fun ServiceOrderScreenImpl(
     onFinishSale: () -> Unit = {},
 
     areUsersLoading: Boolean = false,
-    user: ClientEntity = ClientEntity(),
-    responsible: ClientEntity = ClientEntity(),
-    witness: ClientEntity? = null,
+    user: ClientPickedEntity = ClientPickedEntity(),
+    responsible: ClientPickedEntity = ClientPickedEntity(),
+    witness: ClientPickedEntity? = null,
     onChangeResponsible: () -> Unit = {},
     onChangeUser: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
@@ -619,9 +619,9 @@ private fun ClientSection(
     onChangeUser: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
 
-    user: ClientEntity = ClientEntity(),
-    responsible: ClientEntity = ClientEntity(),
-    witness: ClientEntity? = null,
+    user: ClientPickedEntity = ClientPickedEntity(),
+    responsible: ClientPickedEntity = ClientPickedEntity(),
+    witness: ClientPickedEntity? = null,
 ) {
     Column(
         modifier = modifier
@@ -736,7 +736,7 @@ fun SubSectionTitlePreview() {
 private fun ClientCard(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    client: ClientEntity,
+    client: ClientPickedEntity,
     onEditClient: () -> Unit = {},
 ) {
     Column(
@@ -2337,8 +2337,8 @@ private fun PrescriptionSectionPreview() {
 private fun ClientSectionPreview() {
     SalesAppTheme {
         ClientSection(
-            user = ClientEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
-            responsible = ClientEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
+            user = ClientPickedEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
+            responsible = ClientPickedEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
         )
     }
 }

@@ -1,7 +1,7 @@
 package com.peyess.salesapp.database.room.converters
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.typing.sale.ClientRole
 
 class ConverterClientRole {
     @TypeConverter

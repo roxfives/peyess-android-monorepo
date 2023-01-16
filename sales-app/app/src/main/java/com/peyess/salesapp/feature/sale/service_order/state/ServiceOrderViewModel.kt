@@ -5,19 +5,22 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDao
-import com.peyess.salesapp.dao.client.room.ClientRole
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
@@ -44,6 +47,7 @@ import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
+import com.peyess.salesapp.feature.sale.service_order.utils.SaleDataGenerationResponse
 import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -75,10 +79,7 @@ import kotlin.random.asJavaRandom
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
     private val saleRepository: SaleRepository,
-    private val productRepository: ProductRepository,
-
     private val salesDatabase: ActiveSalesDatabase,
-    private val clientDao: ClientDao,
     private val authenticationRepository: AuthenticationRepository,
     private val localLensesRepository: LocalLensesRepository,
     private val framesRepository: LocalFramesRepository,
@@ -90,6 +91,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val salePaymentRepository: SalePaymentRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
+    private val clientRepository: ClientRepository,
+    private val clientPickedRepository: ClientPickedRepository,
     private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
@@ -118,6 +121,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onAsync(ServiceOrderState::totalPaidAsync) { processTotalPaidResponse(it) }
         onAsync(ServiceOrderState::paymentsResponseAsync) { processPaymentsResponse(it) }
 
+        onAsync(ServiceOrderState::serviceOrderGenerationResponseAsync) {
+            processGenerateSaleResponse(it)
+        }
+
         onEach(ServiceOrderState::serviceOrderId) {
             if (it.isNotBlank()) {
                 loadProductPicked(it)
@@ -142,8 +149,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         ) { lens, coloring, treatment, frames ->
             updateTotalToPay(lens, coloring, treatment, frames)
         }
-
-        // TODO: load the payments and the total to be paid into the state
     }
 
     private fun loadCurrentSale() {
@@ -196,19 +201,21 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     private fun createUploader() {
         serviceOrderUploader = ServiceOrderUploader(
-            salesDatabase,
-            productRepository,
-            clientDao,
-            authenticationRepository,
-            saleRepository,
-            positioningRepository,
-            measuringRepository,
-            prescriptionRepository,
-            purchaseRepository,
-            serviceOrderRepository,
-            discountRepository,
-            paymentFeeRepository,
-            firebaseManager,
+            salesDatabase = salesDatabase,
+            authenticationRepository = authenticationRepository,
+            saleRepository = saleRepository,
+            positioningRepository = positioningRepository,
+            measuringRepository = measuringRepository,
+            prescriptionRepository = prescriptionRepository,
+            purchaseRepository = purchaseRepository,
+            serviceOrderRepository = serviceOrderRepository,
+            discountRepository = discountRepository,
+            paymentFeeRepository = paymentFeeRepository,
+            localLensesRepository = localLensesRepository,
+            framesRepository = framesRepository,
+            clientRepository = clientRepository,
+            clientPickedRepository = clientPickedRepository,
+            firebaseManager = firebaseManager,
         )
     }
 
@@ -463,6 +470,22 @@ class ServiceOrderViewModel @AssistedInject constructor(
         copy(totalToPay = totalToPay)
     }
 
+    private fun processGenerateSaleResponse(response: SaleDataGenerationResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    serviceOrderGenerationResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(serviceOrderResponse = it)
+            },
+        )
+    }
+
     fun onUpdateIsCreating(isCreating: Boolean) = setState {
         copy(isCreating = isCreating)
     }
@@ -476,42 +499,30 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     fun failedAnimationFinished() = setState {
-        copy(hasSaleFailed = false)
+        copy(serviceOrderGenerationResponseAsync = Uninitialized)
     }
 
-    fun generateSale(context: Context) = withState {
+    fun generateSale(context: Context) = withState { state ->
         suspend {
-            var soId = ""
-            var saleId = ""
-
-            Timber.i("Getting so info")
-            saleRepository
-                .activeSO()
-                .filterNotNull()
-                .take(1)
-                .collect{
-                    soId = it.id
-                    saleId = it.saleId
-                }
-            Timber.i("Got so info")
-
-            Timber.i("Generating SO with $soId for sale $saleId")
-            val salePair = serviceOrderUploader
-                .generateSaleData(context, it.hidServiceOrder, soId, saleId, true)
-            Timber.i("Generated SO with $soId for sale $saleId")
-
-            Timber.i("Emitting SO with id $soId for sale $saleId")
-            serviceOrderUploader.emitServiceOrder(salePair.first, salePair.second, saleId)
-            Timber.i("Emitted SO with id $soId for sale $saleId")
-
-        }.execute(Dispatchers.IO) {
-            Timber.i("Generated Service Order result is $it")
-
-            copy(
-                isSaleDone = it is Success,
-                isSaleLoading = it is Loading,
-                hasSaleFailed = it is Fail,
+            val sale = serviceOrderUploader.generateSaleData(
+                context = context,
+                hid = state.hidServiceOrder,
+                serviceOrderId = state.serviceOrderId,
+                localSaleId = state.saleId,
+                uploadPartialData = true,
             )
+
+            sale.fold(
+                ifLeft = { it },
+                ifRight = {
+                    serviceOrderUploader.emitServiceOrder(it.first, it.second, state.saleId)
+                    it
+                }
+            )
+
+            sale
+        }.execute(Dispatchers.IO) {
+            copy(serviceOrderGenerationResponseAsync = it)
         }
     }
 
@@ -521,52 +532,52 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onPdfGenerationFailed: () -> Unit,
     ) = withState {
         suspend {
-            var soId = ""
-            var saleId = ""
-
-            saleRepository
-                .activeSO()
-                .filterNotNull()
-                .take(1)
-                .collect{
-                    soId = it.id
-                    saleId = it.saleId
-                }
-
-            Timber.i("Generating pdf for $soId with sale $saleId")
+            val htmlToPdfConverter = HtmlToPdfConvertor(context)
 
             val salePair = serviceOrderUploader
-                .generateSaleData(context, it.hidServiceOrder, soId, saleId, false)
-            val html = buildHtml(context, salePair.first, salePair.second)
-            val htmlToPdfConverter = HtmlToPdfConvertor(context)
+                .generateSaleData(
+                    context = context,
+                    hid = it.hidServiceOrder,
+                    serviceOrderId = it.serviceOrderId,
+                    localSaleId = it.saleId,
+                    uploadPartialData = false,
+                )
+                .fold(
+                    ifLeft = { null},
+                    ifRight = { it },
+                )
+
+            val html = if (salePair != null) {
+                buildHtml(context, salePair.first, salePair.second)
+            } else {
+                null
+            }
 
             Timber.v("Using the html to print the document")
             Timber.v(html)
 
-            viewModelScope.launch(Dispatchers.Main) {
-                val file = createPrintFile(context)
-                if (file.exists()) {
-                    file.delete()
+            if (html != null) {
+                viewModelScope.launch(Dispatchers.Main) {
+                    val file = createPrintFile(context)
+                    if (file.exists()) {
+                        file.delete()
+                    }
+
+                    htmlToPdfConverter.convert(
+                        file,
+                        html,
+                        {
+                            Timber.e("Failed to generate service order pdf: ${it.message}", it)
+                            onPdfGenerationFailed()
+                        },
+                        { onPdfGenerated(it) },
+                    )
                 }
-
-                htmlToPdfConverter.convert(
-                    file,
-                    html,
-                    {
-                        Timber.e("Failed to generate service order pdf: ${it.message}", it)
-                        onPdfGenerationFailed()
-                    },
-                    { onPdfGenerated(it) },
-                )
             }
-
-            Timber.i("Generated PDF document for SO with id $soId for sale $saleId")
         }.execute(Dispatchers.IO) {
             Timber.i("Generated Service Order result is $it")
 
-            copy(
-                isSOPdfBeingGenerated = it is Loading,
-            )
+            copy(isSOPdfBeingGenerated = it is Loading)
         }
     }
 

@@ -2,6 +2,8 @@ package com.peyess.salesapp.dao.client.firestore
 
 import android.net.Uri
 import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.utils.time.toZonedDateTime
 import java.time.ZonedDateTime
 
@@ -43,6 +45,24 @@ data class ClientDocument(
     val updateAllowedBy: String = "",
 ) {
     val shortAddress = "$city, $state"
+}
+
+fun ClientDocument.toClientPickedEntity(
+    soId: String,
+    role: ClientRole,
+): ClientPickedEntity {
+    return ClientPickedEntity(
+        id = id,
+        soId = soId,
+        clientRole = role,
+        nameDisplay = nameDisplay,
+        name = name,
+        sex = sex.toName(),
+        email = email,
+        document = document,
+        picture = picture,
+        shortAddress = shortAddress,
+    )
 }
 
 fun FSClient.toDocument(id: String): ClientDocument {

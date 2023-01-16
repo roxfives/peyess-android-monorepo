@@ -12,5 +12,6 @@ fun FramesDocument.toFrames(): Frames {
         value = value,
         tagCode = tagCode,
         type = type,
+        framesInfo = framesInfo,
     )
 }

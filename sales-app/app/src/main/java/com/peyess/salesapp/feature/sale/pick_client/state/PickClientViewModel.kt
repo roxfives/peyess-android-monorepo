@@ -7,8 +7,8 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.client.room.toEntity
+import com.peyess.salesapp.dao.client.firestore.toClientPickedEntity
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
@@ -68,8 +68,8 @@ class PickClientViewModel @AssistedInject constructor(
             .take(1)
             .execute(Dispatchers.IO) { so ->
                 if (so is Success) {
-                    saleRepository.pickClient(client.toEntity(so.invoke().id, ClientRole.User))
-                    saleRepository.pickClient(client.toEntity(so.invoke().id, ClientRole.Responsible))
+                    saleRepository.pickClient(client.toClientPickedEntity(so.invoke().id, ClientRole.User))
+                    saleRepository.pickClient(client.toClientPickedEntity(so.invoke().id, ClientRole.Responsible))
 
                     copy(hasPickedClient = true, pickedId = client.id)
                 } else {
@@ -85,7 +85,7 @@ class PickClientViewModel @AssistedInject constructor(
             .take(1)
             .execute(Dispatchers.IO) { so ->
                 if (so is Success) {
-                    saleRepository.pickClient(client.toEntity(so.invoke().id, role))
+                    saleRepository.pickClient(client.toClientPickedEntity(so.invoke().id, role))
 
                     copy(hasPickedClient = true, pickedId = client.id)
                 } else {

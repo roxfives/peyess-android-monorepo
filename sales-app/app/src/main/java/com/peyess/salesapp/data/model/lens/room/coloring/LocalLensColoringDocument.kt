@@ -17,4 +17,6 @@ data class LocalLensColoringDocument(
     val type: String = "",
     val warning: String = "",
     val explanations: List<String> = emptyList(),
-)
+) {
+    val name = "$brand $design"
+}

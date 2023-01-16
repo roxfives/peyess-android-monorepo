@@ -1,16 +1,17 @@
-package com.peyess.salesapp.dao.client.room
+package com.peyess.salesapp.data.model.local_sale.client_picked
 
 import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.typing.sale.ClientRole
 
 @Entity(
-    tableName = ClientEntity.tableName,
+    tableName = ClientPickedEntity.tableName,
     primaryKeys = ["so_id", "role"]
 )
-data class ClientEntity(
-    @ColumnInfo(name = "id") val id: String = "",
+data class ClientPickedEntity(
+    @ColumnInfo(name = "id")
+    val id: String = "",
 
     @ColumnInfo(name = "so_id")
     val soId: String = "",
@@ -42,20 +43,4 @@ data class ClientEntity(
     companion object {
         const val tableName = "sale_client_picked"
     }
-}
-
-fun ClientDocument.toEntity(soId: String, clientRole: ClientRole): ClientEntity {
-    return ClientEntity(
-        id = id,
-        nameDisplay = nameDisplay,
-        name = name,
-        sex = sex.toName(),
-        email = email,
-        document = document,
-        picture = picture,
-        shortAddress = shortAddress,
-
-        soId = soId,
-        clientRole = clientRole,
-    )
 }

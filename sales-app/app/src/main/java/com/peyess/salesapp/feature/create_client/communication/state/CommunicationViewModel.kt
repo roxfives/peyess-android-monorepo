@@ -2,13 +2,12 @@ package com.peyess.salesapp.feature.create_client.communication.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.dao.client.room.ClientRole
-import com.peyess.salesapp.dao.client.room.toEntity
+import com.peyess.salesapp.dao.client.firestore.toClientPickedEntity
+import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.adapter.client.toClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.client.ClientRepository
@@ -22,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 private const val maxPhoneLength = 10
@@ -80,8 +78,8 @@ class CommunicationViewModel @AssistedInject constructor(
             .filterNotNull()
             .take(1)
             .collect { so ->
-                saleRepository.pickClient(client.toEntity(so.id, ClientRole.User))
-                saleRepository.pickClient(client.toEntity(so.id, ClientRole.Responsible))
+                saleRepository.pickClient(client.toClientPickedEntity(so.id, ClientRole.User))
+                saleRepository.pickClient(client.toClientPickedEntity(so.id, ClientRole.Responsible))
             }
     }
 
@@ -90,7 +88,7 @@ class CommunicationViewModel @AssistedInject constructor(
             .filterNotNull()
             .take(1)
             .collect { so ->
-                saleRepository.pickClient(client.toEntity(so.id, role))
+                saleRepository.pickClient(client.toClientPickedEntity(so.id, role))
             }
     }
 

@@ -9,12 +9,13 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
-import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
@@ -32,6 +33,8 @@ import com.peyess.salesapp.feature.sale.service_order.model.OverallDiscount
 import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.PaymentFee
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
+import com.peyess.salesapp.feature.sale.service_order.utils.SaleDataGenerationResponse
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
@@ -45,9 +48,9 @@ data class ServiceOrderState(
     val serviceOrderId: String = "",
     val isCreating: Boolean = false,
 
-    val userClientAsync: Async<ClientEntity?> = Uninitialized,
-    val responsibleClientAsync: Async<ClientEntity?> = Uninitialized,
-    val witnessClientAsync: Async<ClientEntity?> = Uninitialized,
+    val userClientAsync: Async<ClientPickedEntity?> = Uninitialized,
+    val responsibleClientAsync: Async<ClientPickedEntity?> = Uninitialized,
+    val witnessClientAsync: Async<ClientPickedEntity?> = Uninitialized,
 
     val prescriptionPictureAsync: Async<PrescriptionPictureEntity> = Uninitialized,
     val prescriptionDataAsync: Async<PrescriptionDataEntity> = Uninitialized,
@@ -88,28 +91,33 @@ data class ServiceOrderState(
     val hidSale: String = "",
     val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
 
+    val serviceOrderGenerationResponseAsync: Async<SaleDataGenerationResponse> = Uninitialized,
+    val serviceOrderResponse: Pair<ServiceOrderDocument, PurchaseDocument> =
+        Pair(ServiceOrderDocument(), PurchaseDocument()),
+
     val serviceOrderPdfAsync: Async<Uri> = Uninitialized,
     @StringRes
     val serviceOrderPdfErrorMessage: Int = R.string.empty_string,
 
-    val isSaleDone: Boolean = false,
-    val isSaleLoading: Boolean = false,
-    val hasSaleFailed: Boolean = false,
-
     val isSOPdfBeingGenerated: Boolean = false,
 ): MavericksState {
+    val isSaleDone: Boolean = serviceOrderGenerationResponseAsync is Success
+            && serviceOrderGenerationResponseAsync.invoke().isRight()
+    val isSaleLoading = serviceOrderGenerationResponseAsync is Loading
+    val hasSaleFailed = serviceOrderGenerationResponseAsync is Fail
+
     val isUserLoading = userClientAsync is Loading
     val userClient = if (userClientAsync is Success) {
-        userClientAsync.invoke() ?: ClientEntity()
+        userClientAsync.invoke() ?: ClientPickedEntity()
     } else {
-        ClientEntity()
+        ClientPickedEntity()
     }
 
     val isResponsibleLoading = responsibleClientAsync is Loading
     val responsibleClient = if (responsibleClientAsync is Success) {
-        responsibleClientAsync.invoke() ?: ClientEntity()
+        responsibleClientAsync.invoke() ?: ClientPickedEntity()
     } else {
-        ClientEntity()
+        ClientPickedEntity()
     }
 
     val isWitnessLoading = witnessClientAsync is Loading

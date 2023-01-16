@@ -78,4 +78,6 @@ data class StoreLensWithDetailsDocument(
     val altHeights: List<StoreLensAltHeightDocument> = emptyList(),
 
     val explanations: List<String> = emptyList(),
-)
+) {
+    val name = "$brandName $designName $techName $materialName"
+}

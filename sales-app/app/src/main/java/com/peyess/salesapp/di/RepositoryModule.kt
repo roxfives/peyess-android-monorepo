@@ -6,7 +6,7 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.client.firestore.ClientDao
-import com.peyess.salesapp.dao.client.room.ClientPickedDao
+import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.data.model.lens.description.LensDescriptionDao
@@ -60,6 +60,8 @@ import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepositoryImpl
+import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
+import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
@@ -385,5 +387,15 @@ object RepositoryModule {
         salePaymentDao: SalePaymentDao,
     ): SalePaymentRepository {
         return SalePaymentRepositoryImpl(salePaymentDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideClientPickedRepository(
+        clientPickedDao: ClientPickedDao,
+    ): ClientPickedRepository {
+        return ClientPickedRepositoryImpl(
+            clientPickedDao = clientPickedDao,
+        )
     }
 }

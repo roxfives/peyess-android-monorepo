@@ -12,7 +12,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDaoImpl
-import com.peyess.salesapp.dao.client.room.ClientPickedDao
+import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDaoImpl
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao

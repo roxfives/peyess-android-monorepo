@@ -10,6 +10,7 @@ data class Frames(
     val value: Double = 0.0,
     val tagCode: String = "",
     val type: FramesType = FramesType.None,
+    val framesInfo: String = "",
 ) {
     val name = "$description, $reference ($tagCode)"
 }

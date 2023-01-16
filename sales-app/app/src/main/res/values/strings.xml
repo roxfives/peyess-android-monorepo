@@ -568,7 +568,6 @@
     <string name="fs_col_family">lenses_designs</string>
     <string name="fs_col_description">lenses_designs</string>
     <string name="fs_col_clients">clients</string>
-    <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
     <string name="fs_col_so">optical_stores/%1$s/local_optical_so</string>
     <string name="fs_col_positioning">optical_stores/%1$s/local_optical_positioning</string>
     <string name="fs_col_measuring">optical_stores/%1$s/local_optical_measuring</string>
@@ -576,6 +575,7 @@
     <string name="fs_col_purchase">optical_stores/%1$s/local_optical_purchase</string>
     <string name="fs_col_card_flags">payment_card</string>
     <string name="fs_col_discount_groups">optical_stores/%1$s/local_optical_product_discount_groups</string>
+    <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
 
 
     <!--  Firestore documents  -->
@@ -583,6 +583,7 @@
     <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
     <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
     <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>
+    <string name="fs_doc_payment_method">optical_stores/%1$s/local_optical_payment_method/%1$s</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
@@ -596,6 +597,7 @@
     <string name="fs_field_card_flag_name">name</string>
     <string name="fs_field_lens_enabled">is_local_enabled</string>
     <string name="fs_field_lenses_priority">priority</string>
+    <string name="fs_field_payment_method_priority">priority</string>
 
     <!-- Storage file paths -->
     <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>

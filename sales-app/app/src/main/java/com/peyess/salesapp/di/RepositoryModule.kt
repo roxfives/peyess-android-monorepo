@@ -214,9 +214,13 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePaymentRepository(
-        clientDao: PaymentMethodDao
+        salesApplication: SalesApplication,
+        paymentMethodDao: PaymentMethodDao,
     ): PaymentMethodRepository {
-        return PaymentMethodRepositoryImpl(clientDao)
+        return PaymentMethodRepositoryImpl(
+            salesApplication = salesApplication,
+            paymentMethodDao = paymentMethodDao,
+        )
     }
 
     @Provides

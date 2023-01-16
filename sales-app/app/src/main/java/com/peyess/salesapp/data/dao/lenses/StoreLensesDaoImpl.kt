@@ -3,16 +3,14 @@ package com.peyess.salesapp.data.dao.lenses
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.firestore.ktx.toObject
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.internal.firestore.FetchCollectionResponse
+import com.peyess.salesapp.data.dao.lenses.utils.StoreLensCollectionPaginator
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
 import com.peyess.salesapp.data.internal.firestore.error.Unexpected
-import com.peyess.salesapp.data.internal.firestore.error.toFirestoreError
 import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -63,8 +61,7 @@ class StoreLensesDaoImpl @Inject constructor(
 
     override suspend fun fetchCollection(
         query: PeyessQuery,
-        config: SimplePaginatorConfig
-    ): FetchCollectionResponse<FSStoreLocalLens>  = either {
+    ): FetchCollectionResponse<FSStoreLocalLens> = either {
         val firestore = firebaseManager.storeFirestore
         val storeId = firebaseManager.currentStore?.uid
 
@@ -87,7 +84,9 @@ class StoreLensesDaoImpl @Inject constructor(
             .toFirestoreCollectionQuery(path, firestore)
 
         val querySnapshot = fsQuery.get().await()
-        querySnapshot.map { it.toObject(FSStoreLocalLens::class.java) }
+        querySnapshot.map {
+            Pair(it.id, it.toObject(FSStoreLocalLens::class.java))
+        }
     }
 
     override suspend fun getById(id: String): Either<FirestoreError, FSStoreLocalLens> =

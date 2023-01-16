@@ -6,7 +6,8 @@ import arrow.core.continuations.ensureNotNull
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.peyess.salesapp.data.dao.lenses.StoreLensCollectionPaginator
+import com.peyess.salesapp.data.dao.payment_method.utils.PaymentMethodCollectionPaginator
+import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
 import com.peyess.salesapp.data.internal.firestore.error.NotFound
@@ -16,7 +17,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQuery
 import kotlinx.coroutines.tasks.await
 import kotlin.reflect.KClass
 
-typealias FetchCollectionResponse<T> = Either<FirestoreError, List<T>>
+typealias FetchCollectionResponse<T> = Either<FirestoreError, List<Pair<String, T>>>
 
 interface ReadOnlyFirestoreDao<F: Any> {
 
@@ -56,10 +57,9 @@ interface ReadOnlyFirestoreDao<F: Any> {
     suspend fun simpleCollectionPaginator(
         query: PeyessQuery,
         config: SimplePaginatorConfig,
-    ): Either<Unexpected, StoreLensCollectionPaginator>
+    ): Either<Unexpected, SimpleCollectionPaginator<F>>
 
     suspend fun fetchCollection(
         query: PeyessQuery,
-        config: SimplePaginatorConfig,
     ): FetchCollectionResponse<F>
 }

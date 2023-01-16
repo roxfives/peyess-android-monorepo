@@ -1,12 +1,13 @@
 package com.peyess.salesapp.feature.sale.payment.state
 
 import android.net.Uri
+import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.data.model.payment_method.PaymentMethod
+import com.peyess.salesapp.data.model.payment_method.PaymentMethodDocument
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
@@ -29,13 +30,16 @@ import com.peyess.salesapp.feature.sale.payment.adapter.toLens
 import com.peyess.salesapp.feature.sale.payment.adapter.toOverallDiscount
 import com.peyess.salesapp.feature.sale.payment.adapter.toPayment
 import com.peyess.salesapp.feature.sale.payment.adapter.toPaymentFee
+import com.peyess.salesapp.feature.sale.payment.adapter.toPaymentMethod
 import com.peyess.salesapp.feature.sale.payment.adapter.toSalePaymentDocument
 import com.peyess.salesapp.feature.sale.payment.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.payment.model.Coloring
 import com.peyess.salesapp.feature.sale.payment.model.Frames
 import com.peyess.salesapp.feature.sale.payment.model.Lens
+import com.peyess.salesapp.feature.sale.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.sale.payment.model.Treatment
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
+import com.peyess.salesapp.repository.payments.PaymentMethodsResponse
 import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -107,6 +111,8 @@ class PaymentViewModel @AssistedInject constructor(
 
         onAsync(PaymentState::paymentUpdateResponseAsync) { processPaymentUpdateResponse(it) }
 
+        onAsync(PaymentState::paymentMethodsResponseAsync) { processPaymentMethodsResponse(it) }
+
         onEach(PaymentState::activePaymentMethod) { updatePaymentWithMethod(it) }
 
         onEach(PaymentState::totalToPay, PaymentState::totalPaid) { totalToPay, totalPaid ->
@@ -116,14 +122,16 @@ class PaymentViewModel @AssistedInject constructor(
         onEach(PaymentState::paymentId) { watchPaymentDataStream(it) }
 
         onEach(PaymentState::payment) { payment ->
-            withState {
-                val minInstallments = 1
-                val maxInstallments = it.activePaymentMethod.maxInstallments
-                val installments = if (it.activePaymentMethod.hasInstallments) {
-                    payment.installments.coerceAtMost(maxInstallments)
-                } else {
-                    minInstallments
-                }
+            loadInitialData()
+
+//            withState {
+//                val minInstallments = 1
+//                val maxInstallments = it.activePaymentMethod.maxInstallments
+//                val installments = if (it.activePaymentMethod.hasInstallments) {
+//                    payment.installments.coerceAtMost(maxInstallments)
+//                } else {
+//                    minInstallments
+//                }
 
 //                viewModelScope.launch(Dispatchers.IO) {
 //                    saleRepository.updatePayment(
@@ -132,7 +140,7 @@ class PaymentViewModel @AssistedInject constructor(
 //                        )
 //                    )
 //                }
-            }
+//            }
         }
 
         onEach(PaymentState::serviceOrderId) {
@@ -158,40 +166,32 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-    // Load payment method using coroutines
-    // Load the client using coroutines
+    private fun loadInitialData() {
+        loadPaymentMethods()
+        // TODO: load clients
+    }
 
-//    private fun loadPaymentMethods() = withState {
-//        paymentMethodRepository
-//            .payments()
-//            .execute(Dispatchers.IO) {
-//                Timber.i("Loading payment methods $it")
-//                val payments = it.invoke() ?: emptyList()
-//
-//                if (it is Success) {
-//                    copy(
-//                        paymentMethodsAsync = it,
-//                        activePaymentMethod = if (payments.isNotEmpty()) {
-//                            val method = payments[0]
-//
-//                            saleRepository.updatePayment(
-//                                this.payment.copy(
-//                                    methodId = method.id,
-//                                    methodType = method.type,
-//                                    methodName = method.name,
-//                                )
-//                            )
-//
-//                            method
-//                        } else {
-//                            null
-//                        }
-//                    )
-//                } else {
-//                    copy(paymentMethodsAsync = it)
-//                }
-//            }
-//    }
+    private fun loadPaymentMethods() {
+        suspend {
+            paymentMethodRepository.payments()
+        }.execute(Dispatchers.IO) {
+            copy(paymentMethodsResponseAsync = it)
+        }
+    }
+
+    private fun processPaymentMethodsResponse(response: PaymentMethodsResponse) = setState {
+        response.fold(
+            ifLeft = {
+                 copy(
+                     paymentMethodsResponseAsync = Fail(
+                         it.error ?: Throwable(it.description),
+                     ),
+                 )
+            },
+
+            ifRight = { copy(paymentMethods = it.map { m -> m.toPaymentMethod() }) }
+        )
+    }
 
     private fun loadTotalPaid(saleId: String) = withState {
         suspend {
@@ -454,11 +454,16 @@ class PaymentViewModel @AssistedInject constructor(
 
     private fun updatePaymentWithMethod(method: PaymentMethod)  = withState {
         suspend {
+            val maxInstallments = it.payment
+                .installments
+                .coerceAtMost(method.maxInstallments)
+
             val payment = it.payment
                 .copy(
                     methodId = method.id,
                     methodType = method.type,
                     methodName = method.name,
+                    installments = maxInstallments,
                 )
                 .toSalePaymentDocument()
 

@@ -178,7 +178,7 @@ fun TakePictureScreenImpl(
     val context = LocalContext.current
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
 
-    val imageCapture = remember {
+    val imageCapture: ImageCapture = remember {
         ImageCapture.Builder()
             .setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
             .build()
@@ -488,7 +488,7 @@ fun TakePictureScreenImpl(
                                 .Builder(fileImage)
                                 .build(),
                             ContextCompat.getMainExecutor(context),
-                            object : ImageCapture.OnImageSavedCallback {
+                            object: ImageCapture.OnImageSavedCallback {
                                 override fun onImageSaved(
                                     outputFileResults: ImageCapture.OutputFileResults
                                 ) {

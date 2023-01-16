@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.dao.lenses
+package com.peyess.salesapp.data.dao.lenses.utils
 
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens

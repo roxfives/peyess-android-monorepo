@@ -7,7 +7,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.data.model.payment_method.PaymentMethod
+import com.peyess.salesapp.data.model.payment_method.PaymentMethodDocument
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
@@ -25,10 +25,11 @@ import com.peyess.salesapp.feature.sale.payment.model.Lens
 import com.peyess.salesapp.feature.sale.payment.model.OverallDiscount
 import com.peyess.salesapp.feature.sale.payment.model.Payment
 import com.peyess.salesapp.feature.sale.payment.model.PaymentFee
+import com.peyess.salesapp.feature.sale.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.sale.payment.model.Treatment
+import com.peyess.salesapp.repository.payments.PaymentMethodsResponse
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
-import timber.log.Timber
 
 data class PaymentState(
     val paymentId: Long = 0L,
@@ -59,7 +60,8 @@ data class PaymentState(
 
     val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
 
-    val paymentMethodsAsync: Async<List<PaymentMethod>> = Uninitialized,
+    val paymentMethodsResponseAsync: Async<PaymentMethodsResponse> = Uninitialized,
+    val paymentMethods: List<PaymentMethod> = emptyList(),
     val activePaymentMethod: PaymentMethod = PaymentMethod(),
 
     val clientAsync: Async<ClientDocument?> = Uninitialized,
@@ -80,14 +82,7 @@ data class PaymentState(
 ): MavericksState {
     val hasPaymentUpdateFailed = paymentUpdateResponseAsync is Fail
 
-    val arePaymentsLoading = paymentMethodsAsync is Loading
-    val paymentMethods = if (paymentMethodsAsync is Success) {
-        Timber.i("Setting payment methods ${paymentMethodsAsync.invoke()}")
-        paymentMethodsAsync.invoke()
-    } else {
-        Timber.i("Setting empty payment methods")
-        emptyList()
-    }
+    val arePaymentsLoading = paymentMethodsResponseAsync is Loading
 
     val areCardFlagsLoading = cardFlagsAsync is Loading
     val cardFlags = cardFlagsAsync.invoke() ?: emptyList()

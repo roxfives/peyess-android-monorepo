@@ -94,15 +94,14 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
     }
 
     suspend fun page(): Either<FirestoreError, List<F>> = either {
-        val querySnapshot = if (hasDownloadedTheFirstPage) {
+        val querySnapshot = if (hasDownloadedTheFirstPage && latestPage != null) {
             queryNextPage().bind()
         } else {
             queryFirstPage().bind()
         }
 
         updatePagingStatus(querySnapshot)
-        val a = toDocuments(querySnapshot).bind()
 
-        a
+        toDocuments(querySnapshot).bind()
     }
 }

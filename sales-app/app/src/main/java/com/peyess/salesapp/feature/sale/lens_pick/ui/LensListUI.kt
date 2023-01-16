@@ -53,6 +53,8 @@ private val lensCardBorderShape = Shapes.medium
 @Composable
 internal fun LensCard(
     modifier: Modifier = Modifier,
+    showStatus: Boolean = true,
+    showPickOption: Boolean = true,
     lens: LensPickModel = LensPickModel(),
     onPickLens: (lensId: String) -> Unit = {},
 ) {
@@ -64,12 +66,13 @@ internal fun LensCard(
         ),
 
         visibleContent = {
-            LensCardMainContent(lens = lens)
+            LensCardMainContent(lens = lens, showStatus = showStatus)
         },
 
         expandableContent = {
             LensCardDetails(
                 lens = lens,
+                showPickOption = showPickOption,
                 onPickLens = onPickLens,
             )
         }
@@ -79,6 +82,7 @@ internal fun LensCard(
 @Composable
 private fun LensCardMainContent(
     modifier: Modifier = Modifier,
+    showStatus: Boolean = true,
     lens: LensPickModel = LensPickModel(),
 ) {
     Column(
@@ -94,17 +98,19 @@ private fun LensCardMainContent(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            LensStatus(
-                color = if (lens.isAvailable) {
-                    if (lens.needsCheck) {
-                        Color.Yellow
+            if (showStatus) {
+                LensStatus(
+                    color = if (lens.isAvailable) {
+                        if (lens.needsCheck) {
+                            Color.Yellow
+                        } else {
+                            Color.Green
+                        }
                     } else {
-                        Color.Green
+                        Color.Gray
                     }
-                } else {
-                    Color.Gray
-                }
-            )
+                )
+            }
 
             Spacer(modifier = Modifier.width(32.dp))
 
@@ -125,6 +131,7 @@ private fun LensCardMainContent(
 @Composable
 private fun LensCardDetails(
     modifier: Modifier = Modifier,
+    showPickOption: Boolean = true,
     lens: LensPickModel = LensPickModel(),
     onPickLens: (lensId: String) -> Unit = {},
 ) {
@@ -310,18 +317,17 @@ private fun LensCardDetails(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            TextButton(
-                enabled = lens.isAvailable,
-                onClick = { onPickLens(lens.id) }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
-                    color = if (lens.isAvailable) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray
-                    }
-                )
+            if (showPickOption) {
+                TextButton(enabled = lens.isAvailable, onClick = { onPickLens(lens.id) }) {
+                    Text(
+                        text = stringResource(id = R.string.lens_suggestion_select).uppercase(),
+                        color = if (lens.isAvailable) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            Color.Gray
+                        }
+                    )
+                }
             }
         }
 

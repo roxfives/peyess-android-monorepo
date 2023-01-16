@@ -380,6 +380,7 @@ private fun LensSuggestionScreenImpl(
             LensList(
                 lensesTableStream = lensesTableStream,
 
+                showSuggestions = showSuggestions,
                 onPickLens = onPickLens,
 
                 isFamilyLensFilterEnabled = isFamilyLensFilterEnabled,
@@ -552,6 +553,7 @@ private fun TierSuggestion(
 private fun LensList(
     modifier: Modifier = Modifier,
 
+    showSuggestions: Boolean = false,
     onPickLens: (lensId: String) -> Unit,
     onHideSearchScreen: () -> Unit = {},
 
@@ -732,21 +734,23 @@ private fun LensList(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SalesAppTheme.dimensions.minimum_touch_target)
-                        .clickable { onHideSearchScreen() }
-                ) {
-                    Spacer(Modifier.weight(1f))
+                if (showSuggestions) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(SalesAppTheme.dimensions.minimum_touch_target)
+                            .clickable { onHideSearchScreen() }
+                    ) {
+                        Spacer(Modifier.weight(1f))
 
-                    Icon(imageVector = Icons.Filled.FilterList, contentDescription = "")
-                    Spacer(Modifier.width(24.dp))
-                    Text(text = stringResource(id = R.string.lens_suggestion_filter_title))
+                        Icon(imageVector = Icons.Filled.FilterList, contentDescription = "")
+                        Spacer(Modifier.width(24.dp))
+                        Text(text = stringResource(id = R.string.lens_suggestion_filter_title))
 
-                    Spacer(Modifier.weight(1f))
-                    Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "")
-                    Spacer(Modifier.width(16.dp))
+                        Spacer(Modifier.weight(1f))
+                        Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "")
+                        Spacer(Modifier.width(16.dp))
+                    }
                 }
 
                 Row(
@@ -999,6 +1003,8 @@ private fun LensList(
                         lensesTable[index].let {
                             LensCard(
                                 lens = it!!,
+                                showStatus = showSuggestions,
+                                showPickOption = showSuggestions,
                                 onPickLens = onPickLens,
                             )
 

@@ -12,14 +12,16 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
@@ -27,6 +29,7 @@ import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.OverallDiscount
+import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.PaymentFee
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
@@ -67,7 +70,8 @@ data class ServiceOrderState(
     val positioningLeftAsync: Async<PositioningEntity> = Uninitialized,
     val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
 
-    val paymentsAsync: Async<List<SalePaymentEntity>> = Uninitialized,
+    val paymentsResponseAsync: Async<SalePaymentResponse> = Uninitialized,
+    val payments: List<Payment> = emptyList(),
 
     val discountAsync: Async<OverallDiscountRepositoryResponse> = Uninitialized,
     val discount: OverallDiscount = OverallDiscount(),
@@ -77,7 +81,8 @@ data class ServiceOrderState(
 
     val totalToPay: Double = 0.0,
     val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
-    val totalPaidAsync: Async<Double> = Uninitialized,
+    val totalPaidAsync: Async<SalePaymentTotalResponse> = Uninitialized,
+    val totalPaid: Double = 0.0,
 
     val hidServiceOrder: String = "",
     val hidSale: String = "",
@@ -184,19 +189,9 @@ data class ServiceOrderState(
         Measuring()
     }
 
-    val isPaymentLoading = paymentsAsync is Loading
-    val payments = if (paymentsAsync is Success) {
-        paymentsAsync.invoke()
-    } else {
-        emptyList()
-    }
+    val isPaymentLoading = paymentsResponseAsync is Loading
 
     val totalToPayWithDiscount = calculateTotalToPayWithDiscount(totalToPay, discount)
-    val totalPaid = if (totalPaidAsync is Success) {
-        totalPaidAsync.invoke()
-    } else {
-        0.0
-    }
     val totalToPayWithFee = calculatePriceWithFee(totalToPayWithDiscount, paymentFee)
 
     val canAddNewPayment = totalPaid < totalToPayWithFee
@@ -228,24 +223,24 @@ data class ServiceOrderState(
     val isServiceOrderPdfError = serviceOrderPdfAsync is Fail
 
     private fun calculatePriceWithFee(
-        totalToPay: Double,
+        price: Double,
         fee: PaymentFee,
     ): Double {
         return when (fee.method) {
-            PaymentFeeCalcMethod.None -> totalToPay
-            PaymentFeeCalcMethod.Percentage -> totalToPay * (1 + fee.value)
-            PaymentFeeCalcMethod.Whole -> totalToPay + fee.value
+            PaymentFeeCalcMethod.None -> price
+            PaymentFeeCalcMethod.Percentage -> price * (1 + fee.value)
+            PaymentFeeCalcMethod.Whole -> price + fee.value
         }
     }
 
     private fun calculateTotalToPayWithDiscount(
-        totalToPay: Double,
+        price: Double,
         discount: OverallDiscount,
     ): Double {
         return when(discount.discountMethod) {
-            DiscountCalcMethod.None -> totalToPay
-            DiscountCalcMethod.Percentage -> totalToPay * (1.0 - discount.overallDiscountValue)
-            DiscountCalcMethod.Whole -> totalToPay - discount.overallDiscountValue
+            DiscountCalcMethod.None -> price
+            DiscountCalcMethod.Percentage -> price * (1.0 - discount.overallDiscountValue)
+            DiscountCalcMethod.Whole -> price - discount.overallDiscountValue
         }
     }
 }

@@ -14,5 +14,7 @@ interface PaymentFeeRepository {
 
     suspend fun updatePaymentFeeForSale(paymentFee: PaymentFeeDocument)
 
+    fun watchPaymentFee(saleId: String): Flow<PaymentFeeRepositoryResponse>
+
     suspend fun paymentFeeForSale(saleId: String): PaymentFeeRepositoryResponse
 }

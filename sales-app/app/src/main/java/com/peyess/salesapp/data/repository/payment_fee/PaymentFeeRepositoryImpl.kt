@@ -1,7 +1,9 @@
 package com.peyess.salesapp.data.repository.payment_fee
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.leftIfNull
+import arrow.core.right
 import com.peyess.salesapp.data.adapter.payment_fee.toPaymentFeeDocument
 import com.peyess.salesapp.data.adapter.payment_fee.toPaymentFeeEntity
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
@@ -13,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import timber.log.Timber
@@ -42,6 +45,26 @@ class PaymentFeeRepositoryImpl @Inject constructor(
         Timber.i("Updating paymentFee $entity from $paymentFee")
 
         paymentFeeDao.updatePaymentFee(entity)
+    }
+
+    override fun watchPaymentFee(saleId: String): Flow<PaymentFeeRepositoryResponse> {
+        return paymentFeeDao.watchPaymentFee(saleId)
+            .map { paymentFeeEntity ->
+                paymentFeeEntity?.toPaymentFeeDocument()
+                    .right()
+                    .leftIfNull {
+                        PaymentFeeNotFound("PaymentFee for sale $saleId not found")
+                    } as PaymentFeeRepositoryResponse
+            }.catch {
+                Timber.e(it, "Error while watching discount for sale $saleId")
+                val error = Unexpected(
+                    description = it.message
+                        ?: "Unknown error while watching discount for sale $saleId",
+                    error = it,
+                )
+
+                emit(error.left())
+            }
     }
 
     override suspend fun paymentFeeForSale(

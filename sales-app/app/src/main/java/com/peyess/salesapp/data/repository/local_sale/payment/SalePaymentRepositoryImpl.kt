@@ -11,6 +11,7 @@ import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
 import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentNotFound
 import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentReadError
 import com.peyess.salesapp.data.repository.local_sale.payment.error.Unexpected
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -29,7 +30,23 @@ class SalePaymentRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun watchPayment(paymentId: Long): SalePaymentFlowResponse {
+    override fun watchPaymentsForSale(saleId: String): Flow<SalePaymentResponse> {
+        return salePaymentDao.watchPaymentsForSale(saleId)
+            .map {
+                it.map { payment ->
+                    payment.toSalePaymentDocument()
+                }.right() as SalePaymentResponse
+            }.catch {
+                val error = Unexpected(
+                    description = it.message ?: "",
+                    error = it,
+                )
+
+                emit(error.left())
+            }
+    }
+
+    override fun watchPayment(paymentId: Long): Flow<SinglePaymentResponse> {
         return salePaymentDao.watchPayment(paymentId)
             .map {
                 it?.toSalePaymentDocument()?.right()
@@ -37,6 +54,19 @@ class SalePaymentRepositoryImpl @Inject constructor(
                         description = "Payment with id $paymentId not found",
                     ) as SalePaymentReadError).left()
             }.catch {
+                val error = Unexpected(
+                    description = it.message ?: "",
+                    error = it,
+                )
+
+                emit(error.left())
+            }
+    }
+
+    override fun watchTotalPayment(saleId: String): Flow<SalePaymentTotalResponse> {
+        return salePaymentDao.watchTotalPayment(saleId)
+            .map { it.right() as SalePaymentTotalResponse }
+            .catch {
                 val error = Unexpected(
                     description = it.message ?: "",
                     error = it,
@@ -59,7 +89,9 @@ class SalePaymentRepositoryImpl @Inject constructor(
         SalePaymentNotFound(description = "Payment $paymentId not found")
     }
 
-    override suspend fun totalPaymentForSale(saleId: String): SalePaymentTotalResponse = Either.catch {
+    override suspend fun totalPaymentForSale(
+        saleId: String,
+    ): SalePaymentTotalResponse = Either.catch {
         salePaymentDao.totalPaymentForSale(saleId)
     }.mapLeft {
         Unexpected(

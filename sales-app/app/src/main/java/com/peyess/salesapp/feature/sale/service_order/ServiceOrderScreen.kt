@@ -77,7 +77,6 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.client.room.ClientEntity
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
@@ -86,6 +85,7 @@ import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
@@ -436,11 +436,11 @@ private fun ServiceOrderScreenImpl(
     totalPaid: Double = 0.0,
     totalToPay: Double = 0.0,
     isPaymentLoading: Boolean = false,
-    payments: List<SalePaymentEntity> = emptyList(),
+    payments: List<Payment> = emptyList(),
     onAddPayment: () -> Unit = {},
     onAddPaymentFee: () -> Unit = {},
-    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
-    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
+    onDeletePayment: (payment: Payment) -> Unit = {},
+    onEditPayment: (payment: Payment) -> Unit = {},
 
     isGeneratingPdfDocument: Boolean = false,
     onGenerateServiceOrderPdf: () -> Unit = {},
@@ -1950,11 +1950,11 @@ private fun PaymentSection(
     totalToPay: Double = 0.0,
 
     isLoading: Boolean = false,
-    payments: List<SalePaymentEntity> = emptyList(),
+    payments: List<Payment> = emptyList(),
     onAddPayment: () -> Unit = {},
     onAddPaymentFee: () -> Unit = {},
-    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
-    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
+    onDeletePayment: (payment: Payment) -> Unit = {},
+    onEditPayment: (payment: Payment) -> Unit = {},
 ) {
     val paid = NumberFormat.getCurrencyInstance().format(totalPaid)
     val price = NumberFormat.getCurrencyInstance().format(totalToPay)
@@ -2043,9 +2043,9 @@ private fun PaymentSection(
 @Composable
 private fun PaymentCard(
     modifier: Modifier = Modifier,
-    payment: SalePaymentEntity = SalePaymentEntity(),
-    onEditPayment: (payment: SalePaymentEntity) -> Unit = {},
-    onDeletePayment: (payment: SalePaymentEntity) -> Unit = {},
+    payment: Payment = Payment(),
+    onEditPayment: (payment: Payment) -> Unit = {},
+    onDeletePayment: (payment: Payment) -> Unit = {},
 ) {
     Row(
         modifier = modifier.padding(vertical = 16.dp),
@@ -2218,7 +2218,7 @@ private fun PaymentCardPreview() {
     SalesAppTheme {
         PaymentCard(
             modifier = Modifier.fillMaxWidth(),
-            payment = SalePaymentEntity(
+            payment = Payment(
                 clientName = "Nome do Ciente",
                 clientAddress = "Mora aqui, mesmo",
                 installments = 2,

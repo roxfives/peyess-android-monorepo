@@ -20,6 +20,9 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -32,11 +35,14 @@ import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.feature.sale.service_order.adapter.toFrames
 import com.peyess.salesapp.feature.sale.service_order.adapter.toLens
 import com.peyess.salesapp.feature.sale.service_order.adapter.toOverallDiscount
+import com.peyess.salesapp.feature.sale.service_order.adapter.toPayment
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPaymentFee
+import com.peyess.salesapp.feature.sale.service_order.adapter.toSalePaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
@@ -81,6 +87,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val prescriptionRepository: PrescriptionRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
+    private val salePaymentRepository: SalePaymentRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
     private val firebaseManager: FirebaseManager,
@@ -96,8 +103,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadPrescriptionPicture()
         loadPrescriptionData()
         loadPositioning()
-        loadPayments()
-        loadTotalPaid()
 
         createUploader()
         createHid()
@@ -110,15 +115,23 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         onAsync(ServiceOrderState::discountAsync) { processDiscountResponse(it) }
         onAsync(ServiceOrderState::paymentFeeAsync) { processPaymentFeeResponse(it) }
+        onAsync(ServiceOrderState::totalPaidAsync) { processTotalPaidResponse(it) }
+        onAsync(ServiceOrderState::paymentsResponseAsync) { processPaymentsResponse(it) }
 
         onEach(ServiceOrderState::serviceOrderId) {
-            loadProductPicked(it)
-            loadFrames(it)
+            if (it.isNotBlank()) {
+                loadProductPicked(it)
+                loadFrames(it)
+            }
         }
         onEach(ServiceOrderState::productPicked) { loadProducts(it) }
         onEach(ServiceOrderState::saleId) {
-            loadPaymentFee(it)
-            loadDiscount(it)
+            if (it.isNotBlank()) {
+                loadPayments(it)
+                loadPaymentFee(it)
+                loadDiscount(it)
+                loadTotalPaid(it)
+            }
         }
 
         onEach(
@@ -130,30 +143,28 @@ class ServiceOrderViewModel @AssistedInject constructor(
             updateTotalToPay(lens, coloring, treatment, frames)
         }
 
-        // TODO: refactor payments repository to use arrowKt and coroutines
         // TODO: load the payments and the total to be paid into the state
     }
 
     private fun loadCurrentSale() {
-        saleRepository.activeSale().execute {
-            copy(saleIdAsync = it)
-        }
+        saleRepository.activeSale()
+            .execute(Dispatchers.IO) {
+                copy(saleIdAsync = it)
+            }
     }
 
     private fun loadDiscount(saleId: String) {
-        suspend {
-            discountRepository.discountForSale(saleId)
-        }.execute {
-            copy(discountAsync = it)
-        }
+        discountRepository.watchDiscount(saleId)
+            .execute(Dispatchers.IO) {
+                copy(discountAsync = it)
+            }
     }
 
     private fun loadPaymentFee(saleId: String) {
-        suspend {
-            paymentFeeRepository.paymentFeeForSale(saleId)
-        }.execute {
-            copy(paymentFeeAsync = it)
-        }
+        paymentFeeRepository.watchPaymentFee(saleId)
+            .execute(Dispatchers.IO) {
+                copy(paymentFeeAsync = it)
+            }
     }
 
     private fun createHid() {
@@ -237,10 +248,11 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadPayments() = withState {
-        saleRepository.payments().execute(Dispatchers.IO) {
-            copy(paymentsAsync = it)
-        }
+    private fun loadPayments(saleId: String) {
+        salePaymentRepository.watchPaymentsForSale(saleId)
+            .execute(Dispatchers.IO) {
+                copy(paymentsResponseAsync = it)
+            }
     }
 
     private fun loadFrames(serviceOrderId: String) {
@@ -257,6 +269,22 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }.execute(Dispatchers.IO) {
             copy(productPickedResponseAsync = it)
         }
+    }
+
+    private fun processPaymentsResponse(response: SalePaymentResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    paymentsResponseAsync = Fail(
+                        it.error ?: Throwable(it.description),
+                    ),
+                )
+            },
+
+            ifRight = {
+                copy(payments = it.map { p -> p.toPayment() })
+            }
+        )
     }
 
     private fun processProductPickedResponse(response: ProductPickedResponse) = setState {
@@ -389,19 +417,22 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadTotalPaid() = withState {
-        saleRepository
-            .payments()
-            .map {
-                var totalPaid = 0.0
+    private fun processTotalPaidResponse(response: SalePaymentTotalResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    totalPaidAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
+            },
 
-                it.forEach { payment ->
-                    totalPaid += payment.value
-                }
+            ifRight = { copy(totalPaid = it) }
+        )
+    }
 
-                Timber.i("Loaded total paid: $totalPaid")
-                totalPaid
-            }
+    private fun loadTotalPaid(saleId: String) {
+        salePaymentRepository.watchTotalPayment(saleId)
             .execute(Dispatchers.IO) {
                 copy(totalPaidAsync = it)
             }
@@ -559,9 +590,9 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    fun deletePayment(payment: SalePaymentEntity) = withState {
+    fun deletePayment(payment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
-            saleRepository.deletePayment(payment)
+            salePaymentRepository.deletePayment(payment.toSalePaymentDocument())
         }
     }
 

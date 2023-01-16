@@ -6,7 +6,6 @@ import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentR
 import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentWriteError
 import kotlinx.coroutines.flow.Flow
 
-typealias SalePaymentFlowResponse = Flow<Either<SalePaymentReadError, SalePaymentDocument>>
 typealias SalePaymentResponse = Either<SalePaymentReadError, List<SalePaymentDocument>>
 typealias SinglePaymentResponse = Either<SalePaymentReadError, SalePaymentDocument>
 typealias SalePaymentTotalResponse = Either<SalePaymentReadError, Double>
@@ -17,7 +16,11 @@ typealias SalePaymentDeleteResult = Either<SalePaymentWriteError, Unit>
 interface SalePaymentRepository {
     suspend fun paymentForSale(saleId: String): SalePaymentResponse
 
-    fun watchPayment(paymentId: Long): SalePaymentFlowResponse
+    fun watchPaymentsForSale(saleId: String): Flow<SalePaymentResponse>
+
+    fun watchPayment(paymentId: Long): Flow<SinglePaymentResponse>
+
+    fun watchTotalPayment(saleId: String): Flow<SalePaymentTotalResponse>
 
     suspend fun payment(paymentId: Long): SinglePaymentResponse
 

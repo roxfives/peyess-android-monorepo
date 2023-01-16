@@ -20,13 +20,16 @@ interface SalePaymentDao {
     fun delete(paymentEntity: SalePaymentEntity)
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId")
-    fun getBySO(saleId: String): Flow<List<SalePaymentEntity>>
+    fun watchPaymentsForSale(saleId: String): Flow<List<SalePaymentEntity>>
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId ")
     fun paymentsForSale(saleId: String): List<SalePaymentEntity>
 
     @Query("SELECT SUM(value) FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId ")
     fun totalPaymentForSale(saleId: String): Double
+
+    @Query("SELECT SUM(value) FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId ")
+    fun watchTotalPayment(saleId: String): Flow<Double>
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE id = :id ")
     fun watchPayment(id: Long): Flow<SalePaymentEntity?>

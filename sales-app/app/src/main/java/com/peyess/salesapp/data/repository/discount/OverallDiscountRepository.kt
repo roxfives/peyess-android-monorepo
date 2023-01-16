@@ -15,5 +15,7 @@ interface OverallDiscountRepository {
 
     suspend fun updateDiscountForSale(discount: OverallDiscountDocument)
 
+    fun watchDiscount(saleId: String): Flow<OverallDiscountRepositoryResponse>
+
     suspend fun discountForSale(saleId: String): OverallDiscountRepositoryResponse
 }

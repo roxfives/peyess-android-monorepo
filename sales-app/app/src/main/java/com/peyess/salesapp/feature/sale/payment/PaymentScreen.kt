@@ -68,8 +68,8 @@ import coil.request.ImageRequest
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
+import com.peyess.salesapp.feature.sale.payment.model.Client
 import com.peyess.salesapp.feature.sale.payment.model.Payment
 import com.peyess.salesapp.feature.sale.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.sale.payment.state.PaymentState
@@ -189,7 +189,7 @@ private fun PaymentScreenImpl(
     modifier: Modifier = Modifier,
 
     isClientLoading: Boolean = false,
-    client: ClientDocument = ClientDocument(),
+    client: Client = Client(),
     toBePaid: Double = 0.0,
 
     areCardFlagsLoading: Boolean = false,
@@ -285,7 +285,7 @@ private fun ClientView(
     modifier: Modifier = Modifier,
 
     isClientLoading: Boolean = false,
-    client: ClientDocument,
+    client: Client,
     toBePaid: Double = 0.0,
 ) {
     val density = LocalDensity.current
@@ -910,7 +910,7 @@ private fun ClientViewPreview() {
     SalesAppTheme {
         ClientView(
             modifier = Modifier.fillMaxWidth(),
-            client = ClientDocument(name = "Nome Um Pouco Longo"),
+            client = Client(name = "Nome Um Pouco Longo"),
             toBePaid = 1200.0,
         )
     }

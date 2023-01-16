@@ -353,26 +353,33 @@ class ServiceOrderUploader constructor(
         salesDatabase
             .clientPickedDao()
             .getClientForSO(ClientRole.User, so.id)
-            .flatMapLatest { clientDao.clientById(it?.id ?: "") }
+            .map {
+//                clientDao.clientById(it?.id ?: "")
+                ClientDocument()
+            }
             .take(1)
             .collect { user = it }
 
         salesDatabase
             .clientPickedDao()
             .getClientForSO(ClientRole.Responsible, so.id)
-            .flatMapLatest { clientDao.clientById(it?.id ?: "") }
+            .map {
+//                clientDao.clientById(it?.id ?: "")
+                ClientDocument()
+            }
             .take(1)
             .collect { responsible = it }
 
         salesDatabase
             .clientPickedDao()
             .getClientForSO(ClientRole.Witness, so.id)
-            .flatMapLatest {
-                if (it != null) {
-                    clientDao.clientById(it.id)
-                } else {
-                    flowOf(null)
-                }
+            .map {
+//                if (it != null) {
+//                    clientDao.clientById(it.id)
+//                } else {
+//                    flowOf(null)
+//                }
+                ClientDocument()
             }
             .take(1)
             .collect { witness = it }

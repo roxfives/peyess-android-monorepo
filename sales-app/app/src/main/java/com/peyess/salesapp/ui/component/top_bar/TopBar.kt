@@ -85,6 +85,7 @@ fun showNavigateBack(
 
     return !(
         screen == SalesAppScreens.UserListAuthentication
+            || screen == SalesAppScreens.SalePayment
             || screen == SalesAppScreens.SaleScreen
             || screen == SalesAppScreens.FramesMeasureTakePicture
             || screen == SalesAppScreens.FramesMeasure

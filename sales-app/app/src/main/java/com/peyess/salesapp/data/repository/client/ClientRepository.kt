@@ -1,14 +1,18 @@
 package com.peyess.salesapp.data.repository.client
 
+import arrow.core.Either
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.repository.client.error.ClientRepositoryError
 import kotlinx.coroutines.flow.Flow
+
+typealias ClientRepositoryResponse = Either<ClientRepositoryError, ClientDocument>
 
 interface ClientRepository {
     fun clients(): Flow<List<ClientDocument>>
 
-    fun clientById(clientId: String): Flow<ClientDocument?>
+    suspend fun clientById(clientId: String): ClientRepositoryResponse
 
     fun latestLocalClientCreated(): Flow<ClientModel?>
     suspend fun updateLocalClient(clientModel: ClientModel)

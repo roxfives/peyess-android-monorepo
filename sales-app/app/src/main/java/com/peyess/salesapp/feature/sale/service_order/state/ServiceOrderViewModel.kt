@@ -544,11 +544,11 @@ class ServiceOrderViewModel @AssistedInject constructor(
             var id: Long = 0
 
             saleRepository
-                .activeSO()
+                .activeSale()
                 .filterNotNull()
                 .take(1)
                 .map {
-                    id = saleRepository.addPayment(SalePaymentEntity(soId = it.id))
+                    id = saleRepository.addPayment(SalePaymentEntity(saleId = it.id))
                 }
                 .flowOn(Dispatchers.IO)
                 .collect()

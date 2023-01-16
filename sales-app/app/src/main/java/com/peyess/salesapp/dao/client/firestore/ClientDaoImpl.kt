@@ -46,10 +46,10 @@ class ClientDaoImpl @Inject constructor(
         awaitClose()
     }
 
-    override fun clientById(clientId: String): Flow<ClientDocument?> = flow {
+    override suspend fun clientById(clientId: String): ClientDocument? {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
-            return@flow
+            return null
         }
 
         val snap = firestore
@@ -62,14 +62,11 @@ class ClientDaoImpl @Inject constructor(
             .await()
 
         if (!snap.exists()) {
-            emit(null)
-            return@flow
+            return null
         }
 
-        val client = snap.toObject(FSClient::class.java)?.toDocument(snap.id)
-
-        emit(client)
-        return@flow
+        return snap.toObject(FSClient::class.java)
+            ?.toDocument(snap.id)
     }
 
     override suspend fun addClient(clientId: String, client: FSClient) {

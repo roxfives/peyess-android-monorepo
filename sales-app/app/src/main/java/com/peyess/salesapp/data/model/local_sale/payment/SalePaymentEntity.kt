@@ -20,8 +20,8 @@ data class SalePaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
 
-    @ColumnInfo(name = "so_id")
-    val soId: String = "",
+    @ColumnInfo(name = "sale_id")
+    val saleId: String = "",
 
     // TODO: Normalize data for clients and (maybe) payment method
     @ColumnInfo(name = "client_id")

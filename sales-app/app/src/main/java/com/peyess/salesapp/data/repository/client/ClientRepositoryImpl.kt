@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import arrow.core.Either
+import arrow.core.leftIfNull
 import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
@@ -21,6 +23,8 @@ import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client_legal.ClientLegalMethod
 import com.peyess.salesapp.data.model.client_legal.FSClientLegal
+import com.peyess.salesapp.data.repository.client.error.ClientNotFound
+import com.peyess.salesapp.data.repository.client.error.Unexpected
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.file.deleteFile
@@ -55,8 +59,17 @@ class ClientRepositoryImpl @Inject constructor(
         return clientDao.clients()
     }
 
-    override fun clientById(clientId: String): Flow<ClientDocument?> {
-        return clientDao.clientById(clientId)
+    override suspend fun clientById(clientId: String): ClientRepositoryResponse = Either.catch {
+        clientDao.clientById(clientId)
+    }.mapLeft {
+        Unexpected(
+            description = "Error getting client $clientId",
+            error = it,
+        )
+    }.leftIfNull {
+        ClientNotFound(
+            description = "Client $clientId not found",
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

@@ -6,7 +6,7 @@ import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 fun SalePaymentDocument.toSalePaymentEntity(): SalePaymentEntity {
     return SalePaymentEntity(
         id = id,
-        soId = saleId,
+        saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
         clientName = clientName,

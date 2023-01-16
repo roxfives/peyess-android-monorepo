@@ -10,6 +10,7 @@ import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.data.model.payment_method.PaymentMethodDocument
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
+import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
@@ -19,6 +20,7 @@ import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalRe
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
 import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
+import com.peyess.salesapp.feature.sale.payment.model.Client
 import com.peyess.salesapp.feature.sale.payment.model.Coloring
 import com.peyess.salesapp.feature.sale.payment.model.Frames
 import com.peyess.salesapp.feature.sale.payment.model.Lens
@@ -62,9 +64,9 @@ data class PaymentState(
 
     val paymentMethodsResponseAsync: Async<PaymentMethodsResponse> = Uninitialized,
     val paymentMethods: List<PaymentMethod> = emptyList(),
-    val activePaymentMethod: PaymentMethod = PaymentMethod(),
 
-    val clientAsync: Async<ClientDocument?> = Uninitialized,
+    val clientResponseAsync: Async<ClientRepositoryResponse> = Uninitialized,
+    val client: Client = Client(),
 
     val paymentUpdateResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,
 
@@ -80,6 +82,10 @@ data class PaymentState(
 
     val totalLeftToPay: Double = 0.0,
 ): MavericksState {
+    val activePaymentMethod = paymentMethods
+        .firstOrNull { it.id == payment.methodId }
+        ?: PaymentMethod()
+
     val hasPaymentUpdateFailed = paymentUpdateResponseAsync is Fail
 
     val arePaymentsLoading = paymentMethodsResponseAsync is Loading
@@ -87,10 +93,5 @@ data class PaymentState(
     val areCardFlagsLoading = cardFlagsAsync is Loading
     val cardFlags = cardFlagsAsync.invoke() ?: emptyList()
 
-    val isClientLoading = clientAsync is Loading
-    val client = if (clientAsync is Success && clientAsync.invoke() != null) {
-        clientAsync.invoke()!!
-    } else {
-        ClientDocument()
-    }
+    val isClientLoading = clientResponseAsync is Loading
 }

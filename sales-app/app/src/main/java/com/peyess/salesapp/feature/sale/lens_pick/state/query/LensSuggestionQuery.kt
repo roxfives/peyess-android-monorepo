@@ -231,7 +231,8 @@ fun buildQueryFieldsForLensSuggestions(
             buildQueryFieldsForAddition(prescription) +
             buildQueryFieldsForPrism(prescription) +
             buildQueryFieldsForHeight(measuringLeft, measuringRight) +
-            buildQueryFieldsForDiameter(measuringLeft, measuringRight) + buildQueryFieldsForSumRule(prescription)
+            buildQueryFieldsForDiameter(measuringLeft, measuringRight) +
+            buildQueryFieldsForSumRule(prescription)
 }
 
 fun buildGroupByForLensSuggestions(): List<PeyessGroupBy> {

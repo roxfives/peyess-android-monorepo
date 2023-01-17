@@ -7,89 +7,45 @@ import com.peyess.salesapp.features.disponibility.model.Prescription
 private fun checkLensTypeMatch(
     disponibilities: List<Disponibility>,
     prescription: Prescription,
-): List<ReasonUnsupported> {
-    val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
-
-    var isTypeSupported = false
-
-    disponibilities.forEach {
-        isTypeSupported = (prescription.lensType.isLensTypeMono() && it.isLensTypeMono)
-                || (!prescription.lensType.isLensTypeMono() && !it.isLensTypeMono)
-
-        if (isTypeSupported) {
-            return@forEach
-        }
+): List<Disponibility> {
+    return disponibilities.filter {
+        prescription.lensType.isLensTypeMono() && it.isLensTypeMono
+                || !prescription.lensType.isLensTypeMono() && !it.isLensTypeMono
     }
-
-    if (prescription.lensType.isLensTypeMono() && !isTypeSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMono)
-    } else if (!prescription.lensType.isLensTypeMono() && !isTypeSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMulti)
-    }
-
-    return reasonsUnsupported
 }
 
-private fun checkSphericalMatch(
+private fun checkHeightMatch(
+    disponibilities: List<Disponibility>,
+    prescription: Prescription,
+): List<Disponibility> {
+    return disponibilities.filter {
+        prescription.leftHeight >= it.height && prescription.rightHeight >= it.height
+    }
+}
+
+private fun checkDiameterMatch(
+    disponibilities: List<Disponibility>,
+    prescription: Prescription,
+): List<Disponibility> {
+    return disponibilities.filter {
+        prescription.leftDiameter <= it.diameter && prescription.rightDiameter <= it.diameter
+    }
+}
+
+private fun checkPrismMatch(
     disponibilities: List<Disponibility>,
     prescription: Prescription,
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    var isLeftSupported = false
-    var isRightSupported = false
+    val hasPrism = disponibilities.first().hasPrism
+    val maxPrism = disponibilities.maxOf { it.prism }
 
-    disponibilities.forEach {
-        isLeftSupported = isLeftSupported
-                || prescription.leftSpherical <= it.maxSpherical
-        isLeftSupported = isLeftSupported
-                || prescription.leftSpherical >= it.minSpherical
+    val isLeftSupported = prescription.leftPrism <= maxPrism
+    val isRightSupported = prescription.rightPrism <= maxPrism
 
-        isRightSupported = isRightSupported
-                || prescription.rightSpherical <= it.maxSpherical
-        isRightSupported = isRightSupported
-                || prescription.rightSpherical >= it.minSpherical
-    }
-
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.SphericalLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.SphericalRight)
-    }
-
-    return reasonsUnsupported
-}
-
-private fun checkCylindricalMatch(
-    disponibilities: List<Disponibility>,
-    prescription: Prescription,
-): List<ReasonUnsupported> {
-    val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
-
-    var isLeftSupported = false
-    var isRightSupported = false
-
-
-    disponibilities.forEach {
-        isLeftSupported = isLeftSupported
-                || prescription.leftCylindrical <= it.maxCylindrical
-        isLeftSupported = isLeftSupported
-                || prescription.leftCylindrical >= it.minCylindrical
-
-        isRightSupported = isRightSupported
-                || prescription.rightCylindrical <= it.maxCylindrical
-        isRightSupported = isRightSupported
-                || prescription.rightCylindrical >= it.minCylindrical
-    }
-
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.CylindricalLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.CylindricalRight)
+    if (!hasPrism || !isLeftSupported || !isRightSupported) {
+        reasonsUnsupported.add(ReasonUnsupported.Prism)
     }
 
     return reasonsUnsupported
@@ -101,191 +57,74 @@ private fun checkAdditionMatch(
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    var isLeftSupported = false
-    var isRightSupported = false
+    val maxAddition = disponibilities.maxOf { it.maxAddition }
+    val minAddition = disponibilities.minOf { it.minAddition }
 
-    if (!prescription.hasAddition) {
-        isLeftSupported = true
-        isRightSupported = true
-    } else {
-        disponibilities.forEach {
-            isLeftSupported = isLeftSupported
-                    || prescription.leftAddition <= it.maxAddition
-            isLeftSupported = isLeftSupported
-                    || prescription.leftAddition >= it.minAddition
+    val isLeftSupported = prescription.leftAddition in minAddition..maxAddition
+    val isRightSupported = prescription.rightAddition in minAddition..maxAddition
 
-            isRightSupported = isRightSupported
-                    || prescription.rightAddition <= it.maxAddition
-            isRightSupported = isRightSupported
-                    || prescription.rightAddition >= it.minAddition
-        }
-    }
 
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.AdditionLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.AdditionRight)
+    if (!isLeftSupported || !isRightSupported) {
+        reasonsUnsupported.add(ReasonUnsupported.Addition)
     }
 
     return reasonsUnsupported
 }
 
-private fun checkPrismMatch(
+private fun checkSphericalMatch(
     disponibilities: List<Disponibility>,
     prescription: Prescription,
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    var isLeftSupported = false
-    var isRightSupported = false
+    val maxSpherical = disponibilities.maxOf { it.maxSpherical }
+    val minSpherical = disponibilities.minOf { it.minSpherical }
 
-    if (!prescription.hasPrism) {
-        isLeftSupported = true
-        isRightSupported = true
-    } else {
-        disponibilities.forEach {
-            isLeftSupported = isLeftSupported
-                    || (it.hasPrism && prescription.leftPrism <= it.prism)
+    val isLeftSupported = prescription.leftSpherical in minSpherical..maxSpherical
+    val isRightSupported = prescription.rightSpherical in minSpherical..maxSpherical
 
-            isRightSupported = isRightSupported
-                    || (it.hasPrism && prescription.rightPrism <= it.prism)
-        }
-    }
-
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.PrismLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.PrismRight)
+    if (!isLeftSupported || !isRightSupported) {
+        reasonsUnsupported.add(ReasonUnsupported.Spherical)
     }
 
     return reasonsUnsupported
 }
 
-private fun checkDiameterMatch(
+private fun checkCylindricalMatch(
     disponibilities: List<Disponibility>,
     prescription: Prescription,
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    var isLeftSupported = false
-    var isRightSupported = false
+    val maxCylindrical = disponibilities.maxOf { it.maxCylindrical }
+    val minCylindrical = disponibilities.minOf { it.minCylindrical }
 
-    disponibilities.forEach {
-        isLeftSupported = isLeftSupported
-                || prescription.leftDiameter <= it.diameter
+    val isLeftSupported = prescription.leftCylindrical in minCylindrical..maxCylindrical
+    val isRightSupported = prescription.rightCylindrical in minCylindrical..maxCylindrical
 
-        isRightSupported = isRightSupported
-                || prescription.rightDiameter <= it.diameter
-    }
-
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.DiameterLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.DiameterRight)
+    if (!isLeftSupported || !isRightSupported) {
+        reasonsUnsupported.add(ReasonUnsupported.Cylindrical)
     }
 
     return reasonsUnsupported
 }
-
-private fun checkHeightMatch(
-    disponibilities: List<Disponibility>,
-    prescription: Prescription,
-): List<ReasonUnsupported> {
-    val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
-
-    var isLeftSupported = false
-    var isRightSupported = false
-
-    disponibilities.forEach {
-        isLeftSupported = isLeftSupported
-                || prescription.leftHeight >= it.height
-
-        isRightSupported = isRightSupported
-                || prescription.rightHeight >= it.height
-    }
-
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.HeightLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.HeightRight)
-    }
-
-    return reasonsUnsupported
-}
-
-//private fun checkAlternativeHeights(
-//    disponibilities: List<Disponibility>,
-//    prescription: Prescription,
-//): List<ReasonUnsupported> {
-//    val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
-//
-//    var isLeftSupported = false
-//    var isRightSupported = false
-//
-//    disponibilities.forEach { disponibility ->
-//        if (disponibility.hasAlternativeHeight) {
-//            disponibility.alternativeHeights.forEach {
-//                isLeftSupported = isLeftSupported
-//                        || prescription.leftHeight >= it.value
-//
-//                isRightSupported = isRightSupported
-//                        || prescription.rightHeight >= it.value
-//            }
-//        }
-//    }
-//
-//    if (!isLeftSupported) {
-//        reasonsUnsupported.add(ReasonUnsupported.HeightLeft)
-//    }
-//
-//    if (!isRightSupported) {
-//        reasonsUnsupported.add(ReasonUnsupported.HeightRight)
-//    }
-//
-//    return reasonsUnsupported
-//}
 
 private fun checkSumRule(
     disponibilities: List<Disponibility>,
     prescription: Prescription,
-): List<ReasonUnsupported> {
-    val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
-
-    var isLeftSupported = false
-    var isRightSupported = false
-
-    disponibilities.forEach {
-        if (!it.sumRule) {
-            isLeftSupported = true
-            isRightSupported = true
-
-            return@forEach
-        }
-
-        isLeftSupported = isLeftSupported
+): List<Disponibility> {
+    val matchingSumRuleLeft = disponibilities.filter {
+        !it.sumRule
                 || prescription.leftSpherical + prescription.leftCylindrical >= it.minSpherical
-
-        isRightSupported = isRightSupported
+    }
+    val matchingSumRuleRight = disponibilities.filter {
+        !it.sumRule
                 || prescription.rightSpherical + prescription.rightCylindrical >= it.minSpherical
     }
 
-    if (!isLeftSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.SumRuleLeft)
-    }
-
-    if (!isRightSupported) {
-        reasonsUnsupported.add(ReasonUnsupported.SumRuleRight)
-    }
-
-    return reasonsUnsupported
+    return matchingSumRuleLeft.toSet()
+        .union(matchingSumRuleRight.toSet())
+        .toList()
 }
 
 fun supportsPrescription(
@@ -294,19 +133,43 @@ fun supportsPrescription(
 ): List<ReasonUnsupported> {
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
-    reasonsUnsupported.addAll(checkLensTypeMatch(disponibilities, prescription))
-    reasonsUnsupported.addAll(checkSphericalMatch(disponibilities, prescription))
-    reasonsUnsupported.addAll(checkCylindricalMatch(disponibilities, prescription))
-    reasonsUnsupported.addAll(checkDiameterMatch(disponibilities, prescription))
+    val matchingTypes = checkLensTypeMatch(disponibilities, prescription)
+    if (matchingTypes.isEmpty() && prescription.lensType.isLensTypeMono()) {
+        reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMono)
+        return reasonsUnsupported
+    } else if (matchingTypes.isEmpty() && !prescription.lensType.isLensTypeMono()) {
+        reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMulti)
+        return reasonsUnsupported
+    }
 
+    val matchingHeights = checkHeightMatch(matchingTypes, prescription)
+    if (matchingHeights.isEmpty()) {
+        reasonsUnsupported.add(ReasonUnsupported.Height)
+        return reasonsUnsupported
+    }
 
-    reasonsUnsupported.addAll(checkAdditionMatch(disponibilities, prescription))
+    val matchingDiameter = checkDiameterMatch(matchingHeights, prescription)
+    if (matchingDiameter.isEmpty()) {
+        reasonsUnsupported.add(ReasonUnsupported.Diameter)
+        return reasonsUnsupported
+    }
 
-    reasonsUnsupported.addAll(checkPrismMatch(disponibilities, prescription))
+    val matchingSumRule = checkSumRule(matchingDiameter, prescription)
+    if (matchingSumRule.isEmpty()) {
+        reasonsUnsupported.add(ReasonUnsupported.SumRule)
+        return reasonsUnsupported
+    }
 
-    reasonsUnsupported.addAll(checkHeightMatch(disponibilities, prescription))
+    if (prescription.hasPrism) {
+        reasonsUnsupported.addAll(checkPrismMatch(matchingDiameter, prescription))
+    }
 
-    reasonsUnsupported.addAll(checkSumRule(disponibilities, prescription))
+    if (prescription.hasAddition) {
+        reasonsUnsupported.addAll(checkAdditionMatch(matchingDiameter, prescription))
+    }
+
+    reasonsUnsupported.addAll(checkSphericalMatch(matchingDiameter, prescription))
+    reasonsUnsupported.addAll(checkCylindricalMatch(matchingDiameter, prescription))
 
     return reasonsUnsupported
 }

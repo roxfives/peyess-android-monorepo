@@ -8,38 +8,30 @@ fun ReasonUnsupported.toStringResource(
     salesApplication: SalesApplication,
 ): String {
     return when (this) {
-        ReasonUnsupported.DiameterLeft,
-        ReasonUnsupported.DiameterRight ->
-            salesApplication.getString(R.string.lens_incompatible_reason_diameter)
-
-        ReasonUnsupported.HeightLeft,
-        ReasonUnsupported.HeightRight ->
-            salesApplication.getString(R.string.lens_incompatible_reason_height)
-
         ReasonUnsupported.LensTypeShouldBeMono ->
             salesApplication.getString(R.string.lens_incompatible_reason_required_mono)
-
         ReasonUnsupported.LensTypeShouldBeMulti ->
             salesApplication.getString(R.string.lens_incompatible_reason_required_multi)
 
-        ReasonUnsupported.AdditionLeft,
-        ReasonUnsupported.AdditionRight, ->
+        ReasonUnsupported.Diameter ->
+            salesApplication.getString(R.string.lens_incompatible_reason_diameter)
+
+        ReasonUnsupported.Height ->
+            salesApplication.getString(R.string.lens_incompatible_reason_height)
+
+        ReasonUnsupported.Addition ->
             salesApplication.getString(R.string.lens_incompatible_reason_addition)
 
-        ReasonUnsupported.CylindricalLeft,
-        ReasonUnsupported.CylindricalRight, ->
+        ReasonUnsupported.Cylindrical ->
             salesApplication.getString(R.string.lens_incompatible_reason_cylindrical)
 
-        ReasonUnsupported.SphericalLeft,
-        ReasonUnsupported.SphericalRight,->
+        ReasonUnsupported.Spherical ->
             salesApplication.getString(R.string.lens_incompatible_reason_spherical)
 
-        ReasonUnsupported.PrismLeft,
-        ReasonUnsupported.PrismRight ->
+        ReasonUnsupported.Prism ->
             salesApplication.getString(R.string.lens_incompatible_reason_prism)
 
-        ReasonUnsupported.SumRuleLeft,
-        ReasonUnsupported.SumRuleRight ->
+        ReasonUnsupported.SumRule ->
             salesApplication.getString(R.string.lens_incompatible_reason_sum_rule_failed)
     }
 }

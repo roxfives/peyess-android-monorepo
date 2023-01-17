@@ -4,20 +4,14 @@ sealed class ReasonUnsupported {
     object LensTypeShouldBeMono: ReasonUnsupported()
     object LensTypeShouldBeMulti: ReasonUnsupported()
 
-    object MaxSphericalLeft: ReasonUnsupported()
-    object MaxSphericalRight: ReasonUnsupported()
-    object MinSphericalLeft: ReasonUnsupported()
-    object MinSphericalRight: ReasonUnsupported()
+    object SphericalLeft: ReasonUnsupported()
+    object SphericalRight: ReasonUnsupported()
 
-    object MaxCylindricalLeft: ReasonUnsupported()
-    object MaxCylindricalRight: ReasonUnsupported()
-    object MinCylindricalLeft: ReasonUnsupported()
-    object MinCylindricalRight: ReasonUnsupported()
+    object CylindricalLeft: ReasonUnsupported()
+    object CylindricalRight: ReasonUnsupported()
 
-    object MaxAdditionLeft: ReasonUnsupported()
-    object MaxAdditionRight: ReasonUnsupported()
-    object MinAdditionLeft: ReasonUnsupported()
-    object MinAdditionRight: ReasonUnsupported()
+    object AdditionLeft: ReasonUnsupported()
+    object AdditionRight: ReasonUnsupported()
 
     object PrismLeft: ReasonUnsupported()
     object PrismRight: ReasonUnsupported()

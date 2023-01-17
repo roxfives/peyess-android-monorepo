@@ -430,27 +430,15 @@ class LensPickViewModel @AssistedInject constructor(
         lens: StoreLensWithDetailsDocument,
         prescription: Prescription,
     ): List<ReasonUnsupported> {
-        var disponibility: Disponibility
-        var unsupportedList: List<ReasonUnsupported>
-        val reasonsUnsupported: MutableSet<ReasonUnsupported> = mutableSetOf()
-
-        for (disp in lens.disponibilities) {
-            disponibility = disp.toDisponibility(
+        val disponibilities = lens.disponibilities.map {
+            it.toDisponibility(
                 height = lens.height,
                 lensType = prescription.lensType,
                 alternativeHeights = lens.altHeights,
             )
-
-            unsupportedList = supportsPrescription(disponibility, prescription)
-            if (unsupportedList.isEmpty()) {
-                reasonsUnsupported.clear()
-                break
-            } else {
-                reasonsUnsupported.addAll(unsupportedList)
-            }
         }
 
-        return reasonsUnsupported.toList()
+        return supportsPrescription(disponibilities, prescription)
     }
 
     private suspend fun getPrescriptionForFilter():

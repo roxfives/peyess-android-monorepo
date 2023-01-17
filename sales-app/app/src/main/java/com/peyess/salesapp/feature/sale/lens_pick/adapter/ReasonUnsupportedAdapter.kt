@@ -22,22 +22,16 @@ fun ReasonUnsupported.toStringResource(
         ReasonUnsupported.LensTypeShouldBeMulti ->
             salesApplication.getString(R.string.lens_incompatible_reason_required_multi)
 
-        ReasonUnsupported.MaxAdditionLeft,
-        ReasonUnsupported.MaxAdditionRight,
-        ReasonUnsupported.MinAdditionLeft,
-        ReasonUnsupported.MinAdditionRight ->
+        ReasonUnsupported.AdditionLeft,
+        ReasonUnsupported.AdditionRight, ->
             salesApplication.getString(R.string.lens_incompatible_reason_addition)
 
-        ReasonUnsupported.MaxCylindricalLeft,
-        ReasonUnsupported.MaxCylindricalRight,
-        ReasonUnsupported.MinCylindricalLeft,
-        ReasonUnsupported.MinCylindricalRight ->
+        ReasonUnsupported.CylindricalLeft,
+        ReasonUnsupported.CylindricalRight, ->
             salesApplication.getString(R.string.lens_incompatible_reason_cylindrical)
 
-        ReasonUnsupported.MaxSphericalLeft,
-        ReasonUnsupported.MaxSphericalRight,
-        ReasonUnsupported.MinSphericalLeft,
-        ReasonUnsupported.MinSphericalRight ->
+        ReasonUnsupported.SphericalLeft,
+        ReasonUnsupported.SphericalRight,->
             salesApplication.getString(R.string.lens_incompatible_reason_spherical)
 
         ReasonUnsupported.PrismLeft,

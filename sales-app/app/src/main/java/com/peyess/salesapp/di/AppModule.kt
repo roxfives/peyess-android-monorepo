@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.data.room.database.CacheCreateClientDatabase
+import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactoryImpl
@@ -62,8 +63,21 @@ object AppModule {
                 context,
                 CacheCreateClientDatabase::class.java,
                 "cache_create_client.db",
-            )
-            .fallbackToDestructiveMigration()
+            ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePictureUploadDatabase(
+        @ApplicationContext context: Context,
+    ): PictureUploadDatabase {
+        return Room.databaseBuilder(
+                context,
+                PictureUploadDatabase::class.java,
+                "picture_upload_management.db"
+            // TODO: remove destructive migration
+            ).fallbackToDestructiveMigration()
             .build()
     }
 

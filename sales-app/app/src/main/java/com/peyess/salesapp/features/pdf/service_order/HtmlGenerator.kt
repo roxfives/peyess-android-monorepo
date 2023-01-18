@@ -151,10 +151,7 @@ fun buildHtml(
             serviceOrder.framesProducts.style,
             serviceOrder.hasOwnFrames,
         ),
-        framesType = printFramesDescription(
-            serviceOrder.framesProducts.type.toName(),
-            serviceOrder.hasOwnFrames,
-        ),
+        framesType = printValue(serviceOrder.framesProducts.type.toName()),
 
         measuringBridge = "%.2f".format(serviceOrder.lBridge),
         measuringVHoop = "%.2f".format(serviceOrder.lVerticalHoop),

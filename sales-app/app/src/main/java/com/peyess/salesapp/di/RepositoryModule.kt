@@ -36,6 +36,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
+import com.peyess.salesapp.data.dao.management_picture_upload.PictureUploadDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
@@ -72,6 +73,8 @@ import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentReposit
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepositoryImpl
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepositoryImpl
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
@@ -396,6 +399,16 @@ object RepositoryModule {
     ): ClientPickedRepository {
         return ClientPickedRepositoryImpl(
             clientPickedDao = clientPickedDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun providePictureUploadRepository(
+        uploadPictureDao: PictureUploadDao,
+    ): PictureUploadRepository {
+        return PictureUploadRepositoryImpl(
+            uploadPictureDao = uploadPictureDao,
         )
     }
 }

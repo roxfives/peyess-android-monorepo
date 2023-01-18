@@ -66,9 +66,9 @@ import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDaoImpl
 import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.dao.purchase.PurchaseDaoImpl
-import com.peyess.salesapp.database.room.ActiveSalesDatabase
-import com.peyess.salesapp.data.database.CacheCreateClientDatabase
-import com.peyess.salesapp.database.room.ProductsDatabase
+import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
+import com.peyess.salesapp.data.room.database.CacheCreateClientDatabase
+import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDaoImpl

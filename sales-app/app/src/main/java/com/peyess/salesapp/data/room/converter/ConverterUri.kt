@@ -1,4 +1,4 @@
-package com.peyess.salesapp.database.room.converters
+package com.peyess.salesapp.data.room.converter
 
 import android.net.Uri
 import androidx.room.TypeConverter

@@ -14,7 +14,6 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.repository.client.ClientRepository
@@ -36,7 +35,7 @@ import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
-import com.peyess.salesapp.database.room.ActiveSalesDatabase
+import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.feature.sale.service_order.adapter.toFrames
@@ -56,7 +55,6 @@ import com.peyess.salesapp.feature.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument

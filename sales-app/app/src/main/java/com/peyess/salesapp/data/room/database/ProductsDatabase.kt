@@ -1,4 +1,4 @@
-package com.peyess.salesapp.database.room
+package com.peyess.salesapp.data.room.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -91,9 +91,9 @@ import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSup
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesTypeDBView
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
-import com.peyess.salesapp.database.room.converters.ConverterLocalDate
-import com.peyess.salesapp.database.room.converters.ConverterUri
-import com.peyess.salesapp.database.room.converters.ConverterZonedDateTime
+import com.peyess.salesapp.data.room.converter.ConverterLocalDate
+import com.peyess.salesapp.data.room.converter.ConverterUri
+import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
 
 @Database(
     entities = [

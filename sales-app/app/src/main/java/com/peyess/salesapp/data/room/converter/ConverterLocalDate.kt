@@ -1,4 +1,4 @@
-package com.peyess.salesapp.database.room.converters
+package com.peyess.salesapp.data.room.converter
 
 import androidx.room.TypeConverter
 import java.time.LocalDate

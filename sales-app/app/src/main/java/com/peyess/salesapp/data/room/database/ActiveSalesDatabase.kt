@@ -1,4 +1,4 @@
-package com.peyess.salesapp.database.room
+package com.peyess.salesapp.data.room.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -29,13 +29,13 @@ import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntit
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeEntity
 import com.peyess.salesapp.data.room.converter.ConverterOverallDiscountCalcMethod
 import com.peyess.salesapp.data.room.converter.ConverterPaymentFeeMethod
-import com.peyess.salesapp.database.room.converters.ConverterClientRole
-import com.peyess.salesapp.database.room.converters.ConverterEye
-import com.peyess.salesapp.database.room.converters.ConverterFramesType
-import com.peyess.salesapp.database.room.converters.ConverterLensTypeCategoryName
-import com.peyess.salesapp.database.room.converters.ConverterLocalDate
-import com.peyess.salesapp.database.room.converters.ConverterPrismPosition
-import com.peyess.salesapp.database.room.converters.ConverterUri
+import com.peyess.salesapp.data.room.converter.ConverterClientRole
+import com.peyess.salesapp.data.room.converter.ConverterEye
+import com.peyess.salesapp.data.room.converter.ConverterFramesType
+import com.peyess.salesapp.data.room.converter.ConverterLensTypeCategoryName
+import com.peyess.salesapp.data.room.converter.ConverterLocalDate
+import com.peyess.salesapp.data.room.converter.ConverterPrismPosition
+import com.peyess.salesapp.data.room.converter.ConverterUri
 
 @Database(
     entities = [

@@ -1,9 +1,7 @@
-package com.peyess.salesapp.database.room.converters
+package com.peyess.salesapp.data.room.converter
 
 import androidx.room.TypeConverter
 import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDate.ofEpochDay
 import java.time.ZoneId
 import java.time.ZonedDateTime
 

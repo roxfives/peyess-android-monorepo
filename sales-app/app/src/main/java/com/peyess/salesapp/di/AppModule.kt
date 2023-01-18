@@ -3,9 +3,9 @@ package com.peyess.salesapp.di
 import android.content.Context
 import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.database.room.ActiveSalesDatabase
-import com.peyess.salesapp.data.database.CacheCreateClientDatabase
-import com.peyess.salesapp.database.room.ProductsDatabase
+import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
+import com.peyess.salesapp.data.room.database.CacheCreateClientDatabase
+import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactoryImpl
 import com.peyess.salesapp.feature.sale.frames_measure.animation.mediator.MediatorFactory

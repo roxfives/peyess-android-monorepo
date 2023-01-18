@@ -123,7 +123,7 @@ private fun checkSumRule(
     }
 
     return matchingSumRuleLeft.toSet()
-        .union(matchingSumRuleRight.toSet())
+        .intersect(matchingSumRuleRight.toSet())
         .toList()
 }
 

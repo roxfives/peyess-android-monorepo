@@ -68,6 +68,8 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeCategoryDocume
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.PeyessQueryFunctionOperation
+import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
 import com.peyess.salesapp.data.utils.query.adapter.toSqlQuery
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import timber.log.Timber
@@ -362,7 +364,14 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery): LensesResponse =
         Either.catch {
-            val selectStatement = "SELECT * FROM ${LocalLensWithDetailsDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT * $aggregatesStr FROM ${LocalLensWithDetailsDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             val lensesPagingSource = localLensDao.getFilteredLenses(sqlQuery)
@@ -381,8 +390,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
     override suspend fun getLensFilteredByDisponibility(
         query: PeyessQuery,
     ): LensFilteredByDisponibilitiesResponse = Either.catch {
-        val selectStatement =
-            "SELECT * FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}"
+        val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+        val aggregatesStr = if (aggregates.isEmpty()) {
+            ""
+        } else {
+            ", " + buildMinMaxAggregates(aggregates)
+        }
+
+        val selectStatement = "SELECT * $aggregatesStr " +
+                "FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}"
         val sqlQuery = query
             .copy(withLimit = 1)
             .toSqlQuery(selectStatement)
@@ -416,7 +432,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredTypes(query: PeyessQuery): LensesTypesResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesTypeDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesTypeDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -431,7 +455,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredSuppliers(query: PeyessQuery): LensesSuppliersResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesSupplierDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesSupplierDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -446,7 +478,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredFamilies(query: PeyessQuery): LensesFamiliesResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesFamilyDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesFamilyDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -461,7 +501,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredDescriptions(query: PeyessQuery): LensesDescriptionsResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesDescriptionDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesDescriptionDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -476,7 +524,14 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredMaterials(query: PeyessQuery): LensesMaterialsResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesMaterialDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesMaterialDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -491,7 +546,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredSpecialties(query: PeyessQuery): LensesSpecialtiesResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesSpecialtyDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesSpecialtyDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -506,7 +569,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getFilteredGroups(query: PeyessQuery): LensesGroupsResponse =
         Either.catch {
-            val selectStatement = "SELECT DISTINCT id, name FROM ${LocalLensesGroupDBView.viewName}"
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
+            val selectStatement = "SELECT DISTINCT id, name $aggregatesStr " +
+                    "FROM ${LocalLensesGroupDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
             localLensDao
@@ -521,10 +592,18 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getTechsFilteredByDisponibilities(query: PeyessQuery): TechsResponse =
         Either.catch {
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
             val selectStatement = """
                 SELECT
                     techId as id,
                     techName as name
+                    $aggregatesStr
                 FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}
             """.trimIndent()
             val sqlQuery = query.toSqlQuery(selectStatement)
@@ -539,10 +618,18 @@ class LocalLensesRepositoryImpl @Inject constructor(
 
     override suspend fun getMaterialsFilteredByDisponibilities(query: PeyessQuery): MaterialsResponse =
         Either.catch {
+            val aggregates = query.queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+            val aggregatesStr = if (aggregates.isEmpty()) {
+                ""
+            } else {
+                ", " + buildMinMaxAggregates(aggregates)
+            }
+
             val selectStatement = """
                 SELECT
                     materialId as id,
                     materialName as name
+                    $aggregatesStr
                 FROM ${LocalLensFullUnionWithHeightAndLensTypeDBView.viewName}
             """.trimIndent()
             val sqlQuery = query.toSqlQuery(selectStatement)
@@ -554,4 +641,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 error = it,
             )
         }
+
+    private fun buildMinMaxAggregates(fields: List<PeyessQueryMinMaxField>): String {
+        return fields.joinToString(separator = ", ") {
+            when (it.function) {
+                is PeyessQueryFunctionOperation.MIN ->
+                    "MIN(${it.field}) as __${it.field}__"
+                is PeyessQueryFunctionOperation.MAX ->
+                    "MAX(${it.field}) as __${it.field}__"
+            }
+        }
+    }
 }

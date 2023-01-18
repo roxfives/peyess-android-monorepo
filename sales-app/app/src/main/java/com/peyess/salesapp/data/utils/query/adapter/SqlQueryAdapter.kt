@@ -6,6 +6,8 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryArithmeticExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryArithmeticOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryConstantField
 import com.peyess.salesapp.data.utils.query.PeyessQueryField
+import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
+import com.peyess.salesapp.data.utils.query.PeyessQueryFunctionOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateOperation
@@ -27,7 +29,11 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
         }
 
         clauseExpression = buildExpressionForQueryField(peyessQuery)
-        query += "$whereClause $clauseExpression"
+        query += if (clauseExpression.isEmpty()) {
+            ""
+        } else {
+            whereClause + clauseExpression
+        }
     }
 
     var orderByClause: String
@@ -51,13 +57,20 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
         groupByClause = " GROUP BY $groupByClause"
     }
 
+    val havingClauseFields = queryFields.filterIsInstance<PeyessQueryMinMaxField>()
+    val havingClause = if (havingClauseFields.isEmpty()) {
+        ""
+    } else {
+        buildHavingClause(havingClauseFields)
+    }
+
     val limitClause = if (withLimit != null) {
         "LIMIT $withLimit"
     } else {
         ""
     }
 
-    return SimpleSQLiteQuery("$query $groupByClause $orderByClause $limitClause")
+    return SimpleSQLiteQuery("$query $groupByClause $havingClause $orderByClause $limitClause")
 }
 
 private fun buildExpressionForQueryField(
@@ -72,6 +85,7 @@ private fun buildExpressionForQueryField(
             buildExpressionForArithmeticField(queryField)
         is PeyessQueryPredicateExpressionField ->
             buildExpressionForPredicateField(queryField)
+        is PeyessQueryMinMaxField -> ""
     }
 }
 
@@ -122,6 +136,28 @@ private fun buildExpressionForRegularField(
             ""
         }
     }
+}
+
+private fun buildHavingClause(queryFields: List<PeyessQueryMinMaxField>): String {
+    var havingClause = ""
+
+    queryFields.forEach { queryField ->
+        havingClause += if (havingClause.contains("HAVING")) {
+            " AND "
+        } else {
+            " HAVING "
+        }
+
+        havingClause += buildExpressionForRegularField(
+            buildQueryField(
+                "__${queryField.field}__",
+                queryField.op,
+                queryField.value,
+            ) as PeyessQueryRegularField
+        )
+    }
+
+    return havingClause
 }
 
 private fun buildExpressionForArithmeticField(

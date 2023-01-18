@@ -5,6 +5,7 @@ import com.google.firebase.firestore.Query
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.PeyessQueryArithmeticExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryConstantField
+import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryRegularField
@@ -35,6 +36,7 @@ fun PeyessQuery.toFirestoreCollectionQuery(path: String, firestore: FirebaseFire
             }
 
             is PeyessQueryConstantField,
+            is PeyessQueryMinMaxField,
             is PeyessQueryArithmeticExpressionField,
             is PeyessQueryPredicateExpressionField -> {
                 Timber.e("Unsupported field type for Firestore query")

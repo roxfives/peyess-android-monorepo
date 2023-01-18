@@ -7,6 +7,7 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesUnionQueryFiel
 import com.peyess.salesapp.data.utils.query.PeyessGroupBy
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQueryField
+import com.peyess.salesapp.data.utils.query.PeyessQueryFunctionOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateOperation
@@ -39,21 +40,25 @@ private fun buildQueryFieldsForSpherical(
 ): List<PeyessQueryField> {
     return listOf(
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MAX,
             field = LocalLensesUnionQueryFields.MaxSpherical.name(),
             op = PeyessQueryOperation.GreaterThanOrEqual,
             value = prescription.sphericalLeft,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MAX,
             field = LocalLensesUnionQueryFields.MaxSpherical.name(),
             op = PeyessQueryOperation.GreaterThanOrEqual,
             value = prescription.sphericalRight,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MIN,
             field = LocalLensesUnionQueryFields.MinSpherical.name(),
             op = PeyessQueryOperation.LessThanOrEqual,
             value = prescription.sphericalLeft,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MIN,
             field = LocalLensesUnionQueryFields.MinSpherical.name(),
             op = PeyessQueryOperation.LessThanOrEqual,
             value = prescription.sphericalRight,
@@ -66,21 +71,25 @@ private fun buildQueryFieldsForCylindrical(
 ): List<PeyessQueryField> {
     return listOf(
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MAX,
             field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
             op = PeyessQueryOperation.GreaterThanOrEqual,
             value = prescription.cylindricalLeft,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MAX,
             field = LocalLensesUnionQueryFields.MaxCylindrical.name(),
             op = PeyessQueryOperation.GreaterThanOrEqual,
             value = prescription.cylindricalRight,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MIN,
             field = LocalLensesUnionQueryFields.MinCylindrical.name(),
             op = PeyessQueryOperation.LessThanOrEqual,
             value = prescription.cylindricalLeft,
         ),
         buildQueryField(
+            function = PeyessQueryFunctionOperation.MIN,
             field = LocalLensesUnionQueryFields.MinCylindrical.name(),
             op = PeyessQueryOperation.LessThanOrEqual,
             value = prescription.cylindricalRight,
@@ -131,21 +140,25 @@ private fun buildQueryFieldsForAddition(
     return if (prescription.hasPrism) {
         listOf(
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MAX,
                 field = LocalLensesUnionQueryFields.MaxAddition.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.additionLeft,
             ),
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MAX,
                 field = LocalLensesUnionQueryFields.MaxAddition.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.additionRight,
             ),
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MIN,
                 field = LocalLensesUnionQueryFields.MinAddition.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.additionLeft,
             ),
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MIN,
                 field = LocalLensesUnionQueryFields.MinAddition.name(),
                 op = PeyessQueryOperation.LessThanOrEqual,
                 value = prescription.additionRight,
@@ -162,11 +175,13 @@ private fun buildQueryFieldsForPrism(
     return if (prescription.hasPrism) {
         listOf(
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MAX,
                 field = LocalLensesUnionQueryFields.Prism.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.prismDegreeLeft,
             ),
             buildQueryField(
+                function = PeyessQueryFunctionOperation.MAX,
                 field = LocalLensesUnionQueryFields.Prism.name(),
                 op = PeyessQueryOperation.GreaterThanOrEqual,
                 value = prescription.prismDegreeRight,
@@ -246,7 +261,15 @@ fun buildGroupByForLensSuggestions(): List<PeyessGroupBy> {
 fun buildOrderByForLensSuggestions(): List<PeyessOrderBy> {
     return listOf(
         PeyessOrderBy(
+            field = LocalLensesUnionQueryFields.LensSupplierPriority.name(),
+            order = Order.ASCENDING,
+        ),
+        PeyessOrderBy(
             field = LocalLensesUnionQueryFields.LensPriority.name(),
+            order = Order.ASCENDING,
+        ),
+        PeyessOrderBy(
+            field = LocalLensesUnionQueryFields.LensMaterialPriority.name(),
             order = Order.ASCENDING,
         )
     )

@@ -21,6 +21,14 @@ sealed interface PeyessQueryArithmeticExpressionField: PeyessQueryField {
     val value: Double
 }
 
+sealed interface PeyessQueryMinMaxField: PeyessQueryField {
+    val field: String
+    val function: PeyessQueryFunctionOperation
+
+    val op: PeyessQueryOperation
+    val value: Double
+}
+
 sealed interface PeyessQueryPredicateExpressionField: PeyessQueryField {
     val op: PeyessQueryPredicateOperation
     val expression: PeyessQueryField
@@ -51,6 +59,14 @@ private data class PeyessQueryFieldString(
     override val op: PeyessQueryOperation,
     override val value: String,
 ): PeyessQueryRegularField
+
+private data class PeyessFunctionOperationField(
+    override val field: String,
+    override val function: PeyessQueryFunctionOperation,
+
+    override val op: PeyessQueryOperation,
+    override val value: Double,
+): PeyessQueryMinMaxField
 
 private data class PeyessQueryFieldSumOperation(
     override val fields: List<String>,
@@ -98,6 +114,16 @@ fun buildQueryField(
     value: Double,
 ): PeyessQueryField {
     return PeyessQueryFieldSumOperation(fields, arithmeticOp, compareOp, value)
+}
+
+fun buildQueryField(
+    field: String,
+    function: PeyessQueryFunctionOperation,
+
+    op: PeyessQueryOperation,
+    value: Double,
+): PeyessQueryField {
+    return PeyessFunctionOperationField(field, function, op, value)
 }
 
 fun buildQueryField(

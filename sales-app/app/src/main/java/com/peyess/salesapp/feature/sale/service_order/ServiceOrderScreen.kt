@@ -1069,7 +1069,12 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.axisRight),
+                    // TODO: create a property 'hasAxisRight' in the data class returned by the repository when it's built
+                    text = if (prescriptionData.cylindricalRight < 0) {
+                        "%.2f".format(prescriptionData.axisRight)
+                    } else {
+                        "-"
+                    },
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1119,7 +1124,12 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.axisLeft),
+                    // TODO: create a property 'hasAxisLeft' in the data class returned by the repository when it's built
+                    text = if (prescriptionData.cylindricalLeft < 0) {
+                        "%.2f".format(prescriptionData.axisLeft)
+                    } else {
+                        "-"
+                    },
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 

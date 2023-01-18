@@ -118,19 +118,17 @@ class MainViewModel @AssistedInject constructor(
                     val htmlToPdfConverter = HtmlToPdfConvertor(context)
 
                     val purchase = it.invoke()
-                    val html = buildHtml(
-                        context,
-                        serviceOrder,
-                        purchase!!,
-                    )
+                    val html = purchase?.legalText
 
                     val file = createPrintFile(context)
-                    htmlToPdfConverter.convert(
-                        file,
-                        html,
-                        onPdfGenerationFailure,
-                        { onPdfGenerated(it) },
-                    )
+                    if (html != null) {
+                        htmlToPdfConverter.convert(
+                            file,
+                            html,
+                            onPdfGenerationFailure,
+                            { onPdfGenerated(it) },
+                        )
+                    }
                 }
             }
 
@@ -141,7 +139,6 @@ class MainViewModel @AssistedInject constructor(
                 isGeneratingPdfFor = Pair(isGeneratingPdf, generatingFor),
             )
         }
-
     }
 
     fun startNewSale() = withState {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import arrow.core.Either
 import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -25,6 +26,7 @@ import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.feature.sale.service_order.utils.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
+import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
@@ -45,11 +47,14 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.database.room.ActiveSalesDatabase
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.feature.sale.service_order.utils.adapter.toPaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.utils.error.AddClientError
 import com.peyess.salesapp.feature.sale.service_order.utils.error.AddProductError
 import com.peyess.salesapp.feature.sale.service_order.utils.error.ColoringNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.CreatePurchaseError
 import com.peyess.salesapp.feature.sale.service_order.utils.error.FramesNotFound
 import com.peyess.salesapp.feature.sale.service_order.utils.error.LensNotFound
+import com.peyess.salesapp.feature.sale.service_order.utils.error.PurchaseCreationFailed
 import com.peyess.salesapp.feature.sale.service_order.utils.error.ResponsibleNotFound
 import com.peyess.salesapp.feature.sale.service_order.utils.error.ServiceOrderUnexpected
 import com.peyess.salesapp.feature.sale.service_order.utils.error.ServiceOrderUploaderError
@@ -83,6 +88,7 @@ import kotlin.random.asJavaRandom
 
 typealias SaleData = Pair<ServiceOrderDocument, PurchaseDocument>
 typealias SaleDataGenerationResponse = Either<ServiceOrderUploaderError, SaleData>
+typealias PurchaseCreationResponse = Either<CreatePurchaseError, PurchaseDocument>
 
 class ServiceOrderUploader constructor(
     private val salesDatabase: ActiveSalesDatabase,
@@ -99,6 +105,7 @@ class ServiceOrderUploader constructor(
     private val framesRepository: LocalFramesRepository,
     private val clientRepository: ClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
+    private val salePaymentRepository: SalePaymentRepository,
     private val firebaseManager: FirebaseManager,
 ) {
     var purchaseId = ""
@@ -617,8 +624,9 @@ class ServiceOrderUploader constructor(
 
     private suspend fun createPurchase(
         context: Context,
+        saleId: String,
         serviceOrder: ServiceOrderDocument,
-    ): PurchaseDocument {
+    ): PurchaseCreationResponse = either {
         val id = purchaseId.ifBlank {
             val uniqueId = firebaseManager.uniqueId()
             purchaseId = uniqueId
@@ -627,17 +635,20 @@ class ServiceOrderUploader constructor(
         }
 
         val storeId = firebaseManager.currentStore?.uid
-        if (storeId == null) {
-            error("Could not find current store: store == ${firebaseManager.currentStore}")
+        ensureNotNull(storeId) {
+            PurchaseCreationFailed(
+                description = "Store id $storeId not found",
+            )
         }
 
-        val payments: MutableList<SalePaymentEntity> = mutableListOf()
-        saleRepository
-            .payments()
-            .take(1)
-            .collect {
-                payments.addAll(it)
-            }
+        val payments = salePaymentRepository
+            .paymentForSale(saleId)
+            .mapLeft {
+                PurchaseCreationFailed(
+                    description = "Payments for sale $saleId not found",
+                    error = it.error,
+                )
+            }.bind()
 
         var purchase = PurchaseDocument(
             id = id,
@@ -725,7 +736,7 @@ class ServiceOrderUploader constructor(
         val legalText = buildHtml(context, serviceOrder, purchase)
         purchase = purchase.copy(legalText = legalText)
 
-        return purchase
+        purchase
     }
 
     suspend fun generateSaleData(
@@ -770,7 +781,7 @@ class ServiceOrderUploader constructor(
         serviceOrder = addDiscountData(localSaleId, serviceOrder)
         serviceOrder = addFeeData(localSaleId, serviceOrder)
 
-        val purchase = createPurchase(context, serviceOrder)
+        val purchase = createPurchase(context, localSaleId, serviceOrder).bind()
 
         val totalPaid = if (purchase.payments.isEmpty()) {
             0.0

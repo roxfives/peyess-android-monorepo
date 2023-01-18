@@ -37,7 +37,13 @@ data class FramesNotFound(
     override val error: Throwable? = null,
 ): AddProductError
 
+sealed interface CreatePurchaseError: ServiceOrderUploaderError
+data class PurchaseCreationFailed(
+    override val description: String,
+    override val error: Throwable? = null,
+): CreatePurchaseError
+
 data class ServiceOrderUnexpected(
     override val description: String,
     override val error: Throwable? = null,
-): ServiceOrderUploaderError, AddClientError, AddProductError
+): ServiceOrderUploaderError, AddClientError, AddProductError, CreatePurchaseError

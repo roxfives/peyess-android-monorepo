@@ -221,6 +221,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             clientRepository = clientRepository,
             clientPickedRepository = clientPickedRepository,
             firebaseManager = firebaseManager,
+            salePaymentRepository = salePaymentRepository,
         )
     }
 

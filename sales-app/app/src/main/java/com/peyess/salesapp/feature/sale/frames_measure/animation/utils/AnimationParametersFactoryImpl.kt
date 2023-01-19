@@ -25,7 +25,7 @@ class AnimationParametersFactoryImpl(
         Parameter.CheckBottom,
         Parameter.FramesBottom,
         Parameter.FramesBridgePivot,
-        Parameter.FramesBridgeHelper,
+//        Parameter.FramesBridgeHelper,
         Parameter.FramesLeft,
         Parameter.FramesRight,
         Parameter.FramesTop,

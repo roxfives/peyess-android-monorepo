@@ -1,18 +1,13 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
-import android.content.ContentResolver
 import android.content.Context
-import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
-import com.peyess.salesapp.R
-import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
@@ -80,7 +75,6 @@ import kotlin.random.asJavaRandom
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
-    private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
     private val salesDatabase: ActiveSalesDatabase,
     private val authenticationRepository: AuthenticationRepository,
@@ -239,21 +233,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     private fun loadPrescriptionPicture() {
         saleRepository.currentPrescriptionPicture().execute(Dispatchers.IO) {
-            val entityAsync = if (it is Success) {
-                val context = salesApplication as Context
-                val drawableId = R.drawable.receita_pablo
-
-                val imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
-                        + "://" + context.resources.getResourcePackageName(drawableId)
-                        + '/' + context.resources.getResourceTypeName(drawableId)
-                        + '/' + context.resources.getResourceEntryName(drawableId))
-
-                Success(it.invoke().copy(pictureUri = imageUri))
-            } else {
-                it
-            }
-
-            copy(prescriptionPictureAsync = entityAsync)
+            copy(prescriptionPictureAsync = it)
         }
     }
 

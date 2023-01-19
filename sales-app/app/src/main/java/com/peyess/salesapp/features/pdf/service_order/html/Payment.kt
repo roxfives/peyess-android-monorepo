@@ -160,7 +160,12 @@ private fun buildPaymentForCrediario(context: Context, payment: PaymentDocument)
     val clientName = payment.payerName
     val clientDocument = printDocument(payment.payerDocument)
 
-    val paymentMethod = printPaymentMethodValue(context, "CARNÊ", payment.installments)
+    val paymentMethod = printPaymentMethodValue(
+        context = context,
+        methodName = "CARNÊ",
+        installments = payment.installments,
+        forceShowInstallments = true,
+    )
 
     val paymentValue = currencyFormat.format(payment.amount)
 

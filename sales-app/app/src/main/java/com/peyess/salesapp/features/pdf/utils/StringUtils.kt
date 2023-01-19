@@ -12,7 +12,12 @@ fun printValue(value: String): String {
     return value.ifBlank { emptyIndicator }
 }
 
-fun printPaymentMethodValue(context: Context, methodName: String, installments: Int): String {
+fun printPaymentMethodValue(
+    context: Context,
+    methodName: String,
+    installments: Int,
+    forceShowInstallments: Boolean = false,
+): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
 
     val integerFormat = NumberFormat.getIntegerInstance(currentLocale)
@@ -20,7 +25,7 @@ fun printPaymentMethodValue(context: Context, methodName: String, installments: 
     integerFormat.minimumFractionDigits = 0
     integerFormat.minimumIntegerDigits = 2
 
-    return if (installments <= 1) {
+    return if (!forceShowInstallments && installments <= 1) {
         "$methodName À VISTA"
     } else {
         "${integerFormat.format(installments)}X $methodName"

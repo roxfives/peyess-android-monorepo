@@ -56,7 +56,7 @@ import java.time.format.DateTimeFormatter
 //val bankCheck = "<tr class=\"row25\"> <td class=\"column0 style24 s style25\" colspan=\"2\">N° Cliente: %s</td><td class=\"column2 style26 s style28\" colspan=\"6\">NOME: %s</td><td class=\"column8 style26 s style28\" colspan=\"3\">CPF: %s</td></tr><tr class=\"row26\"> <td class=\"column0 style100 s style54\" colspan=\"4\">FORMA PAGAMENTO:</td><td class=\"column2 style54 s style55\" colspan=\"2\">CHEQUE</td><td class=\"column4 style48 s style49\" colspan=\"2\">VALOR: R\$%s</td><td class=\"column6 style50 s style52\" colspan=\"5\">Assinatura:_______________________________________</td></tr>"
 
 //<!-- valor, data_vencimento,  -->
-val notPayed = "<tr class=\"row27\"> <td class=\"column0 style29 s style30\" colspan=\"4\">FORMA PAGAMENTO: À RECEBER</td><td class=\"column4 style29 s style31\" colspan=\"2\">VALOR: R\$%s</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: %s</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: 1%</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: 2%</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: 1</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr><tr class=\"row29\"> <td class=\"column0 style65 s style67\" colspan=\"11\">Pagável somente em lojas físicas / após 15 dias da data de vencimento incidirá protesto automático</td></tr>"
+//val notPayed = "<tr class=\"row27\"> <td class=\"column0 style29 s style30\" colspan=\"4\">FORMA PAGAMENTO: À RECEBER</td><td class=\"column4 style29 s style31\" colspan=\"2\">VALOR: R\$%s</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: %s</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: 1%</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: 2%</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: 1</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr><tr class=\"row29\"> <td class=\"column0 style65 s style67\" colspan=\"11\">Pagável somente em lojas físicas / após 15 dias da data de vencimento incidirá protesto automático</td></tr>"
 
 private fun buildPaymentForMoney(context: Context, payment: PaymentDocument): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
@@ -150,8 +150,27 @@ private fun buildPaymentForCredit(context: Context, payment: PaymentDocument): S
     return credit
 }
 
-private fun buildPaymentForCrediario(context: Context, payment: PaymentDocument): String {
+private fun buildPaymentForCrediario(
+    context: Context,
+    serviceOrder: ServiceOrderDocument,
+    payment: PaymentDocument,
+): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
+
+    val percentFormat = NumberFormat.getPercentInstance(currentLocale)
+    percentFormat.minimumFractionDigits = 2
+    percentFormat.maximumFractionDigits = 2
+
+    val integerFormat = NumberFormat.getIntegerInstance(currentLocale)
+    integerFormat.minimumIntegerDigits = 1
+
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    val fineOnDefault = 0.01
+    val cumulativeFineOnDefault = 0.02
+    val limit = serviceOrder.updated
+        .plusDays(30)
+        .nextBusinessDay()
 
     val currencyFormat = NumberFormat.getCurrencyInstance(currentLocale)
     currencyFormat.minimumFractionDigits = 2
@@ -168,8 +187,12 @@ private fun buildPaymentForCrediario(context: Context, payment: PaymentDocument)
     )
 
     val paymentValue = currencyFormat.format(payment.amount)
+    val fine = percentFormat.format(fineOnDefault)
+    val cumulativeFine = percentFormat.format(cumulativeFineOnDefault)
+    val installments = integerFormat.format(payment.installments)
+    val limitDate = dateFormatter.format(limit)
 
-    val crediario = "<tr class=\"row25\"><td class=\"column2 style26 s style28\" colspan=\"8\">NOME: $clientName</td><td class=\"column8 style26 s style28\" colspan=\"3\">CPF: ${printValue(clientDocument)}</td></tr><tr class=\"row26\"> <td class=\"column0 style100 s style54\" colspan=\"4\">FORMA PAGAMENTO: $paymentMethod</td><td class=\"column4 style48 s style49\" colspan=\"2\">VALOR: $paymentValue</td><td class=\"column6 style50 s style52\" colspan=\"5\">Assinatura:_______________________________________</td></tr>"
+    val crediario = "<tr class=\"row25\"><td class=\"column2 style26 s style28\" colspan=\"8\">NOME: $clientName</td><td class=\"column8 style26 s style28\" colspan=\"3\">CPF: ${printValue(clientDocument)}</td></tr><tr class=\"row26\"> <td class=\"column0 style100 s style54\" colspan=\"4\">FORMA PAGAMENTO: $paymentMethod</td><td class=\"column4 style48 s style49\" colspan=\"2\">VALOR: $paymentValue</td><td class=\"column6 style26 s style25\" colspan=\"3\">DATA 1º VENCIMENTO: ${printValue(limitDate)}</td><td class=\"column9 style26 s style25\" colspan=\"2\">MULTA: ${printValue(fine)}</td></tr><tr class=\"row28\"> <td class=\"column0 style27 s style28\" colspan=\"2\">JUROS MORA: ${printValue(cumulativeFine)}</td><td class=\"column2 style26 s style25\" colspan=\"3\">NÚMERO DE PARCELAS: ${printValue(installments)}</td><td class=\"column5 style29 s style31\" colspan=\"6\">Assinatura:_____________________________________________________</td></tr>"
 
     return crediario
 }
@@ -212,11 +235,15 @@ private fun buildPaymentForBankCheck(context: Context, payment: PaymentDocument)
     return bankCheck
 }
 
-private fun buildPaymentMethod(context: Context, payment: PaymentDocument): String {
+private fun buildPaymentMethod(
+    context: Context,
+    serviceOrder: ServiceOrderDocument,
+    payment: PaymentDocument,
+): String {
     return when (payment.methodName) {
         PaymentMethodType.BankCheck -> buildPaymentForBankCheck(context, payment)
         PaymentMethodType.BankDeposit -> buildPaymentForBankTransfer(context, payment)
-        PaymentMethodType.Crediario -> buildPaymentForCrediario(context, payment)
+        PaymentMethodType.Crediario -> buildPaymentForCrediario(context, serviceOrder, payment)
         PaymentMethodType.Credit -> buildPaymentForCredit(context, payment)
         PaymentMethodType.CreditFull -> buildPaymentForCredit(context, payment)
         PaymentMethodType.Debit -> buildPaymentForDebit(context, payment)
@@ -298,10 +325,14 @@ private fun buildHeader(
     return header
 }
 
-private fun buildPaymentList(context: Context, payments: List<PaymentDocument>): String {
+private fun buildPaymentList(
+    context: Context,
+    serviceOrder: ServiceOrderDocument,
+    payments: List<PaymentDocument>,
+): String {
     var paymentStr = ""
     payments.forEach {
-        paymentStr += buildPaymentMethod(context, it)
+        paymentStr += buildPaymentMethod(context, serviceOrder, it)
     }
 
     return paymentStr
@@ -354,7 +385,7 @@ fun buildPaymentSection(
     serviceOrder: ServiceOrderDocument,
 ): String {
     val header = buildHeader(context, purchase, serviceOrder)
-    val paymentList = buildPaymentList(context, purchase.payments)
+    val paymentList = buildPaymentList(context, serviceOrder, purchase.payments)
     val paymentIncomplete = if (!serviceOrder.isPaymentFull) {
         buildPaymentIncomplete(context, serviceOrder)
     } else {

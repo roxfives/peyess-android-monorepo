@@ -1,12 +1,15 @@
 package com.peyess.salesapp.data.repository.management_picture_upload
 
 import arrow.core.Either
+import arrow.core.left
+import arrow.core.leftIfNull
 import com.peyess.salesapp.data.adapter.management_picture_upload.toPictureDocument
 import com.peyess.salesapp.data.adapter.management_picture_upload.toPictureEntity
 import com.peyess.salesapp.data.dao.management_picture_upload.PictureUploadDao
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.management_picture_upload.error.PictureUploadFetchError
 import com.peyess.salesapp.data.repository.management_picture_upload.error.PictureUploadUpdateError
+import com.peyess.salesapp.data.repository.management_picture_upload.error.UnexpectedPictureError
 import javax.inject.Inject
 
 class PictureUploadRepositoryImpl @Inject constructor(
@@ -20,6 +23,19 @@ class PictureUploadRepositoryImpl @Inject constructor(
         PictureUploadFetchError(
             description = "Error fetching pending pictures",
             error = it,
+        )
+    }
+
+    override suspend fun pictureById(id: Long): PictureSingleResponse = Either.catch {
+        uploadPictureDao.pictureById(id)?.toPictureDocument()
+    }.mapLeft {
+        PictureUploadFetchError(
+            description = "Error fetching picture by id",
+            error = it,
+        )
+    }.leftIfNull {
+        UnexpectedPictureError(
+            description = "Picture with id $id not found",
         )
     }
 

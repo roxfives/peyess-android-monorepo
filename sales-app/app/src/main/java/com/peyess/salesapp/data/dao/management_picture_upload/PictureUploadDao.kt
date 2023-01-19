@@ -21,6 +21,12 @@ interface PictureUploadDao {
 
     @Query("""
         SELECT * FROM ${PictureUploadEntity.tableName}
+        WHERE id = :id
+    """)
+    suspend fun pictureById(id: Long): PictureUploadEntity?
+
+    @Query("""
+        SELECT * FROM ${PictureUploadEntity.tableName}
         WHERE has_been_uploaded = 0
     """)
     suspend fun allWithPendingDownload(): List<PictureUploadEntity>

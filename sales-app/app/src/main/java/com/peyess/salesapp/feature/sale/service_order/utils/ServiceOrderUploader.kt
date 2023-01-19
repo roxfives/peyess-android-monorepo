@@ -642,7 +642,7 @@ class ServiceOrderUploader constructor(
                 )
             }.bind()
 
-        var purchase = PurchaseDocument(
+        PurchaseDocument(
             id = id,
             hid = purchaseHid.ifBlank { createHid() },
 
@@ -724,11 +724,6 @@ class ServiceOrderUploader constructor(
             updatedBy = serviceOrder.updatedBy,
             updateAllowedBy = serviceOrder.updateAllowedBy,
         )
-
-        val legalText = buildHtml(context, serviceOrder, purchase)
-        purchase = purchase.copy(legalText = legalText)
-
-        purchase
     }
 
     suspend fun generateSaleData(
@@ -773,7 +768,7 @@ class ServiceOrderUploader constructor(
         serviceOrder = addDiscountData(localSaleId, serviceOrder)
         serviceOrder = addFeeData(localSaleId, serviceOrder)
 
-        val purchase = createPurchase(context, localSaleId, serviceOrder).bind()
+        var purchase = createPurchase(context, localSaleId, serviceOrder).bind()
 
         val totalPaid = if (purchase.payments.isEmpty()) {
             0.0
@@ -794,6 +789,9 @@ class ServiceOrderUploader constructor(
             totalPaid = totalPaid,
             leftToPay = totalLeft,
         )
+
+        val legalText = buildHtml(context, serviceOrder, purchase)
+        purchase = purchase.copy(legalText = legalText)
 
         Pair(serviceOrder, purchase)
     }

@@ -35,6 +35,10 @@ class CommunicationViewModel @AssistedInject constructor(
     init {
         loadClient()
         loadServiceOrderData()
+
+        onAsync(CommunicationState::activeServiceOrderResponseAsync) {
+            processServiceOrderDataResponse(it)
+        }
     }
 
     private fun loadClient() = withState {

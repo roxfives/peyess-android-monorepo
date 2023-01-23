@@ -10,8 +10,6 @@ data class PictureUploadDocument(
     val id: Long,
 
     val picture: Uri = Uri.EMPTY,
-    val fsDocumentPath: String = "",
-    val fsDocumentField: String = "",
 
     val storagePath: String = "",
     val storageName: String = "",

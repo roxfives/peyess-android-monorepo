@@ -7,8 +7,6 @@ fun PictureUploadDocument.toPictureEntity(): PictureUploadEntity {
     return PictureUploadEntity(
         id = id,
         picture = picture,
-        fsDocumentPath = fsDocumentPath,
-        fsDocumentField = fsDocumentField,
         hasBeenUploaded = hasBeenUploaded,
         hasBeenDeleted = hasBeenDeleted,
         attemptCount = attemptCount,

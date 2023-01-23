@@ -14,10 +14,6 @@ data class PictureUploadEntity(
 
     @ColumnInfo(name = "picture")
     val picture: Uri = Uri.EMPTY,
-    @ColumnInfo(name = "fs_document_path")
-    val fsDocumentPath: String = "",
-    @ColumnInfo(name = "fs_document_field")
-    val fsDocumentField: String = "",
 
     @ColumnInfo(name = "storage_path")
     val storagePath: String = "",

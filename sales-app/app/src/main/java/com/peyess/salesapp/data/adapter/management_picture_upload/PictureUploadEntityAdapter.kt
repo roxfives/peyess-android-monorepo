@@ -6,10 +6,8 @@ import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadEnt
 fun PictureUploadEntity.toPictureDocument(): PictureUploadDocument {
     return PictureUploadDocument(
         id = id,
-        picture = picture,
 
-        fsDocumentPath = fsDocumentPath,
-        fsDocumentField = fsDocumentField,
+        picture = picture,
 
         storagePath = storagePath,
         storageName = storageName,

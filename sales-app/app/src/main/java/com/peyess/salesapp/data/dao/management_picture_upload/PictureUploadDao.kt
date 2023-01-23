@@ -11,7 +11,7 @@ import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadEnt
 @Dao
 interface PictureUploadDao {
     @Insert(onConflict = REPLACE)
-    suspend fun add(pictureUpload: PictureUploadEntity)
+    suspend fun add(pictureUpload: PictureUploadEntity): Long
 
     @Update
     suspend fun update(pictureUpload: PictureUploadEntity)

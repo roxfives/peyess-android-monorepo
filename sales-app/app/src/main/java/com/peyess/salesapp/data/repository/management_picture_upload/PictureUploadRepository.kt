@@ -7,7 +7,7 @@ import com.peyess.salesapp.data.repository.management_picture_upload.error.Pictu
 
 typealias PictureUpdateResponse = Either<PictureUploadWriteError, Unit>
 typealias PictureDeleteResponse = Either<PictureUploadWriteError, Unit>
-typealias PictureAddResponse = Either<PictureUploadWriteError, Unit>
+typealias PictureAddResponse = Either<PictureUploadWriteError, Long>
 typealias PictureSingleResponse = Either<PictureUploadReadError, PictureUploadDocument>
 typealias PictureFetchListResponse =
         Either<PictureUploadReadError, List<PictureUploadDocument>>

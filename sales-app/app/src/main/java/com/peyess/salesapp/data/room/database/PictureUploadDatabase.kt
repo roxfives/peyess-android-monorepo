@@ -12,7 +12,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     entities = [
         PictureUploadEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(

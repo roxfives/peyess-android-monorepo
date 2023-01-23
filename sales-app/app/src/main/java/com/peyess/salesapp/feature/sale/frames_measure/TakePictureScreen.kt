@@ -72,7 +72,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
@@ -92,9 +91,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executors
 
 @Composable
@@ -471,10 +469,10 @@ fun TakePictureScreenImpl(
                     enabled = true, // takingHeadState == HeadState.LookingForward,
                     onClick = {
                         Timber.i("Starting to take picture")
-                        val timeStamp = SimpleDateFormat(
-                            "yyyyMMdd_HHmmss",
-                            Locale.getDefault()
-                        ).format(Date())
+                        val timeStamp = DateTimeFormatter
+                            .ofPattern("yyyyMMdd_HHmmss")
+                            .format(ZonedDateTime.now())
+
                         val fileName = "${timeStamp}_glasses_picture"
                         val fileImage = File.createTempFile(
                             fileName,

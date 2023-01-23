@@ -1,13 +1,15 @@
 package com.peyess.salesapp.feature.create_client.basic_info.utils
 
 import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.os.Environment
 import java.io.File
-import java.util.Date
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 fun createClientFile(context: Context): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val timeStamp = DateTimeFormatter
+        .ofPattern("yyyyMMdd_HHmmss")
+        .format(ZonedDateTime.now())
 
     val storageDir = context.getExternalFilesDir(
         Environment.DIRECTORY_PICTURES

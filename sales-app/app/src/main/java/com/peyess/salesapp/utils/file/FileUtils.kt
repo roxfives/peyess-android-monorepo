@@ -1,16 +1,18 @@
 package com.peyess.salesapp.utils.file
 
 import android.content.Context
-import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Environment
 import timber.log.Timber
 import java.io.File
-import java.util.*
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 fun createPrescriptionFile(context: Context): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val timeStamp = DateTimeFormatter
+        .ofPattern("yyyyMMdd_HHmmss")
+        .format(ZonedDateTime.now())
 
     val storageDir = context.getExternalFilesDir(
         Environment.DIRECTORY_PICTURES
@@ -41,7 +43,9 @@ fun deleteFile(uri: Uri) {
 }
 
 fun createPrintFile(context: Context): File {
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val timeStamp = DateTimeFormatter
+        .ofPattern("yyyyMMdd_HHmmss")
+        .format(ZonedDateTime.now())
 
     val storageDir = context.getExternalFilesDir(
         Environment.DIRECTORY_DOCUMENTS

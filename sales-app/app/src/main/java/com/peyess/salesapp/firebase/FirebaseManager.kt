@@ -9,6 +9,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
+import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.app.SalesApplication
@@ -38,6 +39,11 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
     val currentStore: FirebaseUser?
         get() {
             return firebaseAppStore?.let { Firebase.auth(it).currentUser }
+        }
+
+    val storageRef: FirebaseStorage?
+        get() {
+            return firebaseAppStore?.let { Firebase.storage(it) }
         }
 
     init {

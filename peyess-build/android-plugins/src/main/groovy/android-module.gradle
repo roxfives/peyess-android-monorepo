@@ -4,9 +4,8 @@ afterEvaluate { project ->
             compileSdk 33
 
             defaultConfig {
-                // crypto sdk min is 23
-                minSdk 23
-                targetSdk 32
+                minSdk 28
+                targetSdk 33
 
                 vectorDrawables {
                     useSupportLibrary true

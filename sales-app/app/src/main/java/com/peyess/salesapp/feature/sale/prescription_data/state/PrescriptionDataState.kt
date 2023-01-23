@@ -16,7 +16,7 @@ data class PrescriptionDataState(
     val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
 
     val clientName: Async<String> = Uninitialized,
-    val currentPrescriptionData: Async<PrescriptionDataEntity> = Uninitialized,
+    val currentPrescriptionDataAsync: Async<PrescriptionDataEntity> = Uninitialized,
     val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
     val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
@@ -26,32 +26,32 @@ data class PrescriptionDataState(
     val saleId: String = activeServiceOrderResponse.saleId
     val serviceOrderId: String = activeServiceOrderResponse.id
 
-    internal val _currentPrescriptionData = currentPrescriptionData.invoke()
-    val isLoading = currentPrescriptionData is Success && _currentPrescriptionData == null
+    internal val currentPrescriptionData = currentPrescriptionDataAsync.invoke()
+    val isLoading = currentPrescriptionDataAsync is Success && currentPrescriptionData == null
     val isMessageLoading = generalMessage is Loading
 
     val isAnimationLoading = animationId is Loading
 
     val hasAddition = hasAdditionAsync is Success && hasAdditionAsync.invoke()
-    val hasPrism = _currentPrescriptionData?.hasPrism ?: false
+    val hasPrism = currentPrescriptionData?.hasPrism ?: false
 
-    val hasAxisLeft = (_currentPrescriptionData?.cylindricalLeft ?: 0.0) < 0.0
-    val hasAxisRight = (_currentPrescriptionData?.cylindricalRight ?: 0.0) < 0.0
+    val hasAxisLeft = (currentPrescriptionData?.cylindricalLeft ?: 0.0) < 0.0
+    val hasAxisRight = (currentPrescriptionData?.cylindricalRight ?: 0.0) < 0.0
 
-    val sphericalLeft = _currentPrescriptionData?.sphericalLeft ?: 0.0
-    val sphericalRight = _currentPrescriptionData?.sphericalRight ?: 0.0
-    val cylindricalLeft = _currentPrescriptionData?.cylindricalLeft ?: 0.0
-    val cylindricalRight = _currentPrescriptionData?.cylindricalRight ?: 0.0
-    val axisLeft = _currentPrescriptionData?.axisLeft ?: 0.0
-    val axisRight = _currentPrescriptionData?.axisRight ?: 0.0
-    val additionLeft = _currentPrescriptionData?.additionLeft ?: 0.75
-    val additionRight = _currentPrescriptionData?.additionRight ?: 0.75
-    val prismDegreeLeft = _currentPrescriptionData?.prismDegreeLeft ?: 0.0
-    val prismDegreeRight = _currentPrescriptionData?.prismDegreeRight ?: 0.0
-    val prismAxisLeft = _currentPrescriptionData?.prismAxisLeft ?: 0.0
-    val prismAxisRight = _currentPrescriptionData?.prismAxisRight ?: 0.0
-    val prismPositionLeft = _currentPrescriptionData?.prismPositionLeft ?: PrismPosition.None
-    val prismPositionRight = _currentPrescriptionData?.prismPositionRight ?: PrismPosition.None
+    val sphericalLeft = currentPrescriptionData?.sphericalLeft ?: 0.0
+    val sphericalRight = currentPrescriptionData?.sphericalRight ?: 0.0
+    val cylindricalLeft = currentPrescriptionData?.cylindricalLeft ?: 0.0
+    val cylindricalRight = currentPrescriptionData?.cylindricalRight ?: 0.0
+    val axisLeft = currentPrescriptionData?.axisLeft ?: 0.0
+    val axisRight = currentPrescriptionData?.axisRight ?: 0.0
+    val additionLeft = currentPrescriptionData?.additionLeft ?: 0.75
+    val additionRight = currentPrescriptionData?.additionRight ?: 0.75
+    val prismDegreeLeft = currentPrescriptionData?.prismDegreeLeft ?: 0.0
+    val prismDegreeRight = currentPrescriptionData?.prismDegreeRight ?: 0.0
+    val prismAxisLeft = currentPrescriptionData?.prismAxisLeft ?: 0.0
+    val prismAxisRight = currentPrescriptionData?.prismAxisRight ?: 0.0
+    val prismPositionLeft = currentPrescriptionData?.prismPositionLeft ?: PrismPosition.None
+    val prismPositionRight = currentPrescriptionData?.prismPositionRight ?: PrismPosition.None
 
     val isPrismAxisLeftEnabled = hasPrism && prismPositionLeft == PrismPosition.Axis
     val isPrismAxisRightEnabled = hasPrism && prismPositionRight == PrismPosition.Axis

@@ -28,7 +28,6 @@ import com.peyess.salesapp.constants.stepPrismAxis
 import com.peyess.salesapp.constants.stepPrismDegree
 import com.peyess.salesapp.constants.stepSpherical
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
-import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.typing.prescription.PrismPosition
@@ -55,14 +54,13 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         loadLensTypeCategory()
         loadServiceOrderData()
 
-
         onAsync(PrescriptionDataState::activeServiceOrderResponseAsync) {
             processServiceOrderDataResponse(it)
         }
 
         onEach(
             PrescriptionDataState::hasAdditionAsync,
-            PrescriptionDataState::_currentPrescriptionData,
+            PrescriptionDataState::currentPrescriptionData,
         ) { hasAddition, currPrescription ->
             if (hasAddition is Success && currPrescription != null) {
                 Timber.i("Updating hasAddition $hasAddition")
@@ -237,15 +235,15 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 
     private fun loadInitPrescriptionData() = withState {
         saleRepository.currentPrescriptionData().execute {
-            copy(currentPrescriptionData = it)
+            copy(currentPrescriptionDataAsync = it)
         }
     }
 
     private fun updateHasAddition(hasAddition: Boolean) = withState {
-        Timber.i("Updating has addition ($hasAddition) with prescription ${it._currentPrescriptionData}")
-        if (it._currentPrescriptionData != null) {
+        Timber.i("Updating has addition ($hasAddition) with prescription ${it.currentPrescriptionData}")
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(hasAddition = hasAddition)
+                it.currentPrescriptionData.copy(hasAddition = hasAddition)
             )
         }
     }
@@ -254,9 +252,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseSphericalLeft(curValue: Double) = withState {
         val newValue = (curValue + stepSpherical).coerceAtMost(maxSpherical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(sphericalLeft = newValue)
+                it.currentPrescriptionData.copy(sphericalLeft = newValue)
             )
         }
     }
@@ -264,9 +262,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseSphericalLeft(curValue: Double) = withState {
         val newValue = (curValue - stepSpherical).coerceAtLeast(minSpherical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(sphericalLeft = newValue)
+                it.currentPrescriptionData.copy(sphericalLeft = newValue)
             )
         }
     }
@@ -274,9 +272,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseSphericalRight(curValue: Double) = withState {
         val newValue = (curValue + stepSpherical).coerceAtMost(maxSpherical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(sphericalRight = newValue)
+                it.currentPrescriptionData.copy(sphericalRight = newValue)
             )
         }
     }
@@ -284,9 +282,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseSphericalRight(curValue: Double) = withState {
         val newValue = (curValue - stepSpherical).coerceAtLeast(minSpherical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(sphericalRight = newValue)
+                it.currentPrescriptionData.copy(sphericalRight = newValue)
             )
         }
     }
@@ -294,9 +292,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseCylindricalLeft(curValue: Double) = withState {
         val newValue = (curValue + stepCylindrical).coerceAtMost(maxCylindrical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(cylindricalLeft = newValue)
+                it.currentPrescriptionData.copy(cylindricalLeft = newValue)
             )
         }
     }
@@ -304,9 +302,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseCylindricalLeft(curValue: Double) = withState {
         val newValue = (curValue - stepCylindrical).coerceAtLeast(minCylindrical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(cylindricalLeft = newValue)
+                it.currentPrescriptionData.copy(cylindricalLeft = newValue)
             )
         }
     }
@@ -314,9 +312,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseCylindricalRight(curValue: Double) = withState {
         val newValue = (curValue + stepCylindrical).coerceAtMost(maxCylindrical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(cylindricalRight = newValue)
+                it.currentPrescriptionData.copy(cylindricalRight = newValue)
             )
         }
     }
@@ -324,9 +322,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseCylindricalRight(curValue: Double) = withState {
         val newValue = (curValue - stepCylindrical).coerceAtLeast(minCylindrical)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(cylindricalRight = newValue)
+                it.currentPrescriptionData.copy(cylindricalRight = newValue)
             )
         }
     }
@@ -334,9 +332,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseAxisLeft(curValue: Double) = withState {
         val newValue = (curValue + stepAxis).coerceAtMost(maxAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(axisLeft = newValue)
+                it.currentPrescriptionData.copy(axisLeft = newValue)
             )
         }
     }
@@ -344,9 +342,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseAxisLeft(curValue: Double) = withState {
         val newValue = (curValue - stepAxis).coerceAtLeast(minAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(axisLeft = newValue)
+                it.currentPrescriptionData.copy(axisLeft = newValue)
             )
         }
     }
@@ -354,9 +352,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseAxisRight(curValue: Double) = withState {
         val newValue = (curValue + stepAxis).coerceAtMost(maxAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(axisRight = newValue)
+                it.currentPrescriptionData.copy(axisRight = newValue)
             )
         }
     }
@@ -364,9 +362,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseAxisRight(curValue: Double) = withState {
         val newValue = (curValue - stepAxis).coerceAtLeast(minAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(axisRight = newValue)
+                it.currentPrescriptionData.copy(axisRight = newValue)
             )
         }
     }
@@ -374,9 +372,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseAdditionLeft(curValue: Double) = withState {
         val newValue = (curValue + stepAddition).coerceAtMost(maxAddition)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(additionLeft = newValue)
+                it.currentPrescriptionData.copy(additionLeft = newValue)
             )
         }
     }
@@ -384,9 +382,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseAdditionLeft(curValue: Double) = withState {
         val newValue = (curValue - stepAddition).coerceAtLeast(minAddition)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(additionLeft = newValue)
+                it.currentPrescriptionData.copy(additionLeft = newValue)
             )
         }
     }
@@ -394,9 +392,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increaseAdditionRight(curValue: Double) = withState {
         val newValue = (curValue + stepAddition).coerceAtMost(maxAddition)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(additionRight = newValue)
+                it.currentPrescriptionData.copy(additionRight = newValue)
             )
         }
     }
@@ -404,9 +402,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreaseAdditionRight(curValue: Double) = withState {
         val newValue = (curValue - stepAddition).coerceAtLeast(minAddition)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(additionRight = newValue)
+                it.currentPrescriptionData.copy(additionRight = newValue)
             )
         }
     }
@@ -414,9 +412,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increasePrismDegreeLeft(curValue: Double) = withState {
         val newValue = (curValue + stepPrismDegree).coerceAtMost(maxPrismDegree)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismDegreeLeft = newValue)
+                it.currentPrescriptionData.copy(prismDegreeLeft = newValue)
             )
         }
     }
@@ -424,9 +422,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreasePrismDegreeLeft(curValue: Double) = withState {
         val newValue = (curValue - stepPrismDegree).coerceAtLeast(minPrismDegree)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismDegreeLeft = newValue)
+                it.currentPrescriptionData.copy(prismDegreeLeft = newValue)
             )
         }
     }
@@ -434,9 +432,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increasePrismDegreeRight(curValue: Double) = withState {
         val newValue = (curValue + stepPrismDegree).coerceAtMost(maxPrismDegree)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismDegreeRight = newValue)
+                it.currentPrescriptionData.copy(prismDegreeRight = newValue)
             )
         }
     }
@@ -444,9 +442,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreasePrismDegreeRight(curValue: Double) = withState {
         val newValue = (curValue - stepPrismDegree).coerceAtLeast(minPrismDegree)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismDegreeRight = newValue)
+                it.currentPrescriptionData.copy(prismDegreeRight = newValue)
             )
         }
     }
@@ -454,9 +452,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increasePrismAxisLeft(curValue: Double) = withState {
         val newValue = (curValue + stepPrismAxis).coerceAtMost(maxPrismAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismAxisLeft = newValue)
+                it.currentPrescriptionData.copy(prismAxisLeft = newValue)
             )
         }
     }
@@ -464,9 +462,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreasePrismAxisLeft(curValue: Double) = withState {
         val newValue = (curValue - stepPrismAxis).coerceAtLeast(minPrismAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismAxisLeft = newValue)
+                it.currentPrescriptionData.copy(prismAxisLeft = newValue)
             )
         }
     }
@@ -474,9 +472,9 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun increasePrismAxisRight(curValue: Double) = withState {
         val newValue = (curValue + stepPrismAxis).coerceAtMost(maxPrismAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismAxisRight = newValue)
+                it.currentPrescriptionData.copy(prismAxisRight = newValue)
             )
         }
     }
@@ -484,33 +482,33 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     fun decreasePrismAxisRight(curValue: Double) = withState {
         val newValue = (curValue - stepPrismAxis).coerceAtLeast(minPrismAxis)
 
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismAxisRight = newValue)
+                it.currentPrescriptionData.copy(prismAxisRight = newValue)
             )
         }
     }
 
     fun setPrismPositionLeft(position: PrismPosition) = withState {
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismPositionLeft = position)
+                it.currentPrescriptionData.copy(prismPositionLeft = position)
             )
         }
     }
 
     fun setPrismPositionRight(position: PrismPosition) = withState {
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(prismPositionRight = position)
+                it.currentPrescriptionData.copy(prismPositionRight = position)
             )
         }
     }
 
     fun toggleHasPrism() = withState {
-        if (it._currentPrescriptionData != null) {
+        if (it.currentPrescriptionData != null) {
             saleRepository.updatePrescriptionData(
-                it._currentPrescriptionData.copy(hasPrism = !it.hasPrism)
+                it.currentPrescriptionData.copy(hasPrism = !it.hasPrism)
             )
         }
     }

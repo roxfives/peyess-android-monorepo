@@ -44,7 +44,7 @@ import com.peyess.salesapp.data.room.database.ProductsDatabase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
@@ -287,7 +287,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
        Timber.i("doWork: Starting product update")
 
-        val result = runBlocking(Dispatchers.IO) {
+        val result = withContext(Dispatchers.IO) {
             val forceUpdate = inputData.getBoolean(forceUpdateKey, false)
             Timber.i("doWork: Starting Worker with forceUpdate = $forceUpdate")
 
@@ -299,7 +299,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
 
             if (avoidUpdate) {
-                return@runBlocking Result.success()
+                return@withContext Result.success()
             }
 
             Timber.i("doWork: Cleaning up first...")
@@ -318,7 +318,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             val response = downloadAndPopulateProducts(query)
 
             Timber.i("doWork: Finished update with response $response")
-            return@runBlocking if (response.isLeft()) {
+            return@withContext if (response.isLeft()) {
                 Timber.w("doWork: Failed to update products table: ${response.left()}")
                 Result.retry()
             } else {

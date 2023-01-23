@@ -9,7 +9,6 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
@@ -23,6 +22,8 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
@@ -34,7 +35,6 @@ import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.PaymentFee
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.utils.SaleDataGenerationResponse
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
@@ -47,6 +47,9 @@ data class ServiceOrderState(
     val saleId: String = "",
     val serviceOrderId: String = "",
     val isCreating: Boolean = false,
+
+    val activeStoreIdAsync: Async<String> = Uninitialized,
+    val activeStoreId: String = "",
 
     val userClientAsync: Async<ClientPickedEntity?> = Uninitialized,
     val responsibleClientAsync: Async<ClientPickedEntity?> = Uninitialized,
@@ -89,7 +92,6 @@ data class ServiceOrderState(
 
     val hidServiceOrder: String = "",
     val hidSale: String = "",
-    val saleIdAsync: Async<ActiveSalesEntity?> = Uninitialized,
 
     val serviceOrderGenerationResponseAsync: Async<SaleDataGenerationResponse> = Uninitialized,
     val serviceOrderResponse: Pair<ServiceOrderDocument, PurchaseDocument> =
@@ -100,6 +102,9 @@ data class ServiceOrderState(
     val serviceOrderPdfErrorMessage: Int = R.string.empty_string,
 
     val isSOPdfBeingGenerated: Boolean = false,
+
+    val localPrescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
+    val addPrescriptionPictureResponseAsync: Async<PictureAddResponse> = Uninitialized,
 ): MavericksState {
     val isSaleDone: Boolean = serviceOrderGenerationResponseAsync is Success
             && serviceOrderGenerationResponseAsync.invoke().isRight()

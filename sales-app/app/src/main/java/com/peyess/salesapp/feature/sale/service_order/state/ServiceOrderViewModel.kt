@@ -8,9 +8,11 @@ import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
@@ -24,6 +26,10 @@ import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesReposito
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -38,6 +44,7 @@ import com.peyess.salesapp.feature.sale.service_order.adapter.toLens
 import com.peyess.salesapp.feature.sale.service_order.adapter.toOverallDiscount
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPayment
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPaymentFee
+import com.peyess.salesapp.feature.sale.service_order.adapter.toPictureUploadDocument
 import com.peyess.salesapp.feature.sale.service_order.adapter.toSalePaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
@@ -55,6 +62,7 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.file.createPrintFile
+import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -75,6 +83,7 @@ import kotlin.random.asJavaRandom
 
 class ServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: ServiceOrderState,
+    private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
     private val salesDatabase: ActiveSalesDatabase,
     private val authenticationRepository: AuthenticationRepository,
@@ -90,6 +99,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val paymentFeeRepository: PaymentFeeRepository,
     private val clientRepository: ClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
+    private val pictureUploadRepository: PictureUploadRepository,
+    private val localPrescriptionRepository: LocalPrescriptionRepository,
     private val firebaseManager: FirebaseManager,
 ): MavericksViewModel<ServiceOrderState>(initialState) {
 
@@ -97,7 +108,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private lateinit var serviceOrderHid: String
 
     init {
-        loadCurrentSale()
+        loadCurrentStore()
 
         loadClients()
         loadPrescriptionPicture()
@@ -106,6 +117,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         createUploader()
         createHid()
+
+        onAsync(ServiceOrderState::activeStoreIdAsync) {
+            setState { copy(activeStoreId = it) }
+        }
 
         onAsync(ServiceOrderState::productPickedResponseAsync) { processProductPickedResponse(it) }
         onAsync(ServiceOrderState::lensResponseAsync) { processLensPickedResponse(it) }
@@ -120,6 +135,14 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         onAsync(ServiceOrderState::serviceOrderGenerationResponseAsync) {
             processGenerateSaleResponse(it)
+        }
+
+        onAsync(ServiceOrderState::localPrescriptionResponseAsync) {
+            processPrescriptionPictureResponse(it)
+        }
+
+        onAsync(ServiceOrderState::addPrescriptionPictureResponseAsync) {
+            processAddPrescriptionPictureResponse(it)
         }
 
         onEach(ServiceOrderState::serviceOrderId) {
@@ -148,11 +171,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadCurrentSale() {
-        saleRepository.activeSale()
-            .execute(Dispatchers.IO) {
-                copy(saleIdAsync = it)
-            }
+    private fun loadCurrentStore() {
+        suspend {
+            authenticationRepository.activeStoreId()
+        }.execute(Dispatchers.IO) {
+            copy(activeStoreIdAsync = it)
+        }
     }
 
     private fun loadDiscount(saleId: String) {
@@ -484,6 +508,74 @@ class ServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
+    private fun schedulePrescriptionPictureUpload(soId: String) {
+        suspend {
+            localPrescriptionRepository.getPrescriptionForServiceOrder(soId)
+        }.execute(Dispatchers.IO) {
+            copy(localPrescriptionResponseAsync = it)
+        }
+    }
+
+    private fun processPrescriptionPictureResponse(response: LocalPrescriptionResponse) = withState { state ->
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        localPrescriptionResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = {
+                addPrescriptionPictureToUpload(
+                    it.toPictureUploadDocument(
+                        salesApplication,
+                        state.activeStoreId,
+                        state.userClient.id,
+                        state.serviceOrderResponse.first.prescriptionId,
+                    )
+                )
+            },
+        )
+    }
+
+    private fun addPrescriptionPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
+        suspend {
+            pictureUploadRepository.addPicture(pictureUploadDocument)
+        }.execute {
+            copy(addPrescriptionPictureResponseAsync = it)
+        }
+    }
+
+    private fun processAddPrescriptionPictureResponse(response: PictureAddResponse) {
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        addPrescriptionPictureResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = {
+                enqueuePictureUploadManagerWorker(
+                    context = salesApplication as Context,
+                    uploadEntryId = it,
+                )
+            },
+        )
+    }
+
+//    private fun schedulePrescriptionPictureUpload
+
+    private fun schedulePictureUpload() = withState {
+        schedulePrescriptionPictureUpload(it.serviceOrderId)
+    }
+
     fun onUpdateIsCreating(isCreating: Boolean) = setState {
         copy(isCreating = isCreating)
     }
@@ -501,6 +593,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     fun generateSale(context: Context) = withState { state ->
+        schedulePictureUpload()
+
         suspend {
             val sale = serviceOrderUploader.generateSaleData(
                 context = context,

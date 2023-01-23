@@ -577,13 +577,13 @@
     <string name="fs_col_discount_groups">optical_stores/%1$s/local_optical_product_discount_groups</string>
     <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
 
-
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
     <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
     <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
     <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>
-    <string name="fs_doc_payment_method">optical_stores/%1$s/local_optical_payment_method/%1$s</string>
+    <string name="fs_doc_payment_method">optical_stores/%1$s/local_optical_payment_method/%2$s</string>
+    <string name="fs_doc_prescription">/optical_stores/%1$s/local_optical_prescription/%2$s</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>
@@ -601,4 +601,5 @@
 
     <!-- Storage file paths -->
     <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>
+    <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>
 </resources>

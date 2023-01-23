@@ -13,6 +13,8 @@ interface AuthenticationRepository {
 
     val currentStore: Flow<OpticalStore>
 
+    suspend fun activeStoreId(): String
+
     fun resetCurrentUser(): Flow<Boolean>
 
     fun currentUser(): Flow<CollaboratorDocument?>

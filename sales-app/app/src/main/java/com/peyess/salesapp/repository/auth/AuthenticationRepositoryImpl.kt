@@ -71,6 +71,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 storeId = firebaseManager.currentStore?.uid ?: ""
             )
 
+    override suspend fun activeStoreId(): String {
+        return firebaseManager.currentStore?.uid ?: ""
+    }
+
     override suspend fun updateCurrentUser(uid: String) {
         salesApplication.dataStoreCurrentUser.edit {
             it[currentCollaboratorKey] = uid

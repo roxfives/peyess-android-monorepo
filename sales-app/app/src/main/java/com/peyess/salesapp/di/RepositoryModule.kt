@@ -71,6 +71,8 @@ import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRe
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepositoryImpl
+import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
+import com.peyess.salesapp.data.repository.local_sale.positioning.error.LocalPositioningRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepositoryImpl
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
@@ -409,6 +411,16 @@ object RepositoryModule {
     ): PictureUploadRepository {
         return PictureUploadRepositoryImpl(
             uploadPictureDao = uploadPictureDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalPositioningRepository(
+        positioningDao: PositioningDao,
+    ): LocalPositioningRepository {
+        return LocalPositioningRepositoryImpl(
+            positioningDao = positioningDao,
         )
     }
 }

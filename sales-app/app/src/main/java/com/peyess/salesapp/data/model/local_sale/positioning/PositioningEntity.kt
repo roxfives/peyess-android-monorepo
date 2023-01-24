@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.sale.frames_measure
+package com.peyess.salesapp.data.model.local_sale.positioning
 
 import android.net.Uri
 import androidx.room.ColumnInfo

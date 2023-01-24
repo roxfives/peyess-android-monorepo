@@ -2,8 +2,8 @@ package com.peyess.salesapp.data.repository.local_sale.measuring
 
 import arrow.core.Either
 import arrow.core.leftIfNull
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
-import com.peyess.salesapp.dao.sale.frames_measure.adapter.toLocalMeasuringDocument
+import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
+import com.peyess.salesapp.data.adapter.positioning.toLocalMeasuringDocument
 import com.peyess.salesapp.data.repository.local_sale.measuring.error.MeasuringDataNotFound
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import javax.inject.Inject

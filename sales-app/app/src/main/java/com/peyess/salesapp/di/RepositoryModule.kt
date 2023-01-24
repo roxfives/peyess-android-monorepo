@@ -23,7 +23,7 @@ import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
 import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
 import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
+import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao

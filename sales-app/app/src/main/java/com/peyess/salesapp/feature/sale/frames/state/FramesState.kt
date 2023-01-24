@@ -7,7 +7,7 @@ import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 
 sealed class Eye {

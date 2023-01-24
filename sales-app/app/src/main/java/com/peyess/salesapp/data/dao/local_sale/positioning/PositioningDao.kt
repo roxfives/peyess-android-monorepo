@@ -1,9 +1,10 @@
-package com.peyess.salesapp.dao.sale.frames_measure
+package com.peyess.salesapp.data.dao.local_sale.positioning
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import kotlinx.coroutines.flow.Flow
 

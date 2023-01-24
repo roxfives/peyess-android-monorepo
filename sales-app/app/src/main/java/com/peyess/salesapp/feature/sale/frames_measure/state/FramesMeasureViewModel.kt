@@ -6,9 +6,9 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
-import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
-import com.peyess.salesapp.dao.sale.frames_measure.updateProportion
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
+import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
+import com.peyess.salesapp.data.model.local_sale.positioning.updateProportion
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
@@ -23,7 +23,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Job
 import timber.log.Timber
-import java.io.File
 import java.io.IOException
 import kotlin.math.abs
 

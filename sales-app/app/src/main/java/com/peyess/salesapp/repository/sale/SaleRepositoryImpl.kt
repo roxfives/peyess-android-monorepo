@@ -19,9 +19,9 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningDao
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
-import com.peyess.salesapp.dao.sale.frames_measure.updateInitialPositioningState
+import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
+import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity

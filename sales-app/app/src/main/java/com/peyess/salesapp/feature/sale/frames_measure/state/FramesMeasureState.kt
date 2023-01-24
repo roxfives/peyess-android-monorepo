@@ -7,7 +7,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.google.firebase.firestore.PropertyName
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter

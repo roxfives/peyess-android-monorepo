@@ -3,14 +3,13 @@ package com.peyess.salesapp.data.dao.management_picture_upload
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadEntity
 
 @Dao
 interface PictureUploadDao {
-    @Insert(onConflict = REPLACE)
+    @Insert
     suspend fun add(pictureUpload: PictureUploadEntity): Long
 
     @Update

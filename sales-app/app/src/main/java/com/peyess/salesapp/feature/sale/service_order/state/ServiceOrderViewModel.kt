@@ -26,6 +26,8 @@ import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesReposito
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
+import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
@@ -91,6 +93,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val framesRepository: LocalFramesRepository,
     private val positioningRepository: PositioningRepository,
     private val measuringRepository: MeasuringRepository,
+    private val localPositioningRepository: LocalPositioningRepository,
     private val prescriptionRepository: PrescriptionRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
@@ -137,12 +140,21 @@ class ServiceOrderViewModel @AssistedInject constructor(
             processGenerateSaleResponse(it)
         }
 
+        onAsync(ServiceOrderState::localPositioningsAsync) { processLocalPositioningResponse(it) }
         onAsync(ServiceOrderState::localPrescriptionResponseAsync) {
             processPrescriptionPictureResponse(it)
         }
 
         onAsync(ServiceOrderState::addPrescriptionPictureResponseAsync) {
             processAddPrescriptionPictureResponse(it)
+        }
+
+        onAsync(ServiceOrderState::addPositioningLeftResponseAsync) {
+            processAddPositioningLeftPictureResponse(it)
+        }
+
+        onAsync(ServiceOrderState::addPositioningRightResponseAsync) {
+            processAddPositioningRightPictureResponse(it)
         }
 
         onEach(ServiceOrderState::serviceOrderId) {
@@ -168,6 +180,16 @@ class ServiceOrderViewModel @AssistedInject constructor(
             ServiceOrderState::frames,
         ) { lens, coloring, treatment, frames ->
             updateTotalToPay(lens, coloring, treatment, frames)
+        }
+
+        onEach(ServiceOrderState::serviceOrderResponse) {
+            if (
+                it.first.lPositioningId.isNotBlank()
+                    && it.first.rPositioningId.isNotBlank()
+                    && it.first.prescriptionId.isNotBlank()
+            ) {
+                schedulePictureUpload()
+            }
         }
     }
 
@@ -516,6 +538,15 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
+    private fun scheduleMeasuringPictureUpload(soId: String) {
+        suspend {
+            localPositioningRepository.bothPositioningsForServiceOrder(soId)
+        }.execute(Dispatchers.IO) {
+            copy(localPositioningsAsync = it)
+        }
+    }
+
+
     private fun processPrescriptionPictureResponse(response: LocalPrescriptionResponse) = withState { state ->
         response.fold(
             ifLeft = {
@@ -541,11 +572,63 @@ class ServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processLocalPositioningResponse(
+        response: LocalPositioningFetchBothResponse,
+    ) = withState { state ->
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        localPositioningsAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = {
+                addPositioningLeftPictureToUpload(
+                    it.left.toPictureUploadDocument(
+                        salesApplication,
+                        state.activeStoreId,
+                        state.userClient.id,
+                        state.serviceOrderResponse.first.lPositioningId,
+                    )
+                )
+
+                addPositioningRightPictureToUpload(
+                    it.right.toPictureUploadDocument(
+                        salesApplication,
+                        state.activeStoreId,
+                        state.userClient.id,
+                        state.serviceOrderResponse.first.rPositioningId,
+                    )
+                )
+            },
+        )
+    }
+
     private fun addPrescriptionPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
         suspend {
             pictureUploadRepository.addPicture(pictureUploadDocument)
         }.execute {
             copy(addPrescriptionPictureResponseAsync = it)
+        }
+    }
+
+    private fun addPositioningLeftPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
+        suspend {
+            pictureUploadRepository.addPicture(pictureUploadDocument)
+        }.execute {
+            copy(addPositioningLeftResponseAsync = it)
+        }
+    }
+
+    private fun addPositioningRightPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
+        suspend {
+            pictureUploadRepository.addPicture(pictureUploadDocument)
+        }.execute {
+            copy(addPositioningRightResponseAsync = it)
         }
     }
 
@@ -570,10 +653,51 @@ class ServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-//    private fun schedulePrescriptionPictureUpload
+    private fun processAddPositioningLeftPictureResponse(response: PictureAddResponse) {
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        addPositioningLeftResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = {
+                enqueuePictureUploadManagerWorker(
+                    context = salesApplication as Context,
+                    uploadEntryId = it,
+                )
+            },
+        )
+    }
+
+    private fun processAddPositioningRightPictureResponse(response: PictureAddResponse) {
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(
+                        addPositioningRightResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        ),
+                    )
+                }
+            },
+
+            ifRight = {
+                enqueuePictureUploadManagerWorker(
+                    context = salesApplication as Context,
+                    uploadEntryId = it,
+                )
+            },
+        )
+    }
 
     private fun schedulePictureUpload() = withState {
         schedulePrescriptionPictureUpload(it.serviceOrderId)
+        scheduleMeasuringPictureUpload(it.serviceOrderId)
     }
 
     fun onUpdateIsCreating(isCreating: Boolean) = setState {
@@ -593,8 +717,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     fun generateSale(context: Context) = withState { state ->
-        schedulePictureUpload()
-
         suspend {
             val sale = serviceOrderUploader.generateSaleData(
                 context = context,

@@ -39,7 +39,9 @@ fun printDocument(document: String): String {
     (0 until documentChunks.lastIndex - 1).forEach {
         documentMasked += documentChunks[it] + "."
     }
-    documentMasked += documentChunks[documentChunks.lastIndex - 1] + "-" + documentChunks.last()
+
+    val lastIndex = (documentChunks.lastIndex - 1).coerceAtLeast(0)
+    documentMasked += documentChunks[lastIndex] + "-" + documentChunks.last()
 
     return documentMasked
 }

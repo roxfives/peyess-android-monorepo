@@ -11,7 +11,7 @@ import androidx.work.WorkManager
 fun enqueuePictureUploadManagerWorker(
     context: Context,
     uploadEntryId: Long,
-    workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.KEEP,
+    workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.APPEND,
 ) {
     val inputData = Data.Builder()
         .putLong(uploadEntryIdKey, uploadEntryId)

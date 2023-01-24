@@ -9,7 +9,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.frames_measure.PositioningEntity
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
@@ -22,6 +22,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
@@ -105,9 +106,19 @@ data class ServiceOrderState(
 
     val localPrescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val addPrescriptionPictureResponseAsync: Async<PictureAddResponse> = Uninitialized,
+
+    val localPositioningsAsync: Async<LocalPositioningFetchBothResponse> = Uninitialized,
+    val addPositioningLeftResponseAsync: Async<PictureAddResponse> = Uninitialized,
+    val addPositioningRightResponseAsync: Async<PictureAddResponse> = Uninitialized,
 ): MavericksState {
     val isSaleDone: Boolean = serviceOrderGenerationResponseAsync is Success
             && serviceOrderGenerationResponseAsync.invoke().isRight()
+            && addPrescriptionPictureResponseAsync is Success
+            && addPrescriptionPictureResponseAsync.invoke().isRight()
+            && addPositioningLeftResponseAsync is Success
+            && addPositioningLeftResponseAsync.invoke().isRight()
+            && addPositioningRightResponseAsync is Success
+            && addPositioningRightResponseAsync.invoke().isRight()
     val isSaleLoading = serviceOrderGenerationResponseAsync is Loading
     val hasSaleFailed = serviceOrderGenerationResponseAsync is Fail
 

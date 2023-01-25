@@ -26,10 +26,10 @@ interface SalePaymentDao {
     fun paymentsForSale(saleId: String): List<SalePaymentEntity>
 
     @Query("SELECT SUM(value) FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId ")
-    fun totalPaymentForSale(saleId: String): Double
+    fun totalPaymentForSale(saleId: String): Double?
 
     @Query("SELECT SUM(value) FROM ${SalePaymentEntity.tableName} WHERE sale_id = :saleId ")
-    fun watchTotalPayment(saleId: String): Flow<Double>
+    fun watchTotalPayment(saleId: String): Flow<Double?>
 
     @Query("SELECT * FROM ${SalePaymentEntity.tableName} WHERE id = :id ")
     fun watchPayment(id: Long): Flow<SalePaymentEntity?>

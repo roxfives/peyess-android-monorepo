@@ -14,6 +14,7 @@ import com.peyess.salesapp.data.repository.local_sale.payment.error.Unexpected
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class SalePaymentRepositoryImpl @Inject constructor(
@@ -65,8 +66,13 @@ class SalePaymentRepositoryImpl @Inject constructor(
 
     override fun watchTotalPayment(saleId: String): Flow<SalePaymentTotalResponse> {
         return salePaymentDao.watchTotalPayment(saleId)
-            .map { it.right() as SalePaymentTotalResponse }
-            .catch {
+            .map { (it ?: 0.0).right() }
+            .catch<SalePaymentTotalResponse> {
+                Timber.e(
+                    message = "Error while watching total payment for sale $saleId: ${it.message}",
+                    t = it,
+                )
+
                 val error = Unexpected(
                     description = it.message ?: "",
                     error = it,
@@ -92,7 +98,7 @@ class SalePaymentRepositoryImpl @Inject constructor(
     override suspend fun totalPaymentForSale(
         saleId: String,
     ): SalePaymentTotalResponse = Either.catch {
-        salePaymentDao.totalPaymentForSale(saleId)
+        salePaymentDao.totalPaymentForSale(saleId) ?: 0.0
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",

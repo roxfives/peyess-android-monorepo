@@ -98,7 +98,7 @@ class PaymentViewModel @AssistedInject constructor(
         onEach(
             PaymentState::payment,
             PaymentState::paymentMethods,
-        ) { _, methods -> updatePaymentWithMethodList(methods)  }
+        ) { _, methods -> updatePaymentWithMethodList(methods) }
 
 
         onEach(

@@ -15,6 +15,9 @@ interface ActiveSODao {
     @Query("SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.id = :id")
     suspend fun getServiceOrderById(id: String): ActiveSOEntity?
 
+    @Query("SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.sale_id = :saleId")
+    suspend fun getServiceOrdersForSale(saleId: String): List<ActiveSOEntity>
+
     @Insert
     fun add(activeSale: ActiveSOEntity)
 

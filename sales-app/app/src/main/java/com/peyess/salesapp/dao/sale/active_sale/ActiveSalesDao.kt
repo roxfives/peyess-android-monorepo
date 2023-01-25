@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface ActiveSalesDao {
     @Query(
         "SELECT * FROM ${ActiveSalesEntity.tableName} as sale " +
-                "WHERE sale.collaborator_uid = :uid AND sale.active = ${true}"
+                "WHERE sale.collaborator_uid = :uid AND sale.active = 1"
     )
-    fun activeSalesFor(uid: String): Flow<List<ActiveSalesEntity>>
+    suspend fun activeSalesFor(uid: String): List<ActiveSalesEntity>
 
     @Query(
         "SELECT * FROM ${ActiveSalesEntity.tableName} as sale " +

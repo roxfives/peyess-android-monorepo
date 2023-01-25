@@ -141,6 +141,14 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    fun lookForActiveSales() {
+        suspend {
+            val userId = authenticationRepository.fetchCurrentUserId()
+
+            saleRepository.findActiveSaleFor(userId)
+        }
+    }
+
     fun startNewSale() = withState {
         saleRepository.createSale().execute(Dispatchers.IO) {
             Timber.i("Creating a new sale $it")

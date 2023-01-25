@@ -22,14 +22,21 @@ import kotlinx.coroutines.flow.Flow
 typealias ActiveSaleResponse = Either<ActiveSaleError, ActiveSalesEntity>
 typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOEntity>
 
+typealias ActiveSalesResponse = Either<ActiveSaleError, List<ActiveSalesEntity>>
+
 typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
 
 typealias CancelSaleResponse = Either<ActiveSaleError, Unit>
+typealias ResumeSaleResponse = Either<ActiveSaleError, Unit>
 
 interface SaleRepository {
     fun createSale(): Flow<Boolean>
 
     suspend fun cancelCurrentSale(): CancelSaleResponse
+
+    suspend fun findActiveSaleFor(collaboratorId: String): ActiveSalesResponse
+
+    suspend fun resumeSale(activeSale: ActiveSalesEntity): ResumeSaleResponse
 
     fun activeSale(): Flow<ActiveSalesEntity?>
     suspend fun currentSale(): ActiveSaleResponse

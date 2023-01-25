@@ -261,6 +261,38 @@ class SaleRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun findActiveSaleFor(
+        collaboratorId: String,
+    ): ActiveSalesResponse = Either.catch {
+        activeSalesDao.activeSalesFor(collaboratorId)
+    }.mapLeft {
+        Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
+    }
+
+    override suspend fun resumeSale(
+        activeSale: ActiveSalesEntity,
+    ): ResumeSaleResponse = Either.catch {
+        val serviceOrders = activeSODao.getServiceOrdersForSale(activeSale.id)
+
+        if (serviceOrders.isEmpty()) {
+            error("No service order found for sale ${activeSale.id}")
+        }
+
+        val activeSO = serviceOrders.first()
+
+        Timber.i("Resuming sale $activeSale")
+        Timber.i("Resuming so $activeSO")
+
+        salesApplication.dataStoreCurrentSale.edit { prefs ->
+            prefs[currentSaleKey] = activeSale.id
+            prefs[currentSOKey] = activeSO.id
+        }
+
+        Timber.i("Sale resumed")
+    }.mapLeft {
+        Unexpected(description = "Error resuming sale ${activeSale.id}", it)
+    }
+
     override fun updateSO(so: ActiveSOEntity) {
         Timber.i("Updating sale to $so")
         activeSODao.update(so)

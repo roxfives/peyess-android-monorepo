@@ -133,20 +133,26 @@ fun PrescriptionPictureScreen(
     val isCopy by viewModel.collectAsState(PrescriptionPictureState::isCopy)
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-    val cameraLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.TakePicture(),
-            onResult = { success ->
-                if (success) {
-                    viewModel.onPictureTaken(pictureFileUri)
-                }
-            })
-
-    var hasRequestedPermission = false
-    LaunchedEffect(cameraPermissionState) {
-        if (hasRequestedPermission && cameraPermissionState.status == PermissionStatus.Granted) {
-            cameraLauncher.launch(pictureFileUri)
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                viewModel.onPictureTaken(pictureFileUri)
+            }
         }
-    }
+    )
+
+    val filesPermissionState = rememberPermissionState(
+        android.Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+    val filesLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = {
+            if (it != null) {
+                viewModel.onPictureTaken(it)
+            }
+        }
+    )
 
     if (!isLoading) {
         PrescriptionPictureImpl(
@@ -168,13 +174,17 @@ fun PrescriptionPictureScreen(
 
             takePicture = {
                 if (cameraPermissionState.status == PermissionStatus.Granted) {
-
-                    Timber.i("File path is ${pictureFile.absolutePath}")
-                    Timber.i("File uri is ${pictureFileUri}")
                     cameraLauncher.launch(pictureFileUri)
                 } else {
-                    hasRequestedPermission = true
                     cameraPermissionState.launchPermissionRequest()
+                }
+            },
+
+            pickFromDevice = {
+                if (filesPermissionState.status == PermissionStatus.Granted) {
+                    filesLauncher.launch("image/*")
+                } else {
+                    filesPermissionState.launchPermissionRequest()
                 }
             },
 
@@ -210,6 +220,7 @@ private fun PrescriptionPictureImpl(
     onProfessionalNameChanged: (value: String) -> Unit = {},
 
     takePicture: () -> Unit = {},
+    pickFromDevice: () -> Unit = {},
     onSetDate: (date: LocalDate) -> Unit = {},
     onNext: () -> Unit = {},
 ) {
@@ -238,6 +249,7 @@ private fun PrescriptionPictureImpl(
                 },
                 onPickGallery = {
                     coroutineScope.launch { bottomSheetState.hide() }
+                    pickFromDevice()
                 },
             )
         },

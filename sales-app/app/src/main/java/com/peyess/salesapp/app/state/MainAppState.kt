@@ -6,11 +6,15 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
+import com.peyess.salesapp.repository.sale.CancelSaleResponse
+import com.peyess.salesapp.repository.sale.ResumeSaleResponse
 
 sealed class AppAuthenticationState {
     object Unauthenticated: AppAuthenticationState()
@@ -38,6 +42,13 @@ data class MainAppState(
     val pickScenario: PickScenario = PickScenario.ServiceOrder,
     val pickedId: String = "",
 
+    val activeSalesStreamAsync: Async<ActiveSalesStreamResponse> = Uninitialized,
+    val activeSalesAsync: Async<List<ActiveSalesEntity>> = Uninitialized,
+    val activeSales: List<ActiveSalesEntity> = emptyList(),
+
+    val cancelSaleResponseAsync: Async<CancelSaleResponse> = Uninitialized,
+    val resumeSaleResponseAsync: Async<ResumeSaleResponse> = Uninitialized,
+
     val isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
 ): MavericksState {
     val isCreatingNewSale = createNewSale is Loading
@@ -59,6 +70,9 @@ data class MainAppState(
     } else {
         currentStoreAsync.invoke()
     }
+
+    val isSearchingForActiveSales = activeSalesStreamAsync is Loading
+    val hasActiveSales = activeSales.isNotEmpty()
 
     // Client screen
     val clientList = clientListAsync.invoke() ?: emptyList()

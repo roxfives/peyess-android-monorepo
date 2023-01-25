@@ -58,10 +58,6 @@ class MainActivity: ComponentActivity() {
                 }
             }
 
-            LaunchedEffect(Unit) {
-                viewModel.lookForActiveSales()
-            }
-
             SalesAppTheme {
                 SalesAppRoot(navHostController = navHostController)
             }

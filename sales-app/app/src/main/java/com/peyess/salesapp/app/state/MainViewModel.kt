@@ -1,6 +1,7 @@
 package com.peyess.salesapp.app.state
 
 import android.content.Context
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -8,12 +9,13 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
-import com.peyess.salesapp.features.pdf.service_order.buildHtml
+import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.file.createPrintFile
@@ -21,6 +23,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
@@ -37,6 +41,8 @@ class MainViewModel @AssistedInject constructor(
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
+        streamActiveSales()
+
         setState {
             copy(
                 createNewSale = Success(false),
@@ -61,6 +67,9 @@ class MainViewModel @AssistedInject constructor(
 
             }
         }
+
+        onAsync(MainAppState::activeSalesStreamAsync) { processActiveSalesStreamResponse(it) }
+        onAsync(MainAppState::activeSalesAsync) { processActiveSalesStream(it) }
 
         loadProductTableStatus()
         loadCurrentCollaborator()
@@ -103,6 +112,26 @@ class MainViewModel @AssistedInject constructor(
 
     }
 
+    private fun processActiveSalesStreamResponse(response: ActiveSalesStreamResponse) {
+        response.fold(
+            ifLeft = {
+                setState {
+                    copy(activeSalesStreamAsync = Fail(it.error ?: Throwable(it.description)))
+                }
+            },
+
+            ifRight = { stream ->
+                stream.execute(Dispatchers.IO) {
+                    copy(activeSalesAsync = it)
+                }
+            }
+        )
+    }
+
+    private fun processActiveSalesStream(sales: List<ActiveSalesEntity>) = setState {
+        copy(activeSales = sales)
+    }
+
     fun generateServiceOrderPdf(
         context: Context,
         serviceOrder: ServiceOrderDocument,
@@ -141,18 +170,35 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    fun lookForActiveSales() {
-        suspend {
-            val userId = authenticationRepository.fetchCurrentUserId()
-
-            saleRepository.findActiveSaleFor(userId)
-        }
+    private fun streamActiveSales() {
+        authenticationRepository.currentUser()
+            .filterNotNull()
+            .map { saleRepository.activeSalesStreamFor(it.id) }
+            .execute(Dispatchers.IO) {
+                copy(activeSalesStreamAsync = it)
+            }
     }
 
     fun startNewSale() = withState {
         saleRepository.createSale().execute(Dispatchers.IO) {
             Timber.i("Creating a new sale $it")
             copy(createNewSale = it)
+        }
+    }
+
+    fun resumeSale(sale: ActiveSalesEntity) {
+        suspend {
+            saleRepository.resumeSale(sale)
+        }.execute(Dispatchers.IO) {
+            copy(resumeSaleResponseAsync = it)
+        }
+    }
+
+    fun cancelSale(sale: ActiveSalesEntity) {
+        suspend {
+            saleRepository.cancelSale(sale)
+        }.execute(Dispatchers.IO) {
+            copy(cancelSaleResponseAsync = it)
         }
     }
 

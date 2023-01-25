@@ -23,6 +23,7 @@ typealias ActiveSaleResponse = Either<ActiveSaleError, ActiveSalesEntity>
 typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOEntity>
 
 typealias ActiveSalesResponse = Either<ActiveSaleError, List<ActiveSalesEntity>>
+typealias ActiveSalesStreamResponse = Either<ActiveSaleError, Flow<List<ActiveSalesEntity>>>
 
 typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
 
@@ -34,7 +35,11 @@ interface SaleRepository {
 
     suspend fun cancelCurrentSale(): CancelSaleResponse
 
+    suspend fun cancelSale(sale: ActiveSalesEntity): CancelSaleResponse
+
     suspend fun findActiveSaleFor(collaboratorId: String): ActiveSalesResponse
+
+    fun activeSalesStreamFor(collaboratorId: String): ActiveSalesStreamResponse
 
     suspend fun resumeSale(activeSale: ActiveSalesEntity): ResumeSaleResponse
 

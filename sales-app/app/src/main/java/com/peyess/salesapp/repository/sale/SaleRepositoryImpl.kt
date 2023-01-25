@@ -261,10 +261,38 @@ class SaleRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun cancelSale(
+        sale: ActiveSalesEntity,
+    ): CancelSaleResponse = Either.catch {
+        activeSalesDao.update(sale.copy(active = false))
+    }.mapLeft {
+        ActiveSaleNotCanceled(description = "Error cancelling sale ${sale.id}")
+    }
+
     override suspend fun findActiveSaleFor(
         collaboratorId: String,
     ): ActiveSalesResponse = Either.catch {
-        activeSalesDao.activeSalesFor(collaboratorId)
+        var activeServiceOrder: ActiveSOEntity
+        activeSalesDao.activeSalesFor(collaboratorId).map {
+            activeServiceOrder = activeSODao.getServiceOrdersForSale(it.id).first()
+
+            it.copy(clientName = activeServiceOrder.clientName)
+        }
+    }.mapLeft {
+        Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
+    }
+
+    override fun activeSalesStreamFor(
+        collaboratorId: String,
+    ): ActiveSalesStreamResponse = Either.catch {
+        var activeServiceOrder: ActiveSOEntity
+        activeSalesDao.activeSalesStreamFor(collaboratorId).map {
+            it.map { sale ->
+                activeServiceOrder = activeSODao.getServiceOrdersForSale(sale.id).first()
+
+                sale.copy(clientName = activeServiceOrder.clientName)
+            }
+        }
     }.mapLeft {
         Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
     }

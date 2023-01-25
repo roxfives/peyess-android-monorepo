@@ -93,6 +93,10 @@
     <string name="home_btn_products_subtitle_updating">Atualizando tabela de lentes</string>
     <string name="home_btn_products_subtitle_failed">Erro ao atualizar a tabela</string>
 
+    <string name="home_dialog_btn_dismiss">Decidir depois</string>
+    <string name="home_dialog_sale_found">Venda não finalziada para %1$s</string>
+    <string name="home_dialog_title_sale_found">Encontramos vendas não finalziadas</string>
+
     <string name="btn_make_new_sale">Fazer nova venda</string>
 
     <string name="btn_client_action_add_client">Adicionar cliente</string>

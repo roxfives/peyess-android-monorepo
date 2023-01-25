@@ -17,6 +17,12 @@ interface ActiveSalesDao {
 
     @Query(
         "SELECT * FROM ${ActiveSalesEntity.tableName} as sale " +
+                "WHERE sale.collaborator_uid = :uid AND sale.active = 1"
+    )
+    fun activeSalesStreamFor(uid: String): Flow<List<ActiveSalesEntity>>
+
+    @Query(
+        "SELECT * FROM ${ActiveSalesEntity.tableName} as sale " +
                 "WHERE sale.id = :id"
     )
     fun getById(id: String): Flow<ActiveSalesEntity?>

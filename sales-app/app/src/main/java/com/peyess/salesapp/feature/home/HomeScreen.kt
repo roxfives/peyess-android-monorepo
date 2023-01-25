@@ -22,13 +22,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.EMobiledata
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.ProductionQuantityLimits
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -61,6 +62,7 @@ import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
+import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -73,6 +75,11 @@ import com.peyess.salesapp.ui.component.button.HomeScreenButton
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.customView
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
 
 private val dividerPadding = 16.dp
 
@@ -133,9 +140,13 @@ fun HomeScreen(
     val isUpdatingProductsTable by viewModel.collectAsState(MainAppState::isUpdatingProducts)
     val hasProductsTableUpdateFailed by viewModel.collectAsState(MainAppState::hasProductUpdateFailed)
 
-    val hasStartedNewSale = remember {
-        mutableStateOf(false)
-    }
+    val activeSales by viewModel.collectAsState(MainAppState::activeSales)
+    val isSearchingForActiveSales by viewModel.collectAsState(MainAppState::isSearchingForActiveSales)
+
+    val dismissActiveSales = remember { mutableStateOf(false) }
+    val hasShownActiveSales = remember { mutableStateOf(false) }
+
+    val hasStartedNewSale = remember { mutableStateOf(false) }
 
     if (createNewSale is Success && createNewSale.invoke()!!) {
         LaunchedEffect(Unit) {
@@ -154,6 +165,27 @@ fun HomeScreen(
             sixthStepViewModel.resetState()
         }
     }
+
+    val dialogState = rememberMaterialDialogState(initialValue = activeSales.isNotEmpty())
+    LaunchedEffect(dismissActiveSales.value, activeSales) {
+        if (dismissActiveSales.value || activeSales.isEmpty()) {
+            dialogState.hide()
+        } else if (!hasShownActiveSales.value && !isCreatingNewSale && createNewSale.invoke() != true) {
+            hasShownActiveSales.value = true
+            dialogState.show()
+        }
+    }
+
+    ActiveSalesDialog(
+        dialogState = dialogState,
+        sales = activeSales,
+        onDismiss = { dismissActiveSales.value = true },
+        onCancelSale = viewModel::cancelSale,
+        onResumeSale = {
+            viewModel.resumeSale(it)
+            onStartSale()
+        },
+    )
 
     HomeScreenImpl(
         modifier = modifier,
@@ -311,9 +343,9 @@ private fun ProfileData(
                         .padding(profilePicturePadding)
                         .size(profilePictureSize)
                         // Clip image to be shaped as a circle
-                        .border(width = 2.dp,
-                            color = MaterialTheme.colors.primary,
-                            shape = CircleShape)
+                        .border(
+                            width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape
+                        )
                         .clip(CircleShape),
                     model = ImageRequest.Builder(LocalContext.current).data(collaboratorDocument.picture)
                         .crossfade(true)
@@ -571,6 +603,74 @@ private fun NotificationsPanel(
         style = MaterialTheme.typography.h6
             .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
     )
+}
+
+@Composable
+private fun ActiveSalesDialog(
+    dialogState: MaterialDialogState = rememberMaterialDialogState(),
+    sales: List<ActiveSalesEntity> = emptyList(),
+    onCancelSale: (ActiveSalesEntity) -> Unit = {},
+    onResumeSale: (ActiveSalesEntity) -> Unit = {},
+    onDismiss: () -> Unit = {},
+) {
+    MaterialDialog(
+        dialogState = dialogState,
+        buttons = {
+            positiveButton(
+                text = stringResource(id = R.string.home_dialog_btn_dismiss),
+                onClick = { onDismiss() },
+            )
+        },
+        autoDismiss = false,
+    ) {
+        title(stringResource(id = R.string.home_dialog_title_sale_found))
+
+        customView {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                sales.forEach {
+                    ActiveSale(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+                        sale = it,
+                        onResumeSale = onResumeSale,
+                        onCancelSale = onCancelSale,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActiveSale(
+    modifier: Modifier = Modifier,
+    sale: ActiveSalesEntity,
+    onCancelSale: (ActiveSalesEntity) -> Unit = {},
+    onResumeSale: (ActiveSalesEntity) -> Unit = {},
+) {
+    Row(modifier = modifier) {
+        Text(text = stringResource(id = R.string.home_dialog_sale_found).format(sale.clientName))
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(onClick = { onResumeSale(sale) }) {
+            Icon(
+                imageVector = Icons.Filled.RestartAlt,
+                contentDescription = "",
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        IconButton(onClick = { onCancelSale(sale) }) {
+            Icon(
+                imageVector = Icons.Filled.DeleteForever,
+                contentDescription = "",
+            )
+        }
+    }
 }
 
 @Preview

@@ -7,7 +7,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import arrow.core.Either
+import arrow.core.flatMap
+import arrow.core.left
 import arrow.core.leftIfNull
+import arrow.core.right
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -38,6 +41,7 @@ import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntit
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.adapter.toProductPickedDocument
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
+import com.peyess.salesapp.repository.sale.error.ActiveSaleNotCanceled
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotRegistered
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
@@ -240,6 +244,20 @@ class SaleRepositoryImpl @Inject constructor(
             activeSalesDao.add(activeSale)
             activeSODao.add(activeSO)
             true
+        }
+    }
+
+    override suspend fun cancelCurrentSale(): CancelSaleResponse {
+        return currentSale().flatMap {
+            val canceled = it.copy(active = false)
+
+            try {
+                activeSalesDao.update(canceled).right()
+            } catch (e: Throwable) {
+                ActiveSaleNotCanceled(
+                    description = "Error cancelling sale ${it.id}"
+                ).left()
+            }
         }
     }
 

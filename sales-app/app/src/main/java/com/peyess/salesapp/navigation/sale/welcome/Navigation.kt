@@ -23,10 +23,9 @@ fun buildWelcomeNavGraph(
         exitTransition = welcomeExitTransition()
     ) {
         WelcomeScreen(
-            modifier = modifier
-                .padding(SalesAppTheme.dimensions.screen_offset)
-        ) {
-            navHostController.navigate(SalesAppScreens.SalePrescriptionLensType.name)
-        }
+            modifier = modifier.padding(SalesAppTheme.dimensions.screen_offset),
+            onCancelSale = { navHostController.popBackStack() },
+            onNext = { navHostController.navigate(SalesAppScreens.SalePrescriptionLensType.name) },
+        ) 
     }
 }

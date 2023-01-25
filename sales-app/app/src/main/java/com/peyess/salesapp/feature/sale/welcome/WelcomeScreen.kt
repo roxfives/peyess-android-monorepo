@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +37,7 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 @Composable
 fun WelcomeScreen(
     modifier: Modifier = Modifier,
+    onCancelSale: () -> Unit = {},
     onNext: () -> Unit = {},
 ) {
     val viewModel: WelcomeViewModel = mavericksViewModel()
@@ -58,6 +61,9 @@ fun WelcomeScreen(
             errorMessage = stringResource(id = R.string.error_client_name_empty),
             onClientNameChanged = viewModel::onClientNameChanged,
             canGoNext = canGoNext,
+            onCancelSale = {
+                viewModel.onCancelSale(onCanceled = onCancelSale)
+            },
             onDone = {
                 if (canGoNext) {
                     onNext()
@@ -78,6 +84,7 @@ private fun WelcomeScreenImpl(
     clientName: String = "",
     onClientNameChanged: (name: String) -> Unit = {},
     canGoNext: Boolean = false,
+    onCancelSale: () -> Unit = {},
     onDone: () -> Unit = {},
 ) {
     Column(
@@ -116,9 +123,25 @@ private fun WelcomeScreenImpl(
         }
 
         PeyessStepperFooter(
+            startButton = { CancelSaleButton(onClick = onCancelSale) },
+
             canGoNext = canGoNext,
             onNext = onDone,
         )
+    }
+}
+
+@Composable
+private fun CancelSaleButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
+    OutlinedButton(
+        modifier = modifier
+            .height(SalesAppTheme.dimensions.minimum_touch_target),
+        onClick = onClick,
+    ) {
+        Text(text = stringResource(id = R.string.btn_cancel_sale))
     }
 }
 

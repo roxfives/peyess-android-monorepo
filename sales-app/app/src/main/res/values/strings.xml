@@ -108,6 +108,7 @@
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
     <string name="label_client_name">Primeiro nome do(a) cliente</string>
     <string name="error_client_name_empty">O nome não pode ser vazio</string>
+    <string name="btn_cancel_sale">Cancelar a venda</string>
 
     <!-- UI Component: Setttings and Actions   -->
     <string name="settings_title_update_products">Forçar atualização da tabela de produtos</string>

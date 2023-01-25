@@ -24,8 +24,12 @@ typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOE
 
 typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
 
+typealias CancelSaleResponse = Either<ActiveSaleError, Unit>
+
 interface SaleRepository {
     fun createSale(): Flow<Boolean>
+
+    suspend fun cancelCurrentSale(): CancelSaleResponse
 
     fun activeSale(): Flow<ActiveSalesEntity?>
     suspend fun currentSale(): ActiveSaleResponse

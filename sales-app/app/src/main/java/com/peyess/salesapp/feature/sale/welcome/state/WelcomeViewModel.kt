@@ -14,6 +14,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.withContext
 
 class WelcomeViewModel @AssistedInject constructor(
     @Assisted initialState: WelcomeState,
@@ -46,6 +47,18 @@ class WelcomeViewModel @AssistedInject constructor(
             activeSo = it.activeSO.invoke()!!.copy(clientName = name)
 
             salesRepository.updateSO(activeSo)
+        }
+    }
+
+    fun onCancelSale(onCanceled: () -> Unit) = withState {
+        suspend {
+            salesRepository.cancelCurrentSale().tap {
+                withContext(Dispatchers.Main) {
+                    onCanceled()
+                }
+            }
+        }.execute(Dispatchers.IO) {
+            copy(cancelCurrentSaleAsync = it)
         }
     }
 

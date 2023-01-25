@@ -18,6 +18,10 @@ data class ActiveSaleAlreadyExists(
     override val description: String,
     override val error: Throwable? = null,
 ): ActiveSaleError
+data class ActiveSaleNotCanceled(
+    override val description: String,
+    override val error: Throwable? = null,
+): ActiveSaleError
 
 sealed interface ActiveServiceOrderError: SaleRepositoryError
 data class ActiveServiceOrderNotRegistered(

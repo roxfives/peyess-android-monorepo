@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.prescription_picture
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,23 +25,33 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -75,9 +87,13 @@ import com.peyess.salesapp.utils.file.createPrescriptionFile
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+private val buttonSpacing = 16.dp
+private val buttonIconSpacing = 16.dp
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -174,6 +190,7 @@ fun PrescriptionPictureScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PrescriptionPictureImpl(
     modifier: Modifier = Modifier,
@@ -196,6 +213,131 @@ private fun PrescriptionPictureImpl(
     onSetDate: (date: LocalDate) -> Unit = {},
     onNext: () -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetState: ModalBottomSheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmStateChange = { it != ModalBottomSheetValue.HalfExpanded },
+        skipHalfExpanded = true,
+    )
+
+    BackHandler(bottomSheetState.isVisible) {
+        coroutineScope.launch { bottomSheetState.hide() }
+    }
+
+    ModalBottomSheetLayout(
+        modifier = Modifier.fillMaxSize(),
+        sheetState = bottomSheetState,
+        sheetElevation = 480.dp,
+        sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        sheetContent = {
+            PictureSourceBottomSheetContent(
+                modifier = Modifier.fillMaxWidth(),
+                onPickCamera = {
+                    coroutineScope.launch { bottomSheetState.hide() }
+                    takePicture()
+                },
+                onPickGallery = {
+                    coroutineScope.launch { bottomSheetState.hide() }
+                },
+            )
+        },
+        content = {
+            ModelBottomSheetContent(
+                modifier = modifier,
+                canGoNext = canGoNext,
+                isCopy = isCopy,
+                onCopyChanged = onCopyChanged,
+                picture = picture,
+                date = date,
+                professionalId = professionalId,
+                professionalName = professionalName,
+                onProfessionalIdChanged = onProfessionalIdChanged,
+                onProfessionalNameChanged = onProfessionalNameChanged,
+                choosePictureSource = {
+                    coroutineScope.launch {
+                        bottomSheetState.show()
+                    }
+                },
+                onSetDate = onSetDate,
+                onNext = onNext,
+            )
+        }
+    )
+}
+
+@Composable
+private fun PictureSourceBottomSheetContent(
+    modifier: Modifier = Modifier,
+    onPickCamera: () -> Unit = {},
+    onPickGallery: () -> Unit = {},
+) {
+    Column(modifier = modifier) {
+        PickSourceButton(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Filled.Camera,
+            text = stringResource(id = R.string.btn_take_picture),
+            onClick = onPickCamera
+        )
+
+        Spacer(modifier = Modifier.height(buttonSpacing))
+
+        PickSourceButton(
+            modifier = Modifier.fillMaxWidth(),
+            icon = Icons.Filled.PhotoLibrary,
+            text = stringResource(id = R.string.btn_select_picture),
+            onClick = onPickGallery
+        )
+    }
+}
+
+@Composable
+private fun PickSourceButton(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit = {},
+) {
+    TextButton(
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon, contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(buttonIconSpacing))
+
+            Text(text = text)
+        }
+    }
+}
+
+@Composable
+private fun ModelBottomSheetContent(
+    modifier: Modifier = Modifier,
+
+    canGoNext: Boolean = true,
+
+    isCopy: Boolean = false,
+    onCopyChanged: (isCopy: Boolean) -> Unit = {},
+
+    picture: Uri = Uri.EMPTY,
+    date: LocalDate = LocalDate.now(),
+
+    professionalId: String = "",
+    professionalName: String = "",
+
+    onProfessionalIdChanged: (value: String) -> Unit = {},
+    onProfessionalNameChanged: (value: String) -> Unit = {},
+
+    choosePictureSource: () -> Unit = {},
+    onSetDate: (date: LocalDate) -> Unit = {},
+    onNext: () -> Unit = {},
+) {
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -213,7 +355,7 @@ private fun PrescriptionPictureImpl(
                     .width(256.dp)
                     .height(256.dp),
                 picture = picture,
-                takePicture = takePicture,
+                takePicture = choosePictureSource,
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -285,8 +427,11 @@ fun PrescriptionPicture(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape)
                 .clickable { takePicture() },
-            model = ImageRequest.Builder(LocalContext.current).data(picture).crossfade(true)
-                .size(width = 256, height = 256).build(),
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(picture)
+                .crossfade(true)
+                .size(width = 256, height = 256)
+                .build(),
             contentScale = ContentScale.FillBounds,
             contentDescription = "",
             error = painterResource(id = R.drawable.ic_default_placeholder),

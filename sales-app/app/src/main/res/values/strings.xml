@@ -124,6 +124,8 @@
     <string name="label_professional_id">CRM/CRO do profissional</string>
     <string name="label_professional_name">Nome do profissional</string>
     <string name="txt_prescription_date">Data de emissão da receita</string>
+    <string name="btn_take_picture">Tirar foto</string>
+    <string name="btn_select_picture">Selecionar foto da galeria</string>
 
     <!-- UI Component: PrescriptionData   -->
     <string name="left_eye">OE</string>

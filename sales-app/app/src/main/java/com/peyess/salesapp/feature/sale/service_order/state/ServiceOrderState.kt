@@ -22,6 +22,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentWriteResult
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
@@ -110,6 +111,8 @@ data class ServiceOrderState(
     val localPositioningsAsync: Async<LocalPositioningFetchBothResponse> = Uninitialized,
     val addPositioningLeftResponseAsync: Async<PictureAddResponse> = Uninitialized,
     val addPositioningRightResponseAsync: Async<PictureAddResponse> = Uninitialized,
+
+    val creatingNewPaymentAsync: Async<SalePaymentWriteResult> = Uninitialized,
 ): MavericksState {
     val isSaleDone: Boolean = serviceOrderGenerationResponseAsync is Success
             && serviceOrderGenerationResponseAsync.invoke().isRight()

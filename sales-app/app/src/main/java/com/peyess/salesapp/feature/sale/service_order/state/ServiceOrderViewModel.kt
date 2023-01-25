@@ -484,9 +484,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     private fun loadTotalPaid(saleId: String) {
         salePaymentRepository.watchTotalPayment(saleId)
-            .execute(Dispatchers.IO) {
-                copy(totalPaidAsync = it)
-            }
+            .execute(Dispatchers.IO) { copy(totalPaidAsync = it) }
     }
 
     private fun updateTotalToPay(
@@ -795,23 +793,21 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    fun createPayment(onAdded: (id: Long) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
-            var id: Long = 0
+    fun createPayment(onAdded: (id: Long) -> Unit) = withState {
+        suspend {
+            val payment = Payment(
+                saleId = it.saleId,
+            )
 
-            saleRepository
-                .activeSale()
-                .filterNotNull()
-                .take(1)
-                .map {
-                    id = saleRepository.addPayment(SalePaymentEntity(saleId = it.id))
+            salePaymentRepository
+                .addPaymentToSale(payment.toSalePaymentDocument())
+                .tap {
+                    withContext(Dispatchers.Main) {
+                        onAdded(it)
+                    }
                 }
-                .flowOn(Dispatchers.IO)
-                .collect()
-
-            withContext(Dispatchers.Main) {
-                onAdded(id)
-            }
+        }.execute(Dispatchers.IO) {
+            copy(creatingNewPaymentAsync = it)
         }
     }
 

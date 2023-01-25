@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SalePaymentDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     fun add(paymentEntity: SalePaymentEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

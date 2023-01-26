@@ -95,7 +95,7 @@ data class FramesMeasureState(
     val standardMiddleY: Double = 0.44 * screenHeight,
     val standardMiddleX: Double = 1224.0,
     val standardHeight: Double = 720.0,
-    val standardLength: Double = 1200.0,
+    val standardLength: Double = 1800.0,
     val standardRotation: Double = 0.0,
 
     val personInputErrorCode: String = "",

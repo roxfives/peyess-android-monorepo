@@ -610,6 +610,6 @@
     <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>
     <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>
     <string name="storage_client_prescription_filename">prescription.jpeg</string>
-    <string name="storage_client_positioning">documents/positioning/%1$s/%2$s/%3$s</string>
+    <string name="storage_client_positioning">measure/positioning/%1$s/%2$s/%3$s</string>
     <string name="storage_client_positioning_filename">positioning.jpeg</string>
 </resources>

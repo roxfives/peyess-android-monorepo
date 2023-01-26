@@ -5,7 +5,6 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.feature.sale.frames.state.Eye
-import com.peyess.salesapp.feature.sale.service_order.utils.buildFilename
 import java.time.ZonedDateTime
 
 fun LocalPositioningDocument.toPictureUploadDocument(
@@ -19,17 +18,14 @@ fun LocalPositioningDocument.toPictureUploadDocument(
         .getString(R.string.storage_client_positioning)
         .format(storeId, clientId, positioningId)
 
-    val prefix = when(eye) {
-        Eye.Left -> "LEFT_"
-        Eye.Right -> "RIGHT_"
-        Eye.None -> "NONE_"
-    }
+    val storageFilename = salesApplication
+        .getString(R.string.storage_client_positioning_filename)
 
     return PictureUploadDocument(
         id = entryId,
         picture = picture,
         storagePath = storagePath,
-        storageName = buildFilename(picture, prefix),
+        storageName = storageFilename,
         hasBeenUploaded = false,
         hasBeenDeleted = false,
         attemptCount = 0,

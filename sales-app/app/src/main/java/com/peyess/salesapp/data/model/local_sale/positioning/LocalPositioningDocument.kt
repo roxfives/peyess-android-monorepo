@@ -4,6 +4,8 @@ import android.net.Uri
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 
 data class LocalPositioningDocument(
+    val id: String = "",
+
     val soId: String = "",
     val eye: Eye = Eye.None,
 

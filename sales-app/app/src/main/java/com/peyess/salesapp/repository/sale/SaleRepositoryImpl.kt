@@ -190,7 +190,9 @@ class SaleRepositoryImpl @Inject constructor(
                 .filterNotNull()
                 .flatMapLatest { so ->
                     positioningDao.getById(so.id, eye).map { entity ->
-                        entity ?: PositioningEntity(soId = so.id, eye = eye)
+                        val uniqueId = firebaseManager.uniqueId()
+
+                        entity ?: PositioningEntity(id = uniqueId, soId = so.id, eye = eye)
                             .updateInitialPositioningState()
                     }
                 }.shareIn(

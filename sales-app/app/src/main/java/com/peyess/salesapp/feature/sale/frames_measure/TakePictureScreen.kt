@@ -491,7 +491,7 @@ fun TakePictureScreenImpl(
                                     outputFileResults: ImageCapture.OutputFileResults
                                 ) {
                                     cameraProviderFuture.get().unbindAll()
-                                    cameraProviderFuture.get().shutdown()
+//                                    cameraProviderFuture.get().shutdown()
 
                                     Timber.i("On image save at ${outputFileResults.savedUri}")
                                     onImageSaved(outputFileResults.savedUri, 0)

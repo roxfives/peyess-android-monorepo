@@ -11,12 +11,11 @@ fun LocalPositioningDocument.toPictureUploadDocument(
     salesApplication: SalesApplication,
     storeId: String,
     clientId: String,
-    positioningId: String,
     entryId: Long = 0L,
 ): PictureUploadDocument {
     val storagePath = salesApplication
         .getString(R.string.storage_client_positioning)
-        .format(storeId, clientId, positioningId)
+        .format(storeId, clientId, id)
 
     val storageFilename = salesApplication
         .getString(R.string.storage_client_positioning_filename)

@@ -238,17 +238,12 @@ class ServiceOrderUploader constructor(
                     "right == $positioningRight")
         }
 
-        val posLeftId = positioningLeftId.ifBlank {
-            val uniqueId = firebaseManager.uniqueId()
-            positioningLeftId = uniqueId
-
-            uniqueId
+        val posLeftId = (positioningLeft?.id ?: "").ifBlank {
+            firebaseManager.uniqueId()
         }
-        val posRightId = positioningRightId.ifBlank {
-            val uniqueId = firebaseManager.uniqueId()
-            positioningRightId = uniqueId
 
-            uniqueId
+        val posRightId = (positioningRight?.id ?: "").ifBlank {
+            firebaseManager.uniqueId()
         }
 
         val measLeftId = measuringLeftId.ifBlank {
@@ -265,8 +260,6 @@ class ServiceOrderUploader constructor(
         }
 
         val positioningDocLeft = positioningLeft!!.toPositioningDocument(
-            id = posLeftId,
-
             storeId = currentStore,
             prescriptionId = so.prescriptionId,
 
@@ -279,8 +272,6 @@ class ServiceOrderUploader constructor(
             soId = so.id,
         )
         val positioningDocRight = positioningRight!!.toPositioningDocument(
-            id = posRightId,
-
             storeId = currentStore,
             prescriptionId = so.prescriptionId,
 
@@ -619,12 +610,15 @@ class ServiceOrderUploader constructor(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
     ): PurchaseCreationResponse = either {
-        val id = purchaseId.ifBlank {
-            val uniqueId = firebaseManager.uniqueId()
-            purchaseId = uniqueId
+//        val id = purchaseId.ifBlank {
+//            val uniqueId = firebaseManager.uniqueId()
+//            purchaseId = uniqueId
+//
+//            uniqueId
+//        }
 
-            uniqueId
-        }
+        purchaseId = saleId
+        val id = purchaseId
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {

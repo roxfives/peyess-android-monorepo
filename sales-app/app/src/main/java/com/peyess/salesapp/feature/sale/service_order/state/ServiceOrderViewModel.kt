@@ -587,19 +587,17 @@ class ServiceOrderViewModel @AssistedInject constructor(
             ifRight = {
                 addPositioningLeftPictureToUpload(
                     it.left.toPictureUploadDocument(
-                        salesApplication,
-                        state.activeStoreId,
-                        state.userClient.id,
-                        state.serviceOrderResponse.first.lPositioningId,
+                        salesApplication = salesApplication,
+                        storeId = state.activeStoreId,
+                        clientId = state.userClient.id,
                     )
                 )
 
                 addPositioningRightPictureToUpload(
                     it.right.toPictureUploadDocument(
-                        salesApplication,
-                        state.activeStoreId,
-                        state.userClient.id,
-                        state.serviceOrderResponse.first.rPositioningId,
+                        salesApplication = salesApplication,
+                        storeId = state.activeStoreId,
+                        clientId = state.userClient.id,
                     )
                 )
             },

@@ -52,7 +52,7 @@ import com.peyess.salesapp.data.room.converter.ConverterUri
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
     ],
-    version = 51,
+    version = 52,
 )
 @TypeConverters(
     ConverterLocalDate::class,

@@ -14,8 +14,6 @@ import kotlin.math.hypot
 import kotlin.math.sin
 
 fun PositioningEntity.toPositioningDocument(
-    id: String,
-
     storeId: String,
     prescriptionId: String,
 
@@ -163,6 +161,7 @@ fun PositioningEntity.toLocalMeasuringDocument(): LocalMeasuringDocument {
 
 fun PositioningEntity.toLocalPositioningDocument(): LocalPositioningDocument {
     return LocalPositioningDocument(
+        id = id,
         soId = soId,
         eye = eye,
         picture = picture,

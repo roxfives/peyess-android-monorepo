@@ -15,7 +15,6 @@ private const val screenHeight = 3264.0
 
 @Entity(
     tableName = PositioningEntity.tableName,
-    primaryKeys = ["so_id", "eye"],
 //    foreignKeys = [
 //        ForeignKey(
 //            entity = ActiveSOEntity::class,
@@ -26,6 +25,10 @@ private const val screenHeight = 3264.0
 //    ]
 )
 data class PositioningEntity(
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String = "",
+
     @ColumnInfo(name = "so_id")
     val soId: String = "",
     @ColumnInfo(name = "eye")

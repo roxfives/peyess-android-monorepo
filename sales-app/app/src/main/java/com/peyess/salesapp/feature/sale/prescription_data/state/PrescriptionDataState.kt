@@ -7,7 +7,9 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionInsertResponse
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.feature.sale.prescription_data.model.PrescriptionData
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.typing.prescription.PrismPosition
 
@@ -15,43 +17,46 @@ data class PrescriptionDataState(
     val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
     val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
 
+    val createPrescriptionResponseAsync: Async<LocalPrescriptionInsertResponse> = Uninitialized,
+    val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
+    val prescriptionResponse: PrescriptionData = PrescriptionData(),
+
     val clientName: Async<String> = Uninitialized,
-    val currentPrescriptionDataAsync: Async<PrescriptionDataEntity> = Uninitialized,
     val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
     val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
     val animationId: Async<Int> = Uninitialized,
     val generalMessage: Async<String> = Uninitialized,
+
+    val isLoading: Boolean = false,
 ): MavericksState {
     val saleId: String = activeServiceOrderResponse.saleId
     val serviceOrderId: String = activeServiceOrderResponse.id
 
-    internal val currentPrescriptionData = currentPrescriptionDataAsync.invoke()
-    val isLoading = currentPrescriptionDataAsync is Success && currentPrescriptionData == null
     val isMessageLoading = generalMessage is Loading
 
     val isAnimationLoading = animationId is Loading
 
     val hasAddition = hasAdditionAsync is Success && hasAdditionAsync.invoke()
-    val hasPrism = currentPrescriptionData?.hasPrism ?: false
+    val hasPrism = prescriptionResponse.hasPrism
 
-    val hasAxisLeft = (currentPrescriptionData?.cylindricalLeft ?: 0.0) < 0.0
-    val hasAxisRight = (currentPrescriptionData?.cylindricalRight ?: 0.0) < 0.0
+    val hasAxisLeft = prescriptionResponse.cylindricalLeft < 0.0
+    val hasAxisRight = prescriptionResponse.cylindricalRight < 0.0
 
-    val sphericalLeft = currentPrescriptionData?.sphericalLeft ?: 0.0
-    val sphericalRight = currentPrescriptionData?.sphericalRight ?: 0.0
-    val cylindricalLeft = currentPrescriptionData?.cylindricalLeft ?: 0.0
-    val cylindricalRight = currentPrescriptionData?.cylindricalRight ?: 0.0
-    val axisLeft = currentPrescriptionData?.axisLeft ?: 0.0
-    val axisRight = currentPrescriptionData?.axisRight ?: 0.0
-    val additionLeft = currentPrescriptionData?.additionLeft ?: 0.75
-    val additionRight = currentPrescriptionData?.additionRight ?: 0.75
-    val prismDegreeLeft = currentPrescriptionData?.prismDegreeLeft ?: 0.0
-    val prismDegreeRight = currentPrescriptionData?.prismDegreeRight ?: 0.0
-    val prismAxisLeft = currentPrescriptionData?.prismAxisLeft ?: 0.0
-    val prismAxisRight = currentPrescriptionData?.prismAxisRight ?: 0.0
-    val prismPositionLeft = currentPrescriptionData?.prismPositionLeft ?: PrismPosition.None
-    val prismPositionRight = currentPrescriptionData?.prismPositionRight ?: PrismPosition.None
+    val sphericalLeft = prescriptionResponse.sphericalLeft
+    val sphericalRight = prescriptionResponse.sphericalRight
+    val cylindricalLeft = prescriptionResponse.cylindricalLeft
+    val cylindricalRight = prescriptionResponse.cylindricalRight
+    val axisLeft = prescriptionResponse.axisLeft
+    val axisRight = prescriptionResponse.axisRight
+    val additionLeft = prescriptionResponse.additionLeft
+    val additionRight = prescriptionResponse.additionRight
+    val prismDegreeLeft = prescriptionResponse.prismDegreeLeft
+    val prismDegreeRight = prescriptionResponse.prismDegreeRight
+    val prismAxisLeft = prescriptionResponse.prismAxisLeft
+    val prismAxisRight = prescriptionResponse.prismAxisRight
+    val prismPositionLeft = prescriptionResponse.prismPositionLeft
+    val prismPositionRight = prescriptionResponse.prismPositionRight
 
     val isPrismAxisLeftEnabled = hasPrism && prismPositionLeft == PrismPosition.Axis
     val isPrismAxisRightEnabled = hasPrism && prismPositionRight == PrismPosition.Axis

@@ -16,10 +16,8 @@ import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
@@ -36,13 +34,13 @@ import com.peyess.salesapp.data.room.converter.ConverterLensTypeCategoryName
 import com.peyess.salesapp.data.room.converter.ConverterLocalDate
 import com.peyess.salesapp.data.room.converter.ConverterPrismPosition
 import com.peyess.salesapp.data.room.converter.ConverterUri
+import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
 
 @Database(
     entities = [
         ActiveSalesEntity::class,
         ActiveSOEntity::class,
-        PrescriptionPictureEntity::class,
-        PrescriptionDataEntity::class,
+        PrescriptionEntity::class,
         FramesEntity::class,
         PositioningEntity::class,
         LensComparisonEntity::class,
@@ -52,7 +50,7 @@ import com.peyess.salesapp.data.room.converter.ConverterUri
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
     ],
-    version = 52,
+    version = 54,
 )
 @TypeConverters(
     ConverterLocalDate::class,
@@ -64,15 +62,14 @@ import com.peyess.salesapp.data.room.converter.ConverterUri
     ConverterClientRole::class,
     ConverterOverallDiscountCalcMethod::class,
     ConverterPaymentFeeMethod::class,
+    ConverterZonedDateTime::class,
 )
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao
 
     abstract fun activeSODao(): ActiveSODao
 
-    abstract fun prescriptionPictureDao(): PrescriptionPictureDao
-
-    abstract fun prescriptionDataDao(): PrescriptionDataDao
+    abstract fun prescriptionPictureDao(): LocalPrescriptionDao
 
     abstract fun framesDataDao(): FramesDataDao
 

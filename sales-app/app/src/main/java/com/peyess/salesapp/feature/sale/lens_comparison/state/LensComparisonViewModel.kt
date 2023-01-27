@@ -48,7 +48,6 @@ import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFi
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForLensWithTech
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForMaterials
 import com.peyess.salesapp.feature.sale.lens_comparison.state.query.buildQueryFieldsForTechs
-import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -66,7 +65,6 @@ typealias IndividualComparisonResponse =
 
 class LensComparisonViewModel @AssistedInject constructor(
     @Assisted initialState: LensComparisonState,
-    private val productRepository: ProductRepository,
     private val saleRepository: SaleRepository,
     private val localLensesRepository: LocalLensesRepository,
     private val lensComparisonRepository: LensComparisonRepository,

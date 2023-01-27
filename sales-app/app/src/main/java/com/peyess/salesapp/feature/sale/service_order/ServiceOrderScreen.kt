@@ -76,9 +76,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
@@ -86,6 +84,7 @@ import com.peyess.salesapp.feature.sale.service_order.model.Coloring
 import com.peyess.salesapp.feature.sale.service_order.model.Frames
 import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.Payment
+import com.peyess.salesapp.feature.sale.service_order.model.Prescription
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderState
 import com.peyess.salesapp.feature.sale.service_order.state.ServiceOrderViewModel
@@ -105,6 +104,7 @@ import java.lang.Double.max
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
+import java.time.format.DateTimeFormatter
 
 private val pictureSize = 60.dp
 private val pictureSizePx = 60
@@ -179,11 +179,8 @@ fun ServiceOrderScreen(
     val responsibleIsLoading by viewModel.collectAsState(ServiceOrderState::isResponsibleLoading)
     val witnessIsLoading by viewModel.collectAsState(ServiceOrderState::isWitnessLoading)
 
-    val prescriptionPicture by viewModel.collectAsState(ServiceOrderState::prescriptionPicture)
-    val isPrescriptionPictureLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionPictureLoading)
-
-    val prescriptionData by viewModel.collectAsState(ServiceOrderState::prescriptionData)
-    val isPrescriptionDataLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionDataLoading)
+    val isPrescriptionLoading by viewModel.collectAsState(ServiceOrderState::isPrescriptionLoading)
+    val prescription by viewModel.collectAsState(ServiceOrderState::prescription)
 
     val lens by viewModel.collectAsState(ServiceOrderState::lens)
     val coloring by viewModel.collectAsState(ServiceOrderState::coloring)
@@ -238,9 +235,8 @@ fun ServiceOrderScreen(
             responsible = responsible,
             witness = witness,
 
-            isPrescriptionLoading = isPrescriptionDataLoading || isPrescriptionPictureLoading,
-            prescriptionData = prescriptionData,
-            prescriptionPicture = prescriptionPicture,
+            isPrescriptionLoading = isPrescriptionLoading,
+            prescription = prescription,
             onEditPrescription = onEditPrescription,
 
             isProductLoading = isLensLoading
@@ -416,8 +412,7 @@ private fun ServiceOrderScreenImpl(
     onChangeWitness: () -> Unit = {},
 
     isPrescriptionLoading: Boolean = false,
-    prescriptionData: PrescriptionDataEntity = PrescriptionDataEntity(),
-    prescriptionPicture: PrescriptionPictureEntity = PrescriptionPictureEntity(),
+    prescription: Prescription = Prescription(),
     onEditPrescription: () -> Unit = {},
 
     isProductLoading: Boolean = false,
@@ -479,11 +474,9 @@ private fun ServiceOrderScreenImpl(
 
             PrescriptionSection(
                 isLoading = isPrescriptionLoading,
+                prescription = prescription,
 
                 onEdit = onEditPrescription,
-
-                prescriptionData = prescriptionData,
-                prescriptionPicture = prescriptionPicture,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -834,8 +827,7 @@ private fun PrescriptionSection(
 
     onEdit: () -> Unit = {},
 
-    prescriptionPicture: PrescriptionPictureEntity = PrescriptionPictureEntity(),
-    prescriptionData: PrescriptionDataEntity = PrescriptionDataEntity(),
+    prescription: Prescription = Prescription(),
 ) {
     Column(
         modifier = modifier
@@ -884,7 +876,7 @@ private fun PrescriptionSection(
                         .clip(CircleShape)
                         .align(Alignment.Center),
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(prescriptionPicture.pictureUri)
+                        .data(prescription.pictureUri)
                         .crossfade(true)
                         .size(
                             width = prescriptionPictureSizePx,
@@ -899,7 +891,7 @@ private fun PrescriptionSection(
                 )
             }
 
-            if (prescriptionPicture.isCopy) {
+            if (prescription.isCopy) {
                 // TOOD: use string resource
                 Text(
                     modifier = Modifier.weight(2f),
@@ -945,23 +937,28 @@ private fun PrescriptionSection(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
+                        val date = remember {
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                                .format(prescription.prescriptionDate)
+                        }
+
                         Text(
                             modifier = Modifier.width(IntrinsicSize.Max),
-                            text = prescriptionPicture.prescriptionDate.toString(),
+                            text = date,
                             style = MaterialTheme.typography.body1
                                 .copy(textAlign = TextAlign.Start),
                         )
 
                         Text(
                             modifier = Modifier.width(IntrinsicSize.Max),
-                            text = prescriptionPicture.professionalName,
+                            text = prescription.professionalName,
                             style = MaterialTheme.typography.body1
                                 .copy(textAlign = TextAlign.Start),
                         )
 
                         Text(
                             modifier = Modifier.width(IntrinsicSize.Max),
-                            text = prescriptionPicture.professionalId,
+                            text = prescription.professionalId,
                             style = MaterialTheme.typography.body1
                                 .copy(textAlign = TextAlign.Start),
                         )
@@ -1051,7 +1048,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.sphericalRight),
+                    text = "%.2f".format(prescription.sphericalRight),
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1060,7 +1057,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.cylindricalRight),
+                    text = "%.2f".format(prescription.cylindricalRight),
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1070,8 +1067,8 @@ private fun PrescriptionSection(
                         density,
                     ),
                     // TODO: create a property 'hasAxisRight' in the data class returned by the repository when it's built
-                    text = if (prescriptionData.cylindricalRight < 0) {
-                        "%.2f".format(prescriptionData.axisRight)
+                    text = if (prescription.cylindricalRight < 0) {
+                        "%.2f".format(prescription.axisRight)
                     } else {
                         "-"
                     },
@@ -1106,7 +1103,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.sphericalLeft),
+                    text = "%.2f".format(prescription.sphericalLeft),
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1115,7 +1112,7 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = "%.2f".format(prescriptionData.cylindricalLeft),
+                    text = "%.2f".format(prescription.cylindricalLeft),
                     style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
                 )
 
@@ -1125,8 +1122,8 @@ private fun PrescriptionSection(
                         density,
                     ),
                     // TODO: create a property 'hasAxisLeft' in the data class returned by the repository when it's built
-                    text = if (prescriptionData.cylindricalLeft < 0) {
-                        "%.2f".format(prescriptionData.axisLeft)
+                    text = if (prescription.cylindricalLeft < 0) {
+                        "%.2f".format(prescription.axisLeft)
                     } else {
                         "-"
                     },
@@ -1216,8 +1213,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasAddition) {
-                        "%.2f".format(prescriptionData.additionRight)
+                    text = if (prescription.hasAddition) {
+                        "%.2f".format(prescription.additionRight)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1230,8 +1227,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasPrism) {
-                        "%.2f".format(prescriptionData.prismDegreeRight)
+                    text = if (prescription.hasPrism) {
+                        "%.2f".format(prescription.prismDegreeRight)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1244,8 +1241,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasPrism) {
-                        PrismPosition.toName(prescriptionData.prismPositionRight)
+                    text = if (prescription.hasPrism) {
+                        PrismPosition.toName(prescription.prismPositionRight)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1259,10 +1256,10 @@ private fun PrescriptionSection(
                         density,
                     ),
                     text = if (
-                        prescriptionData.hasPrism
-                        && prescriptionData.prismPositionRight == PrismPosition.Axis
+                        prescription.hasPrism
+                        && prescription.prismPositionRight == PrismPosition.Axis
                     ) {
-                        "%.2fº".format(prescriptionData.prismAxisRight)
+                        "%.2fº".format(prescription.prismAxisRight)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1291,8 +1288,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasAddition) {
-                        "%.2f".format(prescriptionData.additionLeft)
+                    text = if (prescription.hasAddition) {
+                        "%.2f".format(prescription.additionLeft)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1305,8 +1302,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasPrism) {
-                        "%.2f".format(prescriptionData.prismDegreeLeft)
+                    text = if (prescription.hasPrism) {
+                        "%.2f".format(prescription.prismDegreeLeft)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1319,8 +1316,8 @@ private fun PrescriptionSection(
                         minimumWidthState,
                         density,
                     ),
-                    text = if (prescriptionData.hasPrism) {
-                        PrismPosition.toName(prescriptionData.prismPositionLeft)
+                    text = if (prescription.hasPrism) {
+                        PrismPosition.toName(prescription.prismPositionLeft)
                     } else {
                         // TODO: use string resource
                         "-"
@@ -1334,10 +1331,10 @@ private fun PrescriptionSection(
                         density,
                     ),
                     text = if (
-                        prescriptionData.hasPrism
-                        && prescriptionData.prismPositionLeft == PrismPosition.Axis
+                        prescription.hasPrism
+                        && prescription.prismPositionLeft == PrismPosition.Axis
                     ) {
-                        "%.2fº".format(prescriptionData.prismAxisLeft)
+                        "%.2fº".format(prescription.prismAxisLeft)
                     } else {
                         // TODO: use string resource
                         "-"

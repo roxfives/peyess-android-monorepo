@@ -57,7 +57,7 @@ fun FramesLandingScreen(
 ) {
     val viewModel: FramesViewModel = mavericksViewModel()
 
-    val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessageAsync)
+    val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessage)
     val idealCurvatureAnimationId by viewModel.collectAsState(FramesState::idealBaseAnimationResource)
 
     val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)
@@ -71,9 +71,8 @@ fun FramesLandingScreen(
     FramesLandingScreenImpl(
         modifier = modifier,
 
-        idealCurvatureMessage = idealCurvatureMessage.invoke() ?: "",
-        idealCurvatureAnimationId = idealCurvatureAnimationId.invoke()
-            ?: R.raw.lottie_frames_curvature_4,
+        idealCurvatureMessage = idealCurvatureMessage,
+        idealCurvatureAnimationId = idealCurvatureAnimationId,
 
         hasSetFrames = hasSetFrames,
         frames = frames,

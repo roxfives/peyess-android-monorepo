@@ -6,10 +6,7 @@ sealed interface LocalPrescriptionRepositoryError {
 }
 
 sealed interface LocalPrescriptionResponseError: LocalPrescriptionRepositoryError
-data class PrescriptionDataNotFound(
-    override val description: String, override val error: Throwable? = null,
-): LocalPrescriptionResponseError
-data class PrescriptionPictureNotFound(
+data class PrescriptionNotFound(
     override val description: String, override val error: Throwable? = null,
 ): LocalPrescriptionResponseError
 

@@ -44,7 +44,6 @@ import com.peyess.salesapp.feature.sale.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.sale.payment.model.Treatment
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodsResponse
-import com.peyess.salesapp.repository.products.ProductRepository
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument

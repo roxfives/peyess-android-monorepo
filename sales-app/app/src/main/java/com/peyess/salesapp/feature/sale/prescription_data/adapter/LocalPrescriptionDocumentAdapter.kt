@@ -1,19 +1,18 @@
-package com.peyess.salesapp.data.adapter.local_sale.prescription
+package com.peyess.salesapp.feature.sale.prescription_data.adapter
 
-import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
+import com.peyess.salesapp.feature.sale.prescription_data.model.PrescriptionData
 
-fun PrescriptionEntity.toLocalPrescriptionDocument(): LocalPrescriptionDocument {
-    return LocalPrescriptionDocument(
+fun LocalPrescriptionDocument.toPrescriptionData(): PrescriptionData {
+    return PrescriptionData(
         id = id,
-
         soId = soId,
 
+        pictureUri = pictureUri,
         professionalName = professionalName,
         professionalId = professionalId,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
-        pictureUri = pictureUri,
 
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,

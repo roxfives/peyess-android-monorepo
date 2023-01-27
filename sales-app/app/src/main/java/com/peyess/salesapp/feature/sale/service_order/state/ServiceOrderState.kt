@@ -10,8 +10,6 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
@@ -35,6 +33,7 @@ import com.peyess.salesapp.feature.sale.service_order.model.Lens
 import com.peyess.salesapp.feature.sale.service_order.model.OverallDiscount
 import com.peyess.salesapp.feature.sale.service_order.model.Payment
 import com.peyess.salesapp.feature.sale.service_order.model.PaymentFee
+import com.peyess.salesapp.feature.sale.service_order.model.Prescription
 import com.peyess.salesapp.feature.sale.service_order.model.Treatment
 import com.peyess.salesapp.feature.sale.service_order.utils.SaleDataGenerationResponse
 import com.peyess.salesapp.repository.sale.ProductPickedResponse
@@ -56,9 +55,6 @@ data class ServiceOrderState(
     val userClientAsync: Async<ClientPickedEntity?> = Uninitialized,
     val responsibleClientAsync: Async<ClientPickedEntity?> = Uninitialized,
     val witnessClientAsync: Async<ClientPickedEntity?> = Uninitialized,
-
-    val prescriptionPictureAsync: Async<PrescriptionPictureEntity> = Uninitialized,
-    val prescriptionDataAsync: Async<PrescriptionDataEntity> = Uninitialized,
 
     val productPickedResponseAsync: Async<ProductPickedResponse> = Uninitialized,
     val productPicked: ProductPickedDocument = ProductPickedDocument(),
@@ -107,6 +103,7 @@ data class ServiceOrderState(
 
     val localPrescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val addPrescriptionPictureResponseAsync: Async<PictureAddResponse> = Uninitialized,
+    val prescription: Prescription = Prescription(),
 
     val localPositioningsAsync: Async<LocalPositioningFetchBothResponse> = Uninitialized,
     val addPositioningLeftResponseAsync: Async<PictureAddResponse> = Uninitialized,
@@ -142,19 +139,7 @@ data class ServiceOrderState(
     val isWitnessLoading = witnessClientAsync is Loading
     val witnessClient = witnessClientAsync.invoke()
 
-    val isPrescriptionPictureLoading = prescriptionPictureAsync is Loading
-    val prescriptionPicture = if (prescriptionPictureAsync is Success) {
-        prescriptionPictureAsync.invoke()
-    } else {
-        PrescriptionPictureEntity()
-    }
-
-    val isPrescriptionDataLoading = prescriptionDataAsync is Loading
-    val prescriptionData = if (prescriptionDataAsync is Success) {
-        prescriptionDataAsync.invoke()
-    } else {
-        PrescriptionDataEntity()
-    }
+    val isPrescriptionLoading = localPrescriptionResponseAsync is Loading
 
 //    val isLensLoading = lensEntityAsync is Loading
 //    val lensEntity = if (lensEntityAsync is Success) {

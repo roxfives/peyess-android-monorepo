@@ -25,13 +25,10 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
-import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
@@ -74,11 +71,9 @@ class SaleRepositoryImpl @Inject constructor(
     private val activeSalesDao: ActiveSalesDao,
     private val activeSODao: ActiveSODao,
     private val lensTypeCategoryDao: LensTypeCategoryDao,
-    private val prescriptionPictureDao: PrescriptionPictureDao,
-    private val prescriptionDataDao: PrescriptionDataDao,
+    private val prescriptionPictureDao: LocalPrescriptionDao,
     private val framesDataDao: FramesDataDao,
     private val positioningDao: PositioningDao,
-    private val comparisonDao: LensComparisonDao,
     private val productPickedDao: ProductPickedDao,
     private val clientPickedDao: ClientPickedDao,
     private val salePaymentDao: SalePaymentDao,
@@ -128,7 +123,7 @@ class SaleRepositoryImpl @Inject constructor(
             .filterNotNull()
             .flatMapLatest { so ->
                 prescriptionPictureDao.getById(so.id).map {
-                    it ?: PrescriptionPictureEntity(soId = so.id)
+                    it ?: PrescriptionEntity(soId = so.id)
             }.shareIn(
                 scope = repositoryScope,
                 replay = 1,
@@ -152,21 +147,21 @@ class SaleRepositoryImpl @Inject constructor(
             )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val currentPrescriptionData by lazy {
-        currentSO
-            .filterNotNull()
-            .flatMapLatest { so ->
-                prescriptionDataDao.getById(so.id).map {
-                    Timber.i("Emitting prescription data")
-                    it ?: PrescriptionDataEntity(soId = so.id)
-            }.shareIn(
-                scope = repositoryScope,
-                replay = 1,
-                started = SharingStarted.WhileSubscribed(),
-            )
-        }
-    }
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    private val currentPrescriptionData by lazy {
+//        currentSO
+//            .filterNotNull()
+//            .flatMapLatest { so ->
+//                prescriptionDataDao.getById(so.id).map {
+//                    Timber.i("Emitting prescription data")
+//                    it ?: PrescriptionDataEntity(soId = so.id)
+//            }.shareIn(
+//                scope = repositoryScope,
+//                replay = 1,
+//                started = SharingStarted.WhileSubscribed(),
+//            )
+//        }
+//    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPayments by lazy { emptyFlow<List<SalePaymentEntity>>() }
@@ -398,14 +393,6 @@ class SaleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity> {
-        return currentPrescriptionPicture
-    }
-
-    override fun currentPrescriptionData(): Flow<PrescriptionDataEntity> {
-        return currentPrescriptionData
-    }
-
     override fun currentFramesData(): Flow<FramesEntity> {
         return currentFramesData
     }
@@ -449,14 +436,6 @@ class SaleRepositoryImpl @Inject constructor(
 
     override fun updatePositioning(positioning: PositioningEntity) {
         positioningDao.add(positioning)
-    }
-
-    override fun updatePrescriptionData(prescriptionDataEntity: PrescriptionDataEntity) {
-        prescriptionDataDao.add(prescriptionDataEntity)
-    }
-
-    override fun updatePrescriptionPicture(prescriptionPictureEntity: PrescriptionPictureEntity) {
-        prescriptionPictureDao.add(prescriptionPictureEntity)
     }
 
     override fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>> {

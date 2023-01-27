@@ -47,6 +47,7 @@ import com.peyess.salesapp.feature.sale.service_order.adapter.toOverallDiscount
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPayment
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPaymentFee
 import com.peyess.salesapp.feature.sale.service_order.adapter.toPictureUploadDocument
+import com.peyess.salesapp.feature.sale.service_order.adapter.toPrescription
 import com.peyess.salesapp.feature.sale.service_order.adapter.toSalePaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.feature.sale.service_order.model.Coloring
@@ -114,8 +115,6 @@ class ServiceOrderViewModel @AssistedInject constructor(
         loadCurrentStore()
 
         loadClients()
-        loadPrescriptionPicture()
-        loadPrescriptionData()
         loadPositioning()
 
         createUploader()
@@ -159,6 +158,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         onEach(ServiceOrderState::serviceOrderId) {
             if (it.isNotBlank()) {
+                loadPrescriptionForServiceOrder(it)
                 loadProductPicked(it)
                 loadFrames(it)
             }
@@ -277,15 +277,11 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadPrescriptionPicture() {
-        saleRepository.currentPrescriptionPicture().execute(Dispatchers.IO) {
-            copy(prescriptionPictureAsync = it)
-        }
-    }
-
-    private fun loadPrescriptionData() = withState {
-        saleRepository.currentPrescriptionData().execute(Dispatchers.IO) {
-            copy(prescriptionDataAsync = it)
+    private fun loadPrescriptionForServiceOrder(serviceOrderId: String) {
+        suspend {
+            localPrescriptionRepository.getPrescriptionForServiceOrder(serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(localPrescriptionResponseAsync = it)
         }
     }
 
@@ -566,6 +562,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
                         state.serviceOrderResponse.first.prescriptionId,
                     )
                 )
+
+                setState {
+                    copy(prescription = it.toPrescription())
+                }
             },
         )
     }

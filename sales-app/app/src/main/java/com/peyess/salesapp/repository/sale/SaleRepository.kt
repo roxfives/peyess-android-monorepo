@@ -7,8 +7,6 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.feature.sale.frames.state.Eye
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
@@ -52,11 +50,6 @@ interface SaleRepository {
 
     fun updateSO(so: ActiveSOEntity)
 
-    fun currentPrescriptionPicture(): Flow<PrescriptionPictureEntity>
-    fun updatePrescriptionPicture(prescriptionPictureEntity: PrescriptionPictureEntity)
-
-    fun currentPrescriptionData(): Flow<PrescriptionDataEntity>
-    fun updatePrescriptionData(prescriptionDataEntity: PrescriptionDataEntity)
 
     fun currentPositioning(eye: Eye): Flow<PositioningEntity>
     fun updatePositioning(positioning: PositioningEntity)

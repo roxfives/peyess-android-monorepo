@@ -4,6 +4,7 @@ package com.peyess.salesapp.feature.sale.prescription_data.state
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
@@ -28,6 +29,12 @@ import com.peyess.salesapp.constants.stepPrismAxis
 import com.peyess.salesapp.constants.stepPrismDegree
 import com.peyess.salesapp.constants.stepSpherical
 import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.data.repository.local_sale.prescription.error.PrescriptionNotFound
+import com.peyess.salesapp.feature.sale.prescription_data.adapter.toLocalPrescriptionDocument
+import com.peyess.salesapp.feature.sale.prescription_data.adapter.toPrescriptionData
+import com.peyess.salesapp.feature.sale.prescription_data.model.PrescriptionData
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.typing.prescription.PrismPosition
@@ -37,19 +44,20 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class PrescriptionDataViewModel @AssistedInject constructor(
     @Assisted initialState: PrescriptionDataState,
     private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
+    private val localPrescriptionRepository: LocalPrescriptionRepository,
 ): MavericksViewModel<PrescriptionDataState>(initialState) {
 
     init {
         loadHasAddition()
         loadAnimation()
         loadMessage()
-        loadInitPrescriptionData()
         loadClientName()
         loadLensTypeCategory()
         loadServiceOrderData()
@@ -58,16 +66,16 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             processServiceOrderDataResponse(it)
         }
 
-        onEach(
-            PrescriptionDataState::hasAdditionAsync,
-            PrescriptionDataState::currentPrescriptionData,
-        ) { hasAddition, currPrescription ->
-            if (hasAddition is Success && currPrescription != null) {
-                Timber.i("Updating hasAddition $hasAddition")
-                updateHasAddition(hasAddition.invoke())
-            }
+        onAsync(PrescriptionDataState::prescriptionResponseAsync) {
+            processPrescriptionResponse(it)
         }
 
+        onAsync(PrescriptionDataState::hasAdditionAsync) { updateHasAddition(it) }
+
+        onEach(PrescriptionDataState::activeServiceOrderResponse) {
+            loadPrescription(it.id)
+        }
+        
         onEach { mikeMessageAmetropie() }
     }
 
@@ -233,283 +241,382 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         setState { copy(mikeMessageAmetropies = message) }
     }
 
-    private fun loadInitPrescriptionData() = withState {
-        saleRepository.currentPrescriptionData().execute {
-            copy(currentPrescriptionDataAsync = it)
+    private fun createPrescription() = withState {
+        suspend {
+            localPrescriptionRepository.createPrescriptionForServiceOrder(it.serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(createPrescriptionResponseAsync = it)
+        }
+    }
+
+    private fun processPrescriptionResponse(response: LocalPrescriptionResponse) = setState {
+        response.fold(
+            ifLeft = {
+                if (it is PrescriptionNotFound) {
+                    createPrescription()
+                    copy(prescriptionResponseAsync = Uninitialized)
+                } else {
+                    copy(
+                        prescriptionResponseAsync = Fail(
+                            it.error ?: Throwable(it.description)
+                        )
+                    )
+                }
+            },
+
+            ifRight = {
+                copy(
+                    prescriptionResponse = it.toPrescriptionData(),
+                )
+            }
+        )
+    }
+
+    private fun loadPrescription(serviceOrderId: String) {
+        localPrescriptionRepository
+            .streamPrescriptionForServiceOrder(serviceOrderId)
+            .execute(Dispatchers.IO) {
+                copy(prescriptionResponseAsync = it)
+            }
+    }
+
+    private fun updatePrescription(prescription: PrescriptionData) {
+        viewModelScope.launch(Dispatchers.IO) {
+            localPrescriptionRepository
+                .updatePrescription(prescription.toLocalPrescriptionDocument())
         }
     }
 
     private fun updateHasAddition(hasAddition: Boolean) = withState {
-        Timber.i("Updating has addition ($hasAddition) with prescription ${it.currentPrescriptionData}")
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(hasAddition = hasAddition)
-            )
+        val prescriptionData = it.prescriptionResponse
+        
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(hasAddition = hasAddition)
+            
+            updatePrescription(prescription)
         }
     }
 
 
     fun increaseSphericalLeft(curValue: Double) = withState {
         val newValue = (curValue + stepSpherical).coerceAtMost(maxSpherical)
-
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(sphericalLeft = newValue)
-            )
+        val prescriptionData = it.prescriptionResponse
+        
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(sphericalLeft = newValue)
+            
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseSphericalLeft(curValue: Double) = withState {
         val newValue = (curValue - stepSpherical).coerceAtLeast(minSpherical)
-
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(sphericalLeft = newValue)
-            )
+        val prescriptionData = it.prescriptionResponse
+        
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(sphericalLeft = newValue)
+            
+            updatePrescription(prescription)
         }
     }
 
     fun increaseSphericalRight(curValue: Double) = withState {
         val newValue = (curValue + stepSpherical).coerceAtMost(maxSpherical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(sphericalRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(sphericalRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseSphericalRight(curValue: Double) = withState {
         val newValue = (curValue - stepSpherical).coerceAtLeast(minSpherical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(sphericalRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(sphericalRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseCylindricalLeft(curValue: Double) = withState {
         val newValue = (curValue + stepCylindrical).coerceAtMost(maxCylindrical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(cylindricalLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(cylindricalLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseCylindricalLeft(curValue: Double) = withState {
         val newValue = (curValue - stepCylindrical).coerceAtLeast(minCylindrical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(cylindricalLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(cylindricalLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseCylindricalRight(curValue: Double) = withState {
         val newValue = (curValue + stepCylindrical).coerceAtMost(maxCylindrical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(cylindricalRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(cylindricalRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseCylindricalRight(curValue: Double) = withState {
         val newValue = (curValue - stepCylindrical).coerceAtLeast(minCylindrical)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(cylindricalRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(cylindricalRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseAxisLeft(curValue: Double) = withState {
         val newValue = (curValue + stepAxis).coerceAtMost(maxAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(axisLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(axisLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseAxisLeft(curValue: Double) = withState {
         val newValue = (curValue - stepAxis).coerceAtLeast(minAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(axisLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(axisLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseAxisRight(curValue: Double) = withState {
         val newValue = (curValue + stepAxis).coerceAtMost(maxAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(axisRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(axisRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseAxisRight(curValue: Double) = withState {
         val newValue = (curValue - stepAxis).coerceAtLeast(minAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(axisRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(axisRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseAdditionLeft(curValue: Double) = withState {
         val newValue = (curValue + stepAddition).coerceAtMost(maxAddition)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(additionLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(additionLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseAdditionLeft(curValue: Double) = withState {
         val newValue = (curValue - stepAddition).coerceAtLeast(minAddition)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(additionLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(additionLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increaseAdditionRight(curValue: Double) = withState {
         val newValue = (curValue + stepAddition).coerceAtMost(maxAddition)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(additionRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(additionRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreaseAdditionRight(curValue: Double) = withState {
         val newValue = (curValue - stepAddition).coerceAtLeast(minAddition)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(additionRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(additionRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increasePrismDegreeLeft(curValue: Double) = withState {
         val newValue = (curValue + stepPrismDegree).coerceAtMost(maxPrismDegree)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismDegreeLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismDegreeLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreasePrismDegreeLeft(curValue: Double) = withState {
         val newValue = (curValue - stepPrismDegree).coerceAtLeast(minPrismDegree)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismDegreeLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismDegreeLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increasePrismDegreeRight(curValue: Double) = withState {
         val newValue = (curValue + stepPrismDegree).coerceAtMost(maxPrismDegree)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismDegreeRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismDegreeRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreasePrismDegreeRight(curValue: Double) = withState {
         val newValue = (curValue - stepPrismDegree).coerceAtLeast(minPrismDegree)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismDegreeRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismDegreeRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increasePrismAxisLeft(curValue: Double) = withState {
         val newValue = (curValue + stepPrismAxis).coerceAtMost(maxPrismAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismAxisLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismAxisLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreasePrismAxisLeft(curValue: Double) = withState {
         val newValue = (curValue - stepPrismAxis).coerceAtLeast(minPrismAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismAxisLeft = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismAxisLeft = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun increasePrismAxisRight(curValue: Double) = withState {
         val newValue = (curValue + stepPrismAxis).coerceAtMost(maxPrismAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismAxisRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismAxisRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun decreasePrismAxisRight(curValue: Double) = withState {
         val newValue = (curValue - stepPrismAxis).coerceAtLeast(minPrismAxis)
+        val prescriptionData = it.prescriptionResponse
 
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismAxisRight = newValue)
-            )
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismAxisRight = newValue)
+
+            updatePrescription(prescription)
         }
     }
 
     fun setPrismPositionLeft(position: PrismPosition) = withState {
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismPositionLeft = position)
-            )
+        val prescriptionData = it.prescriptionResponse
+
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismPositionLeft = position)
+
+            updatePrescription(prescription)
         }
     }
 
     fun setPrismPositionRight(position: PrismPosition) = withState {
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(prismPositionRight = position)
-            )
+        val prescriptionData = it.prescriptionResponse
+
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(prismPositionRight = position)
+
+            updatePrescription(prescription)
         }
     }
 
     fun toggleHasPrism() = withState {
-        if (it.currentPrescriptionData != null) {
-            saleRepository.updatePrescriptionData(
-                it.currentPrescriptionData.copy(hasPrism = !it.hasPrism)
-            )
+        val prescriptionData = it.prescriptionResponse
+
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse
+                .copy(hasPrism = !it.hasPrism)
+
+            updatePrescription(prescription)
         }
     }
 

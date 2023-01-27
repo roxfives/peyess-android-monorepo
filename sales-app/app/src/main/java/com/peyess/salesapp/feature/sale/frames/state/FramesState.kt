@@ -1,14 +1,16 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
 import android.net.Uri
+import androidx.annotation.RawRes
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 
 sealed class Eye {
     object Left: Eye()
@@ -41,14 +43,19 @@ sealed class Eye {
 }
 
 data class FramesState(
-    val currentPrescriptionData: Async<PrescriptionDataEntity> = Uninitialized,
+    val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
+    val serviceOrderId: String = "",
+
+    val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
+    val prescriptionResponse: LocalPrescriptionDocument = LocalPrescriptionDocument(),
+
     val currentFramesData: Async<FramesEntity> = Uninitialized,
 
     val positioningDataLeft: Async<PositioningEntity> = Uninitialized,
     val positioningDataRight: Async<PositioningEntity> = Uninitialized,
 
-    val idealBaseMessageAsync: Async<String> = Uninitialized,
-    val idealBaseAnimationResource: Async<Int> = Uninitialized,
+    val idealBaseMessage: String = "",
+    val idealBaseAnimationResource: Int = 0,
 
     val showMike: Boolean = false,
     val mikeMessage: String = "",
@@ -57,8 +64,6 @@ data class FramesState(
     val hasSetFrames: Boolean = false
 ): MavericksState {
     val _currentFramesData: FramesEntity? = currentFramesData.invoke()
-
-    val idealBaseMessage = idealBaseMessageAsync.invoke() ?: ""
 
     val areFramesNew = _currentFramesData?.areFramesNew ?: true
     val description = _currentFramesData?.description ?: ""

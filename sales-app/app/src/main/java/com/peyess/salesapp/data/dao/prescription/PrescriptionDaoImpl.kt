@@ -29,7 +29,7 @@ class PrescriptionDaoImpl @Inject constructor(
                 .set(document)
                 .await()
         } catch (err: Exception) {
-            Timber.e(err, "Error while adding client")
+            Timber.e(err, "Error while adding client", err)
             error(err)
         }
     }

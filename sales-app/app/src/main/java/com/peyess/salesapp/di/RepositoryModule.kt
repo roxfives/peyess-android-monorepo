@@ -9,25 +9,10 @@ import com.peyess.salesapp.dao.client.firestore.ClientDao
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
-import com.peyess.salesapp.data.model.lens.description.LensDescriptionDao
-import com.peyess.salesapp.data.model.lens.groups.LensGroupDao
-import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensMaterialDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSpecialtyDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensSupplierDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTechDao
-import com.peyess.salesapp.dao.products.room.filter_lens_supplier.FilterLensTypeDao
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringDao
-import com.peyess.salesapp.dao.products.room.local_lens.LocalLensDao
-import com.peyess.salesapp.dao.products.room.local_lens_disp.LocalLensDispDao
-import com.peyess.salesapp.dao.products.room.local_product_exp.LocalProductExpDao
-import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
@@ -36,6 +21,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
 import com.peyess.salesapp.data.dao.management_picture_upload.PictureUploadDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.payment_fee.PaymentFeeDao
@@ -93,8 +79,6 @@ import com.peyess.salesapp.data.repository.purchase.DiscountGroupRepository
 import com.peyess.salesapp.data.repository.purchase.DiscountGroupRepositoryImpl
 import com.peyess.salesapp.repository.payments.PaymentMethodRepository
 import com.peyess.salesapp.repository.payments.PaymentMethodRepositoryImpl
-import com.peyess.salesapp.repository.products.ProductRepository
-import com.peyess.salesapp.repository.products.ProductRepositoryImpl
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.SaleRepositoryImpl
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
@@ -247,11 +231,9 @@ object RepositoryModule {
         activeSalesDao: ActiveSalesDao,
         activeSODao: ActiveSODao,
         lensTypeCategoryDao: LensTypeCategoryDao,
-        prescriptionPictureDao: PrescriptionPictureDao,
-        prescriptionDataDao: PrescriptionDataDao,
+        prescriptionPictureDao: LocalPrescriptionDao,
         framesDataDao: FramesDataDao,
         positioningDao: PositioningDao,
-        comparisonDao: LensComparisonDao,
         productPickedDao: ProductPickedDao,
         clientPickedDao: ClientPickedDao,
         salePaymentDao: SalePaymentDao,
@@ -264,51 +246,11 @@ object RepositoryModule {
             activeSODao,
             lensTypeCategoryDao,
             prescriptionPictureDao,
-            prescriptionDataDao,
             framesDataDao,
             positioningDao,
-            comparisonDao,
             productPickedDao,
             clientPickedDao,
             salePaymentDao,
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun provideProductsRepository(
-        salesApplication: SalesApplication,
-        localLensDao: LocalLensDao,
-        localTreatmentDao: LocalTreatmentDao,
-        localColoringDao: LocalColoringDao,
-        lensDispDao: LocalLensDispDao,
-        lensProductExpDao: LocalProductExpDao,
-        lensGroupDao: LensGroupDao,
-        lensSpecialtyDao: FilterLensSpecialtyDao,
-        filterLensTypeDao: FilterLensTypeDao,
-        lensSupplierDao: FilterLensSupplierDao,
-        lensMaterialDao: FilterLensMaterialDao,
-        lensTechDao: FilterLensTechDao,
-        lensFamilyDao: FilterLensFamilyDao,
-        lensDescriptionDao: LensDescriptionDao,
-        saleRepository: SaleRepository,
-    ): ProductRepository {
-        return ProductRepositoryImpl(
-            salesApplication,
-            localLensDao,
-            localTreatmentDao,
-            localColoringDao,
-            lensDispDao,
-            lensProductExpDao,
-            lensGroupDao,
-            lensSpecialtyDao,
-            filterLensTypeDao,
-            lensSupplierDao,
-            lensMaterialDao,
-            lensTechDao,
-            lensFamilyDao,
-            lensDescriptionDao,
-            saleRepository,
         )
     }
 
@@ -349,12 +291,12 @@ object RepositoryModule {
     @Singleton
     @Provides
     fun provideLocalPrescriptionRepository(
-        prescriptionDataDao: PrescriptionDataDao,
-        prescriptionPictureDao: PrescriptionPictureDao,
+        firebaseManager: FirebaseManager,
+        prescriptionPictureDao: LocalPrescriptionDao,
     ): LocalPrescriptionRepository {
         return LocalPrescriptionRepositoryImpl(
-            prescriptionDataDao = prescriptionDataDao,
-            prescriptionPictureDao = prescriptionPictureDao,
+            firebaseManager = firebaseManager,
+            localPrescriptionDao = prescriptionPictureDao,
         )
     }
 

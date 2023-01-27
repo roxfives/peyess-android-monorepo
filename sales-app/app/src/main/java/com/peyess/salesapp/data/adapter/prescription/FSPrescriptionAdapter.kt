@@ -1,13 +1,10 @@
 package com.peyess.salesapp.data.adapter.prescription
 
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
 import java.time.ZonedDateTime
 
 fun prescriptionFrom(
-    id: String,
-
     clientName: String,
     clientDocument: String,
     clientUid: String,
@@ -15,46 +12,45 @@ fun prescriptionFrom(
 
     storeId: String,
 
-    dataEntity: PrescriptionDataEntity,
-    pictureEntity: PrescriptionPictureEntity,
+    prescriptionEntity: PrescriptionEntity,
 ): PrescriptionDocument {
     return PrescriptionDocument(
-        id = id,
+        id = prescriptionEntity.id,
 
         storeId = storeId,
         storeIds = listOf(storeId),
 
         emitted = ZonedDateTime.now(),
 
-        picture = pictureEntity.pictureUri.toString(),
-        isCopy = pictureEntity.isCopy,
+        picture = prescriptionEntity.pictureUri.toString(),
+        isCopy = prescriptionEntity.isCopy,
 
         patientUid = clientUid,
         patientDocument = clientDocument,
         patientName = clientName,
 
-        professionalDocument = pictureEntity.professionalId,
-        professionalName = pictureEntity.professionalName,
+        professionalDocument = prescriptionEntity.professionalId,
+        professionalName = prescriptionEntity.professionalName,
 
-        hasAddition = dataEntity.hasAddition,
-        lAddition = dataEntity.additionLeft,
-        rAddition = dataEntity.additionRight,
+        hasAddition = prescriptionEntity.hasAddition,
+        lAddition = prescriptionEntity.additionLeft,
+        rAddition = prescriptionEntity.additionRight,
 
-        lCylinder = dataEntity.cylindricalLeft,
-        lSpherical = dataEntity.sphericalLeft,
-        lAxisDegree = dataEntity.axisLeft,
+        lCylinder = prescriptionEntity.cylindricalLeft,
+        lSpherical = prescriptionEntity.sphericalLeft,
+        lAxisDegree = prescriptionEntity.axisLeft,
 
-        hasPrism = dataEntity.hasPrism,
-        lPrismAxis = dataEntity.prismAxisLeft,
-        lPrismDegree = dataEntity.prismDegreeLeft,
-        lPrismPos = dataEntity.prismPositionLeft,
+        hasPrism = prescriptionEntity.hasPrism,
+        lPrismAxis = prescriptionEntity.prismAxisLeft,
+        lPrismDegree = prescriptionEntity.prismDegreeLeft,
+        lPrismPos = prescriptionEntity.prismPositionLeft,
 
-        rCylinder = dataEntity.cylindricalRight,
-        rSpherical = dataEntity.sphericalRight,
-        rAxisDegree = dataEntity.axisRight,
-        rPrismAxis = dataEntity.prismAxisRight,
-        rPrismDegree = dataEntity.prismDegreeRight,
-        rPrismPos = dataEntity.prismPositionRight,
+        rCylinder = prescriptionEntity.cylindricalRight,
+        rSpherical = prescriptionEntity.sphericalRight,
+        rAxisDegree = prescriptionEntity.axisRight,
+        rPrismAxis = prescriptionEntity.prismAxisRight,
+        rPrismDegree = prescriptionEntity.prismDegreeRight,
+        rPrismPos = prescriptionEntity.prismPositionRight,
 
         createdBy = salespersonUid,
         createAllowedBy = salespersonUid,

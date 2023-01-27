@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.local_sale.prescription
+package com.peyess.salesapp.feature.sale.prescription_data.model
 
 import android.net.Uri
 import com.peyess.salesapp.constants.maxAxis
@@ -11,10 +11,8 @@ import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.utils.math.middle
 import java.time.ZonedDateTime
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 
-data class LocalPrescriptionDocument(
+data class PrescriptionData(
     val id: String = "",
 
     val soId: String = "",
@@ -41,26 +39,4 @@ data class LocalPrescriptionDocument(
     val prismAxisRight: Double = floor(middle(maxPrismAxis, minPrismAxis)),
     val prismPositionLeft: PrismPosition = PrismPosition.None,
     val prismPositionRight: PrismPosition = PrismPosition.None,
-) {
-    private val idealBaseThreshold = 6.0
-
-    private val idealBaseLeft = if (cylindricalLeft != 0.0) {
-        (18.0 + (2.0 * sphericalLeft) + cylindricalLeft) / 3.0
-    } else {
-        (sphericalLeft + 12.0) / 2.0
-    }
-    private val idealBaseRight = if (cylindricalRight != 0.0) {
-        (18.0 + (2.0 * sphericalRight) + cylindricalRight) / 3.0
-    } else {
-        (sphericalRight + 12.0) / 2.0;
-    }
-
-    private val maxIdealBase = max(idealBaseLeft, idealBaseRight)
-    private val minIdealBase = min(idealBaseLeft, idealBaseRight)
-
-    val prevalentIdealBase = if (maxIdealBase > idealBaseThreshold) {
-        maxIdealBase
-    } else {
-        minIdealBase
-    }
-}
+)

@@ -11,9 +11,8 @@ import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.typing.prescription.PrismPosition
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.data.adapter.measuring.toMeasuringDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
@@ -102,11 +101,6 @@ class ServiceOrderUploader constructor(
 ) {
     var purchaseId = ""
 
-    var prescriptionId = ""
-
-    var positioningLeftId = ""
-    var positioningRightId = ""
-
     var measuringLeftId = ""
     var measuringRightId = ""
 
@@ -116,86 +110,66 @@ class ServiceOrderUploader constructor(
         so: ServiceOrderDocument,
         uploadPartialData: Boolean,
     ): ServiceOrderDocument {
-        var prescriptionDataEntity: PrescriptionDataEntity? = null
-        var prescriptionPictureEntity: PrescriptionPictureEntity? = null
-
-        salesDatabase
-            .prescriptionDataDao()
-            .getById(so.id)
-            .take(1)
-            .collect { prescriptionDataEntity = it }
+        var prescriptionEntity: PrescriptionEntity? = null
 
         salesDatabase
             .prescriptionPictureDao()
             .getById(so.id)
             .take(1)
-            .collect { prescriptionPictureEntity = it }
+            .collect { prescriptionEntity = it }
 
-        if (prescriptionDataEntity == null || prescriptionPictureEntity == null) {
+        if (prescriptionEntity == null) {
             error("Prescription not found")
         }
 
-        val prescriptionId = if (uploadPartialData) {
-            uploadPrescription(
-                prescriptionDataEntity!!,
-                prescriptionPictureEntity!!,
-                so,
-            )
-        } else {
-            ""
-        }
+        val prescriptionId = prescriptionEntity!!.id
 
-        val instant: Instant = prescriptionPictureEntity!!
+        val instant: Instant = prescriptionEntity!!
             .prescriptionDate
+            .toLocalDate()
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
         val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         val zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault())
 
+        if (uploadPartialData) {
+            uploadPrescription(prescriptionEntity!!, so)
+        }
+
         return so.copy(
             prescriptionId = prescriptionId,
 
-            isCopy = prescriptionPictureEntity!!.isCopy,
-            professionalName = prescriptionPictureEntity!!.professionalName,
-            professionalId = prescriptionPictureEntity!!.professionalId,
+            isCopy = prescriptionEntity!!.isCopy,
+            professionalName = prescriptionEntity!!.professionalName,
+            professionalId = prescriptionEntity!!.professionalId,
             prescriptionDate = zonedDateTime,
 
-            hasAddition = prescriptionDataEntity!!.hasAddition,
-            hasPrism = prescriptionDataEntity!!.hasPrism,
+            hasAddition = prescriptionEntity!!.hasAddition,
+            hasPrism = prescriptionEntity!!.hasPrism,
 
-            lCylinder = prescriptionDataEntity!!.cylindricalLeft,
-            lSpheric = prescriptionDataEntity!!.sphericalLeft,
-            lAxisDegree = prescriptionDataEntity!!.axisLeft,
-            lAddition = prescriptionDataEntity!!.additionLeft,
-            lPrismAxis = prescriptionDataEntity!!.prismAxisLeft,
-            lPrismDegree = prescriptionDataEntity!!.prismDegreeLeft,
-            lPrismPos = PrismPosition.toName(prescriptionDataEntity!!.prismPositionLeft),
+            lCylinder = prescriptionEntity!!.cylindricalLeft,
+            lSpheric = prescriptionEntity!!.sphericalLeft,
+            lAxisDegree = prescriptionEntity!!.axisLeft,
+            lAddition = prescriptionEntity!!.additionLeft,
+            lPrismAxis = prescriptionEntity!!.prismAxisLeft,
+            lPrismDegree = prescriptionEntity!!.prismDegreeLeft,
+            lPrismPos = PrismPosition.toName(prescriptionEntity!!.prismPositionLeft),
 
-            rCylinder = prescriptionDataEntity!!.cylindricalRight,
-            rSpheric = prescriptionDataEntity!!.sphericalRight,
-            rAxisDegree = prescriptionDataEntity!!.axisRight,
-            rAddition = prescriptionDataEntity!!.additionRight,
-            rPrismAxis = prescriptionDataEntity!!.prismAxisRight,
-            rPrismDegree = prescriptionDataEntity!!.prismDegreeRight,
-            rPrismPos = PrismPosition.toName(prescriptionDataEntity!!.prismPositionRight),
+            rCylinder = prescriptionEntity!!.cylindricalRight,
+            rSpheric = prescriptionEntity!!.sphericalRight,
+            rAxisDegree = prescriptionEntity!!.axisRight,
+            rAddition = prescriptionEntity!!.additionRight,
+            rPrismAxis = prescriptionEntity!!.prismAxisRight,
+            rPrismDegree = prescriptionEntity!!.prismDegreeRight,
+            rPrismPos = PrismPosition.toName(prescriptionEntity!!.prismPositionRight),
         )
     }
 
     private suspend fun uploadPrescription(
-        prescriptionDataEntity: PrescriptionDataEntity,
-        prescriptionPictureEntity: PrescriptionPictureEntity,
-
+        prescriptionEntity: PrescriptionEntity,
         so: ServiceOrderDocument
-    ): String {
-        val id = prescriptionId.ifBlank {
-            val uniqueId = firebaseManager.uniqueId()
-            prescriptionId = uniqueId
-
-            uniqueId
-        }
+    ) {
         val fsPrescription = prescriptionFrom(
-            id = id,
-
             storeId = so.storeId,
 
             clientUid = so.clientUid,
@@ -203,12 +177,10 @@ class ServiceOrderUploader constructor(
             clientName = so.clientName,
             salespersonUid = so.salespersonUid,
 
-            dataEntity = prescriptionDataEntity,
-            pictureEntity = prescriptionPictureEntity,
+            prescriptionEntity = prescriptionEntity,
         )
 
         prescriptionRepository.add(fsPrescription)
-        return id
     }
 
     private suspend fun addPositioningData(

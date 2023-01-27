@@ -1,10 +1,8 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
 import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
@@ -12,8 +10,10 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.prevalentIdealBase
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -31,24 +31,29 @@ class FramesViewModel @AssistedInject constructor(
     private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
     private val authenticationRepository: AuthenticationRepository,
+    private val localPrescriptionRepository: LocalPrescriptionRepository,
 ): MavericksViewModel<FramesState>(initialState) {
 
     init {
         loadCurrentFramesData()
-        loadPrescriptionData()
         loadPositioningData()
         loadMikeMessages()
+        loadServiceOrderData()
+
+        onEach(FramesState::serviceOrderId) {
+            loadPrescriptionData(it)
+        }
 
         onEach(
-            FramesState::currentPrescriptionData,
+            FramesState::prescriptionResponse,
             FramesState::currentFramesData,
         ) { prescription, frames ->
             val framesType: FramesType
             val hasPotentialProblems: Boolean
 
-            if (prescription is Success && frames is Success) {
+            if (frames is Success) {
                 hasPotentialProblems = frames.invoke()
-                    .hasPotentialProblemsWith(prescription.invoke())
+                    .hasPotentialProblemsWith(prescription)
                 framesType = frames.invoke().type ?: FramesType.None
 
                 setState {
@@ -63,60 +68,67 @@ class FramesViewModel @AssistedInject constructor(
             }
         }
 
-        onEach(FramesState::currentPrescriptionData) {
-            val messageId: Int
-            val animationId: Int
-            var ib: Double
+        onEach(FramesState::prescriptionResponse) {
+            val ib = it.prevalentIdealBase
 
-            val idealBaseMessage = when (it) {
-                Uninitialized -> Uninitialized
-                is Loading -> Loading()
-                is Fail -> Fail(it.error)
-                is Success -> {
-                    ib = it.invoke().prevalentIdealBase()
-
-                    messageId = if (ib <= 3.5) {
-                        R.string.ib_message_less_than_3_5
-                    } else if (ib <= 5) {
-                        R.string.ib_message_between_3_5_and_5
-                    } else if (ib <= 8) {
-                        R.string.ib_message_between_5_and_8
-                    } else {
-                        R.string.ib_message_greater_then_8
-                    }
-
-                    // TODO: Refactor this out of here
-                    loadLandingMikeMessage(salesApplication.stringResource(id = messageId).lowercase())
-                    Success(salesApplication.stringResource(messageId))
-                }
+            val messageId = if (ib <= 3.5) {
+                R.string.ib_message_less_than_3_5
+            } else if (ib <= 5) {
+                R.string.ib_message_between_3_5_and_5
+            } else if (ib <= 8) {
+                R.string.ib_message_between_5_and_8
+            } else {
+                R.string.ib_message_greater_then_8
             }
 
-            val idealBaseAnimation = when (it) {
-                Uninitialized -> Uninitialized
-                is Loading -> Loading()
-                is Fail -> Fail(it.error)
-                is Success -> {
-                    ib = it.invoke().prevalentIdealBase()
+            val idealBaseMessage = salesApplication.stringResource(messageId)
+            loadLandingMikeMessage(idealBaseMessage.lowercase())
 
-                    animationId = if (ib <= 4) {
-                        R.raw.lottie_frames_curvature_4
-                    } else if (ib <= 6) {
-                        R.raw.lottie_frames_curvature_6
-                    } else {
-                        R.raw.lottie_frames_curvature_8
-                    }
-
-                    Success(animationId)
-                }
+            val animationId = if (ib <= 4) {
+                R.raw.lottie_frames_curvature_4
+            } else if (ib <= 6) {
+                R.raw.lottie_frames_curvature_6
+            } else {
+                R.raw.lottie_frames_curvature_8
             }
 
             setState {
                 copy(
-                    idealBaseMessageAsync = idealBaseMessage,
-                    idealBaseAnimationResource = idealBaseAnimation,
+                    idealBaseMessage = idealBaseMessage,
+                    idealBaseAnimationResource = animationId,
                 )
             }
         }
+
+        onAsync(FramesState::prescriptionResponseAsync) {
+            processPrescriptionResponse(it)
+        }
+
+        onAsync(FramesState::activeServiceOrderResponseAsync) {
+            processServiceOrderResponse(it)
+        }
+    }
+
+    private fun loadServiceOrderData() {
+        suspend {
+            saleRepository.currentServiceOrder()
+        }.execute {
+            copy(activeServiceOrderResponseAsync = it)
+        }
+    }
+
+    private fun processServiceOrderResponse(response: ActiveServiceOrderResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(activeServiceOrderResponseAsync = Fail(
+                    it.error ?: Throwable(it.description))
+                )
+            },
+
+            ifRight = {
+                copy(serviceOrderId = it.id)
+            }
+        )
     }
 
     private fun loadLandingMikeMessage(framesMessage: String) = withState {
@@ -144,12 +156,24 @@ class FramesViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadPrescriptionData() = withState {
-        saleRepository
-            .currentPrescriptionData()
-            .execute(Dispatchers.IO) {
-                copy(currentPrescriptionData = it)
+    private fun loadPrescriptionData(serviceOrderId: String) {
+        suspend {
+            localPrescriptionRepository.getPrescriptionForServiceOrder(serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(prescriptionResponseAsync = it)
+        }
+    }
+
+    private fun processPrescriptionResponse(response: LocalPrescriptionResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(prescriptionResponseAsync = Fail(it.error ?: Throwable(it.description)))
+            },
+
+            ifRight = {
+                copy(prescriptionResponse = it)
             }
+        )
     }
 
     private fun loadPositioningData() = withState {
@@ -167,11 +191,6 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     private fun loadMikeMessages() = withState {
-//        val ibMessage = it.idealBaseMessageAsync.invoke()
-//        if (ibMessage != null) {
-//            loadLandingMikeMessage(ibMessage.lowercase())
-//        }
-
         saleRepository
             .activeSO()
             .filterNotNull()

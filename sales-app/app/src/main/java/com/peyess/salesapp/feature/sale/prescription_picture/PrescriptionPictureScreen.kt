@@ -118,8 +118,8 @@ fun PrescriptionPictureScreen(
     val picture by viewModel.collectAsState(PrescriptionPictureState::pictureUri)
     val date by viewModel.collectAsState(PrescriptionPictureState::prescriptionDate)
 
-    val professionalId by viewModel.collectAsState(PrescriptionPictureState::professionalId)
-    val professionalName by viewModel.collectAsState(PrescriptionPictureState::professionalName)
+    val professionalId by viewModel.collectAsState(PrescriptionPictureState::professionalIdInput)
+    val professionalName by viewModel.collectAsState(PrescriptionPictureState::professionalNameInput)
 
     val pictureFile = remember { createPrescriptionFile(context) }
     val pictureFileUri = remember {
@@ -161,7 +161,7 @@ fun PrescriptionPictureScreen(
             canGoNext = canGoNext,
 
             picture = picture,
-            date = date,
+            date = date.toLocalDate(),
 
             isCopy = isCopy,
             onCopyChanged = viewModel::onCopyChanged,

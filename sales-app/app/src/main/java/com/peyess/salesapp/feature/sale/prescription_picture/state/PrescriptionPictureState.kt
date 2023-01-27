@@ -4,26 +4,36 @@ import android.net.Uri
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureEntity
-import java.time.LocalDate
+import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionInsertResponse
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
+import com.peyess.salesapp.feature.sale.prescription_picture.model.PrescriptionPicture
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
+import java.time.ZonedDateTime
 
 data class PrescriptionPictureState(
-    val currentPrescription: Async<PrescriptionPictureEntity> = Uninitialized,
+    val activeServiceOrderAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
+    val serviceOrderId: String = "",
 
-    @PersistState val isCopy: Boolean = false,
+    val currentPrescription: Async<PrescriptionEntity> = Uninitialized,
 
-    @PersistState val pictureUri: Uri = Uri.EMPTY,
-    @PersistState val prescriptionDate: LocalDate = LocalDate.now(),
+    val createPrescriptionResponseAsync: Async<LocalPrescriptionInsertResponse> = Uninitialized,
+    val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
+    val prescriptionResponse: PrescriptionPicture = PrescriptionPicture(),
 
-    @PersistState val professionalId: String = "",
-    @PersistState val professionalName: String = "",
+    val professionalIdInput: String = "",
+    val professionalNameInput: String = "",
 ): MavericksState {
-    private val canGoNextWithoutCopy = prescriptionDate.isBefore(LocalDate.now().plusDays(1))
+    val isCopy = prescriptionResponse.isCopy
+    val pictureUri = prescriptionResponse.pictureUri
+    val prescriptionDate = prescriptionResponse.prescriptionDate
+
+    private val tomorrow = ZonedDateTime.now().plusDays(1)
+    private val canGoNextWithoutCopy = prescriptionDate.isBefore(tomorrow)
             && pictureUri != Uri.EMPTY
-            && professionalId.isNotEmpty()
-            && professionalName.isNotEmpty()
+            && professionalIdInput.isNotEmpty()
+            && professionalNameInput.isNotEmpty()
             && !isCopy
 
     private val canGoNextWithCopy = pictureUri != Uri.EMPTY && isCopy

@@ -1,5 +1,6 @@
-package com.peyess.salesapp.data.dao.local_sale.prescription_data
+package com.peyess.salesapp.data.dao.local_sale.local_prescription
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -11,10 +12,11 @@ import com.peyess.salesapp.constants.minPrismAxis
 import com.peyess.salesapp.constants.minPrismDegree
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.utils.math.middle
+import java.time.ZonedDateTime
 import kotlin.math.floor
 
 @Entity(
-    tableName = PrescriptionDataEntity.tableName,
+    tableName = PrescriptionEntity.tableName,
 //    foreignKeys = [
 //        ForeignKey(
 //            entity = ActiveSOEntity::class,
@@ -24,9 +26,26 @@ import kotlin.math.floor
 //        )
 //    ]
 )
-data class PrescriptionDataEntity(
-    @PrimaryKey @ColumnInfo(name = "so_id")
+data class PrescriptionEntity(
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String = "",
+
+    @ColumnInfo(name = "so_id")
     val soId: String = "",
+
+    @ColumnInfo(name = "picture_uri")
+    val pictureUri: Uri = Uri.EMPTY,
+
+    @ColumnInfo(name = "professional_name")
+    val professionalName: String = "",
+    @ColumnInfo(name = "professional_id")
+    val professionalId: String = "",
+
+    @ColumnInfo(name = "is_copy")
+    val isCopy: Boolean = false,
+    @ColumnInfo(name = "local_date")
+    val prescriptionDate: ZonedDateTime = ZonedDateTime.now(),
 
     @ColumnInfo(name = "spherical_left")
     val sphericalLeft: Double = 0.0,
@@ -64,34 +83,6 @@ data class PrescriptionDataEntity(
     val prismPositionRight: PrismPosition = PrismPosition.None,
 ) {
     companion object {
-        const val tableName = "prescription_data"
-        const val idealBaseThreshold = 6.0
-    }
-}
-
-fun PrescriptionDataEntity.idealBaseLeft(): Double {
-    return if (cylindricalLeft != 0.0) {
-        (18.0 + (2.0 * sphericalLeft) + cylindricalLeft) / 3.0
-    } else {
-        (sphericalLeft + 12.0) / 2.0
-    }
-}
-
-fun PrescriptionDataEntity.idealBaseRight(): Double {
-    return if (cylindricalRight != 0.0) {
-        (18.0 + (2.0 * sphericalRight) + cylindricalRight) / 3.0
-    } else {
-        (sphericalRight + 12.0) / 2.0;
-    }
-}
-
-fun PrescriptionDataEntity.prevalentIdealBase(): Double {
-    val maxIdealBase = idealBaseLeft().coerceAtLeast(idealBaseRight())
-    val minIdealBase = idealBaseLeft().coerceAtMost(idealBaseRight())
-
-    return if (maxIdealBase > PrescriptionDataEntity.idealBaseThreshold) {
-        maxIdealBase
-    } else {
-        minIdealBase
+        const val tableName = "local_prescription"
     }
 }

@@ -1,7 +1,6 @@
 package com.peyess.salesapp.feature.sale.lens_comparison.utils
 
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
 import com.peyess.salesapp.feature.sale.lens_comparison.model.Prescription
 
 fun animationFromCategory(categoryName: String, prescription: Prescription): Int {

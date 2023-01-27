@@ -46,8 +46,6 @@ import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataDao
-import com.peyess.salesapp.data.dao.local_sale.prescription_picture.PrescriptionPictureDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
@@ -374,7 +372,7 @@ object DaoModule {
 
     @Singleton
     @Provides
-    fun providePrescriptionPictureDao(saleDatabase: ActiveSalesDatabase): PrescriptionPictureDao {
+    fun providePrescriptionPictureDao(saleDatabase: ActiveSalesDatabase): com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao {
         return saleDatabase.prescriptionPictureDao()
     }
 
@@ -382,12 +380,6 @@ object DaoModule {
     @Provides
     fun provideProductPickedDao(saleDatabase: ActiveSalesDatabase): ProductPickedDao {
         return saleDatabase.productPickedDao()
-    }
-
-    @Singleton
-    @Provides
-    fun providePrescriptionDataDao(saleDatabase: ActiveSalesDatabase): PrescriptionDataDao {
-        return saleDatabase.prescriptionDataDao()
     }
 
     @Singleton

@@ -2,13 +2,9 @@ package com.peyess.salesapp.dao.sale.frames
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.data.dao.local_sale.prescription_data.PrescriptionDataEntity
+import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.typing.frames.FramesType
-import timber.log.Timber
 
 @Entity(
     tableName = FramesEntity.tableName,
@@ -52,7 +48,7 @@ fun FramesEntity.name(): String {
     return "$description, $reference ($tagCode)"
 }
 
-fun FramesEntity.hasPotentialProblemsWith(prescriptionData: PrescriptionDataEntity): Boolean {
+fun FramesEntity.hasPotentialProblemsWith(prescriptionData: LocalPrescriptionDocument): Boolean {
 //    val hasProblemsOnLeft =
 //        (prescriptionData.sphericalLeft <= -4.0) ||
 //                ((prescriptionData.axisLeft <= 30.0 || prescriptionData.axisLeft == 180.0) &&

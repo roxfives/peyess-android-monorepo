@@ -8,14 +8,12 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
-import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 import timber.log.Timber
 
 class UserListViewModel @AssistedInject constructor(
@@ -49,8 +47,12 @@ class UserListViewModel @AssistedInject constructor(
         }
     }
 
-    suspend fun pictureFor(uid: String): Uri {
+    suspend fun pictureForUser(uid: String): Uri {
         return collaboratorsRepository.pictureFor(uid)
+    }
+
+    suspend fun pictureForStore(storeId: String): Uri {
+        return authenticationRepository.pictureForStore(storeId)
     }
 
     fun pickUser(uid: String) = withState {

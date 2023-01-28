@@ -184,8 +184,9 @@ data class FSOpticalStore(
     val isEditable:  Boolean = true,
 )
 
-fun FSOpticalStore.toDocument(): OpticalStore {
+fun FSOpticalStore.toDocument(id: String): OpticalStore {
     return OpticalStore(
+        id = id,
         picture = this.picture,
         nameDisplay = this.nameDisplay,
         typeId = this.typeId,

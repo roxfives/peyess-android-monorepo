@@ -18,11 +18,11 @@ class OpticalStoreDaoImpl @Inject constructor(
 ) : OpticalStoreDao {
     val firestore = firebaseManager.storeFirestore
 
-    private fun toStore(fsStore: FSOpticalStore?): OpticalStore {
+    private fun toStore(id: String, fsStore: FSOpticalStore?): OpticalStore {
         Timber.i("Converting to document")
 
         return if (fsStore != null) {
-            fsStore.toDocument()
+            fsStore.toDocument(id)
         } else {
             Timber.e("Snap object is null")
             error("Snap object is null")
@@ -44,7 +44,7 @@ class OpticalStoreDaoImpl @Inject constructor(
             val fsStore = snap.toObject(FSOpticalStore::class.java)
 
             Timber.i("Converting to document")
-            val store = toStore(fsStore)
+            val store = toStore(snap.id, fsStore)
 
             Timber.i("Emitting store ${store}")
             emit(store)

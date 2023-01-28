@@ -95,7 +95,8 @@ fun UserListAuthScreen(
     UserAuthScreenImpl(
         modifier = modifier,
         store = store,
-        pictureForUser = viewModel::pictureFor,
+        pictureForUser = viewModel::pictureForUser,
+        pictureForStore = viewModel::pictureForStore,
         users = users,
         onEnter = {
             viewModel.pickUser(it)
@@ -109,6 +110,7 @@ fun UserAuthScreenImpl(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
     pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
+    pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
@@ -116,6 +118,7 @@ fun UserAuthScreenImpl(
         modifier = modifier,
         store = store,
         pictureForUser = pictureForUser,
+        pictureForStore = pictureForStore,
         users = users,
         onEnter = onEnter,
     )
@@ -126,12 +129,16 @@ fun UserGrid(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
     pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
+    pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
     if(store is Success) {
         Column(modifier = modifier.fillMaxSize()) {
-            Header(store = store.invoke())
+            Header(
+                pictureForStore = pictureForStore,
+                store = store.invoke(),
+            )
 
             Spacer(
                 modifier = Modifier
@@ -161,8 +168,17 @@ fun UserGrid(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
+    pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     store: OpticalStore = OpticalStore(),
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            pictureUri.value = pictureForStore(store.id)
+        }
+    }
+
     Row(
         modifier = modifier
             .height(200.dp)
@@ -179,7 +195,7 @@ private fun Header(
                 .border(width = 2.dp, color = MaterialTheme.colors.onPrimary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(store.picture)
+                .data(pictureUri.value)
                 .crossfade(true)
                 .size(width = 256, height = 256)
                 .build(),
@@ -283,9 +299,7 @@ fun UserBox(
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            val picture = pictureForUser(user.id)
-
-            pictureUri.value = picture
+            pictureUri.value = pictureForUser(user.id)
         }
     }
 

@@ -1,12 +1,15 @@
 package com.peyess.salesapp.repository.auth
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.firebase.FirebaseApp
+import com.google.firebase.storage.FirebaseStorage
+import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.StoreAuthState
@@ -34,6 +37,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -70,6 +74,31 @@ class AuthenticationRepositoryImpl @Inject constructor(
         get() = storeDao.store(
                 storeId = firebaseManager.currentStore?.uid ?: ""
             )
+
+    override suspend fun pictureForStore(storeId: String): Uri {
+        val storageRef = firebaseManager.storage?.reference
+            ?: FirebaseStorage.getInstance().reference
+
+        val storagePicturePath = salesApplication
+            .stringResource(R.string.storage_store_picture)
+            .format(storeId)
+
+        val picture = try {
+            storageRef.child(storagePicturePath)
+                .downloadUrl
+                .await()
+        } catch (e: Exception) {
+            Timber.e("Failed to download store picture for $storeId", e)
+            Uri.EMPTY
+        }
+
+        if (picture == null) {
+            Timber.e("Store picture with id $storeId does not exist")
+            return Uri.EMPTY
+        }
+
+        return picture
+    }
 
     override suspend fun activeStoreId(): String {
         return firebaseManager.currentStore?.uid ?: ""

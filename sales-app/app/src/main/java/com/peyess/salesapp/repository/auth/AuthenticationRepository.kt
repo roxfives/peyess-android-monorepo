@@ -1,5 +1,6 @@
 package com.peyess.salesapp.repository.auth
 
+import android.net.Uri
 import com.google.firebase.FirebaseApp
 import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.StoreAuthState
@@ -12,6 +13,8 @@ interface AuthenticationRepository {
     val storeAuthState: Flow<StoreAuthState>
 
     val currentStore: Flow<OpticalStore>
+
+    suspend fun pictureForStore(storeId: String): Uri
 
     suspend fun activeStoreId(): String
 

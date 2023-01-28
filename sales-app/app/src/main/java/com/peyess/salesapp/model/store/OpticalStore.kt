@@ -3,6 +3,8 @@ package com.peyess.salesapp.model.store
 import java.util.Date
 
 data class OpticalStore(
+    val id: String = "",
+
     val picture: String = "",
 
     val nameDisplay: String = "",

@@ -138,8 +138,6 @@ class CollaboratorsDaoImpl @Inject constructor(
             .stringResource(R.string.storage_collaborator_picture)
             .format(uid)
 
-//        val storagePicturePath = "public/stores/TShfsU1XsyrSfeevnQ8kCaBGNVdz/store-picture.jpeg"
-
         val picture = storageRef.child(storagePicturePath)
             .downloadUrl
             .addOnFailureListener {

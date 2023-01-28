@@ -607,6 +607,8 @@
     <string name="fs_field_payment_method_priority">priority</string>
 
     <!-- Storage file paths -->
+    <string name="storage_store_picture_60_60">public/stores/%1$s/store-picture_60x60.jpeg</string>
+    <string name="storage_collaborator_picture">users/%1$s/profile-picture.jpg</string>
     <string name="storage_client_profile_pic">clients/%1$s/profile_pic.jpg</string>
     <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>
     <string name="storage_client_prescription_filename">prescription.jpeg</string>

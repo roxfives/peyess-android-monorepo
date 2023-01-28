@@ -1,6 +1,7 @@
 package com.peyess.salesapp.app.state
 
 import android.content.Context
+import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -13,6 +14,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
@@ -33,6 +35,7 @@ import java.io.File
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
     private val authenticationRepository: AuthenticationRepository,
+    private val collaboratorsRepository: CollaboratorsRepository,
     private val saleRepository: SaleRepository,
     private val clientRepository: ClientRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
@@ -130,6 +133,10 @@ class MainViewModel @AssistedInject constructor(
 
     private fun processActiveSalesStream(sales: List<ActiveSalesEntity>) = setState {
         copy(activeSales = sales)
+    }
+
+    suspend fun pictureForUser(uid: String): Uri {
+        return collaboratorsRepository.pictureFor(uid)
     }
 
     fun generateServiceOrderPdf(

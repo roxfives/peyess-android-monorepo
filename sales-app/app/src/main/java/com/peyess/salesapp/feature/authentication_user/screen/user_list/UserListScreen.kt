@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.authentication_user.screen.user_list
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,9 +64,11 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.utils.extentions.activity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun UserListScreen(
+fun UserListAuthScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
 ) {
@@ -88,9 +92,10 @@ fun UserListScreen(
         }
     }
 
-    UserAuthScreenComposable(
+    UserAuthScreenImpl(
         modifier = modifier,
         store = store,
+        pictureForUser = viewModel::pictureFor,
         users = users,
         onEnter = {
             viewModel.pickUser(it)
@@ -100,18 +105,18 @@ fun UserListScreen(
 }
 
 @Composable
-fun UserAuthScreenComposable(
+fun UserAuthScreenImpl(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
-
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
     UserGrid(
         modifier = modifier,
         store = store,
+        pictureForUser = pictureForUser,
         users = users,
-
         onEnter = onEnter,
     )
 }
@@ -120,6 +125,7 @@ fun UserAuthScreenComposable(
 fun UserGrid(
     modifier: Modifier = Modifier,
     store: Async<OpticalStore> = Uninitialized,
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
@@ -140,8 +146,8 @@ fun UserGrid(
                     UserBox(
                         modifier = Modifier
                             .padding(SalesAppTheme.dimensions.grid_1),
+                        pictureForUser = pictureForUser,
                         user = users[it],
-
                         onEnter = onEnter
                     )
                 }
@@ -269,15 +275,28 @@ private fun Header(
 @Composable
 fun UserBox(
     modifier: Modifier = Modifier,
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     user: CollaboratorDocument = CollaboratorDocument(),
     onEnter: (id: String) -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForUser(user.id)
+
+            pictureUri.value = picture
+        }
+    }
+
     Column(
         modifier = modifier
-            .border(border = BorderStroke(
-                width = SalesAppTheme.dimensions.grid_0_25,
-                color = MaterialTheme.colors.primary.copy(alpha = 0.03f),
-            ), shape = RoundedCornerShape(5))
+            .border(
+                border = BorderStroke(
+                    width = SalesAppTheme.dimensions.grid_0_25,
+                    color = MaterialTheme.colors.primary.copy(alpha = 0.03f),
+                ), shape = RoundedCornerShape(5)
+            )
             .padding(SalesAppTheme.dimensions.grid_1)
             .width(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -289,10 +308,9 @@ fun UserBox(
                 .width(128.dp)
                 .height(128.dp)
                 // Clip image to be shaped as a circle
-                .clip(CircleShape)
-            ,
+                .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(user.picture)
+                .data(pictureUri.value)
                 .crossfade(true)
                 .size(width = 256, height = 256)
                 .build(),
@@ -334,6 +352,6 @@ private fun HeaderPreview() {
 @Composable
 fun PreviewUserBox(modifier: Modifier = Modifier) {
     UserBox(
-        user = CollaboratorDocument(picture = "https://images.unsplash.com/photo-1574701148212-8518049c7b2c?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=686&q=80"),
+        user = CollaboratorDocument(),
     )
 }

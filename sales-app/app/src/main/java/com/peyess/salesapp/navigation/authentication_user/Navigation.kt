@@ -8,7 +8,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.authentication_user.screen.authentication.UserAuthScreen
 import com.peyess.salesapp.feature.authentication_user.screen.local_password.LocalPasswordScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.authentication_user.screen.user_list.UserListScreen
+import com.peyess.salesapp.feature.authentication_user.screen.user_list.UserListAuthScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildUserAuthNavGraph(
@@ -21,7 +21,7 @@ fun buildUserAuthNavGraph(
         enterTransition = userListEnterTransition(),
         exitTransition = userListExitTransition()
     ) {
-        UserListScreen(modifier = modifier, navHostController = navHostController)
+        UserListAuthScreen(modifier = modifier, navHostController = navHostController)
     }
 
     builder.composable(

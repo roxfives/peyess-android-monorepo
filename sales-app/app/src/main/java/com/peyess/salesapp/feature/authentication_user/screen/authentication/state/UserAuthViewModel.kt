@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.authentication_user.screen.authentication.state
 
+import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -13,6 +14,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.authenticateUser
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.feature.authentication_user.error.InvalidCredentialsError
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.string.isEmailValid
@@ -25,7 +27,8 @@ import timber.log.Timber
 class UserAuthViewModel @AssistedInject constructor(
     @Assisted initialState: UserAuthState,
     private val application: SalesApplication,
-    private val authenticationRepository: AuthenticationRepository
+    private val authenticationRepository: AuthenticationRepository,
+    private val collaboratorsRepository: CollaboratorsRepository,
 ): MavericksViewModel<UserAuthState>(initialState) {
 
     init {
@@ -118,6 +121,10 @@ class UserAuthViewModel @AssistedInject constructor(
                 application.stringResource(R.string.error_msg_default)
 
         }
+    }
+
+    suspend fun pictureForUser(uid: String): Uri {
+        return collaboratorsRepository.pictureFor(uid)
     }
 
     fun resetPasscode() = withState {

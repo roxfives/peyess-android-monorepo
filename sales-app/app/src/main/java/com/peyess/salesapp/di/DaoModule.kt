@@ -88,7 +88,10 @@ object DaoModule {
         firebaseManager: FirebaseManager,
         application: SalesApplication,
     ): CollaboratorsDao {
-        return CollaboratorsDaoImpl(firebaseManager, application)
+        return CollaboratorsDaoImpl(
+            salesApplication = application,
+            firebaseManager = firebaseManager,
+        )
     }
 
     @Singleton

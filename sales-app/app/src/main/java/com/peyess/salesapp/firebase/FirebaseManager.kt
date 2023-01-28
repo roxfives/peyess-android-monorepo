@@ -41,9 +41,9 @@ class FirebaseManager @Inject constructor(application: SalesApplication) {
             return firebaseAppStore?.let { Firebase.auth(it).currentUser }
         }
 
-    val storageRef: FirebaseStorage?
+    val storage: FirebaseStorage?
         get() {
-            return firebaseAppStore?.let { Firebase.storage(it) }
+            return firebaseAppStore?.let { FirebaseStorage.getInstance(it) }
         }
 
     init {

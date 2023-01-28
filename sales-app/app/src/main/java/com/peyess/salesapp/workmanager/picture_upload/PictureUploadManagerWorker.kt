@@ -1,7 +1,6 @@
 package com.peyess.salesapp.workmanager.picture_upload
 
 import android.content.Context
-import android.net.Uri
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -9,10 +8,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
-import arrow.core.right
-import arrow.fx.coroutines.Schedule
-import arrow.fx.coroutines.Schedule.Companion.exponential
-import arrow.fx.coroutines.retry
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -26,7 +21,6 @@ import com.peyess.salesapp.workmanager.picture_upload.typing.UploadCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import timber.log.Timber
-import kotlin.time.Duration.Companion.milliseconds
 
 private typealias PictureUploadManagerResponse = Either<PictureUploadManagerError, Unit>
 
@@ -59,7 +53,7 @@ class PictureUploadManagerWorker @AssistedInject constructor(
     ): PictureUploadManagerResponse = either {
         Timber.i("Picture with id ${pictureUpload.id} pending upload")
 
-        val storageRef = firebaseManager.storageRef
+        val storageRef = firebaseManager.storage
         ensureNotNull(storageRef) {
             StorageNotInitialized(description = "Reference to storage is null")
         }

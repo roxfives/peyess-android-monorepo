@@ -18,6 +18,7 @@ import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeMana
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
+import com.peyess.salesapp.model.users.toDocument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
@@ -40,11 +40,11 @@ import javax.inject.Inject
 private const val currentUserThreshold = 10
 
 class AuthenticationRepositoryImpl @Inject constructor(
-    val salesApplication: SalesApplication,
-    val firebaseManager: FirebaseManager,
-    val localPasscodeManager: LocalPasscodeManager,
-    val collaboratorsDao: CollaboratorsDao,
-    val storeDao: OpticalStoreDao,
+    private val salesApplication: SalesApplication,
+    private val firebaseManager: FirebaseManager,
+    private val localPasscodeManager: LocalPasscodeManager,
+    private val collaboratorsDao: CollaboratorsDao,
+    private val storeDao: OpticalStoreDao,
 ): AuthenticationRepository {
     private val Context.dataStoreCurrentUser: DataStore<Preferences>
         by preferencesDataStore(dataStoreFilename)
@@ -205,19 +205,17 @@ class AuthenticationRepositoryImpl @Inject constructor(
         awaitClose()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun currentUser(): Flow<CollaboratorDocument?> {
         return salesApplication.dataStoreCurrentUser.data
             .map { prefs -> prefs[currentCollaboratorKey] }
-            .flatMapLatest {
+            .map {
                 if (it == null || it.isBlank()) {
                     Timber.i("Current user is not defined")
-
-                    return@flatMapLatest flowOf(null)
+                    null
+                } else {
+                    // TODO: find why it returns null
+                    collaboratorsDao.getById(it)?.toDocument()
                 }
-
-                collaboratorsDao.user(uid = it)
-                // TODO: find why it returns null
             }
     }
 
@@ -244,10 +242,13 @@ class AuthenticationRepositoryImpl @Inject constructor(
     }
 
     override fun activeCollaborators(): Flow<List<CollaboratorDocument>> {
-        return collaboratorsDao.subscribeToActiveAccounts().onEach {
-            val ids = it.map { user -> user.id }
-
-            firebaseManager.loadedUsers(ids)
+        return collaboratorsDao.streamActiveAccounts()
+            .onEach {
+                firebaseManager.loadedUsers(it.map { user -> user.id })
+            }.map {
+                it.map { collaborator ->
+                    collaborator.toDocument()
+                }
         }
     }
 

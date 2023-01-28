@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.authentication_user.screen.authentication
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -29,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +57,8 @@ import com.peyess.salesapp.ui.component.group.CredentialsInput
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.component.text.PeyessPasswordInput
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserAuthScreen(
@@ -138,10 +142,12 @@ fun UserAuthScreen(
                 currentCollaboratorDocument = user,
                 isAuthenticated = isAuthenticated,
 
+                userId = user.id,
                 username = email,
                 hasUsernameError = hasEmailError,
                 usernameErrorMessage = emailErrorMessage,
                 onUsernameChanged = viewModel::onEmailChanged,
+                pictureForUser = viewModel::pictureForUser,
 
                 password = password,
                 hasPasswordError = hasPasswordError,
@@ -187,10 +193,12 @@ fun UserSignIn(
     currentCollaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     isAuthenticated: Boolean = false,
 
+    userId: String = "",
     username: String = stringResource(id = R.string.empty_string),
     hasUsernameError: Boolean = false,
     usernameErrorMessage: String = stringResource(id = R.string.empty_string),
     onUsernameChanged: (password: String) -> Unit = {},
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
 
     password: String = stringResource(id = R.string.empty_string),
     hasPasswordError: Boolean = false,
@@ -210,6 +218,16 @@ fun UserSignIn(
     onSignIn: () -> Unit = {},
     onRequestPasscodeReset: () -> Unit = {},
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForUser(userId)
+
+            pictureUri.value = picture
+        }
+    }
+
     Column(
         modifier = modifier.height(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -224,7 +242,7 @@ fun UserSignIn(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(currentCollaboratorDocument.picture)
+                .data(pictureUri.value)
                 .crossfade(true)
                 .size(width = 256, height = 256)
                 .build(),

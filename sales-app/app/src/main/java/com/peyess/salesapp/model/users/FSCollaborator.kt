@@ -1,5 +1,6 @@
 package com.peyess.salesapp.model.users
 
+import android.net.Uri
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
@@ -38,10 +39,10 @@ data class FSCollaborator(
     @PropertyName("status")
     val status:  String = AccountStatus.Active.name(), // AccountStatus
 
-    @Keep
-    @JvmField
-    @PropertyName("picture")
-    val picture:  String = "",
+//    @Keep
+//    @JvmField
+//    @PropertyName("picture")
+//    val picture:  String = "",
 
     @Keep
     @JvmField
@@ -117,7 +118,6 @@ fun FSCollaborator.toDocument(): CollaboratorDocument {
         document = document,
         jobPosition = jobPosition,
         status = AccountStatus.fromString(status = status),
-        picture = picture,
         storeDiscountGroup = storeDiscountGroup,
         storePermissionGroup = storePermissionGroup,
         id = id,

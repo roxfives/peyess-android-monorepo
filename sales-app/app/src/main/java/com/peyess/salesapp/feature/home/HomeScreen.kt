@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.home
 
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -80,6 +82,8 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.customView
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 private val dividerPadding = 16.dp
 
@@ -190,6 +194,7 @@ fun HomeScreen(
     HomeScreenImpl(
         modifier = modifier,
 
+        pictureForUser = viewModel::pictureForUser,
         collaboratorDocument = collaborator ?: CollaboratorDocument(),
         isLoadingCollaborator = isLoadingCollaborator,
 
@@ -220,6 +225,7 @@ fun HomeScreen(
 private fun HomeScreenImpl(
     modifier: Modifier = Modifier,
 
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     collaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     isLoadingCollaborator: Boolean = false,
 
@@ -246,6 +252,7 @@ private fun HomeScreenImpl(
             isLoading = isLoadingCollaborator || isLoadingStore,
             collaboratorDocument = collaboratorDocument,
             localization = store.shortAddress,
+            pictureForUser = pictureForUser,
 
             onSignOut = onSignOut,
         )
@@ -318,6 +325,7 @@ private fun ProfileData(
     modifier: Modifier = Modifier,
 
     isLoading: Boolean = false,
+    pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     collaboratorDocument: CollaboratorDocument = CollaboratorDocument(),
     localization: String = "",
 
@@ -326,6 +334,16 @@ private fun ProfileData(
     if (isLoading) {
         CircularProgressIndicator()
     } else {
+        val coroutineScope = rememberCoroutineScope()
+        val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+        LaunchedEffect(Unit) {
+            coroutineScope.launch(Dispatchers.IO) {
+                val picture = pictureForUser(collaboratorDocument.id)
+
+                pictureUri.value = picture
+            }
+        }
+
         Column(
             modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -347,7 +365,8 @@ private fun ProfileData(
                             width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape
                         )
                         .clip(CircleShape),
-                    model = ImageRequest.Builder(LocalContext.current).data(collaboratorDocument.picture)
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(pictureUri.value)
                         .crossfade(true)
                         .size(width = profilePictureSizePx, height = profilePictureSizePx).build(),
                     contentScale = ContentScale.FillBounds,

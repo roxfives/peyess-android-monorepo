@@ -1,5 +1,6 @@
 package com.peyess.salesapp.model.users
 
+import android.net.Uri
 import java.util.Date
 
 sealed class AccountStatus {
@@ -36,8 +37,6 @@ data class CollaboratorDocument(
 
     val jobPosition:  String = "",
     val status:  AccountStatus = AccountStatus.Active, // AccountStatus
-
-    val picture:  String = "",
 
     val storeDiscountGroup:  String = "",
     val storePermissionGroup:  String = "",

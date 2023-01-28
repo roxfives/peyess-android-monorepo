@@ -7,12 +7,6 @@ import java.util.Date
 
 @IgnoreExtraProperties
 data class FSOpticalStore(
-
-    @Keep
-    @JvmField
-    @PropertyName("picture")
-    val picture: String = "",
-
     @Keep
     @JvmField
     @PropertyName("name_display")
@@ -187,41 +181,40 @@ data class FSOpticalStore(
 fun FSOpticalStore.toDocument(id: String): OpticalStore {
     return OpticalStore(
         id = id,
-        picture = this.picture,
-        nameDisplay = this.nameDisplay,
-        typeId = this.typeId,
-        type = this.type,
-        status = this.status,
-        reasonDeactivated = this.reasonDeactivated,
-        reasonBanned = this.reasonBanned,
-        opening = this.opening,
-        directorUid = this.directorUid,
-        responsibleName = this.responsibleName,
-        responsibleUid = this.responsibleUid,
-        acceptsReceivable = this.acceptsReceivable,
-        paymentMinSet = this.paymentMinSet,
-        paymentTotalReceived = this.paymentTotalReceived,
-        daysToTakeFromStore = this.daysToTakeFromStore,
-        hasCustomLegalText = this.hasCustomLegalText,
-        isEnabled = this.isEnabled,
+        nameDisplay = nameDisplay,
+        typeId = typeId,
+        type = type,
+        status = status,
+        reasonDeactivated = reasonDeactivated,
+        reasonBanned = reasonBanned,
+        opening = opening,
+        directorUid = directorUid,
+        responsibleName = responsibleName,
+        responsibleUid = responsibleUid,
+        acceptsReceivable = acceptsReceivable,
+        paymentMinSet = paymentMinSet,
+        paymentTotalReceived = paymentTotalReceived,
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasCustomLegalText = hasCustomLegalText,
+        isEnabled = isEnabled,
 
-        state = this.state,
-        city = this.city,
-        zipCode = this.zipCode,
-        neighborhood = this.neighborhood,
-        street = this.street,
-        number = this.number,
-        complement = this.complement,
-        publicPlace = this.publicPlace,
-        ibge = this.ibge,
-        siafi = this.siafi,
-        gia = this.gia,
+        state = state,
+        city = city,
+        zipCode = zipCode,
+        neighborhood = neighborhood,
+        street = street,
+        number = number,
+        complement = complement,
+        publicPlace = publicPlace,
+        ibge = ibge,
+        siafi = siafi,
+        gia = gia,
 
-        createdAt = this.created,
-        createdBy = this.createdBy,
-        createAllowedBy = this.createAllowedBy,
-        updatedAt = this.updated,
-        updatedBy = this.updatedBy,
-        updateAllowedBy = this.updateAllowedBy,
+        createdAt = created,
+        createdBy = createdBy,
+        createAllowedBy = createAllowedBy,
+        updatedAt = updated,
+        updatedBy = updatedBy,
+        updateAllowedBy = updateAllowedBy,
     )
 }

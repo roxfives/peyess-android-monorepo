@@ -104,35 +104,7 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(prescriptionResponseAsync = it)
             }
-
-//        suspend {
-//            localPrescriptionRepository.getPrescriptionForServiceOrder(serviceOrderId)
-//        }.execute(Dispatchers.IO) {
-//            copy(prescriptionResponseAsync = it)
-//        }
     }
-
-//    private fun loadPrescription(serviceOrderId: String) {
-//        saleRepository.currentPrescriptionPicture().execute {
-//
-//
-//            if (it is Success) {
-//                overwriteScreenState(it.invoke())
-//            }
-//
-//            copy(currentPrescription = it)
-//        }
-//    }
-
-//    private fun overwriteScreenState(prescription: PrescriptionEntity) = setState {
-//        copy(
-//            pictureUri = prescription.pictureUri,
-//            prescriptionDate = prescription.prescriptionDate.toLocalDate(),
-//
-//            professionalId = prescription.professionalId,
-//            professionalName = prescription.professionalName,
-//        )
-//    }
 
     private fun updatePrescription(prescription: PrescriptionPicture) {
         viewModelScope.launch(Dispatchers.IO) {

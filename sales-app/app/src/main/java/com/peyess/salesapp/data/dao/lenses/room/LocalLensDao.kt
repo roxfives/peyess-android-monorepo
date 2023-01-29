@@ -205,6 +205,7 @@ interface LocalLensDao {
             SELECT * FROM $coloringsTable AS colorings
                 JOIN $lensColoringJunction AS _junction ON colorings.id = _junction.coloring_id
             WHERE _junction.lens_id = :lensId
+            ORDER BY colorings.priority
         """
     )
     suspend fun getColoringsForLens(lensId: String): List<LocalLensColoringWithExplanationsEntity>
@@ -218,6 +219,7 @@ interface LocalLensDao {
             SELECT * FROM $treatmentsTable AS treatments
                 JOIN $lensTreatmentJunction AS _junction ON treatments.id = _junction.treatment_id
             WHERE _junction.lens_id = :lensId
+            ORDER BY treatments.priority
         """
     )
     suspend fun getTreatmentsForLens(lensId: String): List<LocalLensTreatmentWithExplanationsEntity>

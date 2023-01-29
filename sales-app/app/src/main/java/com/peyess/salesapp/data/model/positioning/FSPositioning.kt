@@ -30,11 +30,6 @@ data class FSPositioning(
 
     @JvmField
     @Keep
-    @PropertyName("picture")
-    val picture: String = "",
-
-    @JvmField
-    @Keep
     @PropertyName("taken_by_uid")
     val takenByUid: String = "",
 

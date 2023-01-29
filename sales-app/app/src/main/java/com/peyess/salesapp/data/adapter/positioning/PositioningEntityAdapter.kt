@@ -33,8 +33,6 @@ fun PositioningEntity.toPositioningDocument(
         storeIds = listOf(storeId),
         prescriptionId = prescriptionId,
 
-        picture = picture.toString(),
-
         eye = eye.toName(),
 
         baseLeft = baseLeft,

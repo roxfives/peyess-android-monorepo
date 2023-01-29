@@ -10,8 +10,6 @@ data class PositioningDocument(
 
     val prescriptionId: String = "",
 
-    val picture: String = "",
-
     val takenByUid: String = "",
 
     val serviceOrders: List<String> = emptyList(),

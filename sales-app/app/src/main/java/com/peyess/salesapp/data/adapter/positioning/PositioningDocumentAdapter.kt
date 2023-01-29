@@ -11,7 +11,6 @@ fun PositioningDocument.toFSPositioning(): FSPositioning {
         storeId = storeId,
         storeIds = storeIds,
         prescriptionId = prescriptionId,
-        picture = picture,
         takenByUid = takenByUid,
         serviceOrders = serviceOrders,
         patientUid = patientUid,

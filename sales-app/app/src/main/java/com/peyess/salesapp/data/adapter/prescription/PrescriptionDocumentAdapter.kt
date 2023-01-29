@@ -13,8 +13,6 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
 
         emitted = emitted.toTimestamp(),
 
-        picture = picture,
-
         typeId = typeId,
         typeDesc = typeDesc,
 

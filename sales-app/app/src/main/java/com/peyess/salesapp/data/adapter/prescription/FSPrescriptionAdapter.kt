@@ -22,7 +22,6 @@ fun prescriptionFrom(
 
         emitted = ZonedDateTime.now(),
 
-        picture = prescriptionEntity.pictureUri.toString(),
         isCopy = prescriptionEntity.isCopy,
 
         patientUid = clientUid,

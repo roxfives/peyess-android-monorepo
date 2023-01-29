@@ -10,7 +10,6 @@ data class PrescriptionDocument(
     val storeIds: List<String> = emptyList(),
 
     val emitted: ZonedDateTime = ZonedDateTime.now(),
-    val picture: String = "",
 
     val typeId: String = "",
     val typeDesc: String = "",

@@ -27,10 +27,6 @@ data class FSPrescription(
     @Keep
     @PropertyName("emitted")
     val emitted: Timestamp = Timestamp.now(),
-    @JvmField
-    @Keep
-    @PropertyName("picture")
-    val picture: String = "",
 
     @JvmField
     @Keep

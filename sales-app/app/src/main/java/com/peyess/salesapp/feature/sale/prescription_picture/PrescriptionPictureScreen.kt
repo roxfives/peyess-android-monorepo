@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -94,6 +93,7 @@ import java.time.format.DateTimeFormatter
 
 private val buttonSpacing = 16.dp
 private val buttonIconSpacing = 16.dp
+private val modalFooterSize = 64.dp
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -299,6 +299,8 @@ private fun PictureSourceBottomSheetContent(
             text = stringResource(id = R.string.btn_select_picture),
             onClick = onPickGallery
         )
+
+        Spacer(modifier = Modifier.height(modalFooterSize))
     }
 }
 

@@ -1,13 +1,19 @@
 package com.peyess.salesapp.ui.component.chip
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
@@ -38,23 +44,19 @@ fun PeyessContentChip(
     isSelected: Boolean = false,
     onSelectionChanged: (isSelected: Boolean) -> Unit = {},
 ) {
-    Surface(
-        modifier = modifier.padding(4.dp),
-        elevation = 8.dp,
+    Button(
+        modifier = modifier.padding(0.dp),
         shape = MaterialTheme.shapes.large.copy(CornerSize(50)),
         border = BorderStroke(
             width = 2.dp,
             color = if (isSelected) toggleOnBorderColor else toggleOffBorderColor,
         ),
-        color = if (isSelected) toggleOnBackgroundColor else toggleOffBackgroundColor,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = if (isSelected) toggleOnBackgroundColor else toggleOffBackgroundColor,
+        ),
+        onClick = { onSelectionChanged(!isSelected) },
     ) {
         Row(
-            modifier = modifier
-                .padding(14.dp)
-                .toggleable(
-                    value = isSelected,
-                    onValueChange = onSelectionChanged,
-                ),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -67,6 +69,31 @@ fun PeyessContentChip(
             }
         }
     }
+
+//    Button(
+//        modifier = modifier.padding(4.dp),
+//        shape = MaterialTheme.shapes.large.copy(CornerSize(50)),
+//        border = BorderStroke(
+//            width = 2.dp,
+//            color = if (isSelected) toggleOnBorderColor else toggleOffBorderColor,
+//        ),
+//        onClick = { onSelectionChanged(!isSelected) },
+//    ) {
+//        Row(
+//            modifier = modifier
+//                .padding(14.dp),
+//            horizontalArrangement = Arrangement.Center,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            ProvideTextStyle(
+//                MaterialTheme.typography.body1.copy(
+//                    color = if (isSelected) toggleOnTextColor else toggleOffTextColor
+//                )
+//            ) {
+//                content()
+//            }
+//        }
+//    }
 }
 
 @Preview

@@ -902,61 +902,61 @@ private fun LensList(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.Center,
-//                    verticalAlignment = Alignment.CenterVertically,
-//                ) {
-//                    PeyessContentChip(
-//                        isSelected = hasFilterUv,
-//                        onSelectionChanged = onFilterUvChanged,
-//                        content = {
-//                            Row {
-//                                Icon(
-//                                    imageVector = Icons.Filled.WbSunny,
-//                                    contentDescription = "",
-//                                )
-//
-//                                Spacer(modifier = Modifier.width(4.dp))
-//
-//                                Text(text = "Filtro para ultravioleta")
-//                            }
-//                        },
-//
-//                        toggleOnBackgroundColor = MaterialTheme.colors.background,
-//                        toggleOnBorderColor = MaterialTheme.colors.background,
-//                        toggleOnTextColor = MaterialTheme.colors.onBackground,
-//                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
-//                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
-//                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-//                    )
-//
-//                    Spacer(modifier = Modifier.width(16.dp))
-//
-//                    PeyessContentChip(
-//                        isSelected = hasFilterBlue,
-//                        onSelectionChanged = onFilterBlueChanged,
-//                        content = {
-//                            Row {
-//                                Icon(
-//                                    imageVector = Icons.Filled.FlashlightOn,
-//                                    contentDescription = "",
-//                                )
-//
-//                                Spacer(modifier = Modifier.width(4.dp))
-//
-//                                Text(text = "Filtro para luz azul")
-//                            }
-//                        },
-//
-//                        toggleOnBackgroundColor = MaterialTheme.colors.background,
-//                        toggleOnBorderColor = MaterialTheme.colors.background,
-//                        toggleOnTextColor = MaterialTheme.colors.onBackground,
-//                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
-//                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
-//                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
-//                    )
-//                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    PeyessContentChip(
+                        isSelected = hasFilterUv,
+                        onSelectionChanged = onFilterUvChanged,
+                        content = {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Filled.WbSunny,
+                                    contentDescription = "",
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(text = "Filtro para ultravioleta")
+                            }
+                        },
+
+                        toggleOnBackgroundColor = MaterialTheme.colors.background,
+                        toggleOnBorderColor = MaterialTheme.colors.background,
+                        toggleOnTextColor = MaterialTheme.colors.onBackground,
+                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    PeyessContentChip(
+                        isSelected = hasFilterBlue,
+                        onSelectionChanged = onFilterBlueChanged,
+                        content = {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Filled.FlashlightOn,
+                                    contentDescription = "",
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(text = "Filtro para luz azul")
+                            }
+                        },
+
+                        toggleOnBackgroundColor = MaterialTheme.colors.background,
+                        toggleOnBorderColor = MaterialTheme.colors.background,
+                        toggleOnTextColor = MaterialTheme.colors.onBackground,
+                        toggleOffBackgroundColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffBorderColor = MaterialTheme.colors.background.copy(alpha = 0.8f),
+                        toggleOffTextColor = MaterialTheme.colors.onBackground.copy(alpha = 0.5f),
+                    )
+                }
             }
         },
 

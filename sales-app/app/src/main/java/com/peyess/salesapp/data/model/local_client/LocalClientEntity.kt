@@ -50,8 +50,6 @@ data class LocalClientEntity(
     val cellphone: String = "",
     @ColumnInfo(name = "whatsapp")
     val whatsapp: String = "",
-    @ColumnInfo(name = "stores_ids")
-    val storesIds: List<String> = emptyList(),
 
     @ColumnInfo(name = "doc version")
     val doc_version: Int = 0,

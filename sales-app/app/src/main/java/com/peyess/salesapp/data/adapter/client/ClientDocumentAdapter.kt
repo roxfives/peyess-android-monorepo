@@ -30,7 +30,6 @@ fun ClientDocument.toLocalClientDocument(
         phone = phone,
         cellphone = cellphone,
         whatsapp = whatsapp,
-        storesIds = storesIds,
         doc_version = doc_version,
         is_editable = is_editable,
         created = created,

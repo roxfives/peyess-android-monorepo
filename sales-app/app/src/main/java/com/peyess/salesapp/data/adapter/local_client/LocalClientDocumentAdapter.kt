@@ -25,7 +25,6 @@ fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
         phone = phone,
         cellphone = cellphone,
         whatsapp = whatsapp,
-        storesIds = storesIds,
         doc_version = doc_version,
         is_editable = is_editable,
         created = created,
@@ -41,7 +40,9 @@ fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
     )
 }
 
-fun LocalClientDocument.toFSClient(): FSClient {
+fun LocalClientDocument.toFSClient(
+    storeIds: List<String> = emptyList(),
+): FSClient {
     return FSClient(
         name = name,
         nameDisplay = nameDisplay,
@@ -60,7 +61,7 @@ fun LocalClientDocument.toFSClient(): FSClient {
         phone = phone,
         cellphone = cellphone,
         whatsapp = whatsapp,
-        storesIds = storesIds,
+        storesIds = storeIds,
         doc_version = doc_version,
         is_editable = is_editable,
         created = created.toTimestamp(),

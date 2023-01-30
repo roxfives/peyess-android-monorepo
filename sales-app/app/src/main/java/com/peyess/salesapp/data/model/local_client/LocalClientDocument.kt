@@ -27,7 +27,6 @@ data class LocalClientDocument(
     val phone: String = "",
     val cellphone: String = "",
     val whatsapp: String = "",
-    val storesIds: List<String> = emptyList(),
 
     val doc_version: Int = 0,
     val is_editable: Boolean = false,

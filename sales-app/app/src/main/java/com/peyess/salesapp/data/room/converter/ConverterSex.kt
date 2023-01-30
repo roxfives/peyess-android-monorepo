@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.room.converter
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 
 class ConverterSex {
     @TypeConverter

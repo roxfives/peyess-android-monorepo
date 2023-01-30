@@ -66,7 +66,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoState
 import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.feature.create_client.basic_info.utils.createClientFile

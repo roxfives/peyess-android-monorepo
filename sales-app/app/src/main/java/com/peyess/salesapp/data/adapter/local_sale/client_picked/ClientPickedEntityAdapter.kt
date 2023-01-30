@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.adapter.local_sale.client_picked
 
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 

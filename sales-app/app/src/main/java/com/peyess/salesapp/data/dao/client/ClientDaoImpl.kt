@@ -1,16 +1,17 @@
-package com.peyess.salesapp.dao.client.firestore
+package com.peyess.salesapp.data.dao.client
 
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.client.FSClient
+import com.peyess.salesapp.data.model.client.toDocument
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 class ClientDaoImpl @Inject constructor(
     val salesApplication: SalesApplication,

@@ -43,7 +43,7 @@ import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 

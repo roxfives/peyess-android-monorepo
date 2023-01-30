@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 import java.time.OffsetDateTime
 
 @Entity(

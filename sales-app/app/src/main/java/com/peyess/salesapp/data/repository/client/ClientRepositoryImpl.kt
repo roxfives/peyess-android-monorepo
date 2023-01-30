@@ -12,14 +12,14 @@ import arrow.core.leftIfNull
 import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.dao.client.firestore.ClientDao
+import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
 import com.peyess.salesapp.data.adapter.client.toClientModel
 import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
-import com.peyess.salesapp.data.dao.client.ClientLegalDao
+import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client_legal.ClientLegalMethod
 import com.peyess.salesapp.data.model.client_legal.FSClientLegal
@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber

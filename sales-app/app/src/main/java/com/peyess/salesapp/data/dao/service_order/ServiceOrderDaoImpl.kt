@@ -3,8 +3,6 @@ package com.peyess.salesapp.data.dao.service_order
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.dao.client.firestore.FSClient
-import com.peyess.salesapp.dao.client.firestore.toDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.channels.awaitClose

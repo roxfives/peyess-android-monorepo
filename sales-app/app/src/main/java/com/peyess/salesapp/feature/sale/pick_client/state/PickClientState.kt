@@ -4,8 +4,8 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 

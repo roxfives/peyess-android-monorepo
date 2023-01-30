@@ -8,8 +8,8 @@ import com.peyess.salesapp.dao.auth.store.OpticalStoreDaoImpl
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDaoImpl
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
-import com.peyess.salesapp.dao.client.firestore.ClientDao
-import com.peyess.salesapp.dao.client.firestore.ClientDaoImpl
+import com.peyess.salesapp.data.dao.client.ClientDao
+import com.peyess.salesapp.data.dao.client.ClientDaoImpl
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDaoImpl
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
@@ -51,8 +51,8 @@ import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
-import com.peyess.salesapp.data.dao.client.ClientLegalDao
-import com.peyess.salesapp.data.dao.client.ClientLegalDaoImpl
+import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
+import com.peyess.salesapp.data.dao.client_legal.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDaoImpl

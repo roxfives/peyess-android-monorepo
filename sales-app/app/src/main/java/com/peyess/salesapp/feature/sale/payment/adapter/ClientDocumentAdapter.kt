@@ -1,6 +1,6 @@
 package com.peyess.salesapp.feature.sale.payment.adapter
 
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.feature.sale.payment.model.Client
 
 fun ClientDocument.toClient(): Client {

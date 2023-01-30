@@ -1,6 +1,6 @@
 package com.peyess.salesapp.feature.create_client.basic_info.utils
 
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 
 fun readableSexName(sex: Sex): String {
     return when (sex) {

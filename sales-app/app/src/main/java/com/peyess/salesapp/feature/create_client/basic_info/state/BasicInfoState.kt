@@ -1,6 +1,5 @@
 package com.peyess.salesapp.feature.create_client.basic_info.state
 
-import android.net.Uri
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
@@ -9,14 +8,11 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.client.ClientModel
-import com.peyess.salesapp.data.model.client.Sex
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateBirthDate
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateDocument
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateName
 import com.peyess.salesapp.feature.create_client.basic_info.utils.validateNameDisplay
 import com.peyess.salesapp.navigation.pick_client.PickScenario
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 data class BasicInfoState(
     private val _clientAsync: Async<ClientModel?> = Uninitialized,

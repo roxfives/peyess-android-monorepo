@@ -1,8 +1,7 @@
 package com.peyess.salesapp.data.repository.client
 
 import arrow.core.Either
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryError
 import kotlinx.coroutines.flow.Flow

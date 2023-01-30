@@ -1,7 +1,8 @@
-package com.peyess.salesapp.dao.client.firestore
+package com.peyess.salesapp.data.model.client
 
 import android.net.Uri
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.data.model.client.FSClient
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.utils.time.toZonedDateTime

@@ -5,7 +5,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
-import com.peyess.salesapp.dao.client.firestore.ClientDao
+import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.data.dao.payment_method.PaymentMethodDao
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
@@ -18,7 +18,7 @@ import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
-import com.peyess.salesapp.data.dao.client.ClientLegalDao
+import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao

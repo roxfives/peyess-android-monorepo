@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.client.firestore
+package com.peyess.salesapp.typing.client
 
 sealed class UserAccountStatus {
     object Pending: UserAccountStatus()

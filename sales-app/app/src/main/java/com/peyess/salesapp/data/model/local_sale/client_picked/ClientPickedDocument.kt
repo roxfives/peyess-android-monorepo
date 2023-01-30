@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.model.local_sale.client_picked
 
 import android.net.Uri
-import com.peyess.salesapp.data.model.client.Sex
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.typing.sale.ClientRole
 
 data class ClientPickedDocument(

@@ -6,8 +6,8 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
-import com.peyess.salesapp.dao.client.firestore.toClientPickedEntity
+import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.client.toClientPickedEntity
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.data.repository.client.ClientRepository

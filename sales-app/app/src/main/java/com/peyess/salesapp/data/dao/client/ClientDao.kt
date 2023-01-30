@@ -1,5 +1,7 @@
-package com.peyess.salesapp.dao.client.firestore
+package com.peyess.salesapp.data.dao.client
 
+import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.client.FSClient
 import kotlinx.coroutines.flow.Flow
 
 interface ClientDao {

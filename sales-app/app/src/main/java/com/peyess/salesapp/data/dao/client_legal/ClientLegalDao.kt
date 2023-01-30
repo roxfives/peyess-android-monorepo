@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.dao.client
+package com.peyess.salesapp.data.dao.client_legal
 
 import com.peyess.salesapp.data.model.client_legal.FSClientLegal
 

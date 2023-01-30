@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.model.client
+package com.peyess.salesapp.typing.client
 
 sealed class Sex {
     object Male: Sex()

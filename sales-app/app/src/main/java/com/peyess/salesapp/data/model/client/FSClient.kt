@@ -1,4 +1,4 @@
-package com.peyess.salesapp.dao.client.firestore
+package com.peyess.salesapp.data.model.client
 
 import androidx.annotation.Keep
 import com.google.firebase.Timestamp

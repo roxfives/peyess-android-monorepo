@@ -49,11 +49,10 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.client.firestore.ClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.navigation.pick_client.PickScenario
-import com.peyess.salesapp.navigation.pick_client.isPickingParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.action_bar.ClientActions

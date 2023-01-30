@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.model.client
 
 import android.net.Uri
+import com.peyess.salesapp.typing.client.Sex
 import java.time.ZonedDateTime
 
 data class ClientModel(

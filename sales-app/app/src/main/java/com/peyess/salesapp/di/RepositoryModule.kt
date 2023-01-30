@@ -21,6 +21,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
+import com.peyess.salesapp.data.dao.local_client.LocalClientDao
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
 import com.peyess.salesapp.data.dao.management_picture_upload.PictureUploadDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
@@ -47,6 +48,8 @@ import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepositoryImpl
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
@@ -363,6 +366,16 @@ object RepositoryModule {
     ): LocalPositioningRepository {
         return LocalPositioningRepositoryImpl(
             positioningDao = positioningDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalClientRepository(
+        localClientDao: LocalClientDao,
+    ): LocalClientRepository {
+        return LocalClientRepositoryImpl(
+            localClientDao = localClientDao,
         )
     }
 }

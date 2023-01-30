@@ -56,6 +56,7 @@ import com.peyess.salesapp.data.dao.client_legal.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDaoImpl
+import com.peyess.salesapp.data.dao.local_client.LocalClientDao
 import com.peyess.salesapp.data.dao.management_picture_upload.PictureUploadDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
 import com.peyess.salesapp.data.dao.measuring.MeasuringDaoImpl
@@ -71,6 +72,7 @@ import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDaoImpl
+import com.peyess.salesapp.data.room.database.LocalClientDatabase
 import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.Module
@@ -462,5 +464,13 @@ object DaoModule {
         pictureUploadDatabase: PictureUploadDatabase,
     ): PictureUploadDao {
         return pictureUploadDatabase.pictureUploadDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalClientDao(
+        clientsDatabase: LocalClientDatabase,
+    ): LocalClientDao {
+        return clientsDatabase.localClientDao()
     }
 }

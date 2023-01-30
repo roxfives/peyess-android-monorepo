@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.data.room.database.CacheCreateClientDatabase
+import com.peyess.salesapp.data.room.database.LocalClientDatabase
 import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameterFactory
@@ -23,7 +24,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideApplication(@ApplicationContext context: Context): SalesApplication {
@@ -63,6 +63,19 @@ object AppModule {
                 context,
                 CacheCreateClientDatabase::class.java,
                 "cache_create_client.db",
+            ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocalClientDatabase(
+        @ApplicationContext context: Context,
+    ): LocalClientDatabase {
+        return Room.databaseBuilder(
+                context,
+                LocalClientDatabase::class.java,
+                "local_client.db",
             ).fallbackToDestructiveMigration()
             .build()
     }

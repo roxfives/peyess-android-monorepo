@@ -1,20 +1,29 @@
 package com.peyess.salesapp.app.state
 
+import androidx.paging.PagingData
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
-import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
+import com.peyess.salesapp.data.repository.client.error.ClientReadError
+import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
 import com.peyess.salesapp.repository.sale.ResumeSaleResponse
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+
+typealias ClientListStream = Flow<PagingData<Client>>
+typealias ClientsListResponse = Either<LocalClientRepositoryPagingError, ClientListStream>
 
 sealed class AppAuthenticationState {
     object Unauthenticated: AppAuthenticationState()
@@ -31,8 +40,8 @@ data class MainAppState(
 
     val serviceOrderListAsync: Async<List<ServiceOrderDocument>> = Uninitialized,
 
-    // Client screen
-    val clientListAsync: Async<List<ClientDocument>> = Uninitialized,
+    val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
+    val clientListStream: ClientListStream = emptyFlow(),
 
     val currentCollaboratorDocumentAsync: Async<CollaboratorDocument?> = Uninitialized,
     val currentStoreAsync: Async<OpticalStore> = Uninitialized,
@@ -74,11 +83,8 @@ data class MainAppState(
     val isSearchingForActiveSales = activeSalesStreamAsync is Loading
     val hasActiveSales = activeSales.isNotEmpty()
 
-    // Client screen
-    val clientList = clientListAsync.invoke() ?: emptyList()
-
     val isServiceOrderListLoading = serviceOrderListAsync is Loading
     val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()
 
-    val areClientsLoading = clientListAsync is Loading || clientListAsync is Uninitialized
+    val areClientsLoading = clientListResponseAsync is Loading
 }

@@ -2,21 +2,30 @@ package com.peyess.salesapp.app.state
 
 import android.content.Context
 import android.net.Uri
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.map
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.R
+import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.app.adapter.toClient
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
+import com.peyess.salesapp.data.utils.query.PeyessOrderBy
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
@@ -32,15 +41,19 @@ import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
 
+private const val clientsTablePageSize = 20
+private const val lensesTablePrefetchDistance = 10
+
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
+    private val salesApplication: SalesApplication,
     private val authenticationRepository: AuthenticationRepository,
     private val collaboratorsRepository: CollaboratorsRepository,
     private val saleRepository: SaleRepository,
-    private val clientRepository: ClientRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
     private val purchaseRepository: PurchaseRepository,
     private val productsTableStateRepository: ProductsTableStateRepository,
+    private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
@@ -54,7 +67,7 @@ class MainViewModel @AssistedInject constructor(
 
         onEach(MainAppState::authState) {
             if (it is AppAuthenticationState.Authenticated) {
-                loadClients()
+                updateClientList()
                 loadServiceOrders()
             }
         }
@@ -70,6 +83,8 @@ class MainViewModel @AssistedInject constructor(
 
             }
         }
+
+        onAsync(MainAppState::clientListResponseAsync) { processClientListResponse(it) }
 
         onAsync(MainAppState::activeSalesStreamAsync) { processActiveSalesStreamResponse(it) }
         onAsync(MainAppState::activeSalesAsync) { processActiveSalesStream(it) }
@@ -99,11 +114,60 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadClients() = withState {
-        clientRepository.clients()
-            .execute {
-                copy(clientListAsync = it)
+    private fun updatedClientListStream(): ClientsListResponse {
+        // TODO: build query using utils
+        val query = PeyessQuery(
+            queryFields = emptyList(),
+            orderBy = listOf(
+                PeyessOrderBy(
+                    field = "name",
+                    order = Order.ASCENDING,
+                )
+            ),
+            groupBy = emptyList(),
+        )
+
+        return localClientRepository.paginateClients(query).map { pagingSource ->
+            val pagingSourceFactory = { pagingSource }
+
+            val pager = Pager(
+                pagingSourceFactory = pagingSourceFactory,
+                config = PagingConfig(
+                    pageSize = clientsTablePageSize,
+                    enablePlaceholders = true,
+                    prefetchDistance = lensesTablePrefetchDistance,
+                ),
+            )
+
+            pager.flow.map { pagingData ->
+                pagingData.map {
+                    it.toClient()
+                }
             }
+        }
+    }
+
+    private fun processClientListResponse(response: ClientsListResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    clientListResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+            ifRight = {
+                copy(clientListStream = it)
+            }
+        )
+    }
+
+    private fun updateClientList() {
+        suspend {
+            updatedClientListStream()
+        }.execute(Dispatchers.IO) {
+            copy(clientListResponseAsync = it)
+        }
     }
 
     private fun loadServiceOrders() = withState {

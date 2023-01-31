@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.home
 
+import android.net.Uri
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,11 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +36,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -41,11 +48,15 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 
 private val lazyColumnHeaderBottomSpacer = 16.dp
 
@@ -69,7 +80,7 @@ fun ClientScreen(
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
     val isLoading by viewModel.collectAsState(MainAppState::areClientsLoading)
-    val clients by viewModel.collectAsState(MainAppState::clientList)
+    val clientList by viewModel.collectAsState(MainAppState::clientListStream)
 
     if (isLoading) {
         PeyessProgressIndicatorInfinite()
@@ -80,7 +91,7 @@ fun ClientScreen(
             ClientScreenImpl(
                 modifier = modifier,
 
-                clients = clients,
+                clientList = clientList,
 
                 onCreateNewClient = onCreateNewClient,
                 onSearchClient = onSearchClient,
@@ -93,12 +104,14 @@ fun ClientScreen(
 private fun ClientScreenImpl(
     modifier: Modifier = Modifier,
 
-    clients: List<ClientDocument> = emptyList(),
+    clientList: Flow<PagingData<Client>> = emptyFlow(),
 
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
-    if (clients.isEmpty()) {
+    val clients = clientList.collectAsLazyPagingItems()
+
+    if (clients.itemCount == 0) {
         NoClientsYet(
             modifier = modifier,
 
@@ -121,14 +134,15 @@ private fun ClientScreenImpl(
                 }
             }
 
-            items(clients.size) {
-                val client = clients[it]
+            items(clients.itemCount) { index ->
+                val client = clients[index]
 
-                ClientCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    client = client,
-                    onClientPicked = {},
-                )
+                client?.let {
+                    ClientCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        client = it,
+                    )
+                }
             }
 
             item {
@@ -141,9 +155,20 @@ private fun ClientScreenImpl(
 @Composable
 private fun ClientCard(
     modifier: Modifier = Modifier,
-    client: ClientDocument = ClientDocument(),
-    onClientPicked: (client: ClientDocument) -> Unit = {},
+    client: Client = Client(),
+    onClientPicked: (client: Client) -> Unit = {},
+    pictureForClient: (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(client.id)
+
+            pictureUri.value = picture
+        }
+    }
+
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min),
@@ -158,7 +183,7 @@ private fun ClientCard(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(client.picture)
+                .data(pictureUri)
                 .crossfade(true)
                 .size(width = pictureSizePx, height = pictureSizePx)
                 .build(),
@@ -196,7 +221,10 @@ private fun ClientCard(
                     contentDescription = "",
                 )
 
-                Text(modifier = Modifier.padding(vertical = 4.dp), text = client.shortAddress)
+                Text(
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    text = client.shortAddress,
+                )
             }
         }
 

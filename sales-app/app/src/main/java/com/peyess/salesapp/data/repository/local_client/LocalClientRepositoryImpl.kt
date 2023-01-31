@@ -15,7 +15,6 @@ import com.peyess.salesapp.data.model.local_client.LocalClientStatusDocument
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientNotFoundError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryCreatePagingSourceError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryInsertError
-import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryStatusInsertError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryReadStatusError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryStatusNotFoundError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryStatusUpdateError

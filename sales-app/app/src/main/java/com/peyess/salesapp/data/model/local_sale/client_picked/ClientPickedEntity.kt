@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.model.local_sale.client_picked
 
-import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -33,9 +32,6 @@ data class ClientPickedEntity(
 
     @ColumnInfo(name = "document")
     val document: String = "",
-
-    @ColumnInfo(name = "picture")
-    val picture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "short_address")
     val shortAddress: String = "",

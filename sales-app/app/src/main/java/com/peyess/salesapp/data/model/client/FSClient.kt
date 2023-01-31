@@ -20,11 +20,6 @@ data class FSClient(
 
     @JvmField
     @Keep
-    @PropertyName("picture")
-    val picture: String = "",
-
-    @JvmField
-    @Keep
     @PropertyName("birthday")
     val birthday: Timestamp = Timestamp.now(),
 

@@ -34,10 +34,6 @@ data class FSPayment(
     val document: String = "",
     @Keep
     @JvmField
-    @PropertyName("document_picture")
-    val documentPicture: String = "",
-    @Keep
-    @JvmField
     @PropertyName("financial_inst")
     val financialInst: String = FinancialInstitutionType.None.toName(), // FinantialInstitutionType
     @Keep
@@ -61,8 +57,4 @@ data class FSPayment(
     @JvmField
     @PropertyName("payer_name")
     val payerName: String = "",
-    @Keep
-    @JvmField
-    @PropertyName("payer_picture")
-    val payerPicture: String = "",
 )

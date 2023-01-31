@@ -11,15 +11,14 @@ import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.sale.ClientRole
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
-import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
@@ -70,11 +69,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
@@ -101,7 +95,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val salePaymentRepository: SalePaymentRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
-    private val clientRepository: ClientRepository,
+    private val localClientRepository: LocalClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
     private val pictureUploadRepository: PictureUploadRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
@@ -256,7 +250,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             paymentFeeRepository = paymentFeeRepository,
             localLensesRepository = localLensesRepository,
             framesRepository = framesRepository,
-            clientRepository = clientRepository,
+            localClientRepository = localClientRepository,
             clientPickedRepository = clientPickedRepository,
             firebaseManager = firebaseManager,
             salePaymentRepository = salePaymentRepository,

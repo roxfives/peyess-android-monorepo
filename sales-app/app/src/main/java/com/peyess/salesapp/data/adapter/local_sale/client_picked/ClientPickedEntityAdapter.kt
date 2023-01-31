@@ -15,7 +15,6 @@ fun ClientPickedEntity.toClientPickedDocument(): ClientPickedDocument {
         sex = Sex.fromName(sex),
         email = email,
         document = document,
-        picture = picture,
         shortAddress = shortAddress,
     )
 }

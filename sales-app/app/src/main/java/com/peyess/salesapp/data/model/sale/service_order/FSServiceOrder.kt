@@ -38,11 +38,6 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
-    @PropertyName("picture")
-    val picture: String = "",
-
-    @Keep
-    @JvmField
     @PropertyName("salesperson_uid")
     val salespersonUid: String = "",
 
@@ -59,10 +54,6 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("client_name")
     val clientName: String = "",
-    @Keep
-    @JvmField
-    @PropertyName("client_picture")
-    val clientPicture: String = "",
     @Keep
     @JvmField
     @PropertyName("client_birthday")
@@ -112,10 +103,6 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("responsible_name")
     val responsibleName: String = "",
-    @Keep
-    @JvmField
-    @PropertyName("responsible_picture")
-    val responsiblePicture: String = "",
     @Keep
     @JvmField
     @PropertyName("responsible_birthday")
@@ -170,10 +157,6 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("witness_name")
     val witnessName: String = "",
-    @Keep
-    @JvmField
-    @PropertyName("witness_picture")
-    val witnessPicture: String = "",
     @Keep
     @JvmField
     @PropertyName("witness_birthday")

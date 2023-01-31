@@ -8,7 +8,6 @@ fun LocalClientEntity.toLocalClientDocument(): LocalClientDocument {
         id = id,
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday,
         document = document,
         sex = sex,

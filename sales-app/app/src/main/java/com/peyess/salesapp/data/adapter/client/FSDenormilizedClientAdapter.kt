@@ -8,6 +8,5 @@ fun DenormalizedClientDocument.toFSDenormalizedClient(): FSDenormalizedClient {
         uid = uid,
         document = document,
         name = name,
-        picture = picture.toString(),
     )
 }

@@ -136,33 +136,27 @@ class ClientRepositoryImpl @Inject constructor(
     }
 
     private suspend fun uploadClientProfilePicture(clientModel: ClientModel): Uri {
-        val clientId = clientModel.id
-        val path = salesApplication
-            .stringResource(R.string.storage_client_profile_pic)
-            .format(clientId)
+//        val clientId = clientModel.id
+//        val path = salesApplication
+//            .stringResource(R.string.storage_client_profile_pic)
+//            .format(clientId)
+//
+//        val profilePicRef = storageRef.child(path)
+//        var downloadUrl: Uri = Uri.EMPTY
+//        try {
+//            profilePicRef.putFile(clientModel.picture).await()
+//            downloadUrl = profilePicRef.downloadUrl.await()
+//        } catch (error: Throwable) {
+//            Timber.e("Error while uploading client profile picture", error)
+//        }
 
-        val profilePicRef = storageRef.child(path)
-        var downloadUrl: Uri = Uri.EMPTY
-        try {
-            profilePicRef.putFile(clientModel.picture).await()
-            downloadUrl = profilePicRef.downloadUrl.await()
-        } catch (error: Throwable) {
-            Timber.e("Error while uploading client profile picture", error)
-        }
-
-        return downloadUrl
+        return Uri.EMPTY
     }
 
     override suspend fun uploadClient(
         clientModel: ClientModel,
         hasAcceptedPromotionalMessages: Boolean,
     ) {
-        val updatedUri = if (clientModel.picture != Uri.EMPTY) {
-            uploadClientProfilePicture(clientModel)
-        } else {
-            Uri.EMPTY
-        }
-
         val currentStore = firebaseManager.currentStore?.uid ?: ""
         var currentUser = ""
         authenticationRepository
@@ -177,7 +171,6 @@ class ClientRepositoryImpl @Inject constructor(
         val fsClient = clientModel
             .toFSClient(currentStore)
             .copy(
-                picture = updatedUri.toString(),
                 createdBy = currentUser,
                 createAllowedBy = currentUser,
                 updateAllowedBy = currentUser,
@@ -208,7 +201,6 @@ class ClientRepositoryImpl @Inject constructor(
         val client = cacheCreateClientDao.find(clientId)
 
         if (client != null) {
-            deleteFile(client.picture)
             cacheCreateClientDao.deleteById(clientId)
         }
     }

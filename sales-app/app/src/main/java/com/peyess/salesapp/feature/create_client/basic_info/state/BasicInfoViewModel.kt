@@ -58,8 +58,8 @@ class BasicInfoViewModel @AssistedInject constructor(
     }
 
     fun onPictureChanged(picture: Uri) = withState {
-        val client = it.client.copy(picture = picture)
-        updateClient(client)
+//        val client = it.client.copy(picture = picture)
+//        updateClient(client)
     }
 
     fun onNameChanged(value: String) = withState {

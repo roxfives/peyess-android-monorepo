@@ -29,6 +29,8 @@ import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
+import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
@@ -94,7 +96,7 @@ class ServiceOrderUploader constructor(
     private val paymentFeeRepository: PaymentFeeRepository,
     private val localLensesRepository: LocalLensesRepository,
     private val framesRepository: LocalFramesRepository,
-    private val clientRepository: ClientRepository,
+    private val localClientRepository: LocalClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
     private val salePaymentRepository: SalePaymentRepository,
     private val firebaseManager: FirebaseManager,
@@ -324,22 +326,31 @@ class ServiceOrderUploader constructor(
         val user = clientPickedRepository
             .getClientForServiceOrder(role = ClientRole.User, soId = so.id)
             .mapLeft { ClientNotFound(it.description, it.error) }
-            .flatMap { clientRepository.clientById(it.id) }
-            .mapLeft { UserNotFound(it.description, it.error) }
+            .flatMap {
+                localClientRepository.clientById(it.id).mapLeft { e ->
+                    ClientNotFound(e.description, e.error)
+                }
+            }.mapLeft { e -> UserNotFound(e.description, e.error) }
             .bind()
 
         val responsible = clientPickedRepository
             .getClientForServiceOrder(role = ClientRole.Responsible, soId = so.id)
             .mapLeft { ClientNotFound(it.description, it.error) }
-            .flatMap { clientRepository.clientById(it.id) }
-            .mapLeft { ResponsibleNotFound(it.description, it.error) }
+            .flatMap {
+                localClientRepository.clientById(it.id).mapLeft { e ->
+                    ClientNotFound(e.description, e.error)
+                }
+            }.mapLeft { ResponsibleNotFound(it.description, it.error) }
             .bind()
 
         val witness = clientPickedRepository
             .getClientForServiceOrder(role = ClientRole.Witness, soId = so.id)
             .mapLeft { ClientNotFound(it.description, it.error) }
-            .flatMap { clientRepository.clientById(it.id) }
-            .mapLeft { WitnessNotFound(it.description, it.error) }
+            .flatMap {
+                localClientRepository.clientById(it.id).mapLeft { e ->
+                    ClientNotFound(e.description, e.error)
+                }
+            }.mapLeft { WitnessNotFound(it.description, it.error) }
             .fold(
                 ifLeft = { null },
                 ifRight = { it },
@@ -348,7 +359,6 @@ class ServiceOrderUploader constructor(
         so.copy(
             clientDocument = user.document,
             clientName = user.name,
-            clientPicture = user.picture.toString(),
             clientUid = user.id,
             clientBirthday = user.birthday,
             clientPhone = user.phone,
@@ -362,7 +372,6 @@ class ServiceOrderUploader constructor(
 
             responsibleDocument = responsible.document,
             responsibleName = responsible.name,
-            responsiblePicture = responsible.picture.toString(),
             responsibleUid = responsible.id,
             responsibleBirthday = responsible.birthday,
             responsiblePhone = responsible.phone,
@@ -376,7 +385,6 @@ class ServiceOrderUploader constructor(
 
             witnessDocument = witness?.document ?: "",
             witnessName = witness?.name ?: "",
-            witnessPicture = (witness?.picture ?: "").toString(),
             witnessUid = witness?.id ?: "",
             witnessBirthday = witness?.birthday ?: ZonedDateTime.now(),
             witnessPhone = witness?.phone ?: "",
@@ -620,13 +628,11 @@ class ServiceOrderUploader constructor(
                     uid = serviceOrder.clientUid,
                     document = serviceOrder.clientDocument,
                     name = serviceOrder.clientName,
-                    picture = Uri.parse(serviceOrder.clientPicture),
                 ),
             ),
 
             responsibleDocument = serviceOrder.responsibleDocument,
             responsibleName = serviceOrder.responsibleName,
-            responsiblePicture = serviceOrder.responsiblePicture,
             responsibleUid = serviceOrder.responsibleUid,
             responsibleBirthday = serviceOrder.responsibleBirthday,
             responsiblePhone = serviceOrder.responsiblePhone,
@@ -641,7 +647,6 @@ class ServiceOrderUploader constructor(
             hasWitness = serviceOrder.hasWitness,
             witnessDocument = serviceOrder.witnessDocument,
             witnessName = serviceOrder.witnessName,
-            witnessPicture = serviceOrder.witnessPicture,
             witnessUid = serviceOrder.witnessUid,
             witnessBirthday = serviceOrder.witnessBirthday,
             witnessPhone = serviceOrder.witnessPhone,

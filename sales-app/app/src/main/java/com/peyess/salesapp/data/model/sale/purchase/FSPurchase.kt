@@ -52,10 +52,6 @@ data class FSPurchase(
     val responsibleName: String = "",
     @Keep
     @JvmField
-    @PropertyName("responsible_picture")
-    val responsiblePicture: String = "",
-    @Keep
-    @JvmField
     @PropertyName("responsible_birthday")
     val responsibleBirthday: Timestamp = Timestamp.now(),
     @Keep
@@ -107,10 +103,6 @@ data class FSPurchase(
     @JvmField
     @PropertyName("witness_name")
     val witnessName: String = "",
-    @Keep
-    @JvmField
-    @PropertyName("witness_picture")
-    val witnessPicture: String = "",
     @Keep
     @JvmField
     @PropertyName("witness_birthday")

@@ -13,7 +13,6 @@ data class ClientDocument(
 
     val name: String = "",
     val nameDisplay: String = "",
-    val picture: Uri = Uri.EMPTY,
 
     val birthday: ZonedDateTime = ZonedDateTime.now(),
 
@@ -61,7 +60,6 @@ fun ClientDocument.toClientPickedEntity(
         sex = sex.toName(),
         email = email,
         document = document,
-        picture = picture,
         shortAddress = shortAddress,
     )
 }
@@ -72,7 +70,6 @@ fun FSClient.toDocument(id: String): ClientDocument {
 
         name = name,
         nameDisplay = nameDisplay,
-        picture = Uri.parse(picture),
         birthday = birthday.toZonedDateTime(),
         document = document,
         sex = Sex.fromName(sex),

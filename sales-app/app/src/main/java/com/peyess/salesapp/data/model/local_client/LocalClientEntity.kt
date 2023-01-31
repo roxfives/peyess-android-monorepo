@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.model.local_client
 
-import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -17,9 +16,6 @@ data class LocalClientEntity(
     val name: String = "",
     @ColumnInfo(name = "name_display")
     val nameDisplay: String = "",
-
-    @ColumnInfo(name = "picture")
-    val picture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "birthday")
     val birthday: ZonedDateTime = ZonedDateTime.now(),

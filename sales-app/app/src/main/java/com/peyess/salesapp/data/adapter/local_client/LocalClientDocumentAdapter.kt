@@ -10,7 +10,6 @@ fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
         id = id,
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday,
         document = document,
         sex = sex,
@@ -47,7 +46,6 @@ fun LocalClientDocument.toFSClient(
     return FSClient(
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture.toString(),
         birthday = birthday.toTimestamp(),
         document = document,
         sex = sex.toName(),

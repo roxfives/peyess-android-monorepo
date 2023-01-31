@@ -1,12 +1,8 @@
 package com.peyess.salesapp.data.model.sale.service_order
 
-import com.peyess.salesapp.typing.frames.FramesType
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
-import com.peyess.salesapp.typing.products.DiscountCalcMethod
-import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class ServiceOrderDocument(
@@ -16,15 +12,12 @@ data class ServiceOrderDocument(
     val storeId: String = "",
     val storeIds: List<String> = emptyList(),
 
-    val picture: String = "",
-
     val salespersonUid: String = "",
     val salespersonName: String = "",
 
     val clientUid: String = "",
     val clientDocument: String = "",
     val clientName: String = "",
-    val clientPicture: String = "",
     val clientBirthday: ZonedDateTime = ZonedDateTime.now(),
     val clientPhone: String = "",
     val clientCellphone: String = "",
@@ -38,7 +31,6 @@ data class ServiceOrderDocument(
     val responsibleUid: String = "",
     val responsibleDocument: String = "",
     val responsibleName: String = "",
-    val responsiblePicture: String = "",
     val responsibleBirthday: ZonedDateTime = ZonedDateTime.now(),
     val responsiblePhone: String = "",
     val responsibleCellphone: String = "",
@@ -53,7 +45,6 @@ data class ServiceOrderDocument(
     val witnessUid: String = "",
     val witnessDocument: String = "",
     val witnessName: String = "",
-    val witnessPicture: String = "",
     val witnessBirthday: ZonedDateTime = ZonedDateTime.now(),
     val witnessPhone: String = "",
     val witnessCellphone: String = "",

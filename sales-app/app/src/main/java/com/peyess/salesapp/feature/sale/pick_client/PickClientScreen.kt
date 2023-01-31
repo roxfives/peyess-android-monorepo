@@ -225,7 +225,7 @@ private fun ClientCard(
     modifier: Modifier = Modifier,
     client: Client = Client(),
     onClientPicked: (client: Client) -> Unit = {},
-    pictureForClient: (clientId: String) -> Uri = { Uri.EMPTY },
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }

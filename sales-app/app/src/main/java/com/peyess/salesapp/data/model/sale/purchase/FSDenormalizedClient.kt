@@ -19,9 +19,4 @@ data class FSDenormalizedClient(
     @JvmField
     @PropertyName("name")
     val name: String = "",
-
-    @Keep
-    @JvmField
-    @PropertyName("picture")
-    val picture: String = "",
 )

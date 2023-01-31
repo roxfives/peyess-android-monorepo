@@ -292,7 +292,7 @@ private fun ClientView(
     isClientLoading: Boolean = false,
     client: Client,
     toBePaid: Double = 0.0,
-    pictureForClient: (clientId: String) -> Uri = { Uri.EMPTY },
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val density = LocalDensity.current
     val minHeightState = remember { MinimumHeightState() }

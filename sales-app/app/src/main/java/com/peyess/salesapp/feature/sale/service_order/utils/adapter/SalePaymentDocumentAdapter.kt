@@ -12,13 +12,11 @@ fun SalePaymentDocument.toPaymentDocument(): PaymentDocument {
         amount = value,
         installments = installments,
         document = document,
-        documentPicture = docPicture.toString(),
         financialInst = FinancialInstitutionType.fromName("bank"),
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon.toString(),
         payerUid = clientId,
         payerDocument = clientDocument,
         payerName = clientName,
-        payerPicture = clientPicture.toString(),
     )
 }

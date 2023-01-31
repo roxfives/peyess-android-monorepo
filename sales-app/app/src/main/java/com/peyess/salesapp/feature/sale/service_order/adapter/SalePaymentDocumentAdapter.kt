@@ -12,7 +12,6 @@ fun SalePaymentDocument.toPayment(): Payment {
         clientDocument = clientDocument,
         clientName = clientName,
         clientAddress = clientAddress,
-        clientPicture = clientPicture,
 
         methodId = methodId,
         methodName = methodName,
@@ -21,7 +20,6 @@ fun SalePaymentDocument.toPayment(): Payment {
         value = value,
         installments = installments,
         document = document,
-        docPicture = docPicture,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
     )

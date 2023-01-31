@@ -15,7 +15,6 @@ fun ClientDocument.toLocalClientDocument(
 
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday,
         document = document,
         sex = sex,

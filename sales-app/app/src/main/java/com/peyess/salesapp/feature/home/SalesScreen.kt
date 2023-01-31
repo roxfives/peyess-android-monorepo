@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.home
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,6 +67,8 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
@@ -252,7 +256,19 @@ private fun ServiceOrderCard(
 
     onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
+
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(serviceOrder.clientUid)
+
+            pictureUri.value = picture
+        }
+    }
+
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val message = stringResource(id = R.string.so_card_message).format(
             NumberFormat.getCurrencyInstance().format(serviceOrder.total),
@@ -262,11 +278,13 @@ private fun ServiceOrderCard(
 
     Column(
         modifier = modifier
-            .border(border = BorderStroke(
-                width = 2.dp,
-                MaterialTheme.colors.primary.copy(alpha = 0.5f),
-            ), shape = RoundedCornerShape(6.dp))
-            .clickable { },
+            .border(
+                border = BorderStroke(
+                    width = 2.dp,
+                    MaterialTheme.colors.primary.copy(alpha = 0.5f),
+                ),
+                shape = RoundedCornerShape(6.dp),
+            ).clickable { },
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -284,7 +302,7 @@ private fun ServiceOrderCard(
                     )
                     .clip(CircleShape),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(serviceOrder.clientPicture)
+                    .data(pictureUri.value)
                     .crossfade(true)
                     .size(width = pictureSizePx, height = pictureSizePx)
                     .build(),

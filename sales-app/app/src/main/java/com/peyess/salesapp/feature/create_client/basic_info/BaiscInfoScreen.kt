@@ -128,7 +128,6 @@ fun BasicInfoScreen(
         Timber.i("Using scenario $scenario from $scenarioParameter")
     }
 
-    val picture by viewModel.collectAsState(BasicInfoState::picture)
     val name by viewModel.collectAsState(BasicInfoState::name)
     val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplay)
     val birthday by viewModel.collectAsState(BasicInfoState::birthday)
@@ -152,7 +151,6 @@ fun BasicInfoScreen(
     BasicInfoScreenImpl(
         modifier = modifier,
 
-        picture = picture,
         onPictureChanged = viewModel::onPictureChanged,
 
         name = name,

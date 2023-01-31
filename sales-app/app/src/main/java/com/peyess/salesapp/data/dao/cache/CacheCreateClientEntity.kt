@@ -19,8 +19,6 @@ data class CacheCreateClientEntity(
     val name: String = "",
     @ColumnInfo(name = "name_display")
     val nameDisplay: String = "",
-    @ColumnInfo(name = "picture")
-    val picture: Uri = Uri.EMPTY,
     @ColumnInfo(name = "birthday")
     val birthday: OffsetDateTime = OffsetDateTime.now(),
     @ColumnInfo(name = "document")

@@ -12,7 +12,6 @@ fun CacheCreateClientEntity.toClientModel(): ClientModel {
 
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday.toZonedDateTime(),
         document = document,
         sex = sex,
@@ -38,7 +37,6 @@ fun ClientModel.toCacheCreateClientEntity(): CacheCreateClientEntity {
 
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday.toOffsetDateTime(),
         document = document,
         sex = sex,
@@ -65,7 +63,6 @@ fun ClientModel.toFSClient(storeId: String): FSClient {
     return FSClient(
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture.toString(),
         birthday = timestampBirthday,
         document = document,
         sex = sex.toName(),
@@ -93,7 +90,6 @@ fun ClientModel.toClientDocument(): ClientDocument {
 
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday,
         document = document,
         sex = sex,

@@ -37,7 +37,6 @@ data class BasicInfoState(
             || (_clientAsync is Success && _clientAsync.invoke() == null)
     val client = _clientAsync.invoke() ?: ClientModel()
 
-    val picture = client.picture
     val name = client.name
     val nameDisplay = client.nameDisplay
     val birthday = client.birthday

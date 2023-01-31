@@ -11,7 +11,6 @@ data class PaymentDocument(
     val installments: Int = 0,
     val currency: String = "BRL",
     val document: String = "",
-    val documentPicture: String = "",
     val financialInst: FinancialInstitutionType = FinancialInstitutionType.None,
     val cardFlagName: String = "",
     val cardFlagIcon: String = "",
@@ -19,5 +18,4 @@ data class PaymentDocument(
     val payerUid: String = "",
     val payerDocument: String = "",
     val payerName: String = "",
-    val payerPicture: String = "",
 )

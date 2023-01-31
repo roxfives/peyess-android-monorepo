@@ -13,13 +13,11 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
         installments = installments,
         currency = currency,
         document = document,
-        documentPicture = documentPicture,
         financialInst = FinancialInstitutionType.fromName(financialInst),
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
         payerUid = payerUid,
         payerDocument = payerDocument,
         payerName = payerName,
-        payerPicture = payerPicture,
     )
 }

@@ -16,12 +16,9 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         storeId = storeId,
         storeIds = storeIds,
 
-        picture = picture,
-
         clientUid = clientUid,
         clientDocument = clientDocument,
         clientName = clientName,
-        clientPicture = clientPicture,
         clientBirthday = clientBirthday.toZonedDateTime(),
         clientPhone = clientPhone,
         clientCellphone = clientCellphone,
@@ -35,7 +32,6 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,
-        responsiblePicture = responsiblePicture,
         responsibleBirthday = responsibleBirthday.toZonedDateTime(),
         responsiblePhone = responsiblePhone,
         responsibleCellphone = responsibleCellphone,
@@ -50,7 +46,6 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         witnessUid = witnessUid,
         witnessDocument = witnessDocument,
         witnessName = witnessName,
-        witnessPicture = witnessPicture,
         witnessBirthday = witnessBirthday.toZonedDateTime(),
         witnessPhone = witnessPhone,
         witnessCellphone = witnessCellphone,

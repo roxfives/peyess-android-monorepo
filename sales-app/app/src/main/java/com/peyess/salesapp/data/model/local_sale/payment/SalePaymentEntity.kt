@@ -32,8 +32,6 @@ data class SalePaymentEntity(
     val clientName: String = "",
     @ColumnInfo(name = "client_address")
     val clientAddress: String = "",
-    @ColumnInfo(name = "client_picture")
-    val clientPicture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "method_id")
     val methodId: String = "",
@@ -49,8 +47,6 @@ data class SalePaymentEntity(
 
     @ColumnInfo(name = "document")
     val document: String = "",
-    @ColumnInfo(name = "doc_pic")
-    val docPicture: Uri = Uri.EMPTY,
 
     @ColumnInfo(name = "card_flag_name")
     val cardFlagName: String = "",

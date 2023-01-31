@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.service_order
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
@@ -47,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,6 +101,8 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.message
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.Double.max
 import java.math.BigDecimal
@@ -731,7 +735,18 @@ private fun ClientCard(
     isLoading: Boolean = false,
     client: ClientPickedEntity,
     onEditClient: () -> Unit = {},
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(client.id)
+
+            pictureUri.value = picture
+        }
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,
@@ -751,7 +766,7 @@ private fun ClientCard(
                     .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                     .clip(CircleShape),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(client.picture)
+                    .data(pictureUri.value)
                     .crossfade(true)
                     .size(width = pictureSizePx, height = pictureSizePx)
                     .build(),
@@ -2053,7 +2068,18 @@ private fun PaymentCard(
     payment: Payment = Payment(),
     onEditPayment: (payment: Payment) -> Unit = {},
     onDeletePayment: (payment: Payment) -> Unit = {},
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(payment.clientId)
+
+            pictureUri.value = picture
+        }
+    }
+
     Row(
         modifier = modifier.padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Start,
@@ -2067,7 +2093,7 @@ private fun PaymentCard(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(payment.clientPicture)
+                .data(pictureUri.value)
                 .crossfade(true)
                 .size(width = pictureSizePx, height = pictureSizePx)
                 .build(),

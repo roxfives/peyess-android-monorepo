@@ -10,8 +10,6 @@ data class LocalClientDocument(
     val name: String = "",
     val nameDisplay: String = "",
 
-    val picture: Uri = Uri.EMPTY,
-
     val birthday: ZonedDateTime = ZonedDateTime.now(),
     val document: String = "",
     val sex: Sex = Sex.Unknown,

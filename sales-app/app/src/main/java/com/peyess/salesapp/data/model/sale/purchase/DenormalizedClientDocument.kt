@@ -6,5 +6,4 @@ data class DenormalizedClientDocument(
     val uid: String = "",
     val document: String = "",
     val name: String = "",
-    val picture: Uri = Uri.EMPTY,
 )

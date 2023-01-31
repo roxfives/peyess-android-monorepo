@@ -81,12 +81,11 @@ class ClientRepositoryImpl @Inject constructor(
         )
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun latestLocalClientCreated(): Flow<ClientModel?> {
         return salesApplication
             .dataStoreLatestClient
             .data
-            .flatMapLatest { prefs ->
+            .map { prefs ->
                 Timber.i("Getting latest client by id ${prefs[latestClientKey]}")
 
                 cacheCreateClientDao.getById(prefs[latestClientKey] ?: "")
@@ -193,7 +192,7 @@ class ClientRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearCreateClientCache(clientId: String) {
-        val client = cacheCreateClientDao.find(clientId)
+        val client = cacheCreateClientDao.getById(clientId)
 
         if (client != null) {
             cacheCreateClientDao.deleteById(clientId)

@@ -34,9 +34,6 @@ typealias LocalClientPaginateResponse =
         Either<LocalClientRepositoryPagingError, PagingSource<Int, LocalClientDocument>>
 
 interface LocalClientRepository {
-    suspend fun insertClientStatus(
-        clientStatus: LocalClientStatusDocument,
-    ): LocalClientStatusCreateResponse
     suspend fun updateClientStatus(
         clientStatus: LocalClientStatusDocument,
     ): LocalClientStatusUpdateResponse
@@ -46,6 +43,7 @@ interface LocalClientRepository {
     suspend fun insertClient(clientStatus: LocalClientDocument): LocalClientCreateResponse
     suspend fun updateClient(clientStatus: LocalClientDocument): LocalClientUpdateResponse
     suspend fun clientById(clientId: String): LocalClientReadSingleResponse
+    suspend fun latestClientUpdated(): LocalClientReadSingleResponse
     fun streamClientById(clientId: String): LocalClientStreamSingleResponse
     fun paginateClients(query: PeyessQuery): LocalClientPaginateResponse
 }

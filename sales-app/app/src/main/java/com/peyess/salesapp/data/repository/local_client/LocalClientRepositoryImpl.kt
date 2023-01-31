@@ -32,21 +32,6 @@ private const val clientStatusId = 0L
 class LocalClientRepositoryImpl @Inject constructor(
     private val localClientDao: LocalClientDao,
 ): LocalClientRepository {
-    override suspend fun insertClientStatus(
-        clientStatus: LocalClientStatusDocument,
-    ): LocalClientStatusCreateResponse = Either.catch {
-        val entity = clientStatus
-            .toLocalClientStatusEntity()
-            .copy(id = clientStatusId)
-
-        localClientDao.insertClientStatus(entity)
-    }.mapLeft {
-        LocalClientRepositoryStatusInsertError(
-            description = "Error inserting client status: $it",
-            error = it,
-        )
-    }
-
     override suspend fun updateClientStatus(
         clientStatus: LocalClientStatusDocument,
     ): LocalClientStatusUpdateResponse = Either.catch {
@@ -54,7 +39,7 @@ class LocalClientRepositoryImpl @Inject constructor(
             .toLocalClientStatusEntity()
             .copy(id = clientStatusId)
 
-        localClientDao.updateClientStatus(entity)
+        localClientDao.insertClientStatus(entity)
     }.mapLeft {
         LocalClientRepositoryStatusUpdateError(
             description = "Error updating client status: $it",
@@ -120,6 +105,20 @@ class LocalClientRepositoryImpl @Inject constructor(
         clientId: String,
     ): LocalClientReadSingleResponse = Either.catch {
         localClientDao.clientById(clientId)?.toLocalClientDocument()
+    }.mapLeft {
+        UnexpectedLocalClientRepositoryError(
+            description = "Error reading client: $it",
+            error = it,
+        )
+    }.leftIfNull {
+        LocalClientNotFoundError(
+            description = "Client not found",
+            error = null,
+        )
+    }
+
+    override suspend fun latestClientUpdated(): LocalClientReadSingleResponse = Either.catch {
+        localClientDao.latestClientUpdated()?.toLocalClientDocument()
     }.mapLeft {
         UnexpectedLocalClientRepositoryError(
             description = "Error reading client: $it",

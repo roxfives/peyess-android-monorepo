@@ -16,18 +16,23 @@ import kotlinx.coroutines.flow.Flow
 interface LocalClientDao {
     @Insert(onConflict = REPLACE)
     suspend fun insertClientStatus(clientStatus: LocalClientStatusEntity)
-    @Update
-    suspend fun updateClientStatus(clientStatus: LocalClientStatusEntity)
 
     @Query("SELECT * FROM ${LocalClientStatusEntity.tableName} WHERE id = :id")
     suspend fun clientStatus(id: Long): LocalClientStatusEntity?
     @Query("SELECT * FROM ${LocalClientStatusEntity.tableName} WHERE id = :id")
     fun streamClientStatus(id: Long): Flow<LocalClientStatusEntity?>
 
-    @Insert
+    @Insert(onConflict = REPLACE)
     suspend fun insertClient(clientStatus: LocalClientEntity)
     @Update
     suspend fun updateClient(clientStatus: LocalClientEntity)
+
+    @Query("""
+        SELECT * FROM ${LocalClientEntity.tableName}
+        ORDER BY updated DESC
+        LIMIT 1
+    """)
+    suspend fun latestClientUpdated(): LocalClientEntity?
 
     @Query("SELECT * FROM ${LocalClientEntity.tableName} WHERE id = :clientId")
     suspend fun clientById(clientId: String): LocalClientEntity?

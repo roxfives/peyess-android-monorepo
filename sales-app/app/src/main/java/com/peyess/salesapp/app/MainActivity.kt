@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -20,7 +21,9 @@ import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import com.peyess.salesapp.workmanager.products.enqueueWorker
+import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
+import com.peyess.salesapp.workmanager.clients.enqueuePeriodicClientDownloadWorker
+import com.peyess.salesapp.workmanager.products.enqueueProductUpdateWorker
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -48,10 +51,10 @@ class MainActivity: ComponentActivity() {
                     }
 
                     is AppAuthenticationState.Authenticated -> {
+                        createWorkers()
+
                         navHostController.backQueue.clear()
                         navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
-
-                        createWorker()
                     }
 
                     AppAuthenticationState.Away -> {}
@@ -74,8 +77,20 @@ class MainActivity: ComponentActivity() {
 
 
 
-    private suspend fun createWorker() {
-        enqueueWorker(context = applicationContext, workPolicy = ExistingWorkPolicy.KEEP)
+    private suspend fun createWorkers() {
+        enqueuePeriodicClientDownloadWorker(
+            context = applicationContext,
+            workPolicy = ExistingPeriodicWorkPolicy.KEEP,
+        )
+        enqueueOneTimeClientDownloadWorker(
+            context = applicationContext,
+            workPolicy = ExistingWorkPolicy.KEEP,
+        )
+
+        enqueueProductUpdateWorker(
+            context = applicationContext,
+            workPolicy = ExistingWorkPolicy.KEEP,
+        )
     }
 
     @Suppress("DEPRECATION")

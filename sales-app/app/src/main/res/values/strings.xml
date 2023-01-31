@@ -12,6 +12,9 @@
     <string name="notification_title_update_products_table">Atualização em andamento</string>
     <string name="notification_description_update_products_table">Atualizando tabela de produtos…</string>
 
+    <string name="notification_title_download_clients">Sincronização em andamento</string>
+    <string name="notification_description_download_clients">Procurando pelos seus clientes…</string>
+
     <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
 
     <string name="bottom_bar_home">Início</string>
@@ -598,6 +601,7 @@
     <string name="fs_field_lenses_types_category_priority">priority</string>
     <string name="fs_field_description_families_ids">families_ids</string>
     <string name="fs_field_clients_name">name</string>
+    <string name="fs_field_clients_updated">updated</string>
     <string name="fs_field_payments_priority">priority</string>
     <string name="fs_field_payments_is_enabled">is_enabled</string>
     <string name="fs_field_so_created">created</string>

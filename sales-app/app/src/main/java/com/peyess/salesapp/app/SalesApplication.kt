@@ -52,18 +52,16 @@ class SalesApplication: Application(), Configuration.Provider {
     }
 
     private fun createNotificationChannels() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.channel_name_products_table)
-            val descriptionText = getString(R.string.channel_description_products_table)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(productsTableChannelId, name, importance).apply {
-                description = descriptionText
-            }
-
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val name = getString(R.string.channel_name_products_table)
+        val descriptionText = getString(R.string.channel_description_products_table)
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(productsTableChannelId, name, importance).apply {
+            description = descriptionText
         }
+
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     fun stringResource(id: Int): String {

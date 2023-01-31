@@ -29,7 +29,7 @@ interface LocalClientDao {
 
     @Query("""
         SELECT * FROM ${LocalClientEntity.tableName}
-        ORDER BY updated DESC
+        ORDER BY remote_updated DESC
         LIMIT 1
     """)
     suspend fun latestClientUpdated(): LocalClientEntity?

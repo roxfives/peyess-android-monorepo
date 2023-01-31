@@ -3,7 +3,6 @@ package com.peyess.salesapp.data.repository.lenses
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
-import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.adapter.lenses.toStoreLensDocument
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
@@ -18,7 +17,6 @@ import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
 import com.peyess.salesapp.data.repository.lenses.internal.StoreLensesQueryFields
 import com.peyess.salesapp.data.utils.query.PeyessQuery
-import timber.log.Timber
 import javax.inject.Inject
 
 class StoreLensesRepositoryImpl @Inject constructor(
@@ -50,7 +48,7 @@ class StoreLensesRepositoryImpl @Inject constructor(
                 .mapLeft { FetchPageError(it.description, it.error) }
                 .bind()
 
-            lenses.map { it.toStoreLensDocument() }
+            lenses.map { it.second.toStoreLensDocument() }
         }
 
     override suspend fun getById(id: String): Either<ReadError, StoreLensDocument> =

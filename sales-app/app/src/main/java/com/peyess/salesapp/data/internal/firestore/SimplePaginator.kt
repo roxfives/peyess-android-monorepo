@@ -25,8 +25,18 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
     private var hasFinished: Boolean = false
     private var latestPage: DocumentSnapshot? = null
 
-    private fun toDocuments(snaps: QuerySnapshot): Either<Unexpected, List<F>> = Either.catch {
-        val snapshots = snaps.documents.mapNotNull { it.toObject(type.javaObjectType) }
+    private fun toDocuments(
+        snaps: QuerySnapshot,
+    ): Either<Unexpected, List<Pair<String, F>>> = Either.catch {
+        val snapshots = snaps.documents.mapNotNull {
+            val data = it.toObject(type.javaObjectType)
+
+            if (data != null) {
+                Pair(it.id, data)
+            } else {
+                null
+            }
+        }
 
         Timber.i("The snaps are $snapshots")
         snapshots
@@ -93,7 +103,7 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
 //        latestPage = null
     }
 
-    suspend fun page(): Either<FirestoreError, List<F>> = either {
+    suspend fun page(): Either<FirestoreError, List<Pair<String, F>>> = either {
         val querySnapshot = if (hasDownloadedTheFirstPage && latestPage != null) {
             queryNextPage().bind()
         } else {

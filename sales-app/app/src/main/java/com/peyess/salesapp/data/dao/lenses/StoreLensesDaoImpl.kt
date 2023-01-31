@@ -106,7 +106,7 @@ class StoreLensesDaoImpl @Inject constructor(
             }
 
             val localLensPath = salesApplication
-                .stringResource(R.string.fs_doc_client)
+                .stringResource(R.string.fs_doc_store_lens)
                 .format(storeId, id)
             val docRef = firestore.document(localLensPath)
 

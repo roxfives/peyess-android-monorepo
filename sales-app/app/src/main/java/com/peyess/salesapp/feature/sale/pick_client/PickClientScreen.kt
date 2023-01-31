@@ -27,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -49,7 +52,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.feature.sale.pick_client.model.Client
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.navigation.pick_client.PickScenario
@@ -58,6 +61,10 @@ import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 private val pictureSize = 90.dp
@@ -94,7 +101,7 @@ fun PickClientScreen(
     val saleId by viewModel.collectAsState(PickClientState::saleId)
     val serviceOrderId by viewModel.collectAsState(PickClientState::serviceOrderId)
 
-    val clients by viewModel.collectAsState(PickClientState::clientList)
+    val clientList by viewModel.collectAsState(PickClientState::clientListStream)
     val isLoading by viewModel.collectAsState(PickClientState::isLoading)
     val hasPickedClient by viewModel.collectAsState(PickClientState::hasPickedClient)
 
@@ -149,7 +156,7 @@ fun PickClientScreen(
 
             PickClientScreenImpl(
                 modifier = modifier,
-                clients = clients,
+                clientList = clientList,
 
                 onSearchClient = onSearchClient,
                 onCreateNewClient = {
@@ -167,13 +174,15 @@ fun PickClientScreen(
 @Composable
 private fun PickClientScreenImpl(
     modifier: Modifier = Modifier,
-    clients: List<ClientDocument> = emptyList(),
+    clientList: Flow<PagingData<Client>> = emptyFlow(),
 
-    onClientPicked: (client: ClientDocument) -> Unit = {},
+    onClientPicked: (client: Client) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
-    if (clients.isEmpty()) {
+    val clients = clientList.collectAsLazyPagingItems()
+
+    if (clients.itemCount == 0) {
         NoClientsYet(
             modifier = modifier,
             onCreateNewClient = onCreateNewClient,
@@ -196,14 +205,16 @@ private fun PickClientScreenImpl(
                 }
             }
 
-            items(clients.size) {
-                val client = clients[it]
+            items(clients.itemCount) { index ->
+                val client = clients[index]
 
-                ClientCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    client = client,
-                    onClientPicked = onClientPicked,
-                )
+                client?.let {
+                    ClientCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        client = it,
+                        onClientPicked = onClientPicked,
+                    )
+                }
             }
         }
     }
@@ -212,9 +223,20 @@ private fun PickClientScreenImpl(
 @Composable
 private fun ClientCard(
     modifier: Modifier = Modifier,
-    client: ClientDocument = ClientDocument(),
-    onClientPicked: (client: ClientDocument) -> Unit = {},
+    client: Client = Client(),
+    onClientPicked: (client: Client) -> Unit = {},
+    pictureForClient: (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(client.id)
+
+            pictureUri.value = picture
+        }
+    }
+
     Row(
         modifier = modifier
             .height(IntrinsicSize.Min),
@@ -229,7 +251,7 @@ private fun ClientCard(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(client.picture)
+                .data(pictureUri)
                 .crossfade(true)
                 .size(width = pictureSizePx, height = pictureSizePx)
                 .build(),
@@ -291,7 +313,6 @@ private fun ClientCard(
 private fun NoClientsYet(
     modifier: Modifier = Modifier,
 
-    onClientPicked: (client: ClientDocument) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
@@ -334,9 +355,8 @@ private fun ClientCardPreview() {
     SalesAppTheme {
         ClientCard(
             modifier = Modifier.fillMaxWidth(),
-            client = ClientDocument(
+            client = Client(
                 name = "João Ferreira",
-                picture = Uri.parse("https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
             )
         )
     }

@@ -146,7 +146,7 @@ class ClientDownloadWorker @AssistedInject constructor(
                     ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
                 },
 
-                ifRight = { it.updated }
+                ifRight = { it.remoteUpdated }
             )
     }
 

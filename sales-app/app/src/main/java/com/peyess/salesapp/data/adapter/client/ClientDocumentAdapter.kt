@@ -35,12 +35,13 @@ fun ClientDocument.toLocalClientDocument(
         created = created,
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
-        updated = updated,
+        remoteUpdated = updated,
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,
 
         hasBeenUploaded = hasBeenUploaded,
         hasBeenDownloaded = hasBeenDownloaded,
+        localUpdated = uploadedAt,
         downloadedAt = downloadedAt,
         uploadedAt = uploadedAt,
     )

@@ -30,11 +30,12 @@ fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
         created = created,
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
-        updated = updated,
+        remoteUpdated = remoteUpdated,
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,
         hasBeenUploaded = hasBeenUploaded,
         hasBeenDownloaded = hasBeenDownloaded,
+        localUpdated = localUpdated,
         downloadedAt = downloadedAt,
         uploadedAt = uploadedAt,
     )
@@ -67,7 +68,7 @@ fun LocalClientDocument.toFSClient(
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
-        updated = updated.toTimestamp(),
+        updated = remoteUpdated.toTimestamp(),
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,
     )

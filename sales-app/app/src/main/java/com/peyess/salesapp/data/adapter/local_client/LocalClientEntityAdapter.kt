@@ -28,11 +28,12 @@ fun LocalClientEntity.toLocalClientDocument(): LocalClientDocument {
         created = created,
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
-        updated = updated,
+        remoteUpdated = remoteUpdated,
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,
         hasBeenUploaded = hasBeenUploaded,
         hasBeenDownloaded = hasBeenDownloaded,
+        localUpdated = localUpdated,
         downloadedAt = downloadedAt,
         uploadedAt = uploadedAt,
     )

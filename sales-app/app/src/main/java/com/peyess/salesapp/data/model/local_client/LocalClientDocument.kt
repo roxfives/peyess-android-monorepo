@@ -35,13 +35,14 @@ data class LocalClientDocument(
     val createdBy: String = "",
     val createAllowedBy: String = "",
 
-    val updated: ZonedDateTime = ZonedDateTime.now(),
+    val remoteUpdated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",
     val updateAllowedBy: String = "",
 
     val hasBeenUploaded: Boolean = false,
     val hasBeenDownloaded: Boolean = false,
 
+    val localUpdated: ZonedDateTime = ZonedDateTime.now(),
     val downloadedAt: ZonedDateTime = ZonedDateTime.now(),
     val uploadedAt: ZonedDateTime = ZonedDateTime.now(),
 )

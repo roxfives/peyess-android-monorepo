@@ -63,8 +63,8 @@ data class LocalClientEntity(
     @ColumnInfo(name = "create_allowed_by")
     val createAllowedBy: String = "",
 
-    @ColumnInfo(name = "updated")
-    val updated: ZonedDateTime = ZonedDateTime.now(),
+    @ColumnInfo(name = "remote_updated")
+    val remoteUpdated: ZonedDateTime = ZonedDateTime.now(),
     @ColumnInfo(name = "updated_by")
     val updatedBy: String = "",
     @ColumnInfo(name = "update_allowed_by")
@@ -75,6 +75,8 @@ data class LocalClientEntity(
     @ColumnInfo(name = "has_been_downloaded")
     val hasBeenDownloaded: Boolean = false,
 
+    @ColumnInfo(name = "local_updated")
+    val localUpdated: ZonedDateTime = ZonedDateTime.now(),
     @ColumnInfo(name = "downloaded_at")
     val downloadedAt: ZonedDateTime = ZonedDateTime.now(),
     @ColumnInfo(name = "uploaded_at")

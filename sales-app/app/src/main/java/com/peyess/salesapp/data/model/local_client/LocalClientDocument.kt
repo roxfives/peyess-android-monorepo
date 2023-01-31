@@ -45,5 +45,7 @@ data class LocalClientDocument(
     val localUpdated: ZonedDateTime = ZonedDateTime.now(),
     val downloadedAt: ZonedDateTime = ZonedDateTime.now(),
     val uploadedAt: ZonedDateTime = ZonedDateTime.now(),
-)
+) {
+    val shortAddress = "$city, $state"
+}
 

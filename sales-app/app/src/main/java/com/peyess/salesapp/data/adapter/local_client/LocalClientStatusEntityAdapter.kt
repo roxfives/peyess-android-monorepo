@@ -6,6 +6,8 @@ import com.peyess.salesapp.data.model.local_client.LocalClientStatusEntity
 
 fun LocalClientStatusEntity.toLocalClientStatusDocument(): LocalClientStatusDocument {
     return LocalClientStatusDocument(
+        hasBeenInitiated = hasBeenInitiated,
+        isUpdating = isUpdating,
         hasLatestDownloadFailed = hasLatestDownloadFailed,
         hasLatestUploadFailed = hasLatestUploadFailed,
         latestDownload = latestDownload,

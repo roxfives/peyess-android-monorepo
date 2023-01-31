@@ -9,9 +9,15 @@ import java.time.ZonedDateTime
 
 @Entity(tableName = LocalClientStatusEntity.tableName)
 data class LocalClientStatusEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
     val id: Long = 0L,
+
+    @ColumnInfo(name = "has_been_initiated")
+    val hasBeenInitiated: Boolean = false,
+
+    @ColumnInfo(name = "is_updating")
+    val isUpdating: Boolean = false,
 
     @ColumnInfo(name = "has_latest_download_failed")
     val hasLatestDownloadFailed: Boolean = false,

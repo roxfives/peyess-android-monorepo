@@ -5,6 +5,10 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 data class LocalClientStatusDocument(
+    val isUpdating: Boolean = false,
+
+    val hasBeenInitiated: Boolean = false,
+
     val hasLatestDownloadFailed: Boolean = false,
     val hasLatestUploadFailed: Boolean = false,
 

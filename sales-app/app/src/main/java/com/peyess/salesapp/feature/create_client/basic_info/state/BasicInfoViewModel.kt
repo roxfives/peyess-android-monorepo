@@ -1,15 +1,18 @@
 package com.peyess.salesapp.feature.create_client.basic_info.state
 
 import android.net.Uri
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.typing.client.Sex
-import com.peyess.salesapp.data.repository.client.ClientRepository
-import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.feature.create_client.adapter.toCacheCreateClientDocument
+import com.peyess.salesapp.feature.create_client.adapter.toClient
+import com.peyess.salesapp.feature.create_client.model.Client
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -18,83 +21,153 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class BasicInfoViewModel @AssistedInject constructor(
     @Assisted initialState: BasicInfoState,
-    private val clientRepository: ClientRepository,
-    private val localClientRepository: LocalClientRepository,
+    private val cacheCreateClientRepository: CacheCreateClientRepository,
 ): MavericksViewModel<BasicInfoState>(initialState) {
     private val maxDocumentLength = 11
 
     init {
         loadOrCreateClient()
+
+        onEach(BasicInfoState::creatingClient) { updateInput(it) }
+
+        onAsync(BasicInfoState::findCreatingResponseAsync) { processFindCreatingResponse(it) }
+        onAsync(BasicInfoState::createClientResponseAsync) { processCreateClientResponse(it) }
     }
 
-    private fun createNewClient() {
+    private fun updateClient(client: Client) {
         viewModelScope.launch(Dispatchers.IO) {
-            Timber.i("Creating new local client now")
-            clientRepository.createNewLocalClient()
-        }
-    }
-
-
-    private fun updateClient(client: ClientModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            clientRepository.updateLocalClient(client)
+            cacheCreateClientRepository.update(client.toCacheCreateClientDocument())
         }
     }
 
     private fun loadOrCreateClient() = withState {
-        clientRepository
-            .latestLocalClientCreated()
-            .execute {
-                Timber.i("Loading client is $it with ${it.invoke()}")
+        suspend {
+            cacheCreateClientRepository.findCreating()
+        }.execute(Dispatchers.IO) {
+            copy(findCreatingResponseAsync = it)
+        }
+    }
 
-                if (it is Success && it.invoke() == null) {
-                    Timber.i("Creating new client")
-                    createNewClient()
-                }
+    private fun processFindCreatingResponse(
+        response: CacheCreateClientFetchSingleResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Error while finding creating client: $it")
+                copy(
+                    findCreatingResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
 
-                copy(_clientAsync = it)
+            ifRight = {
+                Timber.i("Found creating client: $it")
+                copy(
+                    hasFoundAnyCreating = true,
+                    clientFound = it.toClient(),
+                )
             }
+        )
     }
 
-    fun onPictureChanged(picture: Uri) = withState {
-//        val client = it.client.copy(picture = picture)
-//        updateClient(client)
+    private fun deleteClient(client: Client) {
+        viewModelScope.launch(Dispatchers.IO) {
+            cacheCreateClientRepository.deleteById(client.id)
+        }
     }
 
-    fun onNameChanged(value: String) = withState {
-        val client = it.client.copy(name = value)
-        updateClient(client)
+    private fun createNewClient() {
+        suspend {
+            cacheCreateClientRepository.createClient()
+        }.execute(Dispatchers.IO) {
+            copy(createClientResponseAsync = it)
+        }
     }
 
-    fun onNameDisplayChanged(value: String) = withState {
-        val client = it.client.copy(nameDisplay = value)
-        updateClient(client)
+    private fun processCreateClientResponse(
+        response: CacheCreateClientCreateResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                Timber.e("Error while creating client: $it")
+                copy(
+                    createClientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                Timber.i("Created client: $it")
+                copy(creatingClient = it.toClient())
+            }
+        )
     }
 
-    fun onBirthdayChanged(value: LocalDate) = withState {
-        val day = value.atStartOfDay(ZoneId.systemDefault())
-
-        val client = it.client.copy(birthday = day)
-        updateClient(client)
+    private fun updateInput(client: Client) = setState {
+        copy(creatingClient = client)
     }
 
-    fun onSexChanged(value: Sex) = withState {
-        val client = it.client.copy(sex = value)
-        updateClient(client)
+    fun resetCacheAndCreateNewClient() = withState {
+        if (it.hasFoundAnyCreating) {
+            deleteClient(it.clientFound)
+        }
+
+        createNewClient()
     }
 
-    fun onDocumentChanged(value: String) = withState {
+    fun onPictureChanged(picture: Uri) = setState {
+        val update = this.creatingClient.copy(picture = picture)
+
+        updateClient(update)
+        copy(creatingClient = update)
+    }
+
+    fun onNameChanged(value: String) = setState {
+        val update = this.creatingClient.copy(name = value)
+
+        updateClient(update)
+        copy(creatingClient = update)
+    }
+
+    fun onNameDisplayChanged(value: String) = setState {
+        val update = this.creatingClient.copy(nameDisplay = value)
+
+        updateClient(update)
+        copy(creatingClient = update)
+    }
+
+    fun onBirthdayChanged(value: LocalDate) = setState {
+        val instant = value.atStartOfDay(ZoneId.systemDefault()).toInstant()
+        val day = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+        val update = this.creatingClient.copy(birthday = day)
+
+        updateClient(update)
+        copy(creatingClient = update)
+    }
+
+    fun onSexChanged(value: Sex) = setState {
+        val update = this.creatingClient.copy(sex = value)
+
+        updateClient(update)
+        copy(creatingClient = update)
+    }
+
+    fun onDocumentChanged(value: String) = setState {
         val document = if (value.length <= maxDocumentLength) {
             value
         } else {
             value.substring(0 until maxDocumentLength)
         }
+        val update = this.creatingClient.copy(document = document)
 
-        val client = it.client.copy(document = document)
-        updateClient(client)
+        updateClient(update)
+        copy(creatingClient = update)
     }
 
     fun onDetectNameError() = setState {

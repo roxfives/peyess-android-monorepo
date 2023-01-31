@@ -19,12 +19,12 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
     private val firebaseManager: FirebaseManager,
     private val cacheCreateClientDao: CacheCreateClientDao,
 ): CacheCreateClientRepository {
-    override suspend fun createClient(): CacheClientCreateResponse = Either.catch {
+    override suspend fun createClient(): CacheCreateClientCreateResponse = Either.catch {
         val uniqueId = firebaseManager.uniqueId()
         val entity = CacheCreateClientEntity(id = uniqueId, isCreating = true)
 
         cacheCreateClientDao.add(entity)
-        uniqueId
+        entity.toCacheCreateClientDocument()
     }.mapLeft {
         CacheCreateClientCreateError(
             description = "Error creating client",
@@ -34,7 +34,7 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
 
     override suspend fun update(
         client: CacheCreateClientDocument,
-    ): CacheClientUpdateResponse = Either.catch {
+    ): CacheCreateClientUpdateResponse = Either.catch {
         cacheCreateClientDao.update(client.toCacheCreateClientEntity())
     }.mapLeft {
         CacheCreateClientUpdateError(
@@ -45,7 +45,7 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
 
     override suspend fun deleteById(
         id: String,
-    ): CacheClientDeleteResponse = Either.catch {
+    ): CacheCreateClientDeleteResponse = Either.catch {
         cacheCreateClientDao.deleteById(id)
     }.mapLeft {
         CacheCreateClientDeleteError(
@@ -56,7 +56,7 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
 
     override suspend fun getById(
         id: String,
-    ): CacheClientFetchSingleResponse = Either.catch {
+    ): CacheCreateClientFetchSingleResponse = Either.catch {
         cacheCreateClientDao.getById(id)?.toCacheCreateClientDocument()
     }.mapLeft {
         CacheCreateClientUnexpected(
@@ -69,7 +69,7 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun findCreating(): CacheClientFetchSingleResponse = Either.catch {
+    override suspend fun findCreating(): CacheCreateClientFetchSingleResponse = Either.catch {
         cacheCreateClientDao.findCreating()?.toCacheCreateClientDocument()
     }.mapLeft {
         CacheCreateClientUnexpected(

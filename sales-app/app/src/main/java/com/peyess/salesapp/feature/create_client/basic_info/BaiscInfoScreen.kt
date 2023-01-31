@@ -128,11 +128,7 @@ fun BasicInfoScreen(
         Timber.i("Using scenario $scenario from $scenarioParameter")
     }
 
-    val name by viewModel.collectAsState(BasicInfoState::name)
-    val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplay)
-    val birthday by viewModel.collectAsState(BasicInfoState::birthday)
-    val document by viewModel.collectAsState(BasicInfoState::document)
-    val sex by viewModel.collectAsState(BasicInfoState::sex)
+    val creatingClient by viewModel.collectAsState(BasicInfoState::creatingClient)
 
     val nameErrorId by viewModel.collectAsState(BasicInfoState::nameErrorId)
     val nameHasError by viewModel.collectAsState(BasicInfoState::nameHasError)
@@ -153,21 +149,21 @@ fun BasicInfoScreen(
 
         onPictureChanged = viewModel::onPictureChanged,
 
-        name = name,
+        name = creatingClient.name,
         onNameChanged = viewModel::onNameChanged,
         onDetectNameError = viewModel::onDetectNameError,
 
-        nameDisplay = nameDisplay,
+        nameDisplay = creatingClient.nameDisplay,
         onNameDisplayChanged = viewModel::onNameDisplayChanged,
         onDetectNameDisplayError = viewModel::onDetectNameDisplayError,
 
-        birthday = birthday,
+        birthday = creatingClient.birthday,
         onBirthdayChanged = viewModel::onBirthdayChanged,
 
-        sex = sex,
+        sex = creatingClient.sex,
         onSexChanged = viewModel::onSexChanged,
 
-        document = document,
+        document = creatingClient.document,
         onDocumentChanged = viewModel::onDocumentChanged,
         onDetectDocumentError = viewModel::onDetectDocumentError,
 

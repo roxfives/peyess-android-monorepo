@@ -12,7 +12,7 @@ fun CacheCreateClientEntity.toClientModel(): ClientModel {
 
         name = name,
         nameDisplay = nameDisplay,
-        birthday = birthday.toZonedDateTime(),
+        birthday = birthday,
         document = document,
         sex = sex,
 
@@ -37,7 +37,7 @@ fun ClientModel.toCacheCreateClientEntity(): CacheCreateClientEntity {
 
         name = name,
         nameDisplay = nameDisplay,
-        birthday = birthday.toOffsetDateTime(),
+        birthday = birthday,
         document = document,
         sex = sex,
 

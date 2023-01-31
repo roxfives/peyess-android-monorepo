@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.cache
 import android.net.Uri
 import com.peyess.salesapp.typing.client.Sex
 import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 
 data class CacheCreateClientDocument(
     val id: String = "",
@@ -10,7 +11,7 @@ data class CacheCreateClientDocument(
     val name: String = "",
     val nameDisplay: String = "",
     val picture: Uri = Uri.EMPTY,
-    val birthday: OffsetDateTime = OffsetDateTime.now(),
+    val birthday: ZonedDateTime = ZonedDateTime.now(),
     val document: String = "",
     val sex: Sex = Sex.Unknown,
 

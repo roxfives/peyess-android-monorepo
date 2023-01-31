@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.peyess.salesapp.typing.client.Sex
-import java.time.OffsetDateTime
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = CacheCreateClientEntity.tableName,
@@ -22,7 +22,7 @@ data class CacheCreateClientEntity(
     @ColumnInfo(name = "picture")
     val picture: Uri = Uri.EMPTY,
     @ColumnInfo(name = "birthday")
-    val birthday: OffsetDateTime = OffsetDateTime.now(),
+    val birthday: ZonedDateTime = ZonedDateTime.now(),
     @ColumnInfo(name = "document")
     val document: String = "",
     @ColumnInfo(name = "sex")

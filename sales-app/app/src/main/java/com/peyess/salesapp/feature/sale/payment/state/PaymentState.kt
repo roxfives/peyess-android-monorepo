@@ -12,6 +12,7 @@ import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryRes
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
@@ -62,7 +63,7 @@ data class PaymentState(
     val paymentMethodsResponseAsync: Async<PaymentMethodsResponse> = Uninitialized,
     val paymentMethods: List<PaymentMethod> = emptyList(),
 
-    val clientResponseAsync: Async<ClientRepositoryResponse> = Uninitialized,
+    val clientResponseAsync: Async<LocalClientReadSingleResponse> = Uninitialized,
     val client: Client = Client(),
 
     val paymentUpdateResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,

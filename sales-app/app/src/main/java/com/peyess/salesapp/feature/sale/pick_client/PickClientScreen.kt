@@ -251,7 +251,7 @@ private fun ClientCard(
                 .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                 .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(pictureUri)
+                .data(pictureUri.value)
                 .crossfade(true)
                 .size(width = pictureSizePx, height = pictureSizePx)
                 .build(),

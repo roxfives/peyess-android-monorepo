@@ -39,8 +39,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -92,6 +95,8 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -287,9 +292,20 @@ private fun ClientView(
     isClientLoading: Boolean = false,
     client: Client,
     toBePaid: Double = 0.0,
+    pictureForClient: (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val density = LocalDensity.current
     val minHeightState = remember { MinimumHeightState() }
+
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(client.id)
+
+            pictureUri.value = picture
+        }
+    }
 
     Row(modifier = modifier) {
         Box(
@@ -305,7 +321,7 @@ private fun ClientView(
                     .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
                     .clip(CircleShape),
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(client.picture)
+                    .data(pictureUri.value)
                     .crossfade(true)
                     .size(width = pictureSizePx, height = pictureSizePx)
                     .build(),

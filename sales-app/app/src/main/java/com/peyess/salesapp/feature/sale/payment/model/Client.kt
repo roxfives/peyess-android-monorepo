@@ -1,6 +1,5 @@
 package com.peyess.salesapp.feature.sale.payment.model
 
-import android.net.Uri
 import com.peyess.salesapp.typing.client.Sex
 import java.time.ZonedDateTime
 
@@ -9,13 +8,12 @@ data class Client(
 
     val name: String = "",
     val nameDisplay: String = "",
-    val picture: Uri = Uri.EMPTY,
 
     val birthday: ZonedDateTime = ZonedDateTime.now(),
-
     val document: String = "",
     val sex: Sex = Sex.Unknown,
 
+    val shortAddress: String = "",
     val zipCode: String = "",
     val street: String = "",
     val houseNumber: String = "",
@@ -23,23 +21,9 @@ data class Client(
     val neighborhood: String = "",
     val city: String = "",
     val state: String = "",
-
     val email: String = "",
     val phone: String = "",
     val cellphone: String = "",
     val whatsapp: String = "",
+)
 
-    val storesIds: List<String> = emptyList(),
-
-    val doc_version: Int = 0,
-    val is_editable: Boolean = false,
-
-    val created: ZonedDateTime = ZonedDateTime.now(),
-    val createdBy: String = "",
-    val createAllowedBy: String = "",
-    val updated: ZonedDateTime = ZonedDateTime.now(),
-    val updatedBy: String = "",
-    val updateAllowedBy: String = "",
-) {
-    val shortAddress = "$city, $state"
-}

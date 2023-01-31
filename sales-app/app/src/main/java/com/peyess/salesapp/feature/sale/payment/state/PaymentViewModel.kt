@@ -7,7 +7,6 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
-import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
@@ -15,6 +14,8 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
 import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
@@ -23,7 +24,6 @@ import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateR
 import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
-import com.peyess.salesapp.feature.sale.discount.model.Discount
 import com.peyess.salesapp.feature.sale.payment.adapter.toClient
 import com.peyess.salesapp.feature.sale.payment.adapter.toColoring
 import com.peyess.salesapp.feature.sale.payment.adapter.toFrames
@@ -62,7 +62,7 @@ private typealias MavericksVMFactory = MavericksViewModelFactory<PaymentViewMode
 class PaymentViewModel @AssistedInject constructor(
     @Assisted initialState: PaymentState,
     private val saleRepository: SaleRepository,
-    private val clientRepository: ClientRepository,
+    private val localClientRepository: LocalClientRepository,
     private val paymentMethodRepository: PaymentMethodRepository,
     private val cardFlagsRepository: CardFlagRepository,
     private val discountRepository: OverallDiscountRepository,
@@ -455,7 +455,6 @@ class PaymentViewModel @AssistedInject constructor(
                     clientName = client.name,
                     clientDocument = client.document,
                     clientAddress = client.shortAddress,
-                    clientPicture = client.picture,
                 ).toSalePaymentDocument()
 
             salePaymentRepository.updatePayment(payment)
@@ -488,13 +487,13 @@ class PaymentViewModel @AssistedInject constructor(
 
     private fun loadClient(clientId: String) {
         suspend {
-            clientRepository.clientById(clientId)
+            localClientRepository.clientById(clientId)
         }.execute(Dispatchers.IO) {
             copy(clientResponseAsync = it)
         }
     }
 
-    private fun processClientResponse(response: ClientRepositoryResponse) = setState {
+    private fun processClientResponse(response: LocalClientReadSingleResponse) = setState {
         response.fold(
             ifLeft = {
                 copy(

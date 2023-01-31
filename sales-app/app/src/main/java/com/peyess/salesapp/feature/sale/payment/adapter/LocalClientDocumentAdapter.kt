@@ -1,17 +1,17 @@
 package com.peyess.salesapp.feature.sale.payment.adapter
 
-import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.feature.sale.payment.model.Client
 
-fun ClientDocument.toClient(): Client {
+fun LocalClientDocument.toClient(): Client {
     return Client(
         id = id,
         name = name,
         nameDisplay = nameDisplay,
-        picture = picture,
         birthday = birthday,
         document = document,
         sex = sex,
+        shortAddress = shortAddress,
         zipCode = zipCode,
         street = street,
         houseNumber = houseNumber,
@@ -23,14 +23,5 @@ fun ClientDocument.toClient(): Client {
         phone = phone,
         cellphone = cellphone,
         whatsapp = whatsapp,
-        storesIds = storesIds,
-        doc_version = doc_version,
-        is_editable = is_editable,
-        created = created,
-        createdBy = createdBy,
-        createAllowedBy = createAllowedBy,
-        updated = updated,
-        updatedBy = updatedBy,
-        updateAllowedBy = updateAllowedBy,
     )
 }

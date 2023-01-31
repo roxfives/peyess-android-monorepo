@@ -10,7 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.peyess.salesapp.workmanager.utils.isWorkRunningOrEnqueued
 
-suspend fun enqueueWorker(
+suspend fun enqueueProductUpdateWorker(
     context: Context,
     workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.KEEP,
     forceExecution: Boolean = false,

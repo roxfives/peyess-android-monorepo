@@ -1,23 +1,14 @@
 package com.peyess.salesapp.feature.settings_actions.state
 
 import android.content.Context
-import androidx.work.Constraints
-import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
-import com.peyess.salesapp.workmanager.products.UpdateProductsWorker
-import com.peyess.salesapp.workmanager.products.enqueueWorker
-import com.peyess.salesapp.workmanager.products.forceUpdateKey
-import com.peyess.salesapp.workmanager.utils.isWorkRunningOrEnqueued
+import com.peyess.salesapp.workmanager.products.enqueueProductUpdateWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -51,7 +42,7 @@ class SettingsAndActionViewModel @AssistedInject constructor(
     private suspend fun createWorker() {
         Timber.i("Creating worker")
 
-        enqueueWorker(
+        enqueueProductUpdateWorker(
             context = salesApplication as Context,
             workPolicy = ExistingWorkPolicy.REPLACE,
             forceExecution = true,

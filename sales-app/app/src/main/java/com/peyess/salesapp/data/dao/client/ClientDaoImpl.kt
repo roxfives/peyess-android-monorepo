@@ -1,10 +1,23 @@
 package com.peyess.salesapp.data.dao.client
 
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.dao.client.utils.ClientsCollectionPaginator
+import com.peyess.salesapp.data.dao.internal.firestore.FetchCollectionResponse
+import com.peyess.salesapp.data.dao.lenses.utils.StoreLensCollectionPaginator
+import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
+import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
+import com.peyess.salesapp.data.internal.firestore.error.Unexpected
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.FSClient
 import com.peyess.salesapp.data.model.client.toDocument
+import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
+import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -89,5 +102,49 @@ class ClientDaoImpl @Inject constructor(
             Timber.e(err, "Error while adding client")
             error(err)
         }
+    }
+
+    override suspend fun getById(id: String): Either<FirestoreError, FSClient> = either {
+            val firestore = firebaseManager.storeFirestore
+
+            ensureNotNull(firestore) {
+                Unexpected("Firestore instance is null", null)
+            }
+
+            val localLensPath = salesApplication
+                .stringResource(R.string.fs_doc_client)
+                .format(id)
+            val docRef = firestore.document(localLensPath)
+
+            fetchDocument(FSClient::class, docRef).bind()
+        }
+
+    override suspend fun simpleCollectionPaginator(
+        query: PeyessQuery,
+        config: SimplePaginatorConfig,
+    ): Either<Unexpected, SimpleCollectionPaginator<FSClient>> = either {
+        val firestore = firebaseManager.storeFirestore
+
+        ensureNotNull(firestore) {
+            Unexpected("Firestore instance is null", null)
+        }
+
+        val path = salesApplication
+            .stringResource(R.string.fs_col_clients)
+
+        ClientsCollectionPaginator(
+            query = query.toFirestoreCollectionQuery(
+                path = path,
+                firestore = firestore,
+            ),
+            config = SimplePaginatorConfig(
+                initialPageSize = config.initialPageSize,
+                pageSize = config.pageSize,
+            ),
+        )
+    }
+
+    override suspend fun fetchCollection(query: PeyessQuery): FetchCollectionResponse<FSClient> {
+        TODO("Not yet implemented")
     }
 }

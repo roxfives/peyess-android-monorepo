@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import arrow.core.leftIfNull
 import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.R
@@ -19,15 +21,26 @@ import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
+import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
+import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.client.FSClient
+import com.peyess.salesapp.data.model.client.toDocument
 import com.peyess.salesapp.data.model.client_legal.ClientLegalMethod
 import com.peyess.salesapp.data.model.client_legal.FSClientLegal
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
-import com.peyess.salesapp.data.repository.client.error.Unexpected
+import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.CreatePaginatorError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchPageError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
+import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.utils.file.deleteFile
+import com.peyess.salesapp.workmanager.clients.error.ClientWorkerUnexpectedError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -54,6 +67,8 @@ class ClientRepositoryImpl @Inject constructor(
 
     private val storageRef = FirebaseStorage.getInstance().reference
 
+    private var paginator: SimpleCollectionPaginator<FSClient>? = null
+
     override fun clients(): Flow<List<ClientDocument>> {
         return clientDao.clients()
     }
@@ -61,7 +76,7 @@ class ClientRepositoryImpl @Inject constructor(
     override suspend fun clientById(clientId: String): ClientRepositoryResponse = Either.catch {
         clientDao.clientById(clientId)
     }.mapLeft {
-        Unexpected(
+        ClientRepositoryUnexpectedError(
             description = "Error getting client $clientId",
             error = it,
         )
@@ -196,6 +211,34 @@ class ClientRepositoryImpl @Inject constructor(
             deleteFile(client.picture)
             cacheCreateClientDao.deleteById(clientId)
         }
+    }
+
+    override suspend fun paginateData(
+        query: PeyessQuery,
+        config: SimplePaginatorConfig,
+    ): ClientPaginationResponse = either {
+        val localPaginator = if (paginator == null) {
+            clientDao.simpleCollectionPaginator(query, config)
+                .mapLeft { CreatePaginatorError(it.description, it.error) }
+                .bind()
+        } else {
+            paginator
+        }
+        paginator = localPaginator
+
+        ensureNotNull(localPaginator) {
+            Unexpected("Failed to initialize paginator", null)
+        }
+
+        val clients = localPaginator.page()
+            .mapLeft { FetchPageError(it.description, it.error) }
+            .bind()
+
+        clients.map { it.second.toDocument(it.first) }
+    }
+
+    override suspend fun getById(id: String): Either<ReadError, ClientDocument> {
+        TODO("Not yet implemented")
     }
 
     companion object {

@@ -11,7 +11,7 @@ data class ClientNotFound(
     override val error: Throwable? = null,
 ): ClientReadError
 
-data class Unexpected(
+data class ClientRepositoryUnexpectedError(
     override val description: String,
     override val error: Throwable? = null,
 ): ClientRepositoryError, ClientReadError

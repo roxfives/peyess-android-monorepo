@@ -12,14 +12,13 @@ import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.leftIfNull
 import com.google.firebase.storage.FirebaseStorage
-import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
 import com.peyess.salesapp.data.adapter.client.toClientModel
 import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
-import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
+import com.peyess.salesapp.data.model.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
 import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
@@ -34,13 +33,10 @@ import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpect
 import com.peyess.salesapp.data.repository.internal.firestore.errors.CreatePaginatorError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchPageError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
-import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.utils.file.deleteFile
-import com.peyess.salesapp.workmanager.clients.error.ClientWorkerUnexpectedError
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -50,7 +46,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 

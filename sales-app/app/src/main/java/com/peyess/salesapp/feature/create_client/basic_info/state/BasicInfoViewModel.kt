@@ -9,6 +9,7 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,6 +22,7 @@ import java.time.ZoneId
 class BasicInfoViewModel @AssistedInject constructor(
     @Assisted initialState: BasicInfoState,
     private val clientRepository: ClientRepository,
+    private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<BasicInfoState>(initialState) {
     private val maxDocumentLength = 11
 

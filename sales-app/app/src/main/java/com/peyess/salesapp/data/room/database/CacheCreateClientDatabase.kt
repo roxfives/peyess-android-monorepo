@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
-import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
+import com.peyess.salesapp.data.model.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.room.converter.ConverterOffsetDateTime
 import com.peyess.salesapp.data.room.converter.ConverterSex
 import com.peyess.salesapp.data.room.converter.ConverterUri

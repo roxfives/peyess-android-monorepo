@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.adapter.client
 
 import com.google.firebase.Timestamp
 import com.peyess.salesapp.data.model.client.FSClient
-import com.peyess.salesapp.data.dao.cache.CacheCreateClientEntity
+import com.peyess.salesapp.data.model.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 

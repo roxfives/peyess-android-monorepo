@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.dao.cache
+package com.peyess.salesapp.data.model.cache
 
 import android.net.Uri
 import androidx.room.ColumnInfo
@@ -19,6 +19,8 @@ data class CacheCreateClientEntity(
     val name: String = "",
     @ColumnInfo(name = "name_display")
     val nameDisplay: String = "",
+    @ColumnInfo(name = "picture")
+    val picture: Uri = Uri.EMPTY,
     @ColumnInfo(name = "birthday")
     val birthday: OffsetDateTime = OffsetDateTime.now(),
     @ColumnInfo(name = "document")
@@ -49,6 +51,9 @@ data class CacheCreateClientEntity(
     val cellphone: String = "",
     @ColumnInfo(name = "whatsapp")
     val whatsapp: String = "",
+
+    @ColumnInfo(name = "is_creating")
+    val isCreating: Boolean = false,
 ) {
     companion object {
         const val tableName = "cache_create_client"

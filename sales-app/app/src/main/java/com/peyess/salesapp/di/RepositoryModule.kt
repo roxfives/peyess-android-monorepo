@@ -32,6 +32,8 @@ import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDao
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepository
 import com.peyess.salesapp.data.repository.address_lookup.AddressLookupRepositoryImpl
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepositoryImpl
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepositoryImpl
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
@@ -376,6 +378,18 @@ object RepositoryModule {
     ): LocalClientRepository {
         return LocalClientRepositoryImpl(
             localClientDao = localClientDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideCacheCreateClientRepository(
+        firebaseManager: FirebaseManager,
+        cacheCreateClientDao: CacheCreateClientDao,
+    ): CacheCreateClientRepository {
+        return CacheCreateClientRepositoryImpl(
+            firebaseManager = firebaseManager,
+            cacheCreateClientDao = cacheCreateClientDao,
         )
     }
 }

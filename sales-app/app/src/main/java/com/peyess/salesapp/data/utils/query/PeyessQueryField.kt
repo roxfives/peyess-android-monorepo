@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.utils.query
 
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 sealed interface PeyessQueryField
 
@@ -60,6 +61,12 @@ private data class PeyessQueryFieldString(
     override val value: String,
 ): PeyessQueryRegularField
 
+private data class PeyessQueryFieldDate(
+    override val field: String,
+    override val op: PeyessQueryOperation,
+    override val value: ZonedDateTime,
+): PeyessQueryRegularField
+
 private data class PeyessFunctionOperationField(
     override val field: String,
     override val function: PeyessQueryFunctionOperation,
@@ -105,6 +112,10 @@ fun buildQueryField(field: String, op: PeyessQueryOperation, value: BigDecimal):
 
 fun buildQueryField(field: String, op: PeyessQueryOperation, value: String): PeyessQueryField {
     return PeyessQueryFieldString(field, op, value)
+}
+
+fun buildQueryField(field: String, op: PeyessQueryOperation, value: ZonedDateTime): PeyessQueryField {
+    return PeyessQueryFieldDate(field, op, value)
 }
 
 fun buildQueryField(

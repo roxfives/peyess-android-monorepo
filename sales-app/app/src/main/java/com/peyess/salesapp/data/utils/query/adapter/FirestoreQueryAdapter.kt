@@ -9,7 +9,9 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateExpressionField
 import com.peyess.salesapp.data.utils.query.PeyessQueryRegularField
+import com.peyess.salesapp.utils.time.toTimestamp
 import timber.log.Timber
+import java.time.ZonedDateTime
 
 fun PeyessQuery.toFirestoreCollectionQuery(path: String, firestore: FirebaseFirestore): Query {
     val collection = firestore.collection(path)
@@ -50,22 +52,29 @@ fun PeyessQuery.toFirestoreCollectionQuery(path: String, firestore: FirebaseFire
 private fun Query.buildQueryForRegularField(
     peyessQuery: PeyessQueryRegularField,
 ): Query {
+    val value = if (peyessQuery.value is ZonedDateTime) {
+        (peyessQuery.value as ZonedDateTime).toTimestamp()
+    } else {
+        peyessQuery.value
+    }
+
+
     return when (peyessQuery.op) {
         PeyessQueryOperation.Equal -> {
-            this.whereEqualTo(peyessQuery.field, peyessQuery.value)
+            this.whereEqualTo(peyessQuery.field, value)
         }
 
         PeyessQueryOperation.GreaterThan ->
-            this.whereGreaterThan(peyessQuery.field, peyessQuery.value)
+            this.whereGreaterThan(peyessQuery.field, value)
 
         PeyessQueryOperation.GreaterThanOrEqual ->
-            this.whereGreaterThanOrEqualTo(peyessQuery.field, peyessQuery.value)
+            this.whereGreaterThanOrEqualTo(peyessQuery.field, value)
 
         PeyessQueryOperation.LessThan ->
-            this.whereLessThan(peyessQuery.field, peyessQuery.value)
+            this.whereLessThan(peyessQuery.field, value)
 
         PeyessQueryOperation.LessThanOrEqual ->
-            this.whereLessThanOrEqualTo(peyessQuery.field, peyessQuery.value)
+            this.whereLessThanOrEqualTo(peyessQuery.field, value)
 
         PeyessQueryOperation.Different -> {
             Timber.w("Tried using unsupported firestore operation")

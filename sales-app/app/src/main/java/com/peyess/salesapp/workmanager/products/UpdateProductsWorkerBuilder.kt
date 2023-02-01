@@ -12,7 +12,7 @@ import com.peyess.salesapp.workmanager.utils.isWorkRunningOrEnqueued
 
 suspend fun enqueueProductUpdateWorker(
     context: Context,
-    workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.KEEP,
+    workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE,
     forceExecution: Boolean = false,
 ) {
     val workTag = UpdateProductsWorker.workerTag

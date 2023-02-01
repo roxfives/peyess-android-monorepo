@@ -74,7 +74,7 @@ fun enqueueOneTimeClientDownloadWorker(
 
 fun enqueuePeriodicClientDownloadWorker(
     context: Context,
-    workPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.KEEP,
+    workPolicy: ExistingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.REPLACE,
 ) {
     val inputData = buildInputData(isInitiating = false)
     val constraints = buildWorkerConstraints()

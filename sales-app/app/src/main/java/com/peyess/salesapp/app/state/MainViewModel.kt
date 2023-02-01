@@ -102,13 +102,18 @@ class MainViewModel @AssistedInject constructor(
         loadStore()
     }
 
+    private fun setExistingCreateClient(client: CacheCreateClientDocument) = setState {
+        copy(existingCreateClient = client)
+    }
+
     private fun processActiveCreatingClientResponse(
         response: CacheCreateClientFetchSingleResponse,
     ) = setState {
         response.fold(
             ifLeft = {
+                setExistingCreateClient(CacheCreateClientDocument())
+
                  copy(
-                     existingCreateClient = CacheCreateClientDocument(),
                      hasLookedForExistingClient = true,
                  )
             },

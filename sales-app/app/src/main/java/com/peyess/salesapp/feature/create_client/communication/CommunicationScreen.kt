@@ -118,10 +118,25 @@ fun CreateClientCommunicationScreen(
 
     val isInputValid by viewModel.collectAsState(CommunicationState::isInputValid)
 
+    val clientCreated by viewModel.collectAsState(CommunicationState::clientCreated)
+    val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
+
+    if (clientCreated) {
+        LaunchedEffect(Unit) {
+            onDone(
+                createScenario,
+                clientId,
+                paymentId,
+                saleId,
+                serviceOrderId,
+            )
+        }
+    }
+
     CommunicationScreenImpl(
         modifier = modifier,
 
-        isUploadingClient = false,
+        isUploadingClient = isUploadingClient,
 
         phoneHasWhatsApp = phoneHasWhatsApp,
         onPhoneHasWhatsAppChanged = viewModel::onPhoneHasWhatsappChanged,

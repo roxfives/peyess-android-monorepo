@@ -1,10 +1,15 @@
 package com.peyess.salesapp.feature.create_client.adapter
 
+import android.net.Uri
+import androidx.core.net.toFile
+import com.peyess.salesapp.R
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
+import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.feature.create_client.model.Client
 import com.peyess.salesapp.typing.sale.ClientRole
 import java.time.Instant
@@ -112,5 +117,26 @@ fun Client.toLocalClientDocument(collaboratorId: String): LocalClientDocument {
         localUpdated = epoch,
         downloadedAt = epoch,
         uploadedAt = epoch,
+    )
+}
+
+fun Client.toPictureUploadDocument(
+    salesApplication: SalesApplication,
+    clientId: String,
+): PictureUploadDocument {
+    val storagePath = salesApplication
+        .getString(R.string.storage_client_profile)
+        .format(clientId)
+    val storageFilename = salesApplication
+        .getString(R.string.storage_client_profile_filename)
+
+    return PictureUploadDocument(
+        id = 0L,
+        picture = picture,
+        storagePath = storagePath,
+        storageName = storageFilename,
+        hasBeenUploaded = false,
+        hasBeenDeleted = false,
+        attemptCount = 0,
     )
 }

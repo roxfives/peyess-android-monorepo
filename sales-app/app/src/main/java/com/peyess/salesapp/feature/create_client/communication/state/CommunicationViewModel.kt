@@ -1,29 +1,36 @@
 package com.peyess.salesapp.feature.create_client.communication.state
 
+import android.content.Context
+import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.adapter.client.toClientDocument
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client.toClientPickedEntity
+import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.feature.create_client.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.feature.create_client.adapter.toClient
 import com.peyess.salesapp.feature.create_client.adapter.toClientModel
 import com.peyess.salesapp.feature.create_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.feature.create_client.adapter.toLocalClientDocument
+import com.peyess.salesapp.feature.create_client.adapter.toPictureUploadDocument
 import com.peyess.salesapp.feature.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -38,7 +45,9 @@ private const val maxCellphoneLength = 11
 
 class CommunicationViewModel @AssistedInject constructor(
     @Assisted initialState: CommunicationState,
+    private val salesApplication: SalesApplication,
     private val authenticationRepository: AuthenticationRepository,
+    private val pictureUploadRepository: PictureUploadRepository,
     private val clientRepository: ClientRepository,
     private val localClientRepository: LocalClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
@@ -281,6 +290,15 @@ class CommunicationViewModel @AssistedInject constructor(
         }
     }
 
+    private suspend fun addClientPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
+        pictureUploadRepository.addPicture(pictureUploadDocument).tap {
+            enqueuePictureUploadManagerWorker(
+                context = salesApplication as Context,
+                uploadEntryId = it,
+            )
+        }
+    }
+
     fun createClient() = withState {
         val createdId = it.clientId
 
@@ -304,11 +322,21 @@ class CommunicationViewModel @AssistedInject constructor(
             )
 
             clientRepository.clearCreateClientCache(it.client.id)
+
+            if (it.client.picture != Uri.EMPTY) {
+                val pictureDocument = it.client.toPictureUploadDocument(
+                    salesApplication = salesApplication,
+                    clientId = it.client.id,
+                )
+
+                addClientPictureToUpload(pictureDocument)
+            }
         }.execute(Dispatchers.IO) { uploadState ->
             Timber.i("Upload client: $uploadState")
             copy(
                 uploadClientAsync = uploadState,
                 uploadedId = createdId,
+                clientCreated = true,
             )
         }
     }

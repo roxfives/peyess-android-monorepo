@@ -41,6 +41,7 @@ data class CommunicationState(
     val uploadClientAsync: Async<Unit> = Uninitialized,
 
     val uploadedId: String = "",
+    val clientCreated: Boolean = false,
 
     @PersistState
     val detectEmailError: Boolean = false,

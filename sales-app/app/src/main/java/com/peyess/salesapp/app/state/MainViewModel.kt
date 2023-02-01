@@ -38,8 +38,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
@@ -147,6 +150,7 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun updatedClientListStream(): ClientsListResponse {
         // TODO: build query using utils
         val query = PeyessQuery(
@@ -161,21 +165,25 @@ class MainViewModel @AssistedInject constructor(
         )
 
         return localClientRepository.paginateClients(query).map { pagingSource ->
-            val pagingSourceFactory = { pagingSource }
+            try {
+                val pagingSourceFactory = { pagingSource }
 
-            val pager = Pager(
-                pagingSourceFactory = pagingSourceFactory,
-                config = PagingConfig(
-                    pageSize = clientsTablePageSize,
-                    enablePlaceholders = true,
-                    prefetchDistance = lensesTablePrefetchDistance,
-                ),
-            )
+                val pager = Pager(
+                    pagingSourceFactory = pagingSourceFactory,
+                    config = PagingConfig(
+                        pageSize = clientsTablePageSize,
+                        enablePlaceholders = true,
+                        prefetchDistance = lensesTablePrefetchDistance,
+                    ),
+                )
 
-            pager.flow.map { pagingData ->
-                pagingData.map {
-                    it.toClient()
+                pager.flow.mapLatest { pagingData ->
+                    pagingData.map {
+                        it.toClient()
+                    }
                 }
+            } catch (err: Throwable) {
+                emptyFlow()
             }
         }
     }

@@ -156,24 +156,11 @@ fun buildCreateClientNavGraph(
         enterTransition = clientAddressEnterTransition(),
         exitTransition = clientAddressExitTransition()
     ) {
-        val viewModelScope = remember {
-            Either.catch { navHostController.getBackStackEntry(basicInfoRoute) }
-                .fold(
-                    ifLeft = {
-                        Timber.e("Error getting back stack entry for $basicInfoRoute", it)
-                        null
-                    },
-
-                    ifRight = { it }
-                )
-        }
-
         CreateClientAddressScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            viewModelScope = viewModelScope,
             onDone = { clientId, createScenario, paymentId ->
                 when(createScenario) {
                     is CreateScenario.Home ->

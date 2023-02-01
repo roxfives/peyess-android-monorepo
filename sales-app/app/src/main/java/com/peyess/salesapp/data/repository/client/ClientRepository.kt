@@ -18,10 +18,7 @@ interface ClientRepository: ReadOnlyRepository<ClientDocument> {
 
     suspend fun clientById(clientId: String): ClientRepositoryResponse
 
-    fun latestLocalClientCreated(): Flow<ClientModel?>
     suspend fun updateLocalClient(clientModel: ClientModel)
-    suspend fun createNewLocalClient()
-    suspend fun cancelLocalClientCreation()
 
     suspend fun uploadClient(clientModel: ClientModel, hasAcceptedPromotionalMessages: Boolean)
     suspend fun clearCreateClientCache(clientId: String)

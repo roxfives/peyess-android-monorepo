@@ -1,7 +1,6 @@
 package com.peyess.salesapp.data.repository.client
 
 import android.content.Context
-import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -11,7 +10,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.leftIfNull
-import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
@@ -57,11 +55,6 @@ class ClientRepositoryImpl @Inject constructor(
     private val clientLegalDao: ClientLegalDao,
     private val authenticationRepository: AuthenticationRepository,
 ): ClientRepository {
-    private val Context.dataStoreLatestClient: DataStore<Preferences>
-            by preferencesDataStore(latestClientFilename)
-
-    private val storageRef = FirebaseStorage.getInstance().reference
-
     private var paginator: SimpleCollectionPaginator<FSClient>? = null
 
     override fun clients(): Flow<List<ClientDocument>> {
@@ -81,70 +74,10 @@ class ClientRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun latestLocalClientCreated(): Flow<ClientModel?> {
-        return salesApplication
-            .dataStoreLatestClient
-            .data
-            .map { prefs ->
-                Timber.i("Getting latest client by id ${prefs[latestClientKey]}")
-
-                cacheCreateClientDao.getById(prefs[latestClientKey] ?: "")
-            }
-            .map { it?.toClientModel() }
-    }
-
-    override suspend fun createNewLocalClient() {
-        val id = firebaseManager.uniqueId()
-        val client = CacheCreateClientEntity(id = id)
-
-        Timber.i("Creating client with id $id")
-
-        salesApplication.dataStoreLatestClient.edit { prefs ->
-            Timber.i("Setting latest id to $id")
-
-            prefs[latestClientKey] = id
-        }
-
-        Timber.i("Adding client to database $id")
-        cacheCreateClientDao.add(client)
-    }
-
     override suspend fun updateLocalClient(clientModel: ClientModel) {
         val cacheClient = clientModel.toCacheCreateClientEntity()
 
         cacheCreateClientDao.update(cacheClient)
-    }
-
-    override suspend fun cancelLocalClientCreation() {
-        salesApplication
-            .dataStoreLatestClient
-            .data
-            .map { prefs ->
-                val id = prefs[latestClientKey] ?: ""
-
-                cacheCreateClientDao.deleteById(id)
-            }
-            .take(1)
-            .flowOn(Dispatchers.IO)
-            .collect()
-    }
-
-    private suspend fun uploadClientProfilePicture(clientModel: ClientModel): Uri {
-//        val clientId = clientModel.id
-//        val path = salesApplication
-//            .stringResource(R.string.storage_client_profile_pic)
-//            .format(clientId)
-//
-//        val profilePicRef = storageRef.child(path)
-//        var downloadUrl: Uri = Uri.EMPTY
-//        try {
-//            profilePicRef.putFile(clientModel.picture).await()
-//            downloadUrl = profilePicRef.downloadUrl.await()
-//        } catch (error: Throwable) {
-//            Timber.e("Error while uploading client profile picture", error)
-//        }
-
-        return Uri.EMPTY
     }
 
     override suspend fun uploadClient(
@@ -221,16 +154,5 @@ class ClientRepositoryImpl @Inject constructor(
             .bind()
 
         clients.map { it.second.toDocument(it.first) }
-    }
-
-    override suspend fun getById(id: String): Either<ReadError, ClientDocument> {
-        TODO("Not yet implemented")
-    }
-
-    companion object {
-        const val latestClientFilename =
-            "com.peyess.salesapp.data.repository.client.cache_create_client_datasource"
-
-        val latestClientKey = stringPreferencesKey("latest_client_key")
     }
 }

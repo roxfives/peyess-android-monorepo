@@ -11,7 +11,8 @@ import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
-import com.peyess.salesapp.data.repository.client.error.ClientReadError
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
@@ -39,6 +40,13 @@ data class MainAppState(
     val productsTableStatusAsync: Async<ProductsTableStatus?> = Uninitialized,
 
     val serviceOrderListAsync: Async<List<ServiceOrderDocument>> = Uninitialized,
+
+    val createClientResponseAsync: Async<CacheCreateClientCreateResponse> = Uninitialized,
+    val createClientId: String = "",
+    val createClient: Boolean = false,
+
+    val existingCreateClientAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
+    val existingCreateClientId: String = "",
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
@@ -85,6 +93,10 @@ data class MainAppState(
 
     val isServiceOrderListLoading = serviceOrderListAsync is Loading
     val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()
+
+    val isLookingForCreatingClient = existingCreateClientAsync is Loading
+    val isCreatingClient = createClientResponseAsync is Loading
+    val creatingClientExists = existingCreateClientId.isNotBlank()
 
     val areClientsLoading = clientListResponseAsync is Loading
 }

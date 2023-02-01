@@ -9,15 +9,18 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.app.adapter.toClient
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -54,9 +57,11 @@ class MainViewModel @AssistedInject constructor(
     private val purchaseRepository: PurchaseRepository,
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val localClientRepository: LocalClientRepository,
+    private val cacheCreateClientRepository: CacheCreateClientRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
+        findActiveCreatingClient()
         streamActiveSales()
 
         setState {
@@ -84,6 +89,9 @@ class MainViewModel @AssistedInject constructor(
             }
         }
 
+        onAsync(MainAppState::existingCreateClientAsync) { processActiveCreatingClientResponse(it) }
+        onAsync(MainAppState::createClientResponseAsync) { processCreateNewClientResponse(it) }
+
         onAsync(MainAppState::clientListResponseAsync) { processClientListResponse(it) }
 
         onAsync(MainAppState::activeSalesStreamAsync) { processActiveSalesStreamResponse(it) }
@@ -92,6 +100,28 @@ class MainViewModel @AssistedInject constructor(
         loadProductTableStatus()
         loadCurrentCollaborator()
         loadStore()
+    }
+
+    private fun findActiveCreatingClient() {
+        suspend {
+            cacheCreateClientRepository.findCreating()
+        }.execute {
+            copy(existingCreateClientAsync = it)
+        }
+    }
+
+    private fun processActiveCreatingClientResponse(
+        response: CacheCreateClientFetchSingleResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                 copy(existingCreateClientId = "")
+            },
+
+            ifRight = {
+                copy(existingCreateClientId = it.id)
+            }
+        )
     }
 
     private fun loadProductTableStatus() {
@@ -197,6 +227,50 @@ class MainViewModel @AssistedInject constructor(
 
     private fun processActiveSalesStream(sales: List<ActiveSalesEntity>) = setState {
         copy(activeSales = sales)
+    }
+
+    private fun processCreateNewClientResponse(
+        response: CacheCreateClientCreateResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    createClientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                copy(
+                    createClientId = it.id,
+                    createClient = true,
+                )
+            }
+        )
+    }
+
+    fun createNewClient() = withState {
+        suspend {
+            if (it.creatingClientExists) {
+                cacheCreateClientRepository.deleteById(it.existingCreateClientId)
+            }
+
+            cacheCreateClientRepository.createClient()
+        }.execute(Dispatchers.IO) {
+            copy(createClientResponseAsync = it)
+        }
+    }
+
+    fun createClientFromCache() = setState {
+        copy(
+            createClientId = existingCreateClientId,
+            createClient = true,
+        )
+    }
+
+    fun startedCreatingClient() = setState {
+        copy(createClient = false)
     }
 
     suspend fun pictureForUser(uid: String): Uri {

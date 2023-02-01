@@ -51,6 +51,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -73,6 +75,8 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
+import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.ui.component.button.HomeScreenButton
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -115,11 +119,13 @@ private val buttonIconSize = 72.dp
 fun HomeScreen(
     modifier: Modifier = Modifier,
 
+    navHostController: NavHostController = rememberNavController(),
+
     onSettings: () -> Unit = {},
     onSignOut: () -> Unit = {},
 
     onStartSale: () -> Unit = {},
-    onAddClient: () -> Unit = {},
+    onAddClient: (clientId: String) -> Unit = {},
     onStartVisualAcuity: () -> Unit = {},
     onOpenProductsTable: () -> Unit = {},
 ) {
@@ -131,6 +137,10 @@ fun HomeScreen(
     val sixthStepViewModel: SixthStepViewModel = mavericksActivityViewModel()
 
     val viewModel: MainViewModel = mavericksActivityViewModel()
+
+    val createClient by viewModel.collectAsState(MainAppState::createClient)
+    val createClientId by viewModel.collectAsState(MainAppState::createClientId)
+    val creatingClientExists by viewModel.collectAsState(MainAppState::creatingClientExists)
 
     val collaborator by viewModel.collectAsState(MainAppState::collaboratorDocument)
     val isLoadingCollaborator by viewModel.collectAsState(MainAppState::isLoadingCollaborator)
@@ -151,6 +161,13 @@ fun HomeScreen(
     val hasShownActiveSales = remember { mutableStateOf(false) }
 
     val hasStartedNewSale = remember { mutableStateOf(false) }
+
+    if (createClient) {
+        LaunchedEffect(Unit) {
+            viewModel.startedCreatingClient()
+            onAddClient(createClientId)
+        }
+    }
 
     if (createNewSale is Success && createNewSale.invoke()!!) {
         LaunchedEffect(Unit) {
@@ -215,7 +232,13 @@ fun HomeScreen(
         onStartSale = {
             viewModel.startNewSale()
         },
-        onAddClient = onAddClient,
+        onAddClient = {
+            if (creatingClientExists) {
+                viewModel.createClientFromCache()
+            } else {
+                viewModel.createNewClient()
+            }
+        },
         onStartVisualAcuity = onStartVisualAcuity,
         onOpenProductsTable = onOpenProductsTable,
     )

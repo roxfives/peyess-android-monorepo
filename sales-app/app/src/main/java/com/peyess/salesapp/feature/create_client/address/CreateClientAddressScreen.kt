@@ -50,6 +50,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressState
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressViewModel
+import com.peyess.salesapp.feature.create_client.utils.parseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.PickScenario
@@ -70,63 +71,40 @@ private val warningSpacerSize = 8.dp
 private val animationSpacerHeight = 16.dp
 private val animationSize = 124.dp
 
-private val animationDuration = 2000
-private val animationProgressStart = 0f
-private val animationProgressEnd = 1f
+private const val animationDuration = 2000
+private const val animationProgressStart = 0f
+private const val animationProgressEnd = 1f
 
 @Composable
 fun CreateClientAddressScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
-    viewModelScope: LifecycleOwner? = null,
     onDone: (
         clientId: String,
         createScenario: CreateScenario,
         paymentId: Long,
     ) -> Unit = { _, _, _-> },
 ) {
-    val viewModel: ClientAddressViewModel = if (viewModelScope == null) {
-        mavericksViewModel()
-    } else {
-        mavericksViewModel(viewModelScope)
-    }
+    val viewModel: ClientAddressViewModel = mavericksViewModel()
 
-    val isPicking = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getBoolean(isPickingParam)
-        ?: false
+    parseParameters(
+        navController = navHostController,
+        onUpdateClientId = viewModel::onClientIdChanged,
+        onUpdatePaymentId = viewModel::onPaymentIdChanged,
+        onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+    )
 
-    val pickScenarioParam = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(pickScenarioParam)
-        ?: PickScenario.ServiceOrder.toName()
-    val paymentId = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getLong(paymentIdParam)
-        ?: 0L
+    val clientId by viewModel.collectAsState(ClientAddressState::clientId)
+    val paymentId by viewModel.collectAsState(ClientAddressState::paymentId)
+    val scenario by viewModel.collectAsState(ClientAddressState::createScenario)
 
-    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
-    val scenarioParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(createScenarioParam)
-
-    LaunchedEffect(scenarioParameter) {
-        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
-
-        Timber.i("Using scenario $scenario")
-    }
-
-    val zipCode by viewModel.collectAsState(ClientAddressState::zipCode)
-    val street by viewModel.collectAsState(ClientAddressState::street)
-    val houseNumber by viewModel.collectAsState(ClientAddressState::houseNumber)
-    val complement by viewModel.collectAsState(ClientAddressState::complement)
-    val neighbourhood by viewModel.collectAsState(ClientAddressState::neighborhood)
-    val city by viewModel.collectAsState(ClientAddressState::city)
-    val state by viewModel.collectAsState(ClientAddressState::state)
+    val zipCode by viewModel.collectAsState(ClientAddressState::zipCodeInput)
+    val street by viewModel.collectAsState(ClientAddressState::streetInput)
+    val houseNumber by viewModel.collectAsState(ClientAddressState::houseNumberInput)
+    val complement by viewModel.collectAsState(ClientAddressState::complementInput)
+    val neighbourhood by viewModel.collectAsState(ClientAddressState::neighborhoodInput)
+    val city by viewModel.collectAsState(ClientAddressState::cityInput)
+    val state by viewModel.collectAsState(ClientAddressState::stateInput)
 
     val isAddressLoading by viewModel.collectAsState(ClientAddressState::isAddressLoading)
     val isAddressEnabled by viewModel.collectAsState(ClientAddressState::isAddressEnabled)
@@ -205,7 +183,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
-        onDone = { onDone("clientId", scenario, paymentId) },
+        onDone = { onDone(clientId, scenario, paymentId) },
     )
 }
 

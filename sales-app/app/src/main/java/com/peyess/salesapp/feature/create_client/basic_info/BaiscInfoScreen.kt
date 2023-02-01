@@ -74,8 +74,6 @@ import com.peyess.salesapp.feature.create_client.basic_info.utils.fromReadableSe
 import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexName
 import com.peyess.salesapp.feature.create_client.utils.parseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.create_client.createScenarioParam
-import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.ui.component.date.PeyessDialogDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState

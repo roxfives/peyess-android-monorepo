@@ -13,10 +13,15 @@ import com.peyess.salesapp.data.model.client.toClientPickedEntity
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.feature.create_client.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.feature.create_client.adapter.toClient
+import com.peyess.salesapp.feature.create_client.adapter.toClientModel
+import com.peyess.salesapp.feature.create_client.adapter.toClientPickedEntity
+import com.peyess.salesapp.feature.create_client.adapter.toLocalClientDocument
 import com.peyess.salesapp.feature.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
+import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import dagger.assisted.Assisted
@@ -33,7 +38,9 @@ private const val maxCellphoneLength = 11
 
 class CommunicationViewModel @AssistedInject constructor(
     @Assisted initialState: CommunicationState,
-//    private val clientRepository: ClientRepository,
+    private val authenticationRepository: AuthenticationRepository,
+    private val clientRepository: ClientRepository,
+    private val localClientRepository: LocalClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val saleRepository: SaleRepository,
 ): MavericksViewModel<CommunicationState>(initialState) {
@@ -113,7 +120,7 @@ class CommunicationViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun addAllForServiceOrder(client: ClientDocument) {
+    private suspend fun addAllForServiceOrder(client: Client) {
         saleRepository.activeSO()
             .filterNotNull()
             .take(1)
@@ -123,7 +130,7 @@ class CommunicationViewModel @AssistedInject constructor(
             }
     }
 
-    private suspend fun addOnlyOne(client: ClientDocument, role: ClientRole) {
+    private suspend fun addOnlyOne(client: Client, role: ClientRole) {
         saleRepository.activeSO()
             .filterNotNull()
             .take(1)
@@ -256,9 +263,10 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(detectPhoneError = true)
     }
 
-    private suspend fun addClientToSale(clientModel: ClientModel, createScenarioParam: CreateScenario) {
-        val client = clientModel.toClientDocument()
-
+    private suspend fun addClientToSale(
+        client: Client,
+        createScenarioParam: CreateScenario,
+    ) {
         when (createScenarioParam) {
             CreateScenario.ServiceOrder -> addAllForServiceOrder(client)
             CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible)
@@ -274,28 +282,35 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun createClient() = withState {
-//        val createdId = it.clientId
-//
-//        suspend {
-//            Timber.i("Creating client ${it.client}")
-//
-//            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
-//
-//            if (
-//                it.createScenarioParam != CreateScenario.Home
-//                    && it.createScenarioParam != CreateScenario.Payment
-//            ) {
-//                addClientToSale(it.client, it.createScenarioParam)
-//            }
-//
-//            clientRepository.clearCreateClientCache(it.client.id)
-//        }.execute(Dispatchers.IO) { uploadState ->
-//            Timber.i("Upload client: $uploadState")
-//            copy(
-//                uploadClientAsync = uploadState,
-//                uploadedId = createdId,
-//            )
-//        }
+        val createdId = it.clientId
+
+        suspend {
+            val collaboratorId = authenticationRepository.fetchCurrentUserId()
+
+            Timber.i("Creating client ${it.client}")
+            if (
+                it.createScenario != CreateScenario.Home
+                && it.createScenario != CreateScenario.Payment
+            ) {
+                addClientToSale(it.client, it.createScenario)
+            }
+
+            clientRepository.uploadClient(
+                clientModel = it.client.toClientModel(),
+                hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
+            )
+            localClientRepository.insertClient(
+                it.client.toLocalClientDocument(collaboratorId)
+            )
+
+            clientRepository.clearCreateClientCache(it.client.id)
+        }.execute(Dispatchers.IO) { uploadState ->
+            Timber.i("Upload client: $uploadState")
+            copy(
+                uploadClientAsync = uploadState,
+                uploadedId = createdId,
+            )
+        }
     }
 
     // hilt

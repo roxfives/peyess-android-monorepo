@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.sqlite.db.SimpleSQLiteQuery
 import arrow.core.Either
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
+import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 import com.peyess.salesapp.data.model.local_client.LocalClientStatusDocument
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryFetchError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryFetchStatusError
@@ -31,7 +32,7 @@ typealias LocalClientReadSingleResponse =
 typealias LocalClientStreamSingleResponse =
         Flow<Either<LocalClientRepositoryFetchError, LocalClientDocument>>
 typealias LocalClientPaginateResponse =
-        Either<LocalClientRepositoryPagingError, PagingSource<Int, LocalClientDocument>>
+        Either<LocalClientRepositoryPagingError, () -> PagingSource<Int, LocalClientDocument>>
 
 interface LocalClientRepository {
     suspend fun updateClientStatus(

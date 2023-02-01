@@ -99,7 +99,7 @@ class ClientDaoImpl @Inject constructor(
                 .set(client)
                 .await()
         } catch (err: Exception) {
-            Timber.e(err, "Error while adding client")
+            Timber.e("Error while adding client, ${err.cause}", err)
             error(err)
         }
     }

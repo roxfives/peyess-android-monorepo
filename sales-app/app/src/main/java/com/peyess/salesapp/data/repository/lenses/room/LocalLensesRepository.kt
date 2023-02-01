@@ -51,10 +51,8 @@ typealias LensesSpecialtiesResponse =
 typealias LensesGroupsResponse =
         Either<LocalLensRepositoryException, List<StoreLensGroupDocument>>
 
-typealias LensesResponse = Either<
-        LocalLensRepositoryException,
-        PagingSource<Int, StoreLensWithDetailsDocument>,
-    >
+typealias LensesResponse =
+        Either<LocalLensRepositoryException, () -> PagingSource<Int, StoreLensWithDetailsDocument>>
 
 typealias LensFilteredByDisponibilitiesResponse = Either<
         LocalLensRepositoryException,

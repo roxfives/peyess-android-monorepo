@@ -374,12 +374,15 @@ class LocalLensesRepositoryImpl @Inject constructor(
             val selectStatement = "SELECT * $aggregatesStr FROM ${LocalLensWithDetailsDBView.viewName}"
             val sqlQuery = query.toSqlQuery(selectStatement)
 
-            val lensesPagingSource = localLensDao.getFilteredLenses(sqlQuery)
+            val pagingSourceFactory = {
+                MappingPagingSource(
+                    originalSource = localLensDao.getFilteredLenses(sqlQuery),
+                    buildNewSource = { localLensDao.getFilteredLenses(sqlQuery) },
+                    mapper = { it.toStoreLensWithDetailsDocument() }
+                )
+            }
 
-            MappingPagingSource(
-                originalSource = lensesPagingSource,
-                mapper = { it.toStoreLensWithDetailsDocument() }
-            )
+            pagingSourceFactory
         }.mapLeft {
             Unexpected(
                 description = "Unexpected error: ${it.message}",

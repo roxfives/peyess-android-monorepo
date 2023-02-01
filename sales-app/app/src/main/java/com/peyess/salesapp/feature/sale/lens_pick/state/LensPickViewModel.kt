@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.lens_pick.state
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import androidx.paging.map
 import arrow.core.Either
 import arrow.core.continuations.either
@@ -58,6 +59,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -495,9 +497,7 @@ class LensPickViewModel @AssistedInject constructor(
 
         lensesRepository
             .paginateLensesWithDetailsOnly(query)
-            .map { pagingSource ->
-                val pagingSourceFactory = { pagingSource }
-
+            .map { pagingSourceFactory ->
                 val pager = Pager(
                     pagingSourceFactory = pagingSourceFactory,
                     config = PagingConfig(
@@ -507,7 +507,7 @@ class LensPickViewModel @AssistedInject constructor(
                     ),
                 )
 
-                pager.flow.mapLatest { pagingData ->
+                pager.flow.cancellable().cachedIn(viewModelScope).mapLatest { pagingData ->
                     pagingData.map { lens ->
                         val reasonsUnsupported = if (isSale && prescription != null) {
                             checkLensDisponibilities(

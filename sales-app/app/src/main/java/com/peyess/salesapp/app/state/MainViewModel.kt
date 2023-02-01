@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import androidx.paging.map
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -39,6 +40,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -164,26 +166,21 @@ class MainViewModel @AssistedInject constructor(
             groupBy = emptyList(),
         )
 
-        return localClientRepository.paginateClients(query).map { pagingSource ->
-            try {
-                val pagingSourceFactory = { pagingSource }
+        return localClientRepository.paginateClients(query).map { pagingSourceFn ->
 
-                val pager = Pager(
-                    pagingSourceFactory = pagingSourceFactory,
-                    config = PagingConfig(
-                        pageSize = clientsTablePageSize,
-                        enablePlaceholders = true,
-                        prefetchDistance = lensesTablePrefetchDistance,
-                    ),
-                )
+            val pager = Pager(
+                pagingSourceFactory = pagingSourceFn,
+                config = PagingConfig(
+                    pageSize = clientsTablePageSize,
+                    enablePlaceholders = true,
+                    prefetchDistance = lensesTablePrefetchDistance,
+                ),
+            )
 
-                pager.flow.mapLatest { pagingData ->
-                    pagingData.map {
-                        it.toClient()
-                    }
+            pager.flow.cancellable().cachedIn(viewModelScope).mapLatest { pagingData ->
+                pagingData.map {
+                    it.toClient()
                 }
-            } catch (err: Throwable) {
-                emptyFlow()
             }
         }
     }

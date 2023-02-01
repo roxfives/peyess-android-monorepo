@@ -123,7 +123,7 @@ class MainViewModel @AssistedInject constructor(
                     existingCreateClient = it,
                     hasLookedForExistingClient = true,
                 )
-            }
+            },
         )
     }
 

@@ -29,4 +29,7 @@ data class CacheCreateClientDocument(
     val whatsapp: String = "",
 
     val isCreating: Boolean = false,
+    val phoneHasWhatsApp: Boolean = true,
+    val hasPhoneContact: Boolean = false,
+    val hasAcceptedPromotionalMessages: Boolean = false,
 )

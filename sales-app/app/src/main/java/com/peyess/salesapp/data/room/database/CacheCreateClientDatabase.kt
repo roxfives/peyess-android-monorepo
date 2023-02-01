@@ -13,7 +13,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     entities = [
         CacheCreateClientEntity::class
     ],
-    version = 4,
+    version = 5,
 )
 @TypeConverters(
     ConverterSex::class,

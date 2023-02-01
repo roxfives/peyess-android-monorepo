@@ -54,6 +54,13 @@ data class CacheCreateClientEntity(
 
     @ColumnInfo(name = "is_creating")
     val isCreating: Boolean = false,
+
+    @ColumnInfo(name = "phone_has_whats_app")
+    val phoneHasWhatsApp: Boolean = true,
+    @ColumnInfo(name = "has_phone_contact")
+    val hasPhoneContact: Boolean = false,
+    @ColumnInfo(name = "has_accepted_promotional_messages")
+    val hasAcceptedPromotionalMessages: Boolean = false,
 ) {
     companion object {
         const val tableName = "cache_create_client"

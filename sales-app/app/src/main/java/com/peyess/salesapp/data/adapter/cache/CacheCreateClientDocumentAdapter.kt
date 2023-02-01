@@ -24,5 +24,8 @@ fun CacheCreateClientDocument.toCacheCreateClientEntity(): CacheCreateClientEnti
         cellphone = cellphone,
         whatsapp = whatsapp,
         isCreating = isCreating,
+        phoneHasWhatsApp = phoneHasWhatsApp,
+        hasPhoneContact = hasPhoneContact,
+        hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
     )
 }

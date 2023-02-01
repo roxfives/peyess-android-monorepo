@@ -29,6 +29,7 @@ import com.peyess.salesapp.data.model.client_legal.FSClientLegal
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.CreatePaginatorError
+import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchDataError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchPageError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
@@ -154,5 +155,11 @@ class ClientRepositoryImpl @Inject constructor(
             .bind()
 
         clients.map { it.second.toDocument(it.first) }
+    }
+
+    override suspend fun getById(id: String): Either<ReadError, ClientDocument> {
+        return clientById(id).mapLeft {
+            FetchDataError(it.description, it.error)
+        }
     }
 }

@@ -68,7 +68,6 @@ private val checkboxSpacerHeight = 16.dp
 fun CreateClientCommunicationScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
-    viewModelScope: LifecycleOwner? = null,
     onDone: (
         createScenario: CreateScenario,
         clientId: String,
@@ -77,11 +76,7 @@ fun CreateClientCommunicationScreen(
         serviceOrderId: String,
     ) -> Unit = { _, _, _ , _, _-> },
 ) {
-    val viewModel: CommunicationViewModel = if (viewModelScope == null) {
-        mavericksViewModel()
-    } else {
-        mavericksViewModel(viewModelScope)
-    }
+    val viewModel: CommunicationViewModel = mavericksViewModel()
 
     val saleId by viewModel.collectAsState(CommunicationState::saleId)
     val serviceOrderId by viewModel.collectAsState(CommunicationState::serviceOrderId)

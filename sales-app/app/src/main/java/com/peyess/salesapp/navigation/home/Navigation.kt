@@ -11,7 +11,7 @@ import com.peyess.salesapp.feature.home.HomeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.home.SalesScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
+import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
@@ -40,8 +40,12 @@ fun buildHomeNavGraph(
             onStartSale = { navHostController.navigate(SalesAppScreens.SaleWelcome.name) },
             onAddClient = {
                 val scenario = CreateScenario.Home
+                val route = buildBasicInfoRoute(
+                    clientId = it,
+                    createScenario = scenario,
+                )
 
-                navHostController.navigate(formatBasicInfoRoute(scenario))
+                navHostController.navigate(route)
             },
 
             onOpenProductsTable = {
@@ -66,6 +70,7 @@ fun buildHomeNavGraph(
             navHostController.navigate(SalesAppScreens.SaleWelcome.name)
         }
     }
+
     builder.composable(
         route = SalesAppScreens.Clients.name,
         enterTransition = clientsEnterTransition(),
@@ -76,7 +81,7 @@ fun buildHomeNavGraph(
         ClientScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
             onCreateNewClient = {
-                navHostController.navigate(formatBasicInfoRoute(scenario))
+                navHostController.navigate(buildBasicInfoRoute(it, scenario))
             }
         )
     }

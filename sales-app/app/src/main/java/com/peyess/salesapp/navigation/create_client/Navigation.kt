@@ -3,11 +3,13 @@ package com.peyess.salesapp.navigation.create_client
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import arrow.core.Either
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.feature.create_client.address.CreateClientAddressScreen
 import com.peyess.salesapp.feature.create_client.basic_info.BasicInfoScreen
@@ -19,58 +21,80 @@ import com.peyess.salesapp.navigation.create_client.basic_info.createClientEnter
 import com.peyess.salesapp.navigation.create_client.basic_info.createClientExitTransition
 import com.peyess.salesapp.navigation.create_client.communication.createClientCommunicationEnterTransition
 import com.peyess.salesapp.navigation.create_client.communication.createClientCommunicationExitTransition
-import com.peyess.salesapp.navigation.pick_client.isPickingParam
-import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import timber.log.Timber
 
+const val clientIdParam = "clientId"
+const val paymentIdParam = "paymentId"
 const val createScenarioParam = "createScenario"
+const val pickScenarioParam = "pickScenario"
+const val isPickingParam = "isPicking"
 
-val basicInfoRoute = "${SalesAppScreens.CreateNewClientBasicInfo.name}/{$createScenarioParam}" +
+private val basicInfoRoute = SalesAppScreens.CreateNewClientBasicInfo.name +
+        "/{$clientIdParam}" +
+        "/{$createScenarioParam}" +
         "?$paymentIdParam={$paymentIdParam}"
-val addressRoute = "${SalesAppScreens.CreateNewClientAddress.name}/{$createScenarioParam}" +
+private val addressRoute = SalesAppScreens.CreateNewClientAddress.name +
+        "/{$clientIdParam}" +
+        "/{$createScenarioParam}" +
         "?$paymentIdParam={$paymentIdParam}"
-val communicationRoute = "${SalesAppScreens.CreateNewClientContact.name}/{$createScenarioParam}" +
+private val communicationRoute = SalesAppScreens.CreateNewClientContact.name +
+        "/{$clientIdParam}" +
+        "/{$createScenarioParam}" +
         "?$paymentIdParam={$paymentIdParam}"
 
-fun formatBasicInfoRoute(
+fun buildBasicInfoRoute(
+    clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
-            "${SalesAppScreens.CreateNewClientBasicInfo.name}/${createScenario.toName()}"
+            SalesAppScreens.CreateNewClientBasicInfo.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}"
         else ->
-            "${SalesAppScreens.CreateNewClientBasicInfo.name}/${createScenario.toName()}" +
+            SalesAppScreens.CreateNewClientBasicInfo.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}" +
                     "?$paymentIdParam=$paymentId"
     }
 }
 
-fun formatAddressRoute(
+fun buildAddressRoute(
+    clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
-            "${SalesAppScreens.CreateNewClientAddress.name}/${createScenario.toName()}"
+            SalesAppScreens.CreateNewClientAddress.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}"
         else ->
-            "${SalesAppScreens.CreateNewClientAddress.name}/${createScenario.toName()}" +
+            SalesAppScreens.CreateNewClientAddress.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}" +
                     "?$paymentIdParam=$paymentId"
     }
 }
 
-fun formatCommunicationRoute(
+fun buildCommunicationRoute(
+    clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
-            "${SalesAppScreens.CreateNewClientContact.name}/${createScenario.toName()}"
+            SalesAppScreens.CreateNewClientContact.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}"
         else ->
-            "${SalesAppScreens.CreateNewClientContact.name}/${createScenario.toName()}" +
+            SalesAppScreens.CreateNewClientContact.name +
+                    "/${clientId}" +
+                    "/${createScenario.toName()}" +
                     "?$paymentIdParam=$paymentId"
     }
 }
@@ -79,7 +103,7 @@ fun formatCommunicationRoute(
 fun buildCreateClientNavGraph(
     modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    builder: NavGraphBuilder
+    builder: NavGraphBuilder,
 ) {
     builder.composable(
         route = basicInfoRoute,
@@ -98,13 +122,22 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { createScenario, paymentId ->
+            onDone = { clientId, createScenario, paymentId ->
                 when(createScenario) {
                     is CreateScenario.Home ->
-                        navHostController.navigate(formatAddressRoute(createScenario))
+                        navHostController.navigate(
+                            buildAddressRoute(
+                                clientId = clientId,
+                                createScenario = createScenario,
+                            )
+                        )
                     else ->
                         navHostController.navigate(
-                            formatAddressRoute(createScenario, paymentId)
+                            buildAddressRoute(
+                                clientId = clientId,
+                                createScenario = createScenario,
+                                paymentId = paymentId,
+                            )
                         )
                 }
             },
@@ -123,11 +156,16 @@ fun buildCreateClientNavGraph(
         enterTransition = clientAddressEnterTransition(),
         exitTransition = clientAddressExitTransition()
     ) {
-        val viewModelScope = try {
-            navHostController.getBackStackEntry(basicInfoRoute)
-        } catch (error: Throwable) {
-            Timber.e("Could not find viewModelScope", error)
-            null
+        val viewModelScope = remember {
+            Either.catch { navHostController.getBackStackEntry(basicInfoRoute) }
+                .fold(
+                    ifLeft = {
+                        Timber.e("Error getting back stack entry for $basicInfoRoute", it)
+                        null
+                    },
+
+                    ifRight = { it }
+                )
         }
 
         CreateClientAddressScreen(
@@ -136,13 +174,22 @@ fun buildCreateClientNavGraph(
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
             viewModelScope = viewModelScope,
-            onDone = { createScenario, paymentId ->
+            onDone = { clientId, createScenario, paymentId ->
                 when(createScenario) {
                     is CreateScenario.Home ->
-                        navHostController.navigate(formatCommunicationRoute(createScenario))
+                        navHostController.navigate(
+                            buildCommunicationRoute(
+                                clientId = clientId,
+                                createScenario = createScenario,
+                            )
+                        )
                     else ->
                         navHostController.navigate(
-                            formatCommunicationRoute(createScenario, paymentId)
+                            buildCommunicationRoute(
+                                clientId = clientId,
+                                createScenario = createScenario,
+                                paymentId = paymentId,
+                            )
                         )
                 }
             },
@@ -161,11 +208,16 @@ fun buildCreateClientNavGraph(
         enterTransition = createClientCommunicationEnterTransition(),
         exitTransition = createClientCommunicationExitTransition(),
     ) {
-        val viewModelScope = try {
-            navHostController.getBackStackEntry(basicInfoRoute)
-        } catch (error: Throwable) {
-            Timber.e("Could not find viewModelScope", error)
-            null
+        val viewModelScope = remember {
+            Either.catch { navHostController.getBackStackEntry(basicInfoRoute) }
+                .fold(
+                    ifLeft = {
+                        Timber.e("Error getting back stack entry for $basicInfoRoute", it)
+                        null
+                    },
+
+                    ifRight = { it }
+                )
         }
         
         CreateClientCommunicationScreen(

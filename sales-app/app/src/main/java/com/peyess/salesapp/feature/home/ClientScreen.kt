@@ -74,10 +74,12 @@ private val profilePicPadding = 8.dp
 fun ClientScreen(
     modifier: Modifier = Modifier,
 
-    onCreateNewClient: () -> Unit = {},
+    onCreateNewClient: (clientId: String) -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
     val viewModel: MainViewModel = mavericksActivityViewModel()
+
+    val createClientId by remember { mutableStateOf("") }
 
     val isLoading by viewModel.collectAsState(MainAppState::areClientsLoading)
     val clientList by viewModel.collectAsState(MainAppState::clientListStream)
@@ -93,7 +95,7 @@ fun ClientScreen(
 
                 clientList = clientList,
 
-                onCreateNewClient = onCreateNewClient,
+                onCreateNewClient = { onCreateNewClient(createClientId) },
                 onSearchClient = onSearchClient,
             )
         }

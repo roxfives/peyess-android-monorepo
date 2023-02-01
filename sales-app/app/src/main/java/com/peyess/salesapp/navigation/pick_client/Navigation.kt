@@ -10,7 +10,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.create_client.formatBasicInfoRoute
+import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 
@@ -40,7 +40,7 @@ fun buildPickClientNavGraph(
         PickClientScreen(
             modifier = modifier,
             navHostController = navHostController,
-            onCreateNewClient = { paymentId, pickScenario ->
+            onCreateNewClient = { clientId, paymentId, pickScenario ->
                 val createScenario = when (pickScenario) {
                     PickScenario.ServiceOrder -> CreateScenario.ServiceOrder
                     PickScenario.Payment -> CreateScenario.Payment
@@ -49,7 +49,8 @@ fun buildPickClientNavGraph(
                     PickScenario.Witness -> CreateScenario.Witness
                 }
 
-                val basicInfoRoute = formatBasicInfoRoute(
+                val basicInfoRoute = buildBasicInfoRoute(
+                    clientId = clientId,
                     createScenario = createScenario,
                     paymentId = paymentId,
                 )

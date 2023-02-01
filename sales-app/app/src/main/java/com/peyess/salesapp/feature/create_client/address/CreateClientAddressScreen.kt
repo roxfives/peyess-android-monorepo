@@ -80,9 +80,10 @@ fun CreateClientAddressScreen(
     navHostController: NavHostController = rememberNavController(),
     viewModelScope: LifecycleOwner? = null,
     onDone: (
+        clientId: String,
         createScenario: CreateScenario,
         paymentId: Long,
-    ) -> Unit = { _, _-> },
+    ) -> Unit = { _, _, _-> },
 ) {
     val viewModel: ClientAddressViewModel = if (viewModelScope == null) {
         mavericksViewModel()
@@ -204,7 +205,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
-        onDone = { onDone(scenario, paymentId) },
+        onDone = { onDone("clientId", scenario, paymentId) },
     )
 }
 

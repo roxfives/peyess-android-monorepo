@@ -86,8 +86,14 @@ fun PickClientScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
 
-    onCreateNewClient: (paymentId: Long, pickScenario: PickScenario) -> Unit = { _, _ -> },
+    onCreateNewClient: (
+        clientId: String,
+        paymentId: Long,
+        pickScenario: PickScenario,
+    ) -> Unit = { _, _, _ -> },
+
     onSearchClient: () -> Unit = {},
+
     onClientPicked: (
         paymentId: Long,
         pickedId: String,
@@ -160,7 +166,8 @@ fun PickClientScreen(
 
                 onSearchClient = onSearchClient,
                 onCreateNewClient = {
-                    onCreateNewClient(paymentId ?: 0L, pickScenario)
+                    onCreateNewClient(
+                        "clientId",paymentId ?: 0L, pickScenario)
                 },
                 onClientPicked = {
                     viewModel.pickClient(it)

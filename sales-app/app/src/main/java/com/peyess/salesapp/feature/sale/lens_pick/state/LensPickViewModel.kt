@@ -57,8 +57,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -473,6 +475,7 @@ class LensPickViewModel @AssistedInject constructor(
         prescription
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun getUpdatedLensesTableStream(
         isSale: Boolean,
         filter: LensListFilter,
@@ -504,7 +507,7 @@ class LensPickViewModel @AssistedInject constructor(
                     ),
                 )
 
-                pager.flow.map { pagingData ->
+                pager.flow.mapLatest { pagingData ->
                     pagingData.map { lens ->
                         val reasonsUnsupported = if (isSale && prescription != null) {
                             checkLensDisponibilities(

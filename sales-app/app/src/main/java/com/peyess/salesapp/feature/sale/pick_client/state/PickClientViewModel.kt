@@ -24,8 +24,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 
 private typealias ViewModelFactory = MavericksViewModelFactory<PickClientViewModel, PickClientState>
@@ -105,6 +107,7 @@ class PickClientViewModel @AssistedInject constructor(
             }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun updatedClientListStream(): ClientsListResponse {
         // TODO: build query using utils
         val query = PeyessQuery(
@@ -130,7 +133,7 @@ class PickClientViewModel @AssistedInject constructor(
                 ),
             )
 
-            pager.flow.map { pagingData ->
+            pager.flow.mapLatest { pagingData ->
                 pagingData.map { it.toClient() }
             }
         }

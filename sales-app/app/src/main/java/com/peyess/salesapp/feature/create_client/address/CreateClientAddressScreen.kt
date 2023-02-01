@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
@@ -52,17 +51,11 @@ import com.peyess.salesapp.feature.create_client.address.state.ClientAddressStat
 import com.peyess.salesapp.feature.create_client.address.state.ClientAddressViewModel
 import com.peyess.salesapp.feature.create_client.utils.parseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.create_client.createScenarioParam
-import com.peyess.salesapp.navigation.pick_client.PickScenario
-import com.peyess.salesapp.navigation.pick_client.isPickingParam
-import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.UserZipCodeVisualTransformation
-import timber.log.Timber
 
 private val defaultSpacerSize = 32.dp
 

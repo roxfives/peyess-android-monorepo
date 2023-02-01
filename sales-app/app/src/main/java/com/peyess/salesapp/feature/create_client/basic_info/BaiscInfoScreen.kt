@@ -72,6 +72,7 @@ import com.peyess.salesapp.feature.create_client.basic_info.state.BasicInfoViewM
 import com.peyess.salesapp.feature.create_client.basic_info.utils.createClientFile
 import com.peyess.salesapp.feature.create_client.basic_info.utils.fromReadableSexName
 import com.peyess.salesapp.feature.create_client.basic_info.utils.readableSexName
+import com.peyess.salesapp.feature.create_client.utils.parseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
@@ -104,31 +105,30 @@ fun BasicInfoScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     onDone: (
+        clientId: String,
         createScenario: CreateScenario,
         paymentId: Long,
-    ) -> Unit = { _, _ -> },
+    ) -> Unit = { _, _, _ -> },
 ) {
     val viewModel: BasicInfoViewModel = mavericksViewModel()
 
-    val paymentId = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getLong(paymentIdParam)
-        ?: 0L
+    parseParameters(
+        navController = navHostController,
+        onUpdateClientId = viewModel::onClientIdChanged,
+        onUpdatePaymentId = viewModel::onPaymentIdChanged,
+        onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+    )
 
-    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
-    val scenarioParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(createScenarioParam)
+    val clientId by viewModel.collectAsState(BasicInfoState::clientId)
+    val scenario by viewModel.collectAsState(BasicInfoState::createScenario)
+    val paymentId by viewModel.collectAsState(BasicInfoState::paymentId)
 
-    LaunchedEffect(scenarioParameter) {
-        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
-
-        Timber.i("Using scenario $scenario from $scenarioParameter")
-    }
-
-    val creatingClient by viewModel.collectAsState(BasicInfoState::creatingClient)
+    val name by viewModel.collectAsState(BasicInfoState::nameInput)
+    val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplayInput)
+    val picture by viewModel.collectAsState(BasicInfoState::pictureInput)
+    val birthday by viewModel.collectAsState(BasicInfoState::birthdayInput)
+    val document by viewModel.collectAsState(BasicInfoState::documentInput)
+    val sex by viewModel.collectAsState(BasicInfoState::sexInput)
 
     val nameErrorId by viewModel.collectAsState(BasicInfoState::nameErrorId)
     val nameHasError by viewModel.collectAsState(BasicInfoState::nameHasError)
@@ -147,23 +147,24 @@ fun BasicInfoScreen(
     BasicInfoScreenImpl(
         modifier = modifier,
 
+        picture = picture,
         onPictureChanged = viewModel::onPictureChanged,
 
-        name = creatingClient.name,
+        name = name,
         onNameChanged = viewModel::onNameChanged,
         onDetectNameError = viewModel::onDetectNameError,
 
-        nameDisplay = creatingClient.nameDisplay,
+        nameDisplay = nameDisplay,
         onNameDisplayChanged = viewModel::onNameDisplayChanged,
         onDetectNameDisplayError = viewModel::onDetectNameDisplayError,
 
-        birthday = creatingClient.birthday,
+        birthday = birthday,
         onBirthdayChanged = viewModel::onBirthdayChanged,
 
-        sex = creatingClient.sex,
+        sex = sex,
         onSexChanged = viewModel::onSexChanged,
 
-        document = creatingClient.document,
+        document = document,
         onDocumentChanged = viewModel::onDocumentChanged,
         onDetectDocumentError = viewModel::onDetectDocumentError,
 
@@ -180,7 +181,7 @@ fun BasicInfoScreen(
         documentHasError = documentHasError,
         isInputValid = isInputValid,
 
-        onDone = { onDone(scenario, paymentId) },
+        onDone = { onDone(clientId, scenario, paymentId) },
     )
 }
 

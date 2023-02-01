@@ -13,6 +13,7 @@ import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.feature.create_client.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.feature.create_client.adapter.toClient
 import com.peyess.salesapp.feature.create_client.model.Client
+import com.peyess.salesapp.navigation.create_client.CreateScenario
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,12 +31,10 @@ class BasicInfoViewModel @AssistedInject constructor(
     private val maxDocumentLength = 11
 
     init {
-        loadOrCreateClient()
+        onEach(BasicInfoState::clientId) { loadClient(it) }
+        onEach(BasicInfoState::client) { updateInput(it) }
 
-        onEach(BasicInfoState::creatingClient) { updateInput(it) }
-
-        onAsync(BasicInfoState::findCreatingResponseAsync) { processFindCreatingResponse(it) }
-        onAsync(BasicInfoState::createClientResponseAsync) { processCreateClientResponse(it) }
+        onAsync(BasicInfoState::loadClientResponseAsync) { processLoadClientResponse(it) }
     }
 
     private fun updateClient(client: Client) {
@@ -44,59 +43,22 @@ class BasicInfoViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadOrCreateClient() = withState {
+    private fun loadClient(clientId: String) = withState {
         suspend {
-            cacheCreateClientRepository.findCreating()
+            cacheCreateClientRepository.getById(clientId)
         }.execute(Dispatchers.IO) {
-            copy(findCreatingResponseAsync = it)
+            copy(loadClientResponseAsync = it)
         }
     }
 
-    private fun processFindCreatingResponse(
+    private fun processLoadClientResponse(
         response: CacheCreateClientFetchSingleResponse,
     ) = setState {
         response.fold(
             ifLeft = {
-                Timber.e("Error while finding creating client: $it")
+                Timber.e("Error while loading client: $it")
                 copy(
-                    findCreatingResponseAsync = Fail(
-                        it.error ?: Throwable(it.description)
-                    )
-                )
-            },
-
-            ifRight = {
-                Timber.i("Found creating client: $it")
-                copy(
-                    hasFoundAnyCreating = true,
-                    clientFound = it.toClient(),
-                )
-            }
-        )
-    }
-
-    private fun deleteClient(client: Client) {
-        viewModelScope.launch(Dispatchers.IO) {
-            cacheCreateClientRepository.deleteById(client.id)
-        }
-    }
-
-    private fun createNewClient() {
-        suspend {
-            cacheCreateClientRepository.createClient()
-        }.execute(Dispatchers.IO) {
-            copy(createClientResponseAsync = it)
-        }
-    }
-
-    private fun processCreateClientResponse(
-        response: CacheCreateClientCreateResponse,
-    ) = setState {
-        response.fold(
-            ifLeft = {
-                Timber.e("Error while creating client: $it")
-                copy(
-                    createClientResponseAsync = Fail(
+                    loadClientResponseAsync = Fail(
                         it.error ?: Throwable(it.description)
                     )
                 )
@@ -104,58 +66,77 @@ class BasicInfoViewModel @AssistedInject constructor(
 
             ifRight = {
                 Timber.i("Created client: $it")
-                copy(creatingClient = it.toClient())
+                copy(client = it.toClient())
             }
         )
     }
 
     private fun updateInput(client: Client) = setState {
-        copy(creatingClient = client)
+        copy(client = client)
     }
 
-    fun resetCacheAndCreateNewClient() = withState {
-        if (it.hasFoundAnyCreating) {
-            deleteClient(it.clientFound)
-        }
+    fun onClientIdChanged(clientId: String) = setState {
+        copy(clientId = clientId)
+    }
 
-        createNewClient()
+    fun onPaymentIdChanged(paymentId: Long) = setState {
+        copy(paymentId = paymentId)
+    }
+
+    fun onCreateScenarioChanged(createScenario: CreateScenario) = setState {
+        copy(createScenario = createScenario)
     }
 
     fun onPictureChanged(picture: Uri) = setState {
-        val update = this.creatingClient.copy(picture = picture)
+        val update = this.client.copy(picture = picture)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            pictureInput = picture,
+        )
     }
 
     fun onNameChanged(value: String) = setState {
-        val update = this.creatingClient.copy(name = value)
+        val update = this.client.copy(name = value)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            nameInput = value,
+        )
     }
 
     fun onNameDisplayChanged(value: String) = setState {
-        val update = this.creatingClient.copy(nameDisplay = value)
+        val update = this.client.copy(nameDisplay = value)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            nameDisplayInput = value,
+        )
     }
 
     fun onBirthdayChanged(value: LocalDate) = setState {
         val instant = value.atStartOfDay(ZoneId.systemDefault()).toInstant()
         val day = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-        val update = this.creatingClient.copy(birthday = day)
+        val update = this.client.copy(birthday = day)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            birthdayInput = day,
+        )
     }
 
     fun onSexChanged(value: Sex) = setState {
-        val update = this.creatingClient.copy(sex = value)
+        val update = this.client.copy(sex = value)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            sexInput = value,
+        )
     }
 
     fun onDocumentChanged(value: String) = setState {
@@ -164,10 +145,13 @@ class BasicInfoViewModel @AssistedInject constructor(
         } else {
             value.substring(0 until maxDocumentLength)
         }
-        val update = this.creatingClient.copy(document = document)
+        val update = this.client.copy(document = document)
 
         updateClient(update)
-        copy(creatingClient = update)
+        copy(
+            client = update,
+            documentInput = document,
+        )
     }
 
     fun onDetectNameError() = setState {

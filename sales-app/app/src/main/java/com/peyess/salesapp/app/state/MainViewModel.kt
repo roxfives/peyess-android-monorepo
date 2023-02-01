@@ -9,14 +9,15 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.app.adapter.toClient
+import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
+import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
@@ -61,7 +62,6 @@ class MainViewModel @AssistedInject constructor(
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
-        findActiveCreatingClient()
         streamActiveSales()
 
         setState {
@@ -102,24 +102,22 @@ class MainViewModel @AssistedInject constructor(
         loadStore()
     }
 
-    private fun findActiveCreatingClient() {
-        suspend {
-            cacheCreateClientRepository.findCreating()
-        }.execute {
-            copy(existingCreateClientAsync = it)
-        }
-    }
-
     private fun processActiveCreatingClientResponse(
         response: CacheCreateClientFetchSingleResponse,
     ) = setState {
         response.fold(
             ifLeft = {
-                 copy(existingCreateClientId = "")
+                 copy(
+                     existingCreateClient = CacheCreateClientDocument(),
+                     hasLookedForExistingClient = true,
+                 )
             },
 
             ifRight = {
-                copy(existingCreateClientId = it.id)
+                copy(
+                    existingCreateClient = it,
+                    hasLookedForExistingClient = true,
+                )
             }
         )
     }
@@ -250,10 +248,22 @@ class MainViewModel @AssistedInject constructor(
         )
     }
 
+    fun findActiveCreatingClient() {
+        suspend {
+            cacheCreateClientRepository.findCreating()
+        }.execute {
+            copy(existingCreateClientAsync = it)
+        }
+    }
+
     fun createNewClient() = withState {
         suspend {
             if (it.creatingClientExists) {
-                cacheCreateClientRepository.deleteById(it.existingCreateClientId)
+                val existingClient = it.existingCreateClient.copy(
+                    isCreating = false,
+                )
+
+                cacheCreateClientRepository.update(existingClient)
             }
 
             cacheCreateClientRepository.createClient()
@@ -269,8 +279,16 @@ class MainViewModel @AssistedInject constructor(
         )
     }
 
+    fun checkedForExistingClient() = setState {
+        copy(hasLookedForExistingClient = false)
+    }
+
     fun startedCreatingClient() = setState {
-        copy(createClient = false)
+        copy(
+            hasLookedForExistingClient = false,
+            createClient = false,
+            createClientId = "",
+        )
     }
 
     suspend fun pictureForUser(uid: String): Uri {

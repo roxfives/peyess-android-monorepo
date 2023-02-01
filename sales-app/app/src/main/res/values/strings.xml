@@ -65,7 +65,13 @@
     <string name="error_empty_passcode">Por favor, preencha os campos acima</string>
     <string name="error_wrong_passcode">A senha é inválida</string>
 
-    <!-- UI Component: Home   -->
+    <!-- UI Component: ExistingClientDialog -->
+    <string name="existing_client_dialog_title">Notamos que um cliente já estava sendo criado</string>
+    <string name="existing_client_dialog_content">Você pode continuar a criação do cliente com os dados que encontramos ou criar um novo. O que deseja fazer?</string>
+    <string name="existing_client_dialog_btn_reuse">Retomar criação</string>
+    <string name="existing_client_dialog_btn_create_new">Criar um novo</string>
+
+    <!-- UI Component: Home -->
     <string name="home_welcome">Boas vindas, %1$s</string>
 
     <string name="home_notifications">Notificações</string>

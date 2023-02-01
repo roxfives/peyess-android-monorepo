@@ -67,6 +67,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
+import com.peyess.salesapp.feature.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -75,8 +76,6 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
-import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.ui.component.button.HomeScreenButton
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -88,6 +87,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private val dividerPadding = 16.dp
 
@@ -141,6 +141,7 @@ fun HomeScreen(
     val createClient by viewModel.collectAsState(MainAppState::createClient)
     val createClientId by viewModel.collectAsState(MainAppState::createClientId)
     val creatingClientExists by viewModel.collectAsState(MainAppState::creatingClientExists)
+    val hasLookedForExistingClient by viewModel.collectAsState(MainAppState::hasLookedForExistingClient)
 
     val collaborator by viewModel.collectAsState(MainAppState::collaboratorDocument)
     val isLoadingCollaborator by viewModel.collectAsState(MainAppState::isLoadingCollaborator)
@@ -162,9 +163,30 @@ fun HomeScreen(
 
     val hasStartedNewSale = remember { mutableStateOf(false) }
 
+    val createClientDialogState = rememberMaterialDialogState()
+    ExistingClientDialog(
+        dialogState = createClientDialogState,
+        onCreateNewClient = viewModel::createNewClient,
+        onUseExistingClient = viewModel::createClientFromCache,
+    )
+
+    if (hasLookedForExistingClient && creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.checkedForExistingClient()
+            createClientDialogState.show()
+        }
+    }
+
+    if (hasLookedForExistingClient && !creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.createNewClient()
+        }
+    }
+
     if (createClient) {
         LaunchedEffect(Unit) {
             viewModel.startedCreatingClient()
+            Timber.i("Creating client with id: $createClientId")
             onAddClient(createClientId)
         }
     }
@@ -229,16 +251,8 @@ fun HomeScreen(
             onSignOut()
         },
 
-        onStartSale = {
-            viewModel.startNewSale()
-        },
-        onAddClient = {
-            if (creatingClientExists) {
-                viewModel.createClientFromCache()
-            } else {
-                viewModel.createNewClient()
-            }
-        },
+        onStartSale = { viewModel.startNewSale() },
+        onAddClient = viewModel::findActiveCreatingClient,
         onStartVisualAcuity = onStartVisualAcuity,
         onOpenProductsTable = onOpenProductsTable,
     )

@@ -66,7 +66,17 @@ class BasicInfoViewModel @AssistedInject constructor(
 
             ifRight = {
                 Timber.i("Created client: $it")
-                copy(client = it.toClient())
+                val client = it.toClient()
+
+                copy(
+                    client = client,
+                    nameInput = client.name,
+                    nameDisplayInput = client.nameDisplay,
+                    pictureInput = client.picture,
+                    birthdayInput = client.birthday,
+                    documentInput = client.document,
+                    sexInput = client.sex,
+                )
             }
         )
     }

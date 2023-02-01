@@ -9,6 +9,7 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
+import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
@@ -46,7 +47,8 @@ data class MainAppState(
     val createClient: Boolean = false,
 
     val existingCreateClientAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
-    val existingCreateClientId: String = "",
+    val existingCreateClient: CacheCreateClientDocument = CacheCreateClientDocument(),
+    val hasLookedForExistingClient: Boolean = false,
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
@@ -96,6 +98,7 @@ data class MainAppState(
 
     val isLookingForCreatingClient = existingCreateClientAsync is Loading
     val isCreatingClient = createClientResponseAsync is Loading
+    val existingCreateClientId = existingCreateClient.id
     val creatingClientExists = existingCreateClientId.isNotBlank()
 
     val areClientsLoading = clientListResponseAsync is Loading

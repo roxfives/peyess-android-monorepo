@@ -49,6 +49,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationState
 import com.peyess.salesapp.feature.create_client.communication.state.CommunicationViewModel
+import com.peyess.salesapp.feature.create_client.utils.parseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
@@ -78,56 +79,27 @@ fun CreateClientCommunicationScreen(
 ) {
     val viewModel: CommunicationViewModel = mavericksViewModel()
 
+    parseParameters(
+        navController = navHostController,
+        onUpdateClientId = viewModel::onClientIdChanged,
+        onUpdatePaymentId = viewModel::onPaymentIdChanged,
+        onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+    )
+
     val saleId by viewModel.collectAsState(CommunicationState::saleId)
     val serviceOrderId by viewModel.collectAsState(CommunicationState::serviceOrderId)
 
-    val createScenarioParam = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(createScenarioParam)
-        ?: CreateScenario.Home.toName()
-    val paymentId = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getLong(paymentIdParam)
-        ?: 0L
-
-    LaunchedEffect(createScenarioParam, paymentId) {
-        viewModel.updatePickScenario(createScenarioParam, paymentId)
-    }
-
-    var scenario by remember { mutableStateOf<CreateScenario>(CreateScenario.Home) }
-    val scenarioParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(com.peyess.salesapp.navigation.create_client.createScenarioParam)
-
-    LaunchedEffect(scenarioParameter) {
-        scenario = CreateScenario.fromName(scenarioParameter ?: "") ?: CreateScenario.Home
-
-        Timber.i("Using scenario $scenario")
-    }
-
-    val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
-    val uploadSuccessful by viewModel.collectAsState(CommunicationState::uploadSuccessful)
-
-    val clientId by viewModel.collectAsState(CommunicationState::uploadedId)
-
-    LaunchedEffect(uploadSuccessful, clientId) {
-        if (uploadSuccessful && clientId.isNotBlank()) {
-            Timber.i("Navigating with client $clientId")
-
-            onDone(scenario, clientId, paymentId, saleId, serviceOrderId)
-        }
-    }
+    val clientId by viewModel.collectAsState(CommunicationState::clientId)
+    val paymentId by viewModel.collectAsState(CommunicationState::paymentId)
+    val createScenario by viewModel.collectAsState(CommunicationState::createScenario)
 
     val hasAcceptedPromotionalMessages by
         viewModel.collectAsState(CommunicationState::hasAcceptedPromotionalMessages)
 
-    val email by viewModel.collectAsState(CommunicationState::email)
-    val cellphone by viewModel.collectAsState(CommunicationState::cellphone)
-    val whatsapp by viewModel.collectAsState(CommunicationState::whatsapp)
-    val phone by viewModel.collectAsState(CommunicationState::phone)
+    val email by viewModel.collectAsState(CommunicationState::emailInput)
+    val cellphone by viewModel.collectAsState(CommunicationState::cellphoneInput)
+    val whatsapp by viewModel.collectAsState(CommunicationState::whatsappInput)
+    val phone by viewModel.collectAsState(CommunicationState::phoneInput)
 
     val phoneHasWhatsApp by viewModel.collectAsState(CommunicationState::phoneHasWhatsApp)
     val hasPhoneContact by viewModel.collectAsState(CommunicationState::hasPhoneContact)
@@ -149,7 +121,7 @@ fun CreateClientCommunicationScreen(
     CommunicationScreenImpl(
         modifier = modifier,
 
-        isUploadingClient = isUploadingClient,
+        isUploadingClient = false,
 
         phoneHasWhatsApp = phoneHasWhatsApp,
         onPhoneHasWhatsAppChanged = viewModel::onPhoneHasWhatsappChanged,

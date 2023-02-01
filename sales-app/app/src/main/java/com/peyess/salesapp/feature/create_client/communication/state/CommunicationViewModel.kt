@@ -10,7 +10,12 @@ import com.peyess.salesapp.data.adapter.client.toClientDocument
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client.toClientPickedEntity
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.feature.create_client.adapter.toCacheCreateClientDocument
+import com.peyess.salesapp.feature.create_client.adapter.toClient
+import com.peyess.salesapp.feature.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -28,25 +33,62 @@ private const val maxCellphoneLength = 11
 
 class CommunicationViewModel @AssistedInject constructor(
     @Assisted initialState: CommunicationState,
-    private val clientRepository: ClientRepository,
+//    private val clientRepository: ClientRepository,
+    private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val saleRepository: SaleRepository,
 ): MavericksViewModel<CommunicationState>(initialState) {
 
     init {
-        loadClient()
         loadServiceOrderData()
 
+        onEach(CommunicationState::clientId) { loadClient(it) }
+
+        onAsync(CommunicationState::clientResponseAsync) { processLoadClientResponse(it) }
         onAsync(CommunicationState::activeServiceOrderResponseAsync) {
             processServiceOrderDataResponse(it)
         }
     }
 
-    private fun loadClient() = withState {
-        clientRepository
-            .latestLocalClientCreated()
-            .execute {
-                copy(_clientAsync = it)
-            }
+    private fun updateClient(client: Client) {
+        viewModelScope.launch(Dispatchers.IO) {
+            cacheCreateClientRepository.update(client.toCacheCreateClientDocument())
+        }
+    }
+
+    private fun loadClient(clientId: String) {
+        suspend {
+            cacheCreateClientRepository.getById(clientId)
+        }.execute {
+            copy(clientResponseAsync = it)
+        }
+    }
+
+    private fun processLoadClientResponse(
+        response: CacheCreateClientFetchSingleResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    clientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                copy(
+                    client = it.toClient(),
+
+                    emailInput = it.email,
+                    cellphoneInput = it.cellphone,
+                    whatsappInput = it.whatsapp,
+                    phoneInput = it.phone,
+                    phoneHasWhatsApp = it.phoneHasWhatsApp,
+                    hasPhoneContact = it.hasPhoneContact,
+                    hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
+                )
+            },
+        )
     }
 
     private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
@@ -71,12 +113,6 @@ class CommunicationViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateClient(client: ClientModel) {
-        viewModelScope.launch(Dispatchers.IO) {
-            clientRepository.updateLocalClient(client)
-        }
-    }
-
     private suspend fun addAllForServiceOrder(client: ClientDocument) {
         saleRepository.activeSO()
             .filterNotNull()
@@ -96,74 +132,112 @@ class CommunicationViewModel @AssistedInject constructor(
             }
     }
 
-    fun updatePickScenario(
-        createScenarioParam: String,
-        paymentId: Long,
-    ) = setState {
+    fun onClientIdChanged(clientId: String) = setState {
+        copy(clientId = clientId)
+    }
+
+    fun onPaymentIdChanged(paymentId: Long) = setState {
+        copy(paymentId = paymentId)
+    }
+
+    fun onCreateScenarioChanged(createScenario: CreateScenario) = setState {
+        copy(createScenario = createScenario)
+    }
+
+    fun onEmailChanged(email: String) = setState {
+        val update = client.copy(email = email)
+
+        updateClient(update)
         copy(
-            createScenarioParam = CreateScenario.fromName(createScenarioParam)
-                ?: CreateScenario.Home,
-            paymentId = paymentId,
+            client = update,
+            emailInput = email,
         )
     }
 
-    fun onEmailChanged(email: String) = withState {
-        val update = it.client.copy(email = email)
-        updateClient(update)
-    }
-
-    fun onCellphoneChanged(cellphone: String) = withState {
+    fun onCellphoneChanged(cellphone: String) = setState {
         val cellphoneNumber = if (cellphone.length <= maxCellphoneLength) {
             cellphone
         } else {
             cellphone.substring(0 until maxCellphoneLength)
         }
+        val whatsappUpdate = if (phoneHasWhatsApp) cellphoneNumber else whatsappInput
 
-        val whatsappUpdate = if (it.phoneHasWhatsApp) cellphoneNumber else it.whatsapp
+        val update = client.copy(
+            cellphone = cellphoneNumber,
+            whatsapp = whatsappUpdate,
+        )
 
-        val update = it.client.copy(cellphone = cellphoneNumber, whatsapp = whatsappUpdate)
         updateClient(update)
+        copy(
+            client = update,
+
+            cellphoneInput = cellphoneNumber,
+            whatsappInput = whatsappUpdate,
+        )
     }
 
-    fun onWhatsappChanged(whatsapp: String) = withState {
+    fun onWhatsappChanged(whatsapp: String) = setState {
         val phoneNumber = if (whatsapp.length <= maxCellphoneLength) {
             whatsapp
         } else {
             whatsapp.substring(0 until maxCellphoneLength)
         }
 
-        val update = it.client.copy(whatsapp = phoneNumber)
+        val update = client.copy(whatsapp = phoneNumber)
         updateClient(update)
+
+        copy(
+            client = update,
+            whatsappInput = phoneNumber,
+        )
     }
 
-    fun onPhoneChanged(phone: String) = withState {
+    fun onPhoneChanged(phone: String) = setState {
         val phoneNumber = if (phone.length <= maxPhoneLength) {
             phone
         } else {
             phone.substring(0 until maxPhoneLength)
         }
 
-        val update = it.client.copy(phone = phoneNumber)
+        val update = client.copy(phone = phoneNumber)
+
         updateClient(update)
+        copy(
+            client = update,
+            phoneInput = phoneNumber,
+        )
     }
 
     fun onPhoneHasWhatsappChanged(cellphoneHasWhatsApp: Boolean) = setState {
-        val whatsappUpdate = if (cellphoneHasWhatsApp) cellphone else ""
+        val whatsappUpdate = if (cellphoneHasWhatsApp) cellphoneInput else ""
 
         val update = client.copy(whatsapp = whatsappUpdate)
-        updateClient(update)
 
+        updateClient(update)
         copy(
+            client = update,
             phoneHasWhatsApp = cellphoneHasWhatsApp,
         )
     }
 
     fun onHasPhoneChanged(hasPhone: Boolean) = setState {
-        copy(hasPhoneContact = hasPhone)
+        val update = client.copy(hasPhoneContact = hasPhone)
+
+        updateClient(update)
+        copy(
+            client = update,
+            hasPhoneContact = hasPhone,
+        )
     }
 
     fun onHasAcceptedPromotionalMessages(hasAccepted: Boolean) = setState {
-        copy(hasAcceptedPromotionalMessages = hasAccepted)
+        val update = client.copy(hasAcceptedPromotionalMessages = hasAccepted)
+
+        updateClient(update)
+        copy(
+            client = update,
+            hasAcceptedPromotionalMessages = hasAccepted,
+        )
     }
 
     fun onDetectEmailError() = setState {
@@ -200,28 +274,28 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun createClient() = withState {
-        val createdId = it.clientId
-
-        suspend {
-            Timber.i("Creating client ${it.client}")
-
-            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
-
-            if (
-                it.createScenarioParam != CreateScenario.Home
-                    && it.createScenarioParam != CreateScenario.Payment
-            ) {
-                addClientToSale(it.client, it.createScenarioParam)
-            }
-
-            clientRepository.clearCreateClientCache(it.client.id)
-        }.execute(Dispatchers.IO) { uploadState ->
-            Timber.i("Upload client: $uploadState")
-            copy(
-                uploadClientAsync = uploadState,
-                uploadedId = createdId,
-            )
-        }
+//        val createdId = it.clientId
+//
+//        suspend {
+//            Timber.i("Creating client ${it.client}")
+//
+//            clientRepository.uploadClient(it.client, it.hasAcceptedPromotionalMessages)
+//
+//            if (
+//                it.createScenarioParam != CreateScenario.Home
+//                    && it.createScenarioParam != CreateScenario.Payment
+//            ) {
+//                addClientToSale(it.client, it.createScenarioParam)
+//            }
+//
+//            clientRepository.clearCreateClientCache(it.client.id)
+//        }.execute(Dispatchers.IO) { uploadState ->
+//            Timber.i("Upload client: $uploadState")
+//            copy(
+//                uploadClientAsync = uploadState,
+//                uploadedId = createdId,
+//            )
+//        }
     }
 
     // hilt

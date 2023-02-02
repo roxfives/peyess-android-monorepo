@@ -6,6 +6,7 @@ import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.model.users.toDocument
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 class CollaboratorsRepositoryImpl @Inject constructor(
@@ -28,7 +29,14 @@ class CollaboratorsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun pictureFor(uid: String): Uri {
-        return collaboratorsDao.pictureFor(uid)
+        return try {
+            collaboratorsDao.pictureFor(uid)
+        } catch (err: Throwable) {
+            Timber.e("Error while getting picture for collaborator $uid", err)
+            err.printStackTrace()
+
+            Uri.EMPTY
+        }
     }
 
     override suspend fun getById(uid: String): CollaboratorDocument? {

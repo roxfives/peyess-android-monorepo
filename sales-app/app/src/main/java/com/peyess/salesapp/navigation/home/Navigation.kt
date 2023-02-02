@@ -76,7 +76,7 @@ fun buildHomeNavGraph(
         enterTransition = clientsEnterTransition(),
         exitTransition = clientsExitTransition()
     ) {
-       val scenario = CreateScenario.Home
+       val scenario = CreateScenario.ClientScreen
 
         ClientScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),

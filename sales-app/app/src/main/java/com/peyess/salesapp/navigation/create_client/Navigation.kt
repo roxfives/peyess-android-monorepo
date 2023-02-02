@@ -204,6 +204,13 @@ fun buildCreateClientNavGraph(
             onDone = { createScenario, clientId, paymentId, saleId, serviceOrderId ->
                  when (createScenario) {
                      is CreateScenario.Home ->
+                         navHostController.navigate(SalesAppScreens.Home.name) {
+                             popUpTo(SalesAppScreens.Home.name) {
+                                 inclusive = true
+                             }
+                         }
+
+                     is CreateScenario.ClientScreen ->
                          navHostController.navigate(SalesAppScreens.Clients.name) {
                              popUpTo(SalesAppScreens.Clients.name) {
                                  inclusive = true
@@ -244,6 +251,7 @@ fun buildCreateClientNavGraph(
 
 sealed class CreateScenario {
     object Home: CreateScenario()
+    object ClientScreen: CreateScenario()
     object ServiceOrder: CreateScenario()
 
     object Responsible: CreateScenario()
@@ -257,6 +265,7 @@ sealed class CreateScenario {
         fun toName(scenario: CreateScenario): String {
             return when (scenario) {
                 Home -> "Home"
+                ClientScreen -> "ClientScreen"
                 ServiceOrder -> "ServiceOrder"
                 Payment -> "Payment"
                 Responsible -> "Responsible"
@@ -268,6 +277,7 @@ sealed class CreateScenario {
         fun fromName(name: String): CreateScenario? {
             return when (name) {
                 "Home" -> Home
+                "ClientScreen" -> ClientScreen
                 "ServiceOrder" -> ServiceOrder
                 "Payment" -> Payment
                 "Responsible" -> Responsible

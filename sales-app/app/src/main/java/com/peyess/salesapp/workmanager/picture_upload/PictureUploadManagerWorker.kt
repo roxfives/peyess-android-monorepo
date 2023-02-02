@@ -8,6 +8,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
+import com.google.firebase.storage.StorageMetadata
+import com.google.firebase.storage.ktx.storageMetadata
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -58,11 +60,16 @@ class PictureUploadManagerWorker @AssistedInject constructor(
             StorageNotInitialized(description = "Reference to storage is null")
         }
 
+        val storageMetadata = storageMetadata {
+            contentType = "image/jpeg"
+        }
+
         uploadPicture(
             storage = storageRef,
             storagePath = pictureUpload.storagePath,
             filename = pictureUpload.storageName,
             picture = pictureUpload.picture,
+            metadata = storageMetadata,
             onProgressUpdate = {},
         ).mapLeft {
             UploadFailed(

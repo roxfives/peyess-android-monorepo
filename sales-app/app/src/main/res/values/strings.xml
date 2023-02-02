@@ -620,6 +620,7 @@
     <!-- Storage file paths -->
     <string name="storage_store_picture">public/stores/%1$s/store-picture.jpeg</string>
     <string name="storage_collaborator_picture">users/%1$s/profile-picture.jpeg</string>
+    <string name="storage_client_picture">clients/%1$s/profile-picture.jpeg</string>
     <string name="storage_client_profile">clients/%1$s</string>
     <string name="storage_client_profile_filename">profile-picture.jpeg</string>
     <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>

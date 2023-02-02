@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.repository.client
 
+import android.net.Uri
 import arrow.core.Either
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
@@ -22,4 +23,6 @@ interface ClientRepository: ReadOnlyRepository<ClientDocument> {
 
     suspend fun uploadClient(clientModel: ClientModel, hasAcceptedPromotionalMessages: Boolean)
     suspend fun clearCreateClientCache(clientId: String)
+
+    suspend fun pictureForClient(clientId: String): Uri
 }

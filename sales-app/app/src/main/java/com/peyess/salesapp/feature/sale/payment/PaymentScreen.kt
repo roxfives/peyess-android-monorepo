@@ -163,6 +163,8 @@ fun PaymentScreen(
     PaymentScreenImpl(
         modifier = modifier,
 
+        pictureForClient = viewModel::pictureForClient,
+
         isClientLoading = isClientLoading,
         client = client,
         toBePaid = totalLeftToPay,
@@ -201,6 +203,7 @@ fun PaymentScreen(
 private fun PaymentScreenImpl(
     modifier: Modifier = Modifier,
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     isClientLoading: Boolean = false,
     client: Client = Client(),
     toBePaid: Double = 0.0,
@@ -233,6 +236,8 @@ private fun PaymentScreenImpl(
     Column(modifier = modifier) {
         ClientView(
             modifier = Modifier.fillMaxWidth(),
+
+            pictureForClient = pictureForClient,
 
             isClientLoading = isClientLoading,
             client = client,

@@ -221,46 +221,26 @@ class FramesViewModel @AssistedInject constructor(
             }
     }
 
-    private fun processLoadFramesResponse(response: Either<Throwable, FramesDocument>) = setState {
-        response.fold(
-            ifLeft = {
-                copy(loadFramesResponseAsync = Fail(it))
-            },
+    private fun processLoadFramesResponse(
+      response: FramesEntity,
+//        response: Either<Throwable, FramesDocument>
+    ) = setState {
+        copy(
+            currentFrames = response,
 
-            ifRight = {
-                copy(
-                    currentFrames = FramesEntity(
-                        soId = it.soId,
-                        areFramesNew = it.areFramesNew,
-                        description = it.description,
-                        reference = it.reference,
-                        value = it.value,
-                        tagCode = it.tagCode,
-                        type = it.type,
-                        framesInfo = it.framesInfo,
-                    ),
-
-                    areFramesNewInput = it.areFramesNew,
-                    descriptionInput = it.description,
-                    referenceInput = it.reference,
-                    valueInput = it.value,
-                    tagCodeInput = it.tagCode,
-                    framesTypeInput = it.type,
-                    infoInput = it.framesInfo,
-                )
-            }
+            areFramesNewInput = response.areFramesNew,
+            descriptionInput = response.description,
+            referenceInput = response.reference,
+            valueInput = response.value,
+            tagCodeInput = response.tagCode,
+            framesTypeInput = response.type,
+            infoInput = response.framesInfo,
         )
     }
 
     private fun loadCurrentFramesData() = withState {
         suspend {
-            saleRepository.currentServiceOrder()
-                .mapLeft { it.error ?: Throwable(it.description) }
-                .flatMap { serviceOrder ->
-                    localFramesRepository.framesForServiceOrder(serviceOrder.id).mapLeft {
-                        it.error ?: Throwable(it.description)
-                    }
-                }
+            saleRepository.currentFramesData().first()
         }.execute(Dispatchers.IO) {
             copy(loadFramesResponseAsync = it)
         }
@@ -305,6 +285,8 @@ class FramesViewModel @AssistedInject constructor(
 
     fun onFramesNewChanged(areNew: Boolean) = setState {
         val update = currentFrames.copy(areFramesNew = areNew)
+
+        updateFrames(update)
 
         copy(
             currentFrames = update,

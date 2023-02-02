@@ -7,6 +7,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -67,6 +68,7 @@ class PaymentViewModel @AssistedInject constructor(
     private val cardFlagsRepository: CardFlagRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
+    private val clientRepository: ClientRepository,
     private val localLensesRepository: LocalLensesRepository,
     private val framesRepository: LocalFramesRepository,
     private val salePaymentRepository: SalePaymentRepository,
@@ -506,6 +508,10 @@ class PaymentViewModel @AssistedInject constructor(
                 copy(paymentInput = payment)
             }
         }
+    }
+
+    suspend fun pictureForClient(clientId: String): Uri {
+        return clientRepository.pictureForClient(clientId)
     }
 
     fun onUpdatePaymentId(paymentId: Long) = setState {

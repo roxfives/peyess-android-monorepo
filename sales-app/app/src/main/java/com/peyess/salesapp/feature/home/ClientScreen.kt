@@ -127,6 +127,7 @@ fun ClientScreen(
             ClientScreenImpl(
                 modifier = modifier,
 
+                pictureForClient = viewModel::pictureForClient,
                 clientList = clientList,
 
                 onCreateNewClient = viewModel::findActiveCreatingClient,
@@ -142,6 +143,7 @@ private fun ClientScreenImpl(
 
     clientList: Flow<PagingData<Client>> = emptyFlow(),
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
@@ -176,6 +178,7 @@ private fun ClientScreenImpl(
                 client?.let {
                     ClientCard(
                         modifier = Modifier.fillMaxWidth(),
+                        pictureForClient = pictureForClient,
                         client = it,
                     )
                 }

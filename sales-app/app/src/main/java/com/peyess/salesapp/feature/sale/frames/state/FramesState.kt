@@ -53,7 +53,8 @@ data class FramesState(
     val prescriptionResponse: LocalPrescriptionDocument = LocalPrescriptionDocument(),
 
 //    val currentFramesData: Async<FramesEntity> = Uninitialized,
-    val loadFramesResponseAsync: Async<Either<Throwable, FramesDocument>> = Uninitialized,
+//    val loadFramesResponseAsync: Async<Either<Throwable, FramesDocument>> = Uninitialized,
+    val loadFramesResponseAsync: Async<FramesEntity> = Uninitialized,
     val currentFramesAsync: Async<FramesEntity> = Uninitialized,
     val currentFrames: FramesEntity = FramesEntity(),
 

@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.service_order.state
 
 import android.content.Context
+import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -12,6 +13,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -96,6 +98,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
     private val localClientRepository: LocalClientRepository,
+    private val clientRepository: ClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
     private val pictureUploadRepository: PictureUploadRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
@@ -688,6 +691,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private fun schedulePictureUpload() = withState {
         schedulePrescriptionPictureUpload(it.serviceOrderId)
         scheduleMeasuringPictureUpload(it.serviceOrderId)
+    }
+
+    suspend fun pictureForClient(clientId: String): Uri {
+        return clientRepository.pictureForClient(clientId)
     }
 
     fun onUpdateIsCreating(isCreating: Boolean) = setState {

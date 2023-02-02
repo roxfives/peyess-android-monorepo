@@ -230,6 +230,8 @@ fun ServiceOrderScreen(
 
             onFinishSale = { viewModel.generateSale(context) },
 
+            pictureForClient = viewModel::pictureForClient,
+
             onChangeResponsible = onChangeResponsible,
             onChangeUser = onChangeUser,
             onChangeWitness = onChangeWitness,
@@ -407,6 +409,8 @@ private fun ServiceOrderScreenImpl(
 
     onFinishSale: () -> Unit = {},
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
+
     areUsersLoading: Boolean = false,
     user: ClientPickedEntity = ClientPickedEntity(),
     responsible: ClientPickedEntity = ClientPickedEntity(),
@@ -469,6 +473,8 @@ private fun ServiceOrderScreenImpl(
                 onChangeUser = onChangeUser,
                 onChangeWitness = onChangeWitness,
 
+                pictureForClient = pictureForClient,
+
                 user = user,
                 responsible = responsible,
                 witness = witness,
@@ -512,7 +518,9 @@ private fun ServiceOrderScreenImpl(
 
                 canAddNewPayment = canAddNewPayment,
                 totalPaid = totalPaid,
-                totalToPay = totalToPay, 
+                totalToPay = totalToPay,
+
+                pictureForClient = pictureForClient,
 
                 payments = payments,
                 onAddPayment = onAddPayment,
@@ -616,6 +624,7 @@ private fun ClientSection(
     onChangeUser: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     user: ClientPickedEntity = ClientPickedEntity(),
     responsible: ClientPickedEntity = ClientPickedEntity(),
     witness: ClientPickedEntity? = null,
@@ -655,6 +664,7 @@ private fun ClientSection(
             )
 
             ClientCard(
+                pictureForClient = pictureForClient,
                 client = user,
                 isLoading = isLoading,
                 onEditClient = onChangeUser,
@@ -667,6 +677,7 @@ private fun ClientSection(
             )
 
             ClientCard(
+                pictureForClient = pictureForClient,
                 client = responsible,
                 isLoading = isLoading,
                 onEditClient = onChangeResponsible,
@@ -680,6 +691,7 @@ private fun ClientSection(
                 )
 
                 ClientCard(
+                    pictureForClient = pictureForClient,
                     client = witness,
                     isLoading = isLoading,
                     onEditClient = onChangeWitness,
@@ -1971,6 +1983,8 @@ private fun PaymentSection(
     totalPaid: Double = 0.0,
     totalToPay: Double = 0.0,
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
+
     isLoading: Boolean = false,
     payments: List<Payment> = emptyList(),
     onAddPayment: () -> Unit = {},
@@ -2052,6 +2066,9 @@ private fun PaymentSection(
                 for (payment in payments) {
                     PaymentCard(
                         modifier = Modifier.fillMaxWidth(),
+
+                        pictureForClient = pictureForClient,
+
                         payment = payment,
                         onDeletePayment = onDeletePayment,
                         onEditPayment = onEditPayment,

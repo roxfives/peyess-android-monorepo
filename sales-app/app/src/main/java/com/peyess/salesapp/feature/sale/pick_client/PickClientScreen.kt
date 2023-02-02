@@ -200,6 +200,8 @@ fun PickClientScreen(
                 modifier = modifier,
                 clientList = clientList,
 
+                pictureForClient = viewModel::pictureForClient,
+
                 onSearchClient = onSearchClient,
                 onCreateNewClient = viewModel::findActiveCreatingClient,
                 onClientPicked = {
@@ -216,6 +218,7 @@ private fun PickClientScreenImpl(
     modifier: Modifier = Modifier,
     clientList: Flow<PagingData<Client>> = emptyFlow(),
 
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onClientPicked: (client: Client) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
@@ -251,6 +254,7 @@ private fun PickClientScreenImpl(
                 client?.let {
                     ClientCard(
                         modifier = Modifier.fillMaxWidth(),
+                        pictureForClient = pictureForClient,
                         client = it,
                         onClientPicked = onClientPicked,
                     )

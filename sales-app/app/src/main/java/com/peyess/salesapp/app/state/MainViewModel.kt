@@ -23,6 +23,7 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -63,6 +64,7 @@ class MainViewModel @AssistedInject constructor(
     private val purchaseRepository: PurchaseRepository,
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val localClientRepository: LocalClientRepository,
+    private val clientRepository: ClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
 
@@ -303,6 +305,10 @@ class MainViewModel @AssistedInject constructor(
 
     suspend fun pictureForUser(uid: String): Uri {
         return collaboratorsRepository.pictureFor(uid)
+    }
+
+    suspend fun pictureForClient(clientId: String): Uri {
+        return clientRepository.pictureForClient(clientId)
     }
 
     fun generateServiceOrderPdf(

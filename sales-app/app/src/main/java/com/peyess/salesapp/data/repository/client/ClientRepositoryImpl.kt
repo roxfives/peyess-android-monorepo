@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.repository.client
 
 import android.content.Context
+import android.net.Uri
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -10,6 +11,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.leftIfNull
+import com.google.firebase.storage.FirebaseStorage
+import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
@@ -45,6 +48,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -131,6 +135,31 @@ class ClientRepositoryImpl @Inject constructor(
         if (client != null) {
             cacheCreateClientDao.deleteById(clientId)
         }
+    }
+
+    override suspend fun pictureForClient(clientId: String): Uri {
+        val storageRef = firebaseManager.storage?.reference
+            ?: FirebaseStorage.getInstance().reference
+
+        val storagePicturePath = salesApplication
+            .stringResource(R.string.storage_client_picture)
+            .format(clientId)
+
+        val picture = try {
+            storageRef.child(storagePicturePath)
+                .downloadUrl
+                .await()
+        } catch (e: Exception) {
+            Timber.e("Failed to download client picture for $clientId", e)
+            Uri.EMPTY
+        }
+
+        if (picture == null) {
+            Timber.e("Client picture with id $clientId does not exist")
+            return Uri.EMPTY
+        }
+
+        return picture
     }
 
     override suspend fun paginateData(

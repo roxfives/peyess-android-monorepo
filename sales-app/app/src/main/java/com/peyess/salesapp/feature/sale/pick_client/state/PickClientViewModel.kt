@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.pick_client.state
 
+import android.net.Uri
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -15,6 +16,7 @@ import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -47,6 +49,7 @@ class PickClientViewModel @AssistedInject constructor(
     @Assisted initialState: PickClientState,
     private val saleRepository: SaleRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
+    private val clientRepository: ClientRepository,
     private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<PickClientState>(initialState) {
 
@@ -220,6 +223,10 @@ class PickClientViewModel @AssistedInject constructor(
                 )
             }
         )
+    }
+
+    suspend fun pictureForClient(clientId: String): Uri {
+        return clientRepository.pictureForClient(clientId)
     }
 
     fun findActiveCreatingClient() {

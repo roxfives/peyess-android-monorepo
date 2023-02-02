@@ -170,6 +170,7 @@ fun buildCreateClientNavGraph(
                                 createScenario = createScenario,
                             )
                         )
+
                     else ->
                         navHostController.navigate(
                             buildCommunicationRoute(

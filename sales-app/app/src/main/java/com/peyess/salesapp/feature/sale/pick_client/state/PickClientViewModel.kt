@@ -9,7 +9,12 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -41,12 +46,16 @@ private const val lensesTablePrefetchDistance = 10
 class PickClientViewModel @AssistedInject constructor(
     @Assisted initialState: PickClientState,
     private val saleRepository: SaleRepository,
+    private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<PickClientState>(initialState) {
 
     init {
         updateClientList()
         loadServiceOrderData()
+
+        onAsync(PickClientState::existingCreateClientAsync) { processActiveCreatingClientResponse(it) }
+        onAsync(PickClientState::createClientResponseAsync) { processCreateNewClientResponse(it) }
 
         onAsync(PickClientState::clientListResponseAsync) { processClientListResponse(it) }
 
@@ -137,7 +146,6 @@ class PickClientViewModel @AssistedInject constructor(
             pager.flow.cancellable().cachedIn(viewModelScope).mapLatest { pagingData ->
                 pagingData.map { it.toClient() }
             }
-            emptyFlow()
         }
     }
 
@@ -166,6 +174,97 @@ class PickClientViewModel @AssistedInject constructor(
         }.execute(Dispatchers.IO) {
             copy(clientListResponseAsync = it)
         }
+    }
+
+    private fun setExistingCreateClient(client: CacheCreateClientDocument) = setState {
+        copy(existingCreateClient = client)
+    }
+
+    private fun processActiveCreatingClientResponse(
+        response: CacheCreateClientFetchSingleResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                setExistingCreateClient(CacheCreateClientDocument())
+
+                copy(
+                    hasLookedForExistingClient = true,
+                )
+            },
+
+            ifRight = {
+                copy(
+                    existingCreateClient = it,
+                    hasLookedForExistingClient = true,
+                )
+            },
+        )
+    }
+
+    private fun processCreateNewClientResponse(
+        response: CacheCreateClientCreateResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    createClientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                copy(
+                    createClientId = it.id,
+                    createClient = true,
+                )
+            }
+        )
+    }
+
+    fun findActiveCreatingClient() {
+        suspend {
+            cacheCreateClientRepository.findCreating()
+        }.execute {
+            copy(existingCreateClientAsync = it)
+        }
+    }
+
+    fun createNewClient() = withState {
+        suspend {
+            if (it.creatingClientExists) {
+                val existingClient = it.existingCreateClient.copy(
+                    isCreating = false,
+                )
+
+                cacheCreateClientRepository.update(existingClient)
+            }
+
+            cacheCreateClientRepository.createClient()
+        }.execute(Dispatchers.IO) {
+            copy(createClientResponseAsync = it)
+        }
+    }
+
+
+
+    fun createClientFromCache() = setState {
+        copy(
+            createClientId = existingCreateClientId,
+            createClient = true,
+        )
+    }
+
+    fun checkedForExistingClient() = setState {
+        copy(hasLookedForExistingClient = false)
+    }
+
+    fun startedCreatingClient() = setState {
+        copy(
+            hasLookedForExistingClient = false,
+            createClient = false,
+            createClientId = "",
+        )
     }
 
     fun updatePickScenario(scenario: PickScenario) = setState {

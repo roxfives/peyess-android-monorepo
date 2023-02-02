@@ -166,10 +166,10 @@ class MainViewModel @AssistedInject constructor(
             groupBy = emptyList(),
         )
 
-        return localClientRepository.paginateClients(query).map { pagingSourceFn ->
+        return localClientRepository.paginateClients(query).map { pagingSourceFactory ->
 
             val pager = Pager(
-                pagingSourceFactory = pagingSourceFn,
+                pagingSourceFactory = pagingSourceFactory,
                 config = PagingConfig(
                     pageSize = clientsTablePageSize,
                     enablePlaceholders = true,

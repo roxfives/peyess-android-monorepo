@@ -52,6 +52,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.app.state.MainAppState
+import com.peyess.salesapp.feature.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.feature.sale.pick_client.model.Client
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
@@ -61,6 +63,7 @@ import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -154,6 +157,39 @@ fun PickClientScreen(
         }
     }
 
+    val createClientId by viewModel.collectAsState(PickClientState::createClientId)
+    val createClient by viewModel.collectAsState(PickClientState::createClient)
+    val creatingClientExists by viewModel.collectAsState(PickClientState::creatingClientExists)
+    val hasLookedForExistingClient by viewModel.collectAsState(PickClientState::hasLookedForExistingClient)
+
+    val createClientDialogState = rememberMaterialDialogState()
+    ExistingClientDialog(
+        dialogState = createClientDialogState,
+        onCreateNewClient = viewModel::createNewClient,
+        onUseExistingClient = viewModel::createClientFromCache,
+    )
+
+    if (hasLookedForExistingClient && creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.checkedForExistingClient()
+            createClientDialogState.show()
+        }
+    }
+
+    if (hasLookedForExistingClient && !creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.createNewClient()
+        }
+    }
+
+    if (createClient) {
+        LaunchedEffect(Unit) {
+            viewModel.startedCreatingClient()
+            Timber.i("Creating client with id: $createClientId")
+            onCreateNewClient(createClientId, paymentId ?: 0L, pickScenario)
+        }
+    }
+
     if (isLoading) {
         PeyessProgressIndicatorInfinite()
     } else {
@@ -165,10 +201,7 @@ fun PickClientScreen(
                 clientList = clientList,
 
                 onSearchClient = onSearchClient,
-                onCreateNewClient = {
-                    onCreateNewClient(
-                        "clientId",paymentId ?: 0L, pickScenario)
-                },
+                onCreateNewClient = viewModel::findActiveCreatingClient,
                 onClientPicked = {
                     viewModel.pickClient(it)
                     canNavigate.value = true

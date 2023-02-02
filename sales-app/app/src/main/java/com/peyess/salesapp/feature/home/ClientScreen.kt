@@ -51,12 +51,15 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
+import com.peyess.salesapp.feature.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private val lazyColumnHeaderBottomSpacer = 16.dp
 
@@ -79,10 +82,41 @@ fun ClientScreen(
 ) {
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
-    val createClientId by remember { mutableStateOf("") }
+    val createClientId by viewModel.collectAsState(MainAppState::createClientId)
+    val createClient by viewModel.collectAsState(MainAppState::createClient)
+    val creatingClientExists by viewModel.collectAsState(MainAppState::creatingClientExists)
+    val hasLookedForExistingClient by viewModel.collectAsState(MainAppState::hasLookedForExistingClient)
 
     val isLoading by viewModel.collectAsState(MainAppState::areClientsLoading)
     val clientList by viewModel.collectAsState(MainAppState::clientListStream)
+
+    val createClientDialogState = rememberMaterialDialogState()
+    ExistingClientDialog(
+        dialogState = createClientDialogState,
+        onCreateNewClient = viewModel::createNewClient,
+        onUseExistingClient = viewModel::createClientFromCache,
+    )
+
+    if (hasLookedForExistingClient && creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.checkedForExistingClient()
+            createClientDialogState.show()
+        }
+    }
+
+    if (hasLookedForExistingClient && !creatingClientExists) {
+        LaunchedEffect(Unit) {
+            viewModel.createNewClient()
+        }
+    }
+
+    if (createClient) {
+        LaunchedEffect(Unit) {
+            viewModel.startedCreatingClient()
+            Timber.i("Creating client with id: $createClientId")
+            onCreateNewClient(createClientId)
+        }
+    }
 
     if (isLoading) {
         PeyessProgressIndicatorInfinite()
@@ -95,7 +129,7 @@ fun ClientScreen(
 
                 clientList = clientList,
 
-                onCreateNewClient = { onCreateNewClient(createClientId) },
+                onCreateNewClient = viewModel::findActiveCreatingClient,
                 onSearchClient = onSearchClient,
             )
         }

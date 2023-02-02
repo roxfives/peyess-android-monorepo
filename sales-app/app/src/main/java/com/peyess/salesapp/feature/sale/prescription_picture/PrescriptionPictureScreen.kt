@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.prescription_picture
 
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -142,9 +143,15 @@ fun PrescriptionPictureScreen(
         }
     )
 
-    val filesPermissionState = rememberPermissionState(
-        android.Manifest.permission.READ_EXTERNAL_STORAGE
-    )
+    val filesPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(
+            android.Manifest.permission.READ_MEDIA_IMAGES
+        )
+    } else {
+        rememberPermissionState(
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    }
     val filesLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {

@@ -618,10 +618,10 @@
     <string name="fs_field_payment_method_priority">priority</string>
 
     <!-- Storage file paths -->
-    <string name="storage_store_picture">public/stores/%1$s/store-picture.jpg</string>
-    <string name="storage_collaborator_picture">users/%1$s/profile-picture.jpg</string>
+    <string name="storage_store_picture">public/stores/%1$s/store-picture.jpeg</string>
+    <string name="storage_collaborator_picture">users/%1$s/profile-picture.jpeg</string>
     <string name="storage_client_profile">clients/%1$s</string>
-    <string name="storage_client_profile_filename">profile-picture.jpg</string>
+    <string name="storage_client_profile_filename">profile-picture.jpeg</string>
     <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>
     <string name="storage_client_prescription_filename">prescription.jpeg</string>
     <string name="storage_client_positioning">measure/positioning/%1$s/%2$s/%3$s</string>

@@ -121,7 +121,18 @@ fun CreateClientCommunicationScreen(
     val clientCreated by viewModel.collectAsState(CommunicationState::clientCreated)
     val isUploadingClient by viewModel.collectAsState(CommunicationState::isUploadingClient)
 
+    val hasFinishedSettingCommunication
+        by viewModel.collectAsState(CommunicationState::hasFinishedSettingCommunication)
+
+    if (hasFinishedSettingCommunication) {
+        LaunchedEffect(Unit) {
+            viewModel.createClient()
+        }
+    }
+
     if (clientCreated) {
+        viewModel.onNavigate()
+
         LaunchedEffect(Unit) {
             onDone(
                 createScenario,
@@ -176,7 +187,7 @@ fun CreateClientCommunicationScreen(
         phoneHasError = phoneHasError,
 
         isInputValid = isInputValid,
-        onDone = viewModel::createClient,
+        onDone = viewModel::onFinishSettingCommunication,
     )
 }
 

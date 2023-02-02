@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.create_client.address.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
@@ -213,6 +214,18 @@ class ClientAddressViewModel @AssistedInject constructor(
 
         updateClient(update)
         copy(client = update, stateInput = value)
+    }
+
+    fun onFinish() = withState {
+        suspend {
+            cacheCreateClientRepository.update(it.client.toCacheCreateClientDocument())
+        }.execute(Dispatchers.IO) {
+            copy(hasFinishedSettingAddress = it is Success)
+        }
+    }
+
+    fun onNavigate() = setState {
+        copy(hasFinishedSettingAddress = false)
     }
 
     fun onDetectZipCodeError() = setState {

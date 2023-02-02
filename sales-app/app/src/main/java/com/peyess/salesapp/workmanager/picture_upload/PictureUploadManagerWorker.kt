@@ -57,7 +57,13 @@ class PictureUploadManagerWorker @AssistedInject constructor(
     ): PictureUploadManagerResponse = either {
         Timber.i("Picture with id ${pictureUpload.id} pending upload")
 
-        val storageRef = firebaseManager.storage
+        val storageRef = try {
+            firebaseManager.storage
+        } catch (err: Throwable) {
+            Timber.e("Failed to get storage reference", err)
+            null
+        }
+
         ensureNotNull(storageRef) {
             StorageNotInitialized(description = "Reference to storage is null")
         }

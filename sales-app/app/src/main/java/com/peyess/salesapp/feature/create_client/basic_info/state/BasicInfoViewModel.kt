@@ -3,6 +3,7 @@ package com.peyess.salesapp.feature.create_client.basic_info.state
 import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
@@ -30,8 +31,11 @@ class BasicInfoViewModel @AssistedInject constructor(
     private val maxDocumentLength = 11
 
     init {
+        onEach {
+            Timber.d("Current client (${it.documentInput}): ${it.client}")
+        }
+
         onEach(BasicInfoState::clientId) { loadClient(it) }
-        onEach(BasicInfoState::client) { updateInput(it) }
 
         onAsync(BasicInfoState::loadClientResponseAsync) { processLoadClientResponse(it) }
     }
@@ -80,10 +84,6 @@ class BasicInfoViewModel @AssistedInject constructor(
         )
     }
 
-    private fun updateInput(client: Client) = setState {
-        copy(client = client)
-    }
-
     fun onClientIdChanged(clientId: String) = setState {
         copy(clientId = clientId)
     }
@@ -129,7 +129,7 @@ class BasicInfoViewModel @AssistedInject constructor(
     fun onBirthdayChanged(value: LocalDate) = setState {
         val instant = value.atStartOfDay(ZoneId.systemDefault()).toInstant()
         val day = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-        val update = this.client.copy(birthday = day)
+        val update = client.copy(birthday = day)
 
         updateClient(update)
         copy(
@@ -173,6 +173,18 @@ class BasicInfoViewModel @AssistedInject constructor(
 
     fun onDetectDocumentError() = setState {
         copy(detectDocumentError = true)
+    }
+
+    fun onFinishBasicInfo() = withState {
+        suspend {
+            cacheCreateClientRepository.update(it.client.toCacheCreateClientDocument())
+        }.execute(Dispatchers.IO) {
+            copy(hasFinishedSettingBasicInfo = it is Success)
+        }
+    }
+
+    fun onNavigate() = setState {
+        copy(hasFinishedSettingBasicInfo = false)
     }
 
     @AssistedFactory

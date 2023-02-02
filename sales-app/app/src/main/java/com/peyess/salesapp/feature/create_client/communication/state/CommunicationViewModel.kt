@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
@@ -253,6 +254,21 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(
             client = update,
             hasAcceptedPromotionalMessages = hasAccepted,
+        )
+    }
+
+    fun onFinishSettingCommunication()  = withState {
+        suspend {
+            cacheCreateClientRepository.update(it.client.toCacheCreateClientDocument())
+        }.execute {
+            copy(hasFinishedSettingCommunication = it is Success)
+        }
+    }
+
+    fun onNavigate() = setState {
+        copy(
+            clientCreated = false,
+            hasFinishedSettingCommunication = false,
         )
     }
 

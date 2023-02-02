@@ -43,6 +43,8 @@ data class CommunicationState(
     val uploadedId: String = "",
     val clientCreated: Boolean = false,
 
+    val hasFinishedSettingCommunication: Boolean = false,
+
     @PersistState
     val detectEmailError: Boolean = false,
     @PersistState

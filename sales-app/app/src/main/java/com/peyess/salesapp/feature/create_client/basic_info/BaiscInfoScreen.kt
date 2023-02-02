@@ -142,6 +142,16 @@ fun BasicInfoScreen(
 
     val isInputValid by viewModel.collectAsState(BasicInfoState::isInputValid)
 
+    val hasFinishedSettingBasicInfo
+        by viewModel.collectAsState(BasicInfoState::hasFinishedSettingBasicInfo)
+
+    if (hasFinishedSettingBasicInfo) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigate()
+            onDone(clientId, scenario, paymentId)
+        }
+    }
+
     BasicInfoScreenImpl(
         modifier = modifier,
 
@@ -179,7 +189,7 @@ fun BasicInfoScreen(
         documentHasError = documentHasError,
         isInputValid = isInputValid,
 
-        onDone = { onDone(clientId, scenario, paymentId) },
+        onDone = viewModel::onFinishBasicInfo,
     )
 }
 

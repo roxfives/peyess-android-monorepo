@@ -38,9 +38,14 @@ data class BasicInfoState(
     val isPicking: Boolean = false,
     val pickScenarioParam: String = PickScenario.ServiceOrder.toName(),
 
-    @PersistState val detectNameError: Boolean = false,
-    @PersistState val detectNameDisplayError: Boolean = false,
-    @PersistState val detectDocumentError: Boolean = false,
+    val hasFinishedSettingBasicInfo: Boolean = false,
+
+    @PersistState
+    val detectNameError: Boolean = false,
+    @PersistState
+    val detectNameDisplayError: Boolean = false,
+    @PersistState
+    val detectDocumentError: Boolean = false,
 ): MavericksState {
     val isLoadingClient = loadClientResponseAsync is Loading
 

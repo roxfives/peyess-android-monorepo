@@ -123,6 +123,16 @@ fun CreateClientAddressScreen(
 
     val isInputValid by viewModel.collectAsState(ClientAddressState::isInputValid)
 
+    val hasFinishedSettingAddress
+        by viewModel.collectAsState(ClientAddressState::hasFinishedSettingAddress)
+
+    if (hasFinishedSettingAddress) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigate()
+            onDone(clientId, scenario, paymentId)
+        }
+    }
+
     CreateClientAddressScreenImpl(
         modifier = modifier,
 
@@ -176,7 +186,7 @@ fun CreateClientAddressScreen(
         stateHasError = stateHasError,
 
         isInputValid = isInputValid,
-        onDone = { onDone(clientId, scenario, paymentId) },
+        onDone = viewModel::onFinish,
     )
 }
 

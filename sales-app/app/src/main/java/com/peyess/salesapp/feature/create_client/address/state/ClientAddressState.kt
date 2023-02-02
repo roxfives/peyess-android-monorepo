@@ -37,6 +37,8 @@ data class ClientAddressState(
     val cityInput: String = "",
     val stateInput: String = "",
 
+    val hasFinishedSettingAddress: Boolean = false,
+
     @PersistState
     val detectZipCodeError: Boolean = false,
     @PersistState

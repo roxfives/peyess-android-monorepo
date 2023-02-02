@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
+import arrow.core.Either
+import arrow.core.flatMap
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -8,8 +10,11 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.typing.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
+import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
+import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -21,9 +26,11 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FramesViewModel @AssistedInject constructor(
@@ -32,6 +39,7 @@ class FramesViewModel @AssistedInject constructor(
     private val saleRepository: SaleRepository,
     private val authenticationRepository: AuthenticationRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
+    private val localFramesRepository: LocalFramesRepository,
 ): MavericksViewModel<FramesState>(initialState) {
 
     init {
@@ -46,27 +54,24 @@ class FramesViewModel @AssistedInject constructor(
 
         onEach(
             FramesState::prescriptionResponse,
-            FramesState::currentFramesData,
+            FramesState::currentFrames,
         ) { prescription, frames ->
-            val framesType: FramesType
-            val hasPotentialProblems: Boolean
+            val framesType = frames.type
+            val hasPotentialProblems = frames.hasPotentialProblemsWith(prescription)
 
-            if (frames is Success) {
-                hasPotentialProblems = frames.invoke()
-                    .hasPotentialProblemsWith(prescription)
-                framesType = frames.invoke().type ?: FramesType.None
-
-                setState {
-                    copy(
-                        showMike = hasPotentialProblems
-                                && (framesType is FramesType.AcetateScrewed
-                                    || framesType is FramesType.MetalScrewed
-                                    || framesType is FramesType.AcetateNylon
-                                    || framesType is FramesType.MetalNylon)
-                    )
-                }
+            setState {
+                copy(
+                    showMike = hasPotentialProblems
+                            && (framesType is FramesType.AcetateScrewed
+                            || framesType is FramesType.MetalScrewed
+                            || framesType is FramesType.AcetateNylon
+                            || framesType is FramesType.MetalNylon)
+                )
             }
+
         }
+
+        onEach(FramesState::currentFrames) { updateFrames(it) }
 
         onEach(FramesState::prescriptionResponse) {
             val ib = it.prevalentIdealBase
@@ -106,6 +111,16 @@ class FramesViewModel @AssistedInject constructor(
 
         onAsync(FramesState::activeServiceOrderResponseAsync) {
             processServiceOrderResponse(it)
+        }
+
+        onAsync(FramesState::loadFramesResponseAsync) {
+            processLoadFramesResponse(it)
+        }
+    }
+
+    private fun updateFrames(frames: FramesEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.updateFramesData(frames)
         }
     }
 
@@ -206,58 +221,104 @@ class FramesViewModel @AssistedInject constructor(
             }
     }
 
-    private fun loadCurrentFramesData() = withState {
-        saleRepository
-            .currentFramesData()
-            .execute(Dispatchers.IO) {
-                copy(currentFramesData = it)
+    private fun processLoadFramesResponse(response: Either<Throwable, FramesDocument>) = setState {
+        response.fold(
+            ifLeft = {
+                copy(loadFramesResponseAsync = Fail(it))
+            },
+
+            ifRight = {
+                copy(
+                    currentFrames = FramesEntity(
+                        soId = it.soId,
+                        areFramesNew = it.areFramesNew,
+                        description = it.description,
+                        reference = it.reference,
+                        value = it.value,
+                        tagCode = it.tagCode,
+                        type = it.type,
+                        framesInfo = it.framesInfo,
+                    ),
+
+                    areFramesNewInput = it.areFramesNew,
+                    descriptionInput = it.description,
+                    referenceInput = it.reference,
+                    valueInput = it.value,
+                    tagCodeInput = it.tagCode,
+                    framesTypeInput = it.type,
+                    infoInput = it.framesInfo,
+                )
             }
+        )
     }
 
-    fun onFramesInfoChanged(value: String) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(framesInfo = value))
+    private fun loadCurrentFramesData() = withState {
+        suspend {
+            saleRepository.currentServiceOrder()
+                .mapLeft { it.error ?: Throwable(it.description) }
+                .flatMap { serviceOrder ->
+                    localFramesRepository.framesForServiceOrder(serviceOrder.id).mapLeft {
+                        it.error ?: Throwable(it.description)
+                    }
+                }
+        }.execute(Dispatchers.IO) {
+            copy(loadFramesResponseAsync = it)
         }
     }
 
-    fun onFramesDescriptionChanged(value: String) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(description = value))
-        }
+    fun onFramesInfoChanged(value: String) = setState {
+        val update = currentFrames.copy(framesInfo = value)
+
+        copy(currentFrames = update, infoInput = value)
     }
 
-    fun onFramesReferenceChanged(value: String) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(reference = value))
-        }
+    fun onFramesDescriptionChanged(value: String) = setState {
+        val update = currentFrames.copy(description = value)
+
+        copy(currentFrames = update, descriptionInput = value)
     }
 
-    fun onFramesValueChanged(value: Double) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(value = value))
-        }
+    fun onFramesReferenceChanged(value: String) = setState {
+        val update = currentFrames.copy(reference = value)
+
+        copy(currentFrames = update, referenceInput = value)
     }
 
-    fun onFramesTagCodeChanged(value: String) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(tagCode = value))
-        }
+    fun onFramesValueChanged(value: Double) = setState {
+        val update = currentFrames.copy(value = value)
+
+        copy(currentFrames = update, valueInput = value)
     }
 
-    fun onFramesTypeChanged(name: String) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(
-                it._currentFramesData.copy(type = FramesType.toFramesType(name)!!)
-            )
-        }
+    fun onFramesTagCodeChanged(value: String) = setState {
+        val update = currentFrames.copy(tagCode = value)
+
+        copy(currentFrames = update, tagCodeInput = value)
     }
 
-    fun onFramesNewChanged(areNew: Boolean) = withState {
-        if (it._currentFramesData != null) {
-            saleRepository.updateFramesData(it._currentFramesData.copy(areFramesNew = areNew))
+    fun onFramesTypeChanged(name: String) = setState {
+        val type = FramesType.toFramesType(name)
+        val update = currentFrames.copy(type = type)
 
-            setState { copy(hasSetFrames = true) }
+        copy(currentFrames = update, framesTypeInput = type)
+    }
+
+    fun onFramesNewChanged(areNew: Boolean) = setState {
+        val update = currentFrames.copy(areFramesNew = areNew)
+
+        copy(
+            currentFrames = update,
+            areFramesNewInput = areNew,
+            hasSetFrames = true,
+        )
+    }
+
+    fun onFinishSettingFrames() = setState {
+        viewModelScope.launch(Dispatchers.IO) {
+            saleRepository.updateFramesData(currentFrames)
         }
+
+        copy(finishedSettingFrames = true)
     }
 
     private data class MikeMessageResult(

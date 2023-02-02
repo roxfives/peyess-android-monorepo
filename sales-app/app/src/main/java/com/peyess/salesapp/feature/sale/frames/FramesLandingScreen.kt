@@ -62,7 +62,7 @@ fun FramesLandingScreen(
 
     val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)
 
-    val frames by viewModel.collectAsState(FramesState::_currentFramesData)
+    val frames by viewModel.collectAsState(FramesState::currentFrames)
     val hasSetFrames by viewModel.collectAsState(FramesState::hasSetFrames)
 
     val pictureUriLeftEye by viewModel.collectAsState(FramesState::pictureUriLeftEye)

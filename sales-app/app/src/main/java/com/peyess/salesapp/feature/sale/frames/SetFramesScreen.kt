@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -53,22 +54,30 @@ fun SetFramesScreen(
 ) {
     val viewModel: FramesViewModel = mavericksViewModel()
 
-    val areFramesNew by viewModel.collectAsState(FramesState::areFramesNew)
+    val areFramesNew by viewModel.collectAsState(FramesState::areFramesNewInput)
 
-    val info by viewModel.collectAsState(FramesState::info)
+    val info by viewModel.collectAsState(FramesState::infoInput)
 
-    val description by viewModel.collectAsState(FramesState::description)
-    val reference by viewModel.collectAsState(FramesState::reference)
-    val value by viewModel.collectAsState(FramesState::value)
-    val tagCode by viewModel.collectAsState(FramesState::tagCode)
-    val framesType by viewModel.collectAsState(FramesState::framesType)
+    val description by viewModel.collectAsState(FramesState::descriptionInput)
+    val reference by viewModel.collectAsState(FramesState::referenceInput)
+    val value by viewModel.collectAsState(FramesState::valueInput)
+    val tagCode by viewModel.collectAsState(FramesState::tagCodeInput)
+    val framesType by viewModel.collectAsState(FramesState::framesTypeInput)
 
     val mikeMessage by viewModel.collectAsState(FramesState::mikeMessage)
     val showMike by viewModel.collectAsState(FramesState::showMike)
 
+    val hasFinished by viewModel.collectAsState(FramesState::finishedSettingFrames)
+
+    if (hasFinished) {
+        LaunchedEffect(Unit) {
+            onDone()
+        }
+    }
+
     SetFramesScreenImpl(
         modifier = modifier,
-        onDone = onDone,
+        onDone = viewModel::onFinishSettingFrames,
 
         areFramesNew = areFramesNew,
 

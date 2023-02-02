@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.frames.state
 
 import android.net.Uri
 import androidx.annotation.RawRes
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
@@ -9,8 +10,10 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
+import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
+import com.peyess.salesapp.typing.frames.FramesType
 
 sealed class Eye {
     object Left: Eye()
@@ -49,7 +52,18 @@ data class FramesState(
     val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val prescriptionResponse: LocalPrescriptionDocument = LocalPrescriptionDocument(),
 
-    val currentFramesData: Async<FramesEntity> = Uninitialized,
+//    val currentFramesData: Async<FramesEntity> = Uninitialized,
+    val loadFramesResponseAsync: Async<Either<Throwable, FramesDocument>> = Uninitialized,
+    val currentFramesAsync: Async<FramesEntity> = Uninitialized,
+    val currentFrames: FramesEntity = FramesEntity(),
+
+    val areFramesNewInput: Boolean = false,
+    val descriptionInput: String = "",
+    val infoInput: String = "",
+    val referenceInput: String = "",
+    val valueInput: Double = 0.0,
+    val tagCodeInput: String = "",
+    val framesTypeInput: FramesType = FramesType.None,
 
     val positioningDataLeft: Async<PositioningEntity> = Uninitialized,
     val positioningDataRight: Async<PositioningEntity> = Uninitialized,
@@ -61,18 +75,10 @@ data class FramesState(
     val mikeMessage: String = "",
 
     val landingMikeMessage: String = "",
-    val hasSetFrames: Boolean = false
+    val hasSetFrames: Boolean = false,
+
+    val finishedSettingFrames: Boolean = false,
 ): MavericksState {
-    val _currentFramesData: FramesEntity? = currentFramesData.invoke()
-
-    val areFramesNew = _currentFramesData?.areFramesNew ?: true
-    val description = _currentFramesData?.description ?: ""
-    val info = _currentFramesData?.framesInfo ?: ""
-    val reference = _currentFramesData?.reference ?: ""
-    val value = _currentFramesData?.value ?: 0.0
-    val tagCode = _currentFramesData?.tagCode ?: ""
-    val framesType = _currentFramesData?.type
-
     val pictureUriLeftEye = if (positioningDataLeft is Success) {
         positioningDataLeft.invoke().picture
     } else {

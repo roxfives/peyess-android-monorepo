@@ -7,7 +7,6 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
-import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
@@ -66,10 +65,10 @@ data class PaymentState(
     val clientResponseAsync: Async<LocalClientReadSingleResponse> = Uninitialized,
     val client: Client = Client(),
 
-    val paymentUpdateResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,
+    val finishPaymentResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,
 
     val paymentResponseAsync: Async<SinglePaymentResponse> = Uninitialized,
-    val payment: Payment = Payment(),
+    val paymentInput: Payment = Payment(),
 
     val cardFlagsAsync: Async<List<CardFlagDocument>> = Uninitialized,
 
@@ -79,12 +78,14 @@ data class PaymentState(
     val totalPaid: Double = 0.0,
 
     val totalLeftToPay: Double = 0.0,
+
+    val finishedPayment: Boolean = false,
 ): MavericksState {
     val activePaymentMethod = paymentMethods
-        .firstOrNull { it.id == payment.methodId }
+        .firstOrNull { it.id == paymentInput.methodId }
         ?: PaymentMethod()
 
-    val hasPaymentUpdateFailed = paymentUpdateResponseAsync is Fail
+    val hasPaymentUpdateFailed = finishPaymentResponseAsync is Fail
 
     val arePaymentsLoading = paymentMethodsResponseAsync is Loading
 

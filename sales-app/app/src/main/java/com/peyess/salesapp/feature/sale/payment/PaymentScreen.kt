@@ -141,7 +141,7 @@ fun PaymentScreen(
     val areCardFlagsLoading by viewModel.collectAsState(PaymentState::areCardFlagsLoading)
     val cardFlags by viewModel.collectAsState(PaymentState::cardFlags)
 
-    val payment by viewModel.collectAsState(PaymentState::payment)
+    val payment by viewModel.collectAsState(PaymentState::paymentInput)
 
     val totalLeftToPay by viewModel.collectAsState(PaymentState::totalLeftToPay)
 
@@ -149,8 +149,16 @@ fun PaymentScreen(
     val arePaymentMethodsLoading by viewModel.collectAsState(PaymentState::arePaymentsLoading)
     val activePaymentMethod by viewModel.collectAsState(PaymentState::activePaymentMethod)
 
+    val finishedPayment by viewModel.collectAsState(PaymentState::finishedPayment)
+
     val cardFlagIcon = payment.cardFlagIcon
     val cardFlagName = payment.cardFlagName
+
+    if (finishedPayment) {
+        LaunchedEffect(Unit) {
+            onDone()
+        }
+    }
 
     PaymentScreenImpl(
         modifier = modifier,
@@ -185,7 +193,7 @@ fun PaymentScreen(
             viewModel.cancelPayment()
             onDone()
         },
-        onDone = onDone,
+        onDone = viewModel::onFinishPayment,
     )
 }
 

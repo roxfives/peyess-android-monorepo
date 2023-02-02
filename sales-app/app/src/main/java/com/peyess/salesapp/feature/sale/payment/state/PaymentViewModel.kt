@@ -7,7 +7,6 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
-import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryResponse
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -39,6 +38,7 @@ import com.peyess.salesapp.feature.sale.payment.model.Coloring
 import com.peyess.salesapp.feature.sale.payment.model.Frames
 import com.peyess.salesapp.feature.sale.payment.model.Lens
 import com.peyess.salesapp.feature.sale.payment.model.OverallDiscount
+import com.peyess.salesapp.feature.sale.payment.model.Payment
 import com.peyess.salesapp.feature.sale.payment.model.PaymentFee
 import com.peyess.salesapp.feature.sale.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.sale.payment.model.Treatment
@@ -84,18 +84,20 @@ class PaymentViewModel @AssistedInject constructor(
 
         onAsync(PaymentState::totalPaymentResponseAsync) { processTotalPaymentResponse(it) }
         onAsync(PaymentState::paymentResponseAsync) { processPaymentResponse(it) }
-        onAsync(PaymentState::paymentUpdateResponseAsync) { processPaymentUpdateResponse(it) }
+        onAsync(PaymentState::finishPaymentResponseAsync) { processFinishPaymentResponse(it) }
 
         onAsync(PaymentState::paymentMethodsResponseAsync) { processPaymentMethodsResponse(it) }
 
         onAsync(PaymentState::clientResponseAsync) { processClientResponse(it) }
 
+        onEach(PaymentState::paymentInput) { updatePayment(it) }
+
         onEach(
-            PaymentState::payment,
+            PaymentState::paymentInput,
             PaymentState::client,
         ) { _, client -> updatePaymentWithClient(client) }
         onEach(
-            PaymentState::payment,
+            PaymentState::paymentInput,
             PaymentState::paymentMethods,
         ) { _, methods -> updatePaymentWithMethodList(methods) }
 
@@ -135,6 +137,12 @@ class PaymentViewModel @AssistedInject constructor(
         }
 
         loadInitialData()
+    }
+
+    private fun updatePayment(payment: Payment) {
+        viewModelScope.launch(Dispatchers.IO) {
+            salePaymentRepository.updatePayment(payment.toSalePaymentDocument())
+        }
     }
 
     private fun loadInitialData() {
@@ -350,23 +358,23 @@ class PaymentViewModel @AssistedInject constructor(
                 )
             },
 
-            ifRight = { copy(payment = it.toPayment()) }
+            ifRight = { copy(paymentInput = it.toPayment()) }
         )
     }
 
-    private fun processPaymentUpdateResponse(response: SalePaymentUpdateResult) {
+    private fun processFinishPaymentResponse(response: SalePaymentUpdateResult) = setState {
         response.fold(
             ifLeft = {
-                setState {
-                    copy(
-                        paymentUpdateResponseAsync = Fail(
-                            it.error ?: Throwable(it.description)
-                        ),
-                    )
-                }
+                copy(
+                    finishPaymentResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    ),
+                )
             },
 
-            ifRight = { }
+            ifRight = {
+                copy(finishedPayment = true)
+            }
         )
     }
 
@@ -427,16 +435,12 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateTotalLeftToPay(
-        totalToPay: Double,
-        totalPaid: Double,
-        discount: OverallDiscount,
-        paymentFee: PaymentFee,
-    ) = setState {
-        val totalWithDiscount = calculateTotalWithDiscount(totalToPay, discount)
-        val total = calculatePaymentWithFee(totalWithDiscount, paymentFee)
-
-        copy(totalLeftToPay = total - totalPaid)
+    private fun loadClient(clientId: String) {
+        suspend {
+            localClientRepository.clientById(clientId)
+        }.execute(Dispatchers.IO) {
+            copy(clientResponseAsync = it)
+        }
     }
 
     private fun watchPaymentDataStream(paymentId: Long) {
@@ -445,52 +449,6 @@ class PaymentViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(paymentResponseAsync = it)
             }
-    }
-
-    private fun updatePaymentWithClient(client: Client)  = withState {
-        suspend {
-            val payment = it.payment
-                .copy(
-                    clientId = client.id,
-                    clientName = client.name,
-                    clientDocument = client.document,
-                    clientAddress = client.shortAddress,
-                ).toSalePaymentDocument()
-
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
-    }
-
-    private fun updatePaymentWithMethodList(methods: List<PaymentMethod>) = withState { state ->
-        if (state.payment.methodId.isBlank() && methods.isNotEmpty()) {
-            suspend {
-                val defaultMethod = methods.first()
-
-                val methodId = defaultMethod.id
-                val methodType = defaultMethod.type
-                val methodName = defaultMethod.name
-
-                val payment = state.payment.copy(
-                    methodId = methodId,
-                    methodType = methodType,
-                    methodName = methodName,
-                ).toSalePaymentDocument()
-
-                salePaymentRepository.updatePayment(payment)
-            }.execute(Dispatchers.IO) {
-                copy(paymentUpdateResponseAsync = it)
-            }
-        }
-    }
-
-    private fun loadClient(clientId: String) {
-        suspend {
-            localClientRepository.clientById(clientId)
-        }.execute(Dispatchers.IO) {
-            copy(clientResponseAsync = it)
-        }
     }
 
     private fun processClientResponse(response: LocalClientReadSingleResponse) = setState {
@@ -505,6 +463,49 @@ class PaymentViewModel @AssistedInject constructor(
 
             ifRight = { copy(client = it.toClient()) }
         )
+    }
+
+    private fun updateTotalLeftToPay(
+        totalToPay: Double,
+        totalPaid: Double,
+        discount: OverallDiscount,
+        paymentFee: PaymentFee,
+    ) = setState {
+        val totalWithDiscount = calculateTotalWithDiscount(totalToPay, discount)
+        val total = calculatePaymentWithFee(totalWithDiscount, paymentFee)
+
+        copy(totalLeftToPay = total - totalPaid)
+    }
+
+    private fun updatePaymentWithClient(client: Client)  = setState {
+        val update = paymentInput.copy(
+            clientId = client.id,
+            clientName = client.name,
+            clientDocument = client.document,
+            clientAddress = client.shortAddress,
+        )
+
+        copy(paymentInput = update)
+    }
+
+    private fun updatePaymentWithMethodList(methods: List<PaymentMethod>) = withState { state ->
+        if (state.paymentInput.methodId.isBlank() && methods.isNotEmpty()) {
+            val defaultMethod = methods.first()
+
+            val methodId = defaultMethod.id
+            val methodType = defaultMethod.type
+            val methodName = defaultMethod.name
+
+            val payment = state.paymentInput.copy(
+                methodId = methodId,
+                methodType = methodType,
+                methodName = methodName,
+            )
+
+            setState {
+                copy(paymentInput = payment)
+            }
+        }
     }
 
     fun onUpdatePaymentId(paymentId: Long) = setState {
@@ -523,100 +524,72 @@ class PaymentViewModel @AssistedInject constructor(
         copy(serviceOrderId = serviceOrderId)
     }
 
-    fun onTotalPaidChange(value: Double) = withState {
-        suspend {
-            val paid = value.coerceAtMost(it.totalLeftToPay)
-                .coerceAtLeast(0.0)
+    fun onTotalPaidChange(value: Double) = setState {
+        val paid = value.coerceAtMost(totalLeftToPay)
+            .coerceAtLeast(0.0)
+        val update = paymentInput.copy(value = paid)
 
-            val payment = it.payment
-                .copy(value = paid)
-                .toSalePaymentDocument()
-
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
+        copy(paymentInput = update)
     }
 
-    fun onMethodPaymentChanged(document: String) = withState {
-        suspend {
-            val payment = it.payment
-                .copy(document = document)
-                .toSalePaymentDocument()
+    fun onMethodPaymentChanged(document: String) = setState {
+        val update = paymentInput.copy(document = document)
 
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
+        copy(paymentInput = update)
     }
 
-    fun onCardFlagChanged(cardFlagIcon: Uri, cardFlagName: String) = withState {
-        suspend {
-            val payment = it.payment
-                .copy(
-                    cardFlagIcon = cardFlagIcon,
-                    cardFlagName = cardFlagName,
-                )
-                .toSalePaymentDocument()
+    fun onCardFlagChanged(cardFlagIcon: Uri, cardFlagName: String) = setState {
+        val update = paymentInput.copy(
+            cardFlagIcon = cardFlagIcon,
+            cardFlagName = cardFlagName,
+        )
 
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
+        copy(paymentInput = update)
     }
 
-    fun onIncreaseInstallments(value: Int) = withState {
-        suspend {
-            val maxInstallments = it.activePaymentMethod.maxInstallments
-            val newValue = (value + 1).coerceAtMost(maxInstallments)
-            val payment = it.payment
-                .copy(installments = newValue)
-                .toSalePaymentDocument()
+    fun onIncreaseInstallments(value: Int) = setState {
+        val maxInstallments = activePaymentMethod.maxInstallments
+        val newValue = (value + 1).coerceAtMost(maxInstallments)
+        val update = paymentInput.copy(installments = newValue)
 
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
+        copy(paymentInput = update)
     }
 
-    fun onDecreaseInstallments(value: Int) = withState {
-        suspend {
-            val minInstallments = 1
-            val newValue = (value - 1).coerceAtLeast(minInstallments)
-            val payment = it.payment
-                .copy(installments = newValue)
-                .toSalePaymentDocument()
+    fun onDecreaseInstallments(value: Int) = setState {
+        val minInstallments = 1
+        val newValue = (value - 1).coerceAtLeast(minInstallments)
+        val payment = paymentInput.copy(installments = newValue)
 
-            salePaymentRepository.updatePayment(payment)
-        }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
-        }
+        copy(paymentInput = payment)
     }
 
-    fun onPaymentMethodChanged(method: PaymentMethod) = withState {
-        suspend {
-            val maxInstallments = it.payment
-                .installments
-                .coerceAtMost(method.maxInstallments)
+    fun onPaymentMethodChanged(method: PaymentMethod) = setState {
+        val maxInstallments = paymentInput.installments
+            .coerceAtMost(method.maxInstallments)
 
-            val payment = it.payment
-                .copy(
-                    methodId = method.id,
-                    methodType = method.type,
-                    methodName = method.name,
-                    installments = maxInstallments,
-                )
-                .toSalePaymentDocument()
+        val update = paymentInput.copy(
+            methodId = method.id,
+            methodType = method.type,
+            methodName = method.name,
+            installments = maxInstallments,
+        )
+
+        copy(paymentInput = update)
+    }
+
+    fun onFinishPayment() = withState {
+        suspend {
+            val payment = it.paymentInput.toSalePaymentDocument()
 
             salePaymentRepository.updatePayment(payment)
         }.execute(Dispatchers.IO) {
-            copy(paymentUpdateResponseAsync = it)
+            copy(finishPaymentResponseAsync = it)
         }
     }
 
     fun cancelPayment() = withState {
         viewModelScope.launch(Dispatchers.IO) {
-            val payment = it.payment.toSalePaymentDocument()
+            val payment = it.paymentInput.toSalePaymentDocument()
 
             val deleteResponse = salePaymentRepository.deletePayment(payment)
             if (deleteResponse.isLeft()) {

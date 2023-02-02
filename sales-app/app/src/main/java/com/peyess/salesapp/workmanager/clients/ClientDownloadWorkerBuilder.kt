@@ -57,9 +57,10 @@ private fun buildInputData(isInitiating: Boolean): Data {
 
 fun enqueueOneTimeClientDownloadWorker(
     context: Context,
+    forceSync: Boolean = false,
     workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE,
 ) {
-    val inputData = buildInputData(isInitiating = true)
+    val inputData = buildInputData(isInitiating = !forceSync)
     val constraints = buildWorkerConstraints()
     val uploadWorkRequest = buildOneTimeWorkRequest(constraints, inputData)
 

@@ -22,6 +22,7 @@ import com.peyess.salesapp.data.repository.client.ClientPaginationResponse
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.workmanager.clients.error.ClientDownloadError
 import com.peyess.salesapp.workmanager.clients.error.ClientWorkerUpdateStatusError
 import com.peyess.salesapp.workmanager.clients.utils.buildQueryForClients
@@ -38,6 +39,7 @@ const val notificationId = 21
 class ClientDownloadWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
+    private val authenticationRepository: AuthenticationRepository,
     private val salesApplication: SalesApplication,
     private val clientRepository: ClientRepository,
     private val localClientRepository: LocalClientRepository,
@@ -155,13 +157,15 @@ class ClientDownloadWorker @AssistedInject constructor(
 
         val isInitiating = inputData.getBoolean(isInitiatingKey, false)
 
+        val storeId = authenticationRepository.activeStoreId()
+
         val latestUpdated = findLatestUpdatedClient()
         val result = updateStatus(isUpdating = true).flatMap { status ->
             if (isInitiating && status.hasBeenInitiated) {
                 Timber.i("Client download has already been initiated")
                 return@flatMap Either.Right(status)
             } else {
-                val queryPair = buildQueryForClients(salesApplication, latestUpdated)
+                val queryPair = buildQueryForClients(salesApplication, storeId, latestUpdated)
 
                 Timber.i("Downloading clients with query: $queryPair")
                 downloadClients(queryPair.first, queryPair.second).map { status }

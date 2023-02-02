@@ -608,6 +608,7 @@
     <string name="fs_field_description_families_ids">families_ids</string>
     <string name="fs_field_clients_name">name</string>
     <string name="fs_field_clients_updated">updated</string>
+    <string name="fs_field_clients_store_ids">stores_ids</string>
     <string name="fs_field_payments_priority">priority</string>
     <string name="fs_field_payments_is_enabled">is_enabled</string>
     <string name="fs_field_so_created">created</string>

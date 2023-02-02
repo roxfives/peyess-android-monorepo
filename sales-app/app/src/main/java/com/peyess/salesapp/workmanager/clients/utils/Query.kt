@@ -24,13 +24,13 @@ private fun buildQueryFields(
         buildQueryField(
             field = salesApplication.getString(R.string.fs_field_clients_store_ids),
             op = PeyessQueryOperation.ArrayContains,
-            value = after,
+            value = storeId,
         ),
 
         buildQueryField(
             field = salesApplication.getString(R.string.fs_field_clients_updated),
             op = PeyessQueryOperation.GreaterThan,
-            value = storeId,
+            value = after,
         )
     )
 }

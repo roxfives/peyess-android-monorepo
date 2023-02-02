@@ -135,6 +135,10 @@ private fun buildExpressionForRegularField(
             Timber.i("Used a noop while building the query")
             ""
         }
+        PeyessQueryOperation.ArrayContains -> {
+            Timber.w("Tried using unsupported firestore operation")
+            ""
+        }
     }
 }
 

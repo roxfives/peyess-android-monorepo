@@ -17,13 +17,20 @@ private const val defaultThreshold = 1L
 
 private fun buildQueryFields(
     salesApplication: SalesApplication,
+    storeId: String,
     after: ZonedDateTime,
 ): List<PeyessQueryField> {
     return listOf(
         buildQueryField(
+            field = salesApplication.getString(R.string.fs_field_clients_store_ids),
+            op = PeyessQueryOperation.ArrayContains,
+            value = after,
+        ),
+
+        buildQueryField(
             field = salesApplication.getString(R.string.fs_field_clients_updated),
             op = PeyessQueryOperation.GreaterThan,
-            value = after,
+            value = storeId,
         )
     )
 }
@@ -39,10 +46,11 @@ private fun buildOrderBy(salesApplication: SalesApplication): List<PeyessOrderBy
 
 fun buildQueryForClients(
     salesApplication: SalesApplication,
+    storeId: String,
     after: ZonedDateTime,
 ): Pair<PeyessQuery, SimplePaginatorConfig> {
 
-    val queryFields = buildQueryFields(salesApplication, after)
+    val queryFields = buildQueryFields(salesApplication, storeId, after)
     val orderBy = buildOrderBy(salesApplication)
 
     val query = PeyessQuery(

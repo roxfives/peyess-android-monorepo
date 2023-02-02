@@ -76,6 +76,9 @@ private fun Query.buildQueryForRegularField(
         PeyessQueryOperation.LessThanOrEqual ->
             this.whereLessThanOrEqualTo(peyessQuery.field, value)
 
+        PeyessQueryOperation.ArrayContains ->
+            this.whereArrayContains(peyessQuery.field, value)
+
         PeyessQueryOperation.Different -> {
             Timber.w("Tried using unsupported firestore operation")
             this

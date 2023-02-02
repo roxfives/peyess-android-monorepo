@@ -1,6 +1,7 @@
 package com.peyess.salesapp.workmanager.picture_upload
 
 import android.content.Context
+import android.webkit.MimeTypeMap
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -8,8 +9,8 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
-import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.ktx.storageMetadata
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -33,6 +34,7 @@ const val tooManyAttemptsThreshold = 20
 class PictureUploadManagerWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
+    private val salesApplication: SalesApplication,
     private val pictureUploadRepository: PictureUploadRepository,
     private val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
@@ -60,8 +62,17 @@ class PictureUploadManagerWorker @AssistedInject constructor(
             StorageNotInitialized(description = "Reference to storage is null")
         }
 
+        val context = salesApplication as Context
+        val contentResolver = context.contentResolver
+        val mime = MimeTypeMap.getSingleton()
+        val type = mime.getExtensionFromMimeType(
+            contentResolver.getType(pictureUpload.picture)
+        ).let {
+            if (it == "jpg") { "jpeg" } else { it }
+        }
+
         val storageMetadata = storageMetadata {
-            contentType = "image/jpeg"
+            contentType = "image/$type"
         }
 
         uploadPicture(

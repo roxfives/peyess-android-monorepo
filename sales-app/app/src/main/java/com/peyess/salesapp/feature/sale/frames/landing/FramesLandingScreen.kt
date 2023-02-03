@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.sale.frames.landing
 
+import android.Manifest
 import android.net.Uri
 import androidx.annotation.RawRes
 import androidx.compose.foundation.BorderStroke
@@ -35,6 +36,10 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.frames.landing.state.FramesLandingState
@@ -47,6 +52,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 private val measureButtonHeight = 240.dp
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun FramesLandingScreen(
     modifier: Modifier = Modifier,
@@ -80,6 +86,8 @@ fun FramesLandingScreen(
         }
     }
 
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -89,7 +97,13 @@ fun FramesLandingScreen(
         hasSetFrames = hasSetFrames,
         areFramesNew = areFramesNew,
         onAddFrames = viewModel::onFramesNewChanged,
-        onAddMeasure = onAddMeasure,
+        onAddMeasure = {
+            if (cameraPermissionState.status != PermissionStatus.Granted) {
+                cameraPermissionState.launchPermissionRequest()
+            } else {
+                onAddMeasure(it)
+            }
+        },
         onAddPantocospic = onAddPantoscopic,
 
         mikeMessage = landingMikeMessage,
@@ -167,8 +181,8 @@ private fun FramesLandingScreenImpl(
             hasMeasuredLeft = pictureUriLeftEye != Uri.EMPTY,
             hasMeasuredRight = pictureUriRightEye != Uri.EMPTY,
 
-            onMeasureLeft = {onAddMeasure(Eye.Left)},
-            onMeasureRight = {onAddMeasure(Eye.Right)},
+            onMeasureLeft = { onAddMeasure(Eye.Left) },
+            onMeasureRight = { onAddMeasure(Eye.Right) },
         )
 
         val materialDialogState = rememberMaterialDialogState()

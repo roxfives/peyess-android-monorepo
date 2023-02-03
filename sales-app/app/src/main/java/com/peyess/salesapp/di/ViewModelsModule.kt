@@ -20,6 +20,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.feature.sale.discount.state.DiscountViewModel
 import com.peyess.salesapp.feature.sale.fee.state.PaymentFeeViewModel
+import com.peyess.salesapp.feature.sale.frames.data.state.FramesDataViewModel
 import com.peyess.salesapp.feature.sale.frames.landing.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
@@ -241,5 +242,12 @@ interface ViewModelsModule {
     @ViewModelKey(PaymentFeeViewModel::class)
     fun bindPaymentFeeViewModelFactory(
         factory: PaymentFeeViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FramesDataViewModel::class)
+    fun bindFramesDataViewModelFactory(
+        factory: FramesDataViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

@@ -10,11 +10,20 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
-import com.peyess.salesapp.feature.sale.frames.SetFramesScreen
+import com.peyess.salesapp.feature.sale.frames.data.FramesDataScreen
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTransition
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+
+const val serviceOrderParamName = "serviceOrderId"
+
+private val framesDataRoute = SalesAppScreens.SetFramesData.name +
+        "/{$serviceOrderParamName}"
+
+fun buildFramesDataRoute(serviceOrderId: String): String {
+    return "${SalesAppScreens.SetFramesData.name}/$serviceOrderId"
+}
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildFramesNavGraph(
@@ -33,7 +42,11 @@ fun buildFramesNavGraph(
             modifier = modifier
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset),
-            onAddFrames = { navHostController.navigate(SalesAppScreens.SetFramesData.name) },
+            onAddFrames = {
+                val route = buildFramesDataRoute(it)
+
+                navHostController.navigate(route)
+            },
             onAddMeasure = {
                 val eyeParam = if (it is Eye.Left) {
                     "left"
@@ -49,13 +62,14 @@ fun buildFramesNavGraph(
     }
 
     builder.composable(
-        route = SalesAppScreens.SetFramesData.name,
+        route = framesDataRoute,
         enterTransition = setFramesEnterTransition(),
         exitTransition = setFramesExitTransition()
     ) {
-        SetFramesScreen(
+        FramesDataScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
         ) {
             navHostController.popBackStack()
         }

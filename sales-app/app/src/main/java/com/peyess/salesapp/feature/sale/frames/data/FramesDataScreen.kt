@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.frames
+package com.peyess.salesapp.feature.sale.frames.data
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -30,12 +30,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
+import com.peyess.salesapp.feature.sale.frames.data.state.FramesDataState
+import com.peyess.salesapp.feature.sale.frames.data.state.FramesDataViewModel
+import com.peyess.salesapp.feature.sale.frames.data.utils.parseParameters
 import com.peyess.salesapp.typing.frames.FramesType
-import com.peyess.salesapp.feature.sale.frames.landing.state.FramesState
-import com.peyess.salesapp.feature.sale.frames.landing.state.FramesViewModel
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
@@ -48,26 +51,34 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 @Composable
-fun SetFramesScreen(
+fun FramesDataScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController = rememberNavController(),
     onDone: () -> Unit = {},
 ) {
-    val viewModel: FramesViewModel = mavericksViewModel()
+    val viewModel: FramesDataViewModel = mavericksViewModel()
 
-    val areFramesNew by viewModel.collectAsState(FramesState::areFramesNewInput)
+    LaunchedEffect(Unit) {
+        parseParameters(
+            backStackEntry = navHostController.currentBackStackEntry,
+            onUpdateServiceId = viewModel::onUpdateServiceOrder,
+        )
+    }
 
-    val info by viewModel.collectAsState(FramesState::infoInput)
+    val areFramesNew by viewModel.collectAsState(FramesDataState::areFramesNewInput)
 
-    val description by viewModel.collectAsState(FramesState::descriptionInput)
-    val reference by viewModel.collectAsState(FramesState::referenceInput)
-    val value by viewModel.collectAsState(FramesState::valueInput)
-    val tagCode by viewModel.collectAsState(FramesState::tagCodeInput)
-    val framesType by viewModel.collectAsState(FramesState::framesTypeInput)
+    val info by viewModel.collectAsState(FramesDataState::infoInput)
 
-    val mikeMessage by viewModel.collectAsState(FramesState::mikeMessage)
-    val showMike by viewModel.collectAsState(FramesState::showMike)
+    val description by viewModel.collectAsState(FramesDataState::descriptionInput)
+    val reference by viewModel.collectAsState(FramesDataState::referenceInput)
+    val value by viewModel.collectAsState(FramesDataState::valueInput)
+    val tagCode by viewModel.collectAsState(FramesDataState::tagCodeInput)
+    val framesType by viewModel.collectAsState(FramesDataState::framesTypeInput)
 
-    val hasFinished by viewModel.collectAsState(FramesState::finishedSettingFrames)
+    val mikeMessage by viewModel.collectAsState(FramesDataState::mikeMessage)
+    val showMike by viewModel.collectAsState(FramesDataState::showMike)
+
+    val hasFinished by viewModel.collectAsState(FramesDataState::finishedSettingFrames)
 
     if (hasFinished) {
         LaunchedEffect(Unit) {
@@ -75,7 +86,7 @@ fun SetFramesScreen(
         }
     }
 
-    SetFramesScreenImpl(
+    FramesDataScreenImpl(
         modifier = modifier,
         onDone = viewModel::onFinishSettingFrames,
 
@@ -105,7 +116,7 @@ fun SetFramesScreen(
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
 @Composable
-private fun SetFramesScreenImpl(
+private fun FramesDataScreenImpl(
     modifier: Modifier = Modifier,
     onDone: () -> Unit = {},
 
@@ -313,7 +324,7 @@ private fun SetFramesScreenImpl(
 @Composable
 fun SetFramesScreenPreview() {
     SalesAppTheme {
-        SetFramesScreenImpl(
+        FramesDataScreenImpl(
             modifier = Modifier.fillMaxSize(),
 
             descriptionHasError = false,

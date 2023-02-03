@@ -43,10 +43,12 @@ interface SaleRepository {
 
     fun activeSale(): Flow<ActiveSalesEntity?>
     suspend fun currentSale(): ActiveSaleResponse
+    suspend fun saleForServiceOrder(serviceOrderId: String): ActiveSaleResponse
 
     fun updateActiveSO(activeSOEntity: ActiveSOEntity)
     fun activeSO(): Flow<ActiveSOEntity?>
     suspend fun currentServiceOrder(): ActiveServiceOrderResponse
+    suspend fun serviceOrder(serviceOrderId: String): ActiveServiceOrderResponse
 
     fun updateSO(so: ActiveSOEntity)
 

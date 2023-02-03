@@ -51,12 +51,14 @@ private val measureButtonHeight = 240.dp
 @Composable
 fun FramesLandingScreen(
     modifier: Modifier = Modifier,
-    onAddFrames: () -> Unit = {},
+    onAddFrames: (serviceOrderId: String) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
     onAddPantoscopic: (eye: Eye) -> Unit = {},
     onNext: () -> Unit = {},
 ) {
     val viewModel: FramesViewModel = mavericksViewModel()
+
+    val serviceOrderId by viewModel.collectAsState(FramesState::serviceOrderId)
 
     val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessage)
     val idealCurvatureAnimationId by viewModel.collectAsState(FramesState::idealBaseAnimationResource)
@@ -79,7 +81,7 @@ fun FramesLandingScreen(
     if (hasFinishedSettingFramesType) {
         LaunchedEffect(Unit) {
             viewModel.onNavigateToSetFrames()
-            onAddFrames()
+            onAddFrames(serviceOrderId)
         }
     }
 

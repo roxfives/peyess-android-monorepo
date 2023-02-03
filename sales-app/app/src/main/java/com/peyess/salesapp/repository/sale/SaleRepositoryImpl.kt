@@ -11,6 +11,7 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
+import arrow.core.valid
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -354,6 +355,36 @@ class SaleRepositoryImpl @Inject constructor(
                 )
             }
         }
+    }
+
+    override suspend fun serviceOrder(
+        serviceOrderId: String,
+    ): ActiveServiceOrderResponse = Either.catch {
+        activeSODao.getServiceOrderById(serviceOrderId)
+    }.mapLeft {
+        Unexpected(
+            description = "Error finding sale for service order $serviceOrderId",
+            error = it,
+        )
+    }.leftIfNull {
+        Unexpected(
+            description = "Error finding sale for service order $serviceOrderId",
+        )
+    }
+
+    override suspend fun saleForServiceOrder(serviceOrderId: String): ActiveSaleResponse = Either.catch {
+        val serviceOrder = activeSODao.getServiceOrderById(serviceOrderId)
+
+        serviceOrder?.let { activeSalesDao.getSaleById(serviceOrder.saleId) }
+    }.mapLeft {
+        Unexpected(
+            description = "Error finding sale for service order $serviceOrderId",
+            error = it,
+        )
+    }.leftIfNull {
+        Unexpected(
+            description = "Error finding sale for service order $serviceOrderId",
+        )
     }
 
     override fun updateActiveSO(activeSOEntity: ActiveSOEntity) {

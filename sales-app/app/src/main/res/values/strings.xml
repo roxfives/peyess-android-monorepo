@@ -230,6 +230,7 @@
     <string name="own_frames_data">Digite a descrição da sua armação</string>
     <string name="frames_data">Digite os demais dados das armação escolhida</string>
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
+    <string name="mike_bad_lens_type_default_client_name">cliente</string>
 
     <!--  UI Component: Frames measure  -->
     <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>

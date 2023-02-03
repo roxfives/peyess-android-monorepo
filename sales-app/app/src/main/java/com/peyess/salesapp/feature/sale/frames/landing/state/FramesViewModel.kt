@@ -120,11 +120,11 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     private fun updateFrames(frames: FramesEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (frames.soId.isNotBlank()) {
-                saleRepository.updateFramesData(frames)
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            if (frames.soId.isNotBlank()) {
+//                saleRepository.updateFramesData(frames)
+//            }
+//        }
     }
 
     private fun loadServiceOrderData() {
@@ -242,11 +242,11 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     fun loadCurrentFramesData() = withState {
-        suspend {
-            saleRepository.currentFramesData().first()
-        }.execute(Dispatchers.IO) {
-            copy(loadFramesResponseAsync = it)
-        }
+//        suspend {
+//            saleRepository.currentFramesData().first()
+//        }.execute(Dispatchers.IO) {
+//            copy(loadFramesResponseAsync = it)
+//        }
     }
 
     fun onFramesInfoChanged(value: String) = setState {
@@ -305,7 +305,7 @@ class FramesViewModel @AssistedInject constructor(
         suspend {
             val update = it.currentFrames.copy(areFramesNew = areNew)
 
-            saleRepository.updateFrames(update)
+//            saleRepository.updateFrames(update)
             update
         }.execute(Dispatchers.IO) {
             copy(setFramesNewResponseAsync = it)
@@ -318,11 +318,11 @@ class FramesViewModel @AssistedInject constructor(
     }
 
     fun onFinishSettingFrames() = withState {
-        suspend {
-            saleRepository.updateFrames(it.currentFrames)
-        }.execute(Dispatchers.IO) {
-            copy(finishedSettingFrames = it is Success)
-        }
+//        suspend {
+//            saleRepository.updateFrames(it.currentFrames)
+//        }.execute(Dispatchers.IO) {
+//            copy(finishedSettingFrames = it is Success)
+//        }
     }
 
     private data class MikeMessageResult(

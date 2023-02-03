@@ -460,10 +460,6 @@ class SaleRepositoryImpl @Inject constructor(
         return currentClientsByRole[role]!!
     }
 
-    override fun updateFramesData(frames: FramesEntity) {
-        framesDataDao.update(frames)
-    }
-
     override suspend fun updateFrames(frames: FramesEntity) = Either.catch {
         framesDataDao.updateFrames(frames)
     }.fold(

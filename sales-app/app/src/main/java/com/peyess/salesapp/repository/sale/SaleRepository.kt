@@ -57,7 +57,6 @@ interface SaleRepository {
     fun updatePositioning(positioning: PositioningEntity)
 
     fun currentFramesData(): Flow<FramesEntity>
-    fun updateFramesData(frames: FramesEntity)
     suspend fun updateFrames(frames: FramesEntity)
 
     fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>>

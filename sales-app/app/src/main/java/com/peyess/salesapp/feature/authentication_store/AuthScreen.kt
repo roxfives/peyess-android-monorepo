@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.authentication_store
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -24,6 +26,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -40,6 +43,9 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.authentication_store.state.AuthenticationState
 import com.peyess.salesapp.feature.authentication_store.state.AuthenticationViewModel
@@ -51,6 +57,7 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 const val totalLogoWeight = 0.6f
 const val totalLogoSpacerWeight = (1f - totalLogoWeight) / 2f
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AuthScreen(modifier: Modifier = Modifier) {
     val viewModel: AuthenticationViewModel = mavericksViewModel()
@@ -69,6 +76,17 @@ fun AuthScreen(modifier: Modifier = Modifier) {
     val errorMessage by viewModel.collectAsState(AuthenticationState::errorMessage)
 
     val canSignIn by viewModel.collectAsState(AuthenticationState::canSignIn)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val notificationsPermissionState =
+            rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+
+        if (notificationsPermissionState.status != PermissionStatus.Granted) {
+            LaunchedEffect(Unit) {
+                notificationsPermissionState.launchPermissionRequest()
+            }
+        }
+    }
 
     val onUsernameChanged = viewModel::updateUsername
     val onPasswordChanged = viewModel::updatePassword

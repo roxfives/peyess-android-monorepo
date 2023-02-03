@@ -1,6 +1,8 @@
 package com.peyess.salesapp.feature.home
 
+import android.Manifest
 import android.net.Uri
+import android.os.Build
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,6 +65,9 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
@@ -115,6 +120,7 @@ private val buttonPanelSpacerWidth = 32.dp
 
 private val buttonIconSize = 72.dp
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -162,6 +168,17 @@ fun HomeScreen(
     val hasShownActiveSales = remember { mutableStateOf(false) }
 
     val hasStartedNewSale = remember { mutableStateOf(false) }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val notificationsPermissionState =
+            rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+
+        if (notificationsPermissionState.status != PermissionStatus.Granted) {
+            LaunchedEffect(Unit) {
+                notificationsPermissionState.launchPermissionRequest()
+            }
+        }
+    }
 
     val createClientDialogState = rememberMaterialDialogState()
     ExistingClientDialog(

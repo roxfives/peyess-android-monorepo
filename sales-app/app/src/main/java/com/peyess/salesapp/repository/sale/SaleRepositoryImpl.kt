@@ -11,7 +11,6 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
-import arrow.core.valid
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.local_sale.client_picked.ClientPickedDao
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -138,7 +137,7 @@ class SaleRepositoryImpl @Inject constructor(
         currentSO
             .filterNotNull()
             .flatMapLatest { so ->
-                framesDataDao.getById(so.id).map {
+                framesDataDao.streamFramesForServiceOrder(so.id).map {
                     it ?: FramesEntity(soId = so.id)
                 }
             }.shareIn(

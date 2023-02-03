@@ -1,14 +1,16 @@
 package com.peyess.salesapp.data.repository.local_sale.frames
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.leftIfNull
+import arrow.core.right
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.data.repository.local_sale.frames.adapter.toFramesDocument
 import com.peyess.salesapp.data.repository.local_sale.frames.adapter.toFramesEntity
 import com.peyess.salesapp.data.repository.local_sale.frames.error.FramesDataNotFound
 import com.peyess.salesapp.data.repository.local_sale.frames.error.Unexpected
 import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
-import com.peyess.salesapp.feature.sale.payment.adapter.toFrames
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class LocalFramesRepositoryImpl @Inject constructor(
@@ -39,19 +41,34 @@ class LocalFramesRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun framesForServiceOrder(soId: String): LocalFramesRepositoryResponse =
+    override suspend fun framesForServiceOrder(serviceOrderId: String): LocalFramesRepositoryResponse =
         Either.catch {
             framesDataDao
-                .getFramesForServiceOrder(soId)
+                .getFramesForServiceOrder(serviceOrderId)
                 ?.toFramesDocument()
         }.mapLeft {
             Unexpected(
-                description = "Error while getting frames for service order $soId",
+                description = "Error while getting frames for service order $serviceOrderId",
                 error = it,
             )
         }.leftIfNull {
             FramesDataNotFound(
-                description = "No frames data found for service order with id: $soId"
+                description = "No frames data found for service order with id: $serviceOrderId"
             )
         }
+
+    override fun streamFramesForServiceOrder(
+        serviceOrderId: String,
+    ): LocalFramesStreamResponse {
+        return framesDataDao.streamFramesForServiceOrder(serviceOrderId)
+            .map { framesEntity ->
+                if (framesEntity == null) {
+                    FramesDataNotFound(
+                        description = "No frames data found for service order with id: $serviceOrderId"
+                    ).left()
+                } else {
+                    framesEntity.toFramesDocument().right()
+                }
+            }
+    }
 }

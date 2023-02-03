@@ -25,9 +25,9 @@ interface FramesDataDao {
     """)
     suspend fun updateFramesNew(serviceOrderId: String, isNew: Int)
 
-    @Query("SELECT * FROM ${FramesEntity.tableName} as p WHERE p.so_id = :soId ")
-    fun getById(soId: String): Flow<FramesEntity?>
+    @Query("SELECT * FROM ${FramesEntity.tableName} WHERE so_id = :soId ")
+    fun streamFramesForServiceOrder(soId: String): Flow<FramesEntity?>
 
-    @Query("SELECT * FROM ${FramesEntity.tableName} as p WHERE p.so_id = :soId ")
+    @Query("SELECT * FROM ${FramesEntity.tableName} WHERE so_id = :soId ")
     suspend fun getFramesForServiceOrder(soId: String): FramesEntity?
 }

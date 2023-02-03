@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.frames
+package com.peyess.salesapp.feature.sale.frames.landing
 
 import android.net.Uri
 import androidx.annotation.RawRes
@@ -36,10 +36,9 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.typing.general.Eye
-import com.peyess.salesapp.feature.sale.frames.landing.state.FramesState
-import com.peyess.salesapp.feature.sale.frames.landing.state.FramesViewModel
+import com.peyess.salesapp.feature.sale.frames.landing.state.FramesLandingState
+import com.peyess.salesapp.feature.sale.frames.landing.state.FramesLandingViewModel
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -56,27 +55,23 @@ fun FramesLandingScreen(
     onAddPantoscopic: (eye: Eye) -> Unit = {},
     onNext: () -> Unit = {},
 ) {
-    val viewModel: FramesViewModel = mavericksViewModel()
+    val viewModel: FramesLandingViewModel = mavericksViewModel()
 
-    val serviceOrderId by viewModel.collectAsState(FramesState::serviceOrderId)
+    val serviceOrderId by viewModel.collectAsState(FramesLandingState::serviceOrderId)
 
-    val idealCurvatureMessage by viewModel.collectAsState(FramesState::idealBaseMessage)
-    val idealCurvatureAnimationId by viewModel.collectAsState(FramesState::idealBaseAnimationResource)
+    val idealCurvatureMessage by viewModel.collectAsState(FramesLandingState::idealBaseMessage)
+    val idealCurvatureAnimationId by viewModel.collectAsState(FramesLandingState::idealBaseAnimationResource)
 
-    val landingMikeMessage by viewModel.collectAsState(FramesState::landingMikeMessage)
+    val landingMikeMessage by viewModel.collectAsState(FramesLandingState::landingMikeMessage)
 
-    val frames by viewModel.collectAsState(FramesState::currentFrames)
-    val hasSetFrames by viewModel.collectAsState(FramesState::hasSetFrames)
+    val areFramesNew by viewModel.collectAsState(FramesLandingState::areFramesNew)
+    val hasSetFrames by viewModel.collectAsState(FramesLandingState::hasSetFrames)
 
-    val pictureUriLeftEye by viewModel.collectAsState(FramesState::pictureUriLeftEye)
-    val pictureUriRightEye by viewModel.collectAsState(FramesState::pictureUriRightEye)
+    val pictureUriLeftEye by viewModel.collectAsState(FramesLandingState::pictureUriLeftEye)
+    val pictureUriRightEye by viewModel.collectAsState(FramesLandingState::pictureUriRightEye)
 
     val hasFinishedSettingFramesType
-        by viewModel.collectAsState(FramesState::hasFinishedSettingFramesType)
-
-    LaunchedEffect(Unit) {
-        viewModel.loadCurrentFramesData()
-    }
+        by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
 
     if (hasFinishedSettingFramesType) {
         LaunchedEffect(Unit) {
@@ -92,7 +87,7 @@ fun FramesLandingScreen(
         idealCurvatureAnimationId = idealCurvatureAnimationId,
 
         hasSetFrames = hasSetFrames,
-        frames = frames,
+        areFramesNew = areFramesNew,
         onAddFrames = viewModel::onFramesNewChanged,
         onAddMeasure = onAddMeasure,
         onAddPantocospic = onAddPantoscopic,
@@ -114,7 +109,7 @@ private fun FramesLandingScreenImpl(
     idealCurvatureAnimationId: Int = R.raw.lottie_frames_curvature_4,
 
     hasSetFrames: Boolean = false,
-    frames: FramesEntity? = null,
+    areFramesNew: Boolean = false,
     onAddFrames: (isNew: Boolean) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
     onAddPantocospic: (eye: Eye) -> Unit = {},
@@ -145,7 +140,7 @@ private fun FramesLandingScreenImpl(
     Column(modifier = modifier) {
         FramesInput(
             hasSetFrames = hasSetFrames,
-            currentFrames = frames,
+            areFramesNew = areFramesNew,
             onSetOwnFrames = {onAddFrames(false)},
             onSetNewFrames = {onAddFrames(true)},
         )
@@ -243,7 +238,7 @@ private fun FramesLandingScreenImpl(
 private fun FramesInput(
     modifier: Modifier = Modifier,
     hasSetFrames: Boolean = false,
-    currentFrames: FramesEntity? = null,
+    areFramesNew: Boolean = false,
     onSetOwnFrames: () -> Unit = {},
     onSetNewFrames: () -> Unit = {},
 ) {
@@ -257,7 +252,7 @@ private fun FramesInput(
         var newFramesButtonModifier = Modifier
             .height(SalesAppTheme.dimensions.minimum_touch_target)
             .weight(1f)
-        if (hasSetFrames && currentFrames?.areFramesNew == true) {
+        if (hasSetFrames && areFramesNew) {
             newFramesButtonModifier = newFramesButtonModifier
                 .border(
                     border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary)
@@ -265,7 +260,7 @@ private fun FramesInput(
         }
 
         var newFramesButtonTextStyle = MaterialTheme.typography.body1
-        if (hasSetFrames && currentFrames?.areFramesNew == true) {
+        if (hasSetFrames && areFramesNew) {
             newFramesButtonTextStyle = newFramesButtonTextStyle
                 .copy(textDecoration = TextDecoration.Underline)
         }
@@ -273,7 +268,7 @@ private fun FramesInput(
         var ownFramesButtonModifier = Modifier
             .height(SalesAppTheme.dimensions.minimum_touch_target)
             .weight(1f)
-        if (hasSetFrames && currentFrames?.areFramesNew == false) {
+        if (hasSetFrames && !areFramesNew) {
             ownFramesButtonModifier = ownFramesButtonModifier
                 .border(
                     border = BorderStroke(width = 4.dp, color = MaterialTheme.colors.primary)
@@ -281,7 +276,7 @@ private fun FramesInput(
         }
 
         var ownFramesButtonTextStyle = MaterialTheme.typography.body1
-        if (hasSetFrames && currentFrames?.areFramesNew == false) {
+        if (hasSetFrames && !areFramesNew) {
             ownFramesButtonTextStyle = ownFramesButtonTextStyle
                 .copy(textDecoration = TextDecoration.Underline)
         }

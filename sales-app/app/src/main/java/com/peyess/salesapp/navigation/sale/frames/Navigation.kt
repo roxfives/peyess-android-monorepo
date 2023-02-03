@@ -9,7 +9,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
+import com.peyess.salesapp.feature.sale.frames.landing.FramesLandingScreen
 import com.peyess.salesapp.feature.sale.frames.data.FramesDataScreen
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTransition

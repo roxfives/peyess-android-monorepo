@@ -4,7 +4,6 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
-import com.peyess.salesapp.feature.sale.frames.state.Eye
 import java.time.ZonedDateTime
 
 fun LocalPositioningDocument.toPictureUploadDocument(

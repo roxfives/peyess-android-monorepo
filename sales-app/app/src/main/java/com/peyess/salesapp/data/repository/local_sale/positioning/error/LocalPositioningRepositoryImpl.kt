@@ -8,7 +8,7 @@ import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioni
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchSingleResponse
 import com.peyess.salesapp.data.repository.local_sale.positioning.typing.PositioningPair
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import javax.inject.Inject
 
 class LocalPositioningRepositoryImpl @Inject constructor(

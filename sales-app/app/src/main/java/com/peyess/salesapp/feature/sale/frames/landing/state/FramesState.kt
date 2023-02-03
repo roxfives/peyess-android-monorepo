@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.frames.state
+package com.peyess.salesapp.feature.sale.frames.landing.state
 
 import android.net.Uri
 import com.airbnb.mvrx.Async

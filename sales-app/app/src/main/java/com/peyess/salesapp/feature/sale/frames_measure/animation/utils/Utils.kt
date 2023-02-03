@@ -2,7 +2,7 @@ package com.peyess.salesapp.feature.sale.frames_measure.animation.utils
 
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.state.HeadState
 
 fun lottieCompositionFor(state: PositioningAnimationState, eye: Eye):

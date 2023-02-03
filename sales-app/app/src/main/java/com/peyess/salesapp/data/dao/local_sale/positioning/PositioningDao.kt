@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import kotlinx.coroutines.flow.Flow
 
 @Dao

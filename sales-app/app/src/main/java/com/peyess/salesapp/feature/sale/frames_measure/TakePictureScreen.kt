@@ -78,7 +78,7 @@ import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.headCompositionFor
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.state.CameraSetUpState
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureState
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel

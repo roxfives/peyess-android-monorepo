@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.raw_measuring
 
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 
 data class RawMeasuring(
     val eye: Eye = Eye.None,

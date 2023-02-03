@@ -5,14 +5,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
 import com.peyess.salesapp.feature.sale.frames.SetFramesScreen
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTransition
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme

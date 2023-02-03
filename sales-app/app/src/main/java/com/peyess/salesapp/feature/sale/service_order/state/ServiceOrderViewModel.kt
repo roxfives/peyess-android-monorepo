@@ -40,7 +40,7 @@ import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryRespo
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.feature.sale.service_order.adapter.toFrames
 import com.peyess.salesapp.feature.sale.service_order.adapter.toLens

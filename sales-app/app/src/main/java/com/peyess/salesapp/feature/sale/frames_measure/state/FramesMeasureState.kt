@@ -1,19 +1,14 @@
 package com.peyess.salesapp.feature.sale.frames_measure.state
 
-import android.net.Uri
-import androidx.annotation.Keep
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.PositioningAnimationState
-import java.util.Date
-import kotlin.math.abs
 
 // TODO: Remove hardcoded sizes
 private const val screenWidth = 2448.0

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.feature.sale.frames.state
+package com.peyess.salesapp.feature.sale.frames.landing.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -144,7 +144,7 @@ class FramesViewModel @AssistedInject constructor(
 
             ifRight = {
                 copy(serviceOrderId = it.id)
-            }
+            },
         )
     }
 

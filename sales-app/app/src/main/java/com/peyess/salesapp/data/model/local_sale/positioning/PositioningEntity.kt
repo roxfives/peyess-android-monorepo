@@ -3,11 +3,8 @@ package com.peyess.salesapp.data.model.local_sale.positioning
 import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.google.firebase.firestore.PropertyName
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import kotlin.math.abs
 
 private const val screenWidth = 2448.0

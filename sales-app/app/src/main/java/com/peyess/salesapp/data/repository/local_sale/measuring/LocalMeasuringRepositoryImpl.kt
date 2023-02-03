@@ -5,7 +5,7 @@ import arrow.core.leftIfNull
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.adapter.positioning.toLocalMeasuringDocument
 import com.peyess.salesapp.data.repository.local_sale.measuring.error.MeasuringDataNotFound
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import javax.inject.Inject
 
 class LocalMeasuringRepositoryImpl @Inject constructor(

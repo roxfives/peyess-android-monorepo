@@ -20,13 +20,12 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesGroupsQueryFie
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepository
-import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.types.Order
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.buildPrescription
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toDisponibility
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensGroupModel
@@ -50,7 +49,6 @@ import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildLensListQuery
 import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildOrderByForLensSuggestions
 import com.peyess.salesapp.feature.sale.lens_pick.state.query.buildQueryFieldsForLensSuggestions
 import com.peyess.salesapp.features.disponibility.contants.ReasonUnsupported
-import com.peyess.salesapp.features.disponibility.model.Disponibility
 import com.peyess.salesapp.features.disponibility.model.Prescription
 import com.peyess.salesapp.features.disponibility.supportsPrescription
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -61,7 +59,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber

@@ -37,15 +37,14 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
-import com.peyess.salesapp.feature.sale.frames.state.Eye
-import com.peyess.salesapp.feature.sale.frames.state.FramesState
-import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.FramesState
+import com.peyess.salesapp.feature.sale.frames.landing.state.FramesViewModel
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
-import timber.log.Timber
 
 private val measureButtonHeight = 240.dp
 

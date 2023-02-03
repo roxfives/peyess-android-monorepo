@@ -20,7 +20,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.sixth_step_time.state.SixthSte
 import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.feature.sale.discount.state.DiscountViewModel
 import com.peyess.salesapp.feature.sale.fee.state.PaymentFeeViewModel
-import com.peyess.salesapp.feature.sale.frames.state.FramesViewModel
+import com.peyess.salesapp.feature.sale.frames.landing.state.FramesViewModel
 import com.peyess.salesapp.feature.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.feature.sale.lens_comparison.state.LensComparisonViewModel
 import com.peyess.salesapp.feature.sale.lens_pick.state.LensPickViewModel

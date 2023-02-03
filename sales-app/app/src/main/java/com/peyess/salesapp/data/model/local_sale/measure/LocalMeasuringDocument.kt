@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.local_sale.measure
 
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 
 data class LocalMeasuringDocument(
     val eye: Eye = Eye.None,

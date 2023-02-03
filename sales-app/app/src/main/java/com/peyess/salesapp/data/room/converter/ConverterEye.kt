@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.room.converter
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import timber.log.Timber
 
 class ConverterEye {

@@ -24,7 +24,7 @@ import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRe
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.utils.query.PeyessQuery
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toColoring
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLens
 import com.peyess.salesapp.feature.sale.lens_comparison.adapter.toLensMaterial

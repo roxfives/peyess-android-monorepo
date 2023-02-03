@@ -55,7 +55,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.animation_positioning.AnimationPanel
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter

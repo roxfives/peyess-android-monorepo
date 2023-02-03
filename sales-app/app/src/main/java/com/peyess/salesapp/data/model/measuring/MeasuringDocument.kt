@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.model.measuring
 
-import com.peyess.salesapp.feature.sale.frames.state.Eye
+import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
 import java.time.ZonedDateTime
 
 data class MeasuringDocument(

@@ -80,6 +80,8 @@ fun FramesDataScreen(
 
     val hasFinished by viewModel.collectAsState(FramesDataState::finishedSettingFrames)
 
+    val isUpdatingFrames by viewModel.collectAsState(FramesDataState::isUpdatingFrames)
+
     if (hasFinished) {
         LaunchedEffect(Unit) {
             onDone()
@@ -110,7 +112,9 @@ fun FramesDataScreen(
         mikeMessageBadFramesType = mikeMessage,
         showMike = showMike,
         framesType = framesType,
-        onFramesTypeChange = viewModel::onFramesTypeChanged
+        onFramesTypeChange = viewModel::onFramesTypeChanged,
+
+        isUpdatingFrames = isUpdatingFrames,
     )
 }
 
@@ -152,6 +156,8 @@ private fun FramesDataScreenImpl(
     mikeMessageBadFramesType: String = "",
     framesType: FramesType? = null,
     onFramesTypeChange: (value: String) -> Unit = {},
+
+    isUpdatingFrames: Boolean = false,
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -314,6 +320,7 @@ private fun FramesDataScreenImpl(
 
         Spacer(modifier = Modifier.weight(1f))
         PeyessStepperFooter(
+            isLoadingConstraints = isUpdatingFrames,
             canGoNext = canSetFrames,
             onNext = onDone,
         )

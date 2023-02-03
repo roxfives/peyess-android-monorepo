@@ -225,7 +225,10 @@ class FramesDataViewModel @AssistedInject constructor(
         suspend {
             framesRepository.updateFrames(it.frames.toFramesDocument())
         }.execute(Dispatchers.IO) {
-            copy(finishedSettingFrames = it is Success)
+            copy(
+                finishSettingFramesAsync = it,
+                finishedSettingFrames = it is Success,
+            )
         }
     }
 

@@ -143,6 +143,8 @@ fun SalesScreen(
                 viewModel.startNewSale()
             },
 
+            pictureForClient = viewModel::pictureForClient,
+
             isGeneratingPdfFor = isGeneratingPdfFor,
             onGenerateSalePdf = {
                 viewModel.generateServiceOrderPdf(
@@ -179,6 +181,8 @@ fun SaleList(
     isServiceOrderListLoading: Boolean = false,
 
     serviceOrderList: List<ServiceOrderDocument> = emptyList(),
+
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 
     isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
     onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
@@ -237,6 +241,7 @@ fun SaleList(
                     .padding(SalesAppTheme.dimensions.grid_1_5)
                     .fillMaxWidth(),
                 serviceOrder = serviceOrderList[it],
+                pictureForClient = pictureForClient,
                 isGeneratingPdf = isGeneratingPdfFor.first
                         && isGeneratingPdfFor.second == serviceOrderList[it].id,
                 onGenerateSalePdf = onGenerateSalePdf,

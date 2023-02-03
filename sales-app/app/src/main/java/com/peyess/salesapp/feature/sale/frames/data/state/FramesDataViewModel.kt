@@ -223,6 +223,7 @@ class FramesDataViewModel @AssistedInject constructor(
 
     fun onFinishSettingFrames() = withState {
         suspend {
+            framesRepository.createFramesIfNotExists(it.serviceOrderId)
             framesRepository.updateFrames(it.frames.toFramesDocument())
         }.execute(Dispatchers.IO) {
             copy(

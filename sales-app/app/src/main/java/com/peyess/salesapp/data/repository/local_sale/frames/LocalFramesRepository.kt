@@ -18,4 +18,6 @@ interface LocalFramesRepository {
     suspend fun framesForServiceOrder(serviceOrderId: String): LocalFramesRepositoryResponse
 
     fun streamFramesForServiceOrder(serviceOrderId: String): LocalFramesStreamResponse
+
+    suspend fun createFramesIfNotExists(serviceOrderId: String)
 }

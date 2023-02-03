@@ -5,6 +5,7 @@ import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
+import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.repository.local_sale.frames.adapter.toFramesDocument
 import com.peyess.salesapp.data.repository.local_sale.frames.adapter.toFramesEntity
 import com.peyess.salesapp.data.repository.local_sale.frames.error.FramesDataNotFound
@@ -70,5 +71,13 @@ class LocalFramesRepositoryImpl @Inject constructor(
                     framesEntity.toFramesDocument().right()
                 }
             }
+    }
+
+    override suspend fun createFramesIfNotExists(serviceOrderId: String) {
+        val entity = framesDataDao.getFramesForServiceOrder(serviceOrderId)
+
+        if (entity == null) {
+            framesDataDao.add(FramesEntity(soId = serviceOrderId))
+        }
     }
 }

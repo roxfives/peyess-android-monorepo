@@ -220,6 +220,7 @@ class FramesLandingViewModel @AssistedInject constructor(
 
     fun onFramesNewChanged(areNew: Boolean) = withState {
         suspend {
+            localFramesRepository.createFramesIfNotExists(it.serviceOrderId)
             localFramesRepository.updateFramesNew(it.serviceOrderId, areNew)
         }.execute(Dispatchers.IO) {
             copy(setFramesNewResponseAsync = it)

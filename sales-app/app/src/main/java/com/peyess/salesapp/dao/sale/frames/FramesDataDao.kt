@@ -9,10 +9,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface FramesDataDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(prescriptionPictureEntity: FramesEntity)
+    fun add(framesEntity: FramesEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun update(prescriptionPictureEntity: FramesEntity)
+    fun update(framesEntity: FramesEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateFrames(framesEntity: FramesEntity)
 
     @Query("SELECT * FROM ${FramesEntity.tableName} as p WHERE p.so_id = :soId ")
     fun getById(soId: String): Flow<FramesEntity?>

@@ -1,7 +1,5 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
-import arrow.core.Either
-import arrow.core.flatMap
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -14,7 +12,6 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.typing.frames.FramesType
 import com.peyess.salesapp.dao.sale.frames.hasPotentialProblemsWith
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
-import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
@@ -68,10 +65,7 @@ class FramesViewModel @AssistedInject constructor(
                             || framesType is FramesType.MetalNylon)
                 )
             }
-
         }
-
-        onEach(FramesState::currentFrames) { updateFrames(it) }
 
         onEach(FramesState::prescriptionResponse) {
             val ib = it.prevalentIdealBase
@@ -116,11 +110,19 @@ class FramesViewModel @AssistedInject constructor(
         onAsync(FramesState::loadFramesResponseAsync) {
             processLoadFramesResponse(it)
         }
+
+        onAsync(FramesState::setFramesNewResponseAsync) {
+            processOnSetFramesNewResponse(it)
+        }
+
+
     }
 
     private fun updateFrames(frames: FramesEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            saleRepository.updateFramesData(frames)
+            if (frames.soId.isNotBlank()) {
+                saleRepository.updateFramesData(frames)
+            }
         }
     }
 
@@ -238,7 +240,7 @@ class FramesViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadCurrentFramesData() = withState {
+    fun loadCurrentFramesData() = withState {
         suspend {
             saleRepository.currentFramesData().first()
         }.execute(Dispatchers.IO) {
@@ -249,30 +251,35 @@ class FramesViewModel @AssistedInject constructor(
     fun onFramesInfoChanged(value: String) = setState {
         val update = currentFrames.copy(framesInfo = value)
 
+        updateFrames(update)
         copy(currentFrames = update, infoInput = value)
     }
 
     fun onFramesDescriptionChanged(value: String) = setState {
         val update = currentFrames.copy(description = value)
 
+        updateFrames(update)
         copy(currentFrames = update, descriptionInput = value)
     }
 
     fun onFramesReferenceChanged(value: String) = setState {
         val update = currentFrames.copy(reference = value)
 
+        updateFrames(update)
         copy(currentFrames = update, referenceInput = value)
     }
 
     fun onFramesValueChanged(value: Double) = setState {
         val update = currentFrames.copy(value = value)
 
+        updateFrames(update)
         copy(currentFrames = update, valueInput = value)
     }
 
     fun onFramesTagCodeChanged(value: String) = setState {
         val update = currentFrames.copy(tagCode = value)
 
+        updateFrames(update)
         copy(currentFrames = update, tagCodeInput = value)
     }
 
@@ -280,27 +287,41 @@ class FramesViewModel @AssistedInject constructor(
         val type = FramesType.toFramesType(name)
         val update = currentFrames.copy(type = type)
 
+        updateFrames(update)
         copy(currentFrames = update, framesTypeInput = type)
     }
 
-    fun onFramesNewChanged(areNew: Boolean) = setState {
-        val update = currentFrames.copy(areFramesNew = areNew)
-
-        updateFrames(update)
-
+    private fun processOnSetFramesNewResponse(frames: FramesEntity) = setState {
         copy(
-            currentFrames = update,
-            areFramesNewInput = areNew,
+            currentFrames = frames,
+            areFramesNewInput = frames.areFramesNew,
             hasSetFrames = true,
+            hasFinishedSettingFramesType = true,
         )
     }
 
-    fun onFinishSettingFrames() = setState {
-        viewModelScope.launch(Dispatchers.IO) {
-            saleRepository.updateFramesData(currentFrames)
+    fun onFramesNewChanged(areNew: Boolean) = withState {
+        suspend {
+            val update = it.currentFrames.copy(areFramesNew = areNew)
+
+            saleRepository.updateFrames(update)
+            update
+        }.execute(Dispatchers.IO) {
+            copy(setFramesNewResponseAsync = it)
         }
 
-        copy(finishedSettingFrames = true)
+    }
+
+    fun onNavigateToSetFrames() = setState {
+        copy(hasFinishedSettingFramesType = false)
+    }
+
+    fun onFinishSettingFrames() = withState {
+        suspend {
+            saleRepository.updateFrames(it.currentFrames)
+        }.execute(Dispatchers.IO) {
+            copy(finishedSettingFrames = it is Success)
+        }
     }
 
     private data class MikeMessageResult(

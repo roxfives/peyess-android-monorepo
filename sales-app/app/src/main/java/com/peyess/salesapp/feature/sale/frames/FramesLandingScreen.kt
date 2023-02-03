@@ -19,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,7 @@ import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import timber.log.Timber
 
 private val measureButtonHeight = 240.dp
 
@@ -68,6 +70,20 @@ fun FramesLandingScreen(
     val pictureUriLeftEye by viewModel.collectAsState(FramesState::pictureUriLeftEye)
     val pictureUriRightEye by viewModel.collectAsState(FramesState::pictureUriRightEye)
 
+    val hasFinishedSettingFramesType
+        by viewModel.collectAsState(FramesState::hasFinishedSettingFramesType)
+
+    LaunchedEffect(Unit) {
+        viewModel.loadCurrentFramesData()
+    }
+
+    if (hasFinishedSettingFramesType) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigateToSetFrames()
+            onAddFrames()
+        }
+    }
+
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -76,10 +92,7 @@ fun FramesLandingScreen(
 
         hasSetFrames = hasSetFrames,
         frames = frames,
-        onAddFrames = {
-            viewModel.onFramesNewChanged(it)
-            onAddFrames()
-        },
+        onAddFrames = viewModel::onFramesNewChanged,
         onAddMeasure = onAddMeasure,
         onAddPantocospic = onAddPantoscopic,
 

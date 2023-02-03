@@ -1,8 +1,11 @@
 package com.peyess.salesapp.data.room.database
 
 import androidx.room.Database
+import androidx.room.DatabaseConfiguration
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.peyess.salesapp.dao.products.room.filter_lens_category.FilterLensCategoryEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_description.FilterLensDescriptionEntity
 import com.peyess.salesapp.dao.products.room.filter_lens_family.FilterLensFamilyDao

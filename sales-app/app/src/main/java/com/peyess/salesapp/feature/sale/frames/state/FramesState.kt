@@ -1,8 +1,6 @@
 package com.peyess.salesapp.feature.sale.frames.state
 
 import android.net.Uri
-import androidx.annotation.RawRes
-import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
@@ -10,7 +8,6 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
-import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.typing.frames.FramesType
@@ -78,6 +75,8 @@ data class FramesState(
     val landingMikeMessage: String = "",
     val hasSetFrames: Boolean = false,
 
+    val setFramesNewResponseAsync: Async<FramesEntity> = Uninitialized,
+    val hasFinishedSettingFramesType: Boolean = false,
     val finishedSettingFrames: Boolean = false,
 ): MavericksState {
     val pictureUriLeftEye = if (positioningDataLeft is Success) {

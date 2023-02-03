@@ -434,6 +434,13 @@ class SaleRepositoryImpl @Inject constructor(
         framesDataDao.update(frames)
     }
 
+    override suspend fun updateFrames(frames: FramesEntity) = Either.catch {
+        framesDataDao.updateFrames(frames)
+    }.fold(
+        ifLeft = { Timber.i("Frames updated") },
+        ifRight = { Timber.e("Error updating frames: $frames") }
+    )
+
     override fun updatePositioning(positioning: PositioningEntity) {
         positioningDao.add(positioning)
     }

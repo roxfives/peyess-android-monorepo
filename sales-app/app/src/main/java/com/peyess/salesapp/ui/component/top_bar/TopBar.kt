@@ -93,5 +93,6 @@ fun showNavigateBack(
             || screen == SalesAppScreens.Home
             || screen == SalesAppScreens.Clients
             || screen == SalesAppScreens.Landing
+            || screen == SalesAppScreens.SetFramesData
     )
 }

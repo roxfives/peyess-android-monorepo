@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.model.local_sale.positioning
 
 import android.net.Uri
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 
 data class LocalPositioningDocument(
     val id: String = "",

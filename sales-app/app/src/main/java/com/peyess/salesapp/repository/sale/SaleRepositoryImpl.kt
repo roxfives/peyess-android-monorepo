@@ -31,7 +31,7 @@ import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescript
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity

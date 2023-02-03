@@ -11,7 +11,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.feature.sale.frames.FramesLandingScreen
 import com.peyess.salesapp.feature.sale.frames.SetFramesScreen
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTransition
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme

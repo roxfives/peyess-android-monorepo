@@ -36,7 +36,7 @@ import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.sale.service_order.utils.adapter.toPaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.utils.error.AddClientError

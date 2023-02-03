@@ -17,6 +17,7 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.typing.general.Eye
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

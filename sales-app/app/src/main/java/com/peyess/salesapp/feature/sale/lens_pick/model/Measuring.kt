@@ -3,7 +3,7 @@ package com.peyess.salesapp.feature.sale.lens_pick.model
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.raw_measuring.RawMeasuring
 import com.peyess.salesapp.data.adapter.raw_measuring.toMeasuring
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.hypot

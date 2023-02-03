@@ -8,7 +8,7 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError

@@ -6,7 +6,7 @@ import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDoc
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.positioning.PositioningDocument
 import com.peyess.salesapp.data.model.raw_measuring.RawMeasuring
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import java.time.ZonedDateTime
 import kotlin.math.abs
 import kotlin.math.cos

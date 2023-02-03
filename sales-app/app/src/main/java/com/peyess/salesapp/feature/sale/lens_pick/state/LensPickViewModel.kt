@@ -25,7 +25,7 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.types.Order
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.buildPrescription
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toDisponibility
 import com.peyess.salesapp.feature.sale.lens_pick.adapter.toLensGroupModel

@@ -4,7 +4,7 @@ import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
 import com.peyess.salesapp.data.repository.local_sale.positioning.error.LocalPositioningReadError
 import com.peyess.salesapp.data.repository.local_sale.positioning.typing.PositioningPair
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 
 typealias LocalPositioningFetchSingleResponse =
         Either<LocalPositioningReadError, LocalPositioningDocument>

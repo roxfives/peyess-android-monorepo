@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.adapter.measuring
 
 import com.peyess.salesapp.data.model.measuring.FSMeasuring
 import com.peyess.salesapp.data.model.measuring.MeasuringDocument
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun MeasuringDocument.toFSMeasuring(): FSMeasuring {

@@ -9,7 +9,7 @@ import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
 import com.peyess.salesapp.data.model.local_sale.positioning.updateProportion
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.AnimationParametersFactory
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.PositioningAnimationState

@@ -5,7 +5,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.feature.sale.frames.landing.state.Eye
+import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.frames_measure.animation.measuring_parameter.MeasuringParameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.Parameter
 import com.peyess.salesapp.feature.sale.frames_measure.animation.utils.PositioningAnimationState

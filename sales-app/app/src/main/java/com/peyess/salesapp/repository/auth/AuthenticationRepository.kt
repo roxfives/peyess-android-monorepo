@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp
 import com.peyess.salesapp.auth.LocalAuthorizationState
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.UserAuthenticationState
+import com.peyess.salesapp.dao.auth.store.OpticalStoreResponse
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,8 @@ interface AuthenticationRepository {
     val storeAuthState: Flow<StoreAuthState>
 
     val currentStore: Flow<OpticalStore>
+
+    suspend fun loadCurrentStore(): OpticalStoreResponse
 
     suspend fun pictureForStore(storeId: String): Uri
 

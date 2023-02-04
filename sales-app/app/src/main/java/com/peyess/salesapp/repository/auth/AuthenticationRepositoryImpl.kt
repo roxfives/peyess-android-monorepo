@@ -16,6 +16,7 @@ import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.auth.UserAuthenticationState
 import com.peyess.salesapp.auth.exception.InvalidCredentialsError
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
+import com.peyess.salesapp.dao.auth.store.OpticalStoreResponse
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
 import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -74,6 +75,10 @@ class AuthenticationRepositoryImpl @Inject constructor(
         get() = storeDao.store(
                 storeId = firebaseManager.currentStore?.uid ?: ""
             )
+
+    override suspend fun loadCurrentStore(): OpticalStoreResponse {
+        return storeDao.loadCurrentStore()
+    }
 
     override suspend fun pictureForStore(storeId: String): Uri {
         val storageRef = firebaseManager.storage?.reference

@@ -156,7 +156,10 @@ object DaoModule {
         firebaseManager: FirebaseManager,
         application: SalesApplication,
     ): OpticalStoreDao {
-        return OpticalStoreDaoImpl(firebaseManager, application)
+        return OpticalStoreDaoImpl(
+            salesApplication = application,
+            firebaseManager = firebaseManager,
+        )
     }
 
     @Singleton

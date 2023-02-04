@@ -1,7 +1,11 @@
 package com.peyess.salesapp.dao.auth.store
 
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.dao.auth.store.error.OpticalStoreUnexpected
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.FSOpticalStore
 import com.peyess.salesapp.model.store.OpticalStore
@@ -13,8 +17,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class OpticalStoreDaoImpl @Inject constructor(
+    val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
-    val application: SalesApplication,
 ) : OpticalStoreDao {
     val firestore = firebaseManager.storeFirestore
 
@@ -29,12 +33,44 @@ class OpticalStoreDaoImpl @Inject constructor(
         }
     }
 
+    override suspend fun loadCurrentStore(): OpticalStoreResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        val storeId = firebaseManager.currentStore?.uid
+
+        ensureNotNull(firestore) {
+            OpticalStoreUnexpected("Firestore instance is null")
+        }
+
+        ensureNotNull(storeId) {
+            OpticalStoreUnexpected("Active store is null")
+        }
+        ensure(storeId.isNotBlank()) {
+            OpticalStoreUnexpected("Active store has no id")
+        }
+
+        Either.catch {
+            val snap = firestore
+                .collection(salesApplication.stringResource(R.string.fs_col_store))
+                .document(storeId)
+                .get()
+                .await()
+
+            Timber.i("Converting to object")
+            val fsStore = snap.toObject(FSOpticalStore::class.java)
+
+            Timber.i("Converting to document")
+            toStore(snap.id, fsStore)
+        }.mapLeft {
+            OpticalStoreUnexpected(it.message ?: "Unknown error")
+        }.bind()
+    }
+
     override fun store(storeId: String): Flow<OpticalStore>  = flow {
         if (firestore != null) {
             Timber.i("Loading store ${storeId}")
 
             val snap = firestore
-                .collection(application.stringResource(R.string.fs_col_store))
+                .collection(salesApplication.stringResource(R.string.fs_col_store))
                 .document(storeId)
                 .get()
                 .await()

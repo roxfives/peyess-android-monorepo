@@ -6,6 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.map
+import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -36,6 +37,7 @@ import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.file.createPrintFile
+import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -257,6 +259,14 @@ class MainViewModel @AssistedInject constructor(
                     createClient = true,
                 )
             }
+        )
+    }
+
+    fun syncClients(context: Context) {
+        enqueueOneTimeClientDownloadWorker(
+            context = context,
+            forceSync = true,
+            workPolicy = ExistingWorkPolicy.REPLACE,
         )
     }
 

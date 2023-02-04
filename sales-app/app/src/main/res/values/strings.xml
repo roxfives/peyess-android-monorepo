@@ -117,6 +117,9 @@
 
     <string name="btn_open_pdf">Abrir PDF</string>
 
+    <!--    UI Component: Sales -->
+    <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
+
     <!-- UI Component: Welcome   -->
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
     <string name="label_client_name">Primeiro nome do(a) cliente</string>
@@ -352,7 +355,7 @@
     <string name="demonstration_treatment_damaged_info_obs">\u2731 Resistência a riscos não oferece garantia contra riscos, apenas torna a lente menos suscetível a sua deterioração no dia a dia.</string>
 
     <!--  UI Component: PickClient  -->
-    <string name="no_clients_yet">Ainda não há clientes cadastrados</string>
+    <string name="no_clients_yet">Não encontramos clientes cadastrados</string>
     <string name="btn_add_new_client">Adicionar cliente</string>
     <string name="btn_select_client">Selecionar</string>
 

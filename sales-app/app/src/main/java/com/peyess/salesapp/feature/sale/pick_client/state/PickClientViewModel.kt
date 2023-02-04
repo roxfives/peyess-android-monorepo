@@ -1,10 +1,12 @@
 package com.peyess.salesapp.feature.sale.pick_client.state
 
+import android.content.Context
 import android.net.Uri
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.map
+import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -28,6 +30,7 @@ import com.peyess.salesapp.feature.sale.pick_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.feature.sale.pick_client.model.Client
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -222,6 +225,14 @@ class PickClientViewModel @AssistedInject constructor(
                     createClient = true,
                 )
             }
+        )
+    }
+
+    fun syncClients(context: Context) {
+        enqueueOneTimeClientDownloadWorker(
+            context = context,
+            forceSync = true,
+            workPolicy = ExistingWorkPolicy.REPLACE,
         )
     }
 

@@ -105,6 +105,8 @@ fun PickClientScreen(
         serviceOrderId: String,
     ) -> Unit = { _, _, _, _, _ -> },
 ) {
+    val context = LocalContext.current
+
     val viewModel: PickClientViewModel = mavericksViewModel()
 
     val saleId by viewModel.collectAsState(PickClientState::saleId)
@@ -190,46 +192,53 @@ fun PickClientScreen(
         }
     }
 
-    if (isLoading) {
-        PeyessProgressIndicatorInfinite()
-    } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(16.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-            PickClientScreenImpl(
-                modifier = modifier,
-                clientList = clientList,
+        PickClientScreenImpl(
+            modifier = modifier,
 
-                pictureForClient = viewModel::pictureForClient,
+            isLoadingClients = isLoading,
 
-                onSearchClient = onSearchClient,
-                onCreateNewClient = viewModel::findActiveCreatingClient,
-                onClientPicked = {
-                    viewModel.pickClient(it)
-                    canNavigate.value = true
-                },
-            )
-        }
+            clientList = clientList,
+
+            pictureForClient = viewModel::pictureForClient,
+
+            onSyncClients = { viewModel.syncClients(context) },
+            onSearchClient = onSearchClient,
+            onCreateNewClient = viewModel::findActiveCreatingClient,
+            onClientPicked = {
+                viewModel.pickClient(it)
+                canNavigate.value = true
+            },
+        )
     }
 }
 
 @Composable
 private fun PickClientScreenImpl(
     modifier: Modifier = Modifier,
+
+    isLoadingClients: Boolean = false,
+
     clientList: Flow<PagingData<Client>> = emptyFlow(),
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onClientPicked: (client: Client) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
+    onSyncClients: () -> Unit = {},
 ) {
     val clients = clientList.collectAsLazyPagingItems()
 
-    if (clients.itemCount == 0) {
+    if (isLoadingClients) {
+        LoadingClients(modifier)
+    } else if (clients.itemCount == 0) {
         NoClientsYet(
             modifier = modifier,
             onCreateNewClient = onCreateNewClient,
             onSearchClient = onSearchClient,
+            syncClients = onSyncClients,
         )
     } else {
         LazyColumn(
@@ -261,6 +270,37 @@ private fun PickClientScreenImpl(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+private fun LoadingClients(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_loading)
+        )
+
+        LottieAnimation(
+            modifier = modifier
+                .padding(36.dp)
+                .fillMaxWidth(),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
+
+        Text(
+            text = stringResource(id = R.string.no_clients_yet),
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold),
+        )
     }
 }
 
@@ -359,27 +399,28 @@ private fun NoClientsYet(
 
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
+    syncClients: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results))
+            LottieCompositionSpec.RawRes(R.raw.lottie_no_data)
+        )
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            ClientActions(
-                modifier = Modifier.padding(horizontal = clientActionPadding),
-                onCreateNewClient = onCreateNewClient,
-                onSearchClient = onSearchClient,
-            )
-
-            Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
-        }
+        ClientActions(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onCreateNewClient = onCreateNewClient,
+            onSearchClient = onSearchClient,
+        )
 
         LottieAnimation(
-            modifier = modifier.padding(36.dp),
+            modifier = Modifier
+                .padding(36.dp)
+                .height(360.dp)
+                .width(420.dp),
             composition = composition,
             iterations = LottieConstants.IterateForever,
             clipSpec = LottieClipSpec.Progress(0f, 1f),
@@ -390,6 +431,12 @@ private fun NoClientsYet(
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold),
         )
+
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Button(onClick = syncClients) {
+            Text(text = stringResource(id = R.string.clients_screen_btn_sync))
+        }
     }
 }
 

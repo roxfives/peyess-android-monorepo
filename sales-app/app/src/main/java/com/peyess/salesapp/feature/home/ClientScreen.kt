@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -66,6 +67,8 @@ private val lazyColumnHeaderBottomSpacer = 16.dp
 private val pictureSize = 90.dp
 private val pictureSizePx = 90
 
+private val noClientsHeight = 120.dp
+
 private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
 private val spacingBetweenCards = 8.dp
@@ -80,6 +83,8 @@ fun ClientScreen(
     onCreateNewClient: (clientId: String) -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
+    val context = LocalContext.current
+
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
     val createClientId by viewModel.collectAsState(MainAppState::createClientId)
@@ -118,22 +123,23 @@ fun ClientScreen(
         }
     }
 
-    if (isLoading) {
-        PeyessProgressIndicatorInfinite()
-    } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(16.dp))
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-            ClientScreenImpl(
-                modifier = modifier,
+        ClientScreenImpl(
+            modifier = modifier,
 
-                pictureForClient = viewModel::pictureForClient,
-                clientList = clientList,
+            isLoadingClients = isLoading,
 
-                onCreateNewClient = viewModel::findActiveCreatingClient,
-                onSearchClient = onSearchClient,
-            )
-        }
+            pictureForClient = viewModel::pictureForClient,
+            clientList = clientList,
+
+            onCreateNewClient = viewModel::findActiveCreatingClient,
+            onSearchClient = onSearchClient,
+            onSyncClients = {
+                viewModel.syncClients(context)
+            },
+        )
     }
 }
 
@@ -143,18 +149,26 @@ private fun ClientScreenImpl(
 
     clientList: Flow<PagingData<Client>> = emptyFlow(),
 
+    isLoadingClients: Boolean = false,
+
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
+
+    onSyncClients: () -> Unit = {},
 ) {
     val clients = clientList.collectAsLazyPagingItems()
 
-    if (clients.itemCount == 0) {
+    if (isLoadingClients) {
+        LoadingClients(modifier)
+    } else if (clients.itemCount == 0) {
         NoClientsYet(
             modifier = modifier,
 
             onCreateNewClient = onCreateNewClient,
             onSearchClient = onSearchClient,
+
+            syncClients = onSyncClients,
         )
     } else {
         LazyColumn(
@@ -266,47 +280,26 @@ private fun ClientCard(
                 )
             }
         }
-
-//        Spacer(modifier = Modifier.weight(1f))
-
-//        Button(
-//            modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
-//            onClick = { onClientPicked(client) },
-//        ) {
-//            Text(
-//                modifier = Modifier.padding(horizontal = 16.dp),
-//                text = stringResource(id = R.string.btn_select_client),
-//            )
-//        }
-//
-//        Spacer(modifier = Modifier.width(endingSpacerWidth))
     }
 }
 
 @Composable
-private fun NoClientsYet(
+private fun LoadingClients(
     modifier: Modifier = Modifier,
-
-    onCreateNewClient: () -> Unit = {},
-    onSearchClient: () -> Unit = {},
-
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results))
-
-        ClientActions(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            onCreateNewClient = onCreateNewClient,
-            onSearchClient = onSearchClient,
+            LottieCompositionSpec.RawRes(R.raw.lottie_loading)
         )
 
         LottieAnimation(
-            modifier = modifier.padding(36.dp),
+            modifier = modifier
+                .padding(36.dp)
+                .fillMaxWidth(),
             composition = composition,
             iterations = LottieConstants.IterateForever,
             clipSpec = LottieClipSpec.Progress(0f, 1f),
@@ -317,5 +310,52 @@ private fun NoClientsYet(
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold),
         )
+    }
+}
+
+@Composable
+private fun NoClientsYet(
+    modifier: Modifier = Modifier,
+
+    onCreateNewClient: () -> Unit = {},
+    onSearchClient: () -> Unit = {},
+    syncClients: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_no_data)
+        )
+
+        ClientActions(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            onCreateNewClient = onCreateNewClient,
+            onSearchClient = onSearchClient,
+        )
+
+        LottieAnimation(
+            modifier = Modifier
+                .padding(36.dp)
+                .height(360.dp)
+                .width(420.dp),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
+
+        Text(
+            text = stringResource(id = R.string.no_clients_yet),
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold),
+        )
+
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Button(onClick = syncClients) {
+            Text(text = stringResource(id = R.string.clients_screen_btn_sync))
+        }
     }
 }

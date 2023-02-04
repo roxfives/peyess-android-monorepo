@@ -9,6 +9,9 @@
     <string name="channel_name_products_table">Atualização de produtos</string>
     <string name="channel_description_products_table">Notificações sobre atualizações de produtos</string>
 
+    <string name="channel_name_clients_sync">Atualização de produtos</string>
+    <string name="channel_description_clients_sync">Notificações sobre atualizações de produtos</string>
+
     <string name="notification_title_update_products_table">Atualização em andamento</string>
     <string name="notification_description_update_products_table">Atualizando tabela de produtos…</string>
 

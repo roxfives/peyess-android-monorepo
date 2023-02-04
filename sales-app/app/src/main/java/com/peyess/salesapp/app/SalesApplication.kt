@@ -33,6 +33,7 @@ class SalesApplication: Application(), Configuration.Provider {
     }
 
     private val productsTableChannelId = "products_table_channel_id"
+    private val clientsSyncChannelId = "client_sync_channel_id"
 
     override fun onCreate() {
         super.onCreate()
@@ -52,10 +53,28 @@ class SalesApplication: Application(), Configuration.Provider {
     }
 
     private fun createNotificationChannels() {
+        createProductsNotificationChannels()
+        createClientsNotificationChannels()
+    }
+
+    private fun createProductsNotificationChannels() {
         val name = getString(R.string.channel_name_products_table)
         val descriptionText = getString(R.string.channel_description_products_table)
         val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(productsTableChannelId, name, importance).apply {
+            description = descriptionText
+        }
+
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun createClientsNotificationChannels() {
+        val name = getString(R.string.channel_name_clients_sync)
+        val descriptionText = getString(R.string.channel_description_clients_sync)
+        val importance = NotificationManager.IMPORTANCE_HIGH
+        val channel = NotificationChannel(clientsSyncChannelId, name, importance).apply {
             description = descriptionText
         }
 

@@ -33,17 +33,21 @@ fun printPaymentMethodValue(
 }
 
 fun printDocument(document: String): String {
-    val documentChunks = document.chunked(3)
+    return if (document.length > 1) {
+        val documentChunks = document.chunked(3)
 
-    var documentMasked = ""
-    (0 until documentChunks.lastIndex - 1).forEach {
-        documentMasked += documentChunks[it] + "."
+        var documentMasked = ""
+        (0 until documentChunks.lastIndex - 1).forEach {
+            documentMasked += documentChunks[it] + "."
+        }
+
+        val lastIndex = (documentChunks.lastIndex - 1).coerceAtLeast(0)
+        documentMasked += documentChunks[lastIndex] + "-" + documentChunks.last()
+
+        documentMasked
+    } else {
+        document
     }
-
-    val lastIndex = (documentChunks.lastIndex - 1).coerceAtLeast(0)
-    documentMasked += documentChunks[lastIndex] + "-" + documentChunks.last()
-
-    return documentMasked
 }
 
 fun printDate(date: ZonedDateTime): String {

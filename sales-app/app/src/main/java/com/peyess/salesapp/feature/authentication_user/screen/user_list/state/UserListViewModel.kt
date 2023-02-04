@@ -1,13 +1,18 @@
 package com.peyess.salesapp.feature.authentication_user.screen.user_list.state
 
 import android.net.Uri
+import arrow.core.getOrElse
+import arrow.fx.coroutines.Schedule
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.dao.auth.store.OpticalStoreResponse
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
+import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -15,6 +20,11 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.toDuration
+
+private const val storeDownloadRetry = 10
 
 class UserListViewModel @AssistedInject constructor(
     @Assisted initialState: UserListState,
@@ -26,6 +36,7 @@ class UserListViewModel @AssistedInject constructor(
         loadStore()
         resetCurrentUser()
 
+        onAsync(UserListState::storeResponseAsync) { processStoreResponse(it) }
 
         authenticationRepository.activeCollaborators().setOnEach {
             Timber.i("Got users: ${it.size}")
@@ -40,10 +51,37 @@ class UserListViewModel @AssistedInject constructor(
         }
     }
 
+    private fun processStoreResponse(response: OpticalStoreResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(storeResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(store = it)
+            }
+        )
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private suspend fun loadStoreRetry() = Schedule
+        .exponential<OpticalStoreResponse>(10.toDuration(DurationUnit.MILLISECONDS), 2.0)
+        .whileOutput { it < 10.toDuration(DurationUnit.SECONDS) }
+        .andThen(
+            Schedule.spaced<OpticalStoreResponse>(
+                10.toDuration(DurationUnit.MILLISECONDS)
+            ) and Schedule.recurs(100)
+        ).jittered()
+        .zipRight(Schedule.identity())
+        .repeat{
+            authenticationRepository.loadCurrentStore()
+        }
+
     private fun loadStore() = withState {
-        authenticationRepository.currentStore.execute {
-            Timber.i("Current store $it")
-            copy(currentStore = it)
+        suspend {
+            loadStoreRetry()
+        }.execute(Dispatchers.IO) {
+            copy(storeResponseAsync = it)
         }
     }
 

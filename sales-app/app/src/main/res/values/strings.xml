@@ -18,6 +18,11 @@
     <string name="notification_title_download_clients">Sincronização em andamento</string>
     <string name="notification_description_download_clients">Procurando pelos seus clientes…</string>
 
+    <string name="loading_text_long_placeholder">Long text to display a placeholder</string>
+    <string name="loading_text_medium_placeholder">Medium placeholder displayed</string>
+    <string name="loading_text_short_placeholder">Short placeholder</string>
+<!--    <string name="loading_text_placeholder">Long text to display a placeholder</string>-->
+
     <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
 
     <string name="bottom_bar_home">Início</string>

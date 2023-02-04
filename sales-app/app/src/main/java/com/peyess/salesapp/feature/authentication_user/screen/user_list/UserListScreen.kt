@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -50,11 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.placeholder
+import com.google.accompanist.placeholder.shimmer
 import com.peyess.salesapp.R
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
@@ -75,9 +77,12 @@ fun UserListAuthScreen(
     val viewModel: UserListViewModel = mavericksViewModel()
 
     val users by viewModel.collectAsState(UserListState::users)
-    val store by viewModel.collectAsState(UserListState::currentStore)
+    val store by viewModel.collectAsState(UserListState::store)
+    val isLoading by viewModel.collectAsState(UserListState::isLoading)
 
     val isUpdatingCurrentUser by viewModel.collectAsState(UserListState::updatingCurrentUser)
+
+    val isStoreLoading by viewModel.collectAsState(UserListState::isStoreLoading)
 
     val hasNavigated = remember { mutableStateOf(false) }
     val canNavigate = remember { mutableStateOf(false) }
@@ -95,6 +100,8 @@ fun UserListAuthScreen(
     UserAuthScreenImpl(
         modifier = modifier,
         store = store,
+        isLoading = isLoading,
+        isStoreLoading = isStoreLoading,
         pictureForUser = viewModel::pictureForUser,
         pictureForStore = viewModel::pictureForStore,
         users = users,
@@ -108,7 +115,9 @@ fun UserListAuthScreen(
 @Composable
 fun UserAuthScreenImpl(
     modifier: Modifier = Modifier,
-    store: Async<OpticalStore> = Uninitialized,
+    store: OpticalStore = OpticalStore(),
+    isLoading: Boolean = false,
+    isStoreLoading: Boolean = false,
     pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
@@ -117,6 +126,8 @@ fun UserAuthScreenImpl(
     UserGrid(
         modifier = modifier,
         store = store,
+        isStoreLoading = isStoreLoading,
+        isLoading = isLoading,
         pictureForUser = pictureForUser,
         pictureForStore = pictureForStore,
         users = users,
@@ -127,17 +138,22 @@ fun UserAuthScreenImpl(
 @Composable
 fun UserGrid(
     modifier: Modifier = Modifier,
-    store: Async<OpticalStore> = Uninitialized,
+    store: OpticalStore = OpticalStore(),
+    isStoreLoading: Boolean = false,
+    isLoading: Boolean = false,
     pictureForUser: suspend (uid: String) -> Uri = { Uri.EMPTY },
     pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     users: List<CollaboratorDocument> = listOf(),
     onEnter: (id: String) -> Unit = {},
 ) {
-    if(store is Success) {
+    if(isLoading) {
+        PeyessProgressIndicatorInfinite()
+    } else {
         Column(modifier = modifier.fillMaxSize()) {
             Header(
                 pictureForStore = pictureForStore,
-                store = store.invoke(),
+                isStoreLoading = isStoreLoading,
+                store = store,
             )
 
             Spacer(
@@ -160,14 +176,13 @@ fun UserGrid(
                 }
             }
         }
-    } else {
-      PeyessProgressIndicatorInfinite()
     }
 }
 
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
+    isStoreLoading: Boolean = false,
     pictureForStore: suspend (storeId: String) -> Uri = { Uri.EMPTY },
     store: OpticalStore = OpticalStore(),
 ) {
@@ -220,7 +235,17 @@ private fun Header(
                 )
 
                 Text(
-                    text = store.nameDisplay,
+                    modifier = Modifier.placeholder(
+                        visible = isStoreLoading,
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(4.dp),
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.White.copy(alpha = 0.7f),
+                        ),
+                    ),
+                    text = store.nameDisplay.ifEmpty {
+                        stringResource(id = R.string.loading_text_long_placeholder)
+                    },
                     style = MaterialTheme.typography.h5,
                     color = MaterialTheme.colors.onPrimary,
                 )
@@ -235,7 +260,17 @@ private fun Header(
                 )
 
                 Text(
-                    text = store.city,
+                    modifier = Modifier.placeholder(
+                        visible = isStoreLoading,
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(4.dp),
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.White.copy(alpha = 0.7f),
+                        ),
+                    ),
+                    text = store.city.ifEmpty {
+                        stringResource(id = R.string.loading_text_medium_placeholder)
+                    },
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onPrimary,
                 )
@@ -252,7 +287,17 @@ private fun Header(
                 )
 
                 Text(
-                    text = store.type,
+                    modifier = Modifier.placeholder(
+                        visible = isStoreLoading,
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(4.dp),
+                        highlight = PlaceholderHighlight.shimmer(
+                            highlightColor = Color.White.copy(alpha = 0.7f),
+                        ),
+                    ),
+                    text = store.type.ifEmpty {
+                        stringResource(id = R.string.loading_text_short_placeholder)
+                    },
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onPrimary,
                 )

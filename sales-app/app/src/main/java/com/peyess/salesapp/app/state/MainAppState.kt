@@ -21,11 +21,17 @@ import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
 import com.peyess.salesapp.repository.sale.ResumeSaleResponse
+import com.peyess.salesapp.repository.service_order.ServiceOrderPaginationResponse
+import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 typealias ClientListStream = Flow<PagingData<Client>>
 typealias ClientsListResponse = Either<LocalClientRepositoryPagingError, ClientListStream>
+
+typealias ServiceOrderStream = Flow<PagingData<ServiceOrderDocument>>
+typealias ServiceOrderListResponse =
+        Either<ServiceOrderRepositoryPaginationError, ServiceOrderStream>
 
 sealed class AppAuthenticationState {
     object Unauthenticated: AppAuthenticationState()
@@ -40,7 +46,8 @@ data class MainAppState(
 
     val productsTableStatusAsync: Async<ProductsTableStatus?> = Uninitialized,
 
-    val serviceOrderListAsync: Async<List<ServiceOrderDocument>> = Uninitialized,
+    val serviceOrderListResponseAsync: Async<ServiceOrderListResponse> = Uninitialized,
+    val serviceOrderListStream: ServiceOrderStream = emptyFlow(),
 
     val createClientResponseAsync: Async<CacheCreateClientCreateResponse> = Uninitialized,
     val createClientId: String = "",
@@ -93,8 +100,8 @@ data class MainAppState(
     val isSearchingForActiveSales = activeSalesStreamAsync is Loading
     val hasActiveSales = activeSales.isNotEmpty()
 
-    val isServiceOrderListLoading = serviceOrderListAsync is Loading
-    val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()
+    val isServiceOrderListLoading = serviceOrderListResponseAsync is Loading
+//    val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()
 
     val isLookingForCreatingClient = existingCreateClientAsync is Loading
     val isCreatingClient = createClientResponseAsync is Loading

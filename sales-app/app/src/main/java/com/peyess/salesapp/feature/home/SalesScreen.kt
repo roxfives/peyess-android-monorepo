@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.mvrx.Success
@@ -58,6 +59,7 @@ import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
+import com.peyess.salesapp.app.state.ServiceOrderStream
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.feature.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.feature.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -68,6 +70,7 @@ import com.peyess.salesapp.feature.sale.anamnesis.third_step_sun_light.state.Thi
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.NumberFormat
@@ -103,7 +106,7 @@ fun SalesScreen(
     val isUpdatingProducts by viewModel.collectAsState(MainAppState::isUpdatingProducts)
 
     val isServiceOrderListLoading by viewModel.collectAsState(MainAppState::isServiceOrderListLoading)
-    val serviceOrderList by viewModel.collectAsState(MainAppState::serviceOrderList)
+    val serviceOrderList by viewModel.collectAsState(MainAppState::serviceOrderListStream)
 
     val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
 
@@ -180,7 +183,7 @@ fun SaleList(
     isUpdatingProducts: Boolean = true,
     isServiceOrderListLoading: Boolean = false,
 
-    serviceOrderList: List<ServiceOrderDocument> = emptyList(),
+    serviceOrderList: ServiceOrderStream = emptyFlow(),
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 
@@ -188,6 +191,8 @@ fun SaleList(
     onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
     onStartNewSale: () -> Unit = {},
 ) {
+    val serviceOrders = serviceOrderList.collectAsLazyPagingItems()
+
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -235,17 +240,19 @@ fun SaleList(
             }
         }
 
-        items(serviceOrderList.size) {
-            ServiceOrderCard(
-                modifier = Modifier
-                    .padding(SalesAppTheme.dimensions.grid_1_5)
-                    .fillMaxWidth(),
-                serviceOrder = serviceOrderList[it],
-                pictureForClient = pictureForClient,
-                isGeneratingPdf = isGeneratingPdfFor.first
-                        && isGeneratingPdfFor.second == serviceOrderList[it].id,
-                onGenerateSalePdf = onGenerateSalePdf,
-            )
+        items(serviceOrders.itemCount) { index ->
+            serviceOrders[index]?.let {
+                ServiceOrderCard(
+                    modifier = Modifier
+                        .padding(SalesAppTheme.dimensions.grid_1_5)
+                        .fillMaxWidth(),
+                    serviceOrder = it,
+                    pictureForClient = pictureForClient,
+                    isGeneratingPdf = isGeneratingPdfFor.first
+                            && isGeneratingPdfFor.second == it.id,
+                    onGenerateSalePdf = onGenerateSalePdf,
+                )
+            }
         }
 
         item {

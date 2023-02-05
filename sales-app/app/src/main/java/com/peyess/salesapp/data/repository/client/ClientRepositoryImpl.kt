@@ -1,12 +1,6 @@
 package com.peyess.salesapp.data.repository.client
 
-import android.content.Context
 import android.net.Uri
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
@@ -16,13 +10,11 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
-import com.peyess.salesapp.data.adapter.client.toClientModel
 import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
-import com.peyess.salesapp.data.model.cache.CacheCreateClientEntity
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
-import com.peyess.salesapp.data.internal.firestore.SimpleCollectionPaginator
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimpleCollectionPaginator
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client.FSClient
@@ -39,13 +31,8 @@ import com.peyess.salesapp.data.repository.internal.firestore.errors.Unexpected
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.tasks.await

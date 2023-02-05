@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.repository.internal.firestore
 
 import arrow.core.Either
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.repository.internal.firestore.errors.ReadError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import com.peyess.salesapp.data.utils.query.PeyessQuery

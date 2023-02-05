@@ -2,9 +2,7 @@ package com.peyess.salesapp.workmanager.clients.utils
 
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
-import com.peyess.salesapp.data.model.local_client.LocalClientStatusDocument
-import com.peyess.salesapp.data.utils.query.PeyessGroupBy
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.PeyessQueryField

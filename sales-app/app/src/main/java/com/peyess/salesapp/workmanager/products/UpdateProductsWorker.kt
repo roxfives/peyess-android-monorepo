@@ -26,7 +26,7 @@ import com.peyess.salesapp.data.adapter.lenses.extractSpecialty
 import com.peyess.salesapp.data.adapter.lenses.extractSupplier
 import com.peyess.salesapp.data.adapter.lenses.extractTech
 import com.peyess.salesapp.data.adapter.lenses.extractType
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument

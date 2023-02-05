@@ -1,17 +1,14 @@
-package com.peyess.salesapp.data.internal.firestore
+package com.peyess.salesapp.data.internal.firestore.simple_paginator
 
 import arrow.core.Either
 import arrow.core.continuations.either
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.Source
-import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
-import com.peyess.salesapp.data.internal.firestore.error.Unexpected
-import com.peyess.salesapp.data.internal.firestore.error.toFirestoreError
-import kotlinx.coroutines.delay
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.FirestoreError
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.Unexpected
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.toFirestoreError
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import kotlin.reflect.KClass

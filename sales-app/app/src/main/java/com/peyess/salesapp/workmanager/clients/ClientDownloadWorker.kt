@@ -15,7 +15,7 @@ import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.local_client.LocalClientStatusDocument
 import com.peyess.salesapp.data.repository.client.ClientPaginationResponse

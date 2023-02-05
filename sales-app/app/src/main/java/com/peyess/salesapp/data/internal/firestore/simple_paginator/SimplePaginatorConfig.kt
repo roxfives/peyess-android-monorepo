@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.internal.firestore
+package com.peyess.salesapp.data.internal.firestore.simple_paginator
 
 data class SimplePaginatorConfig(
     val initialPageSize: Int = 20,

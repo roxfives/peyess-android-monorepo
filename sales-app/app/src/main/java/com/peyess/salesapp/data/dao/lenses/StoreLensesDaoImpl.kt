@@ -8,9 +8,9 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.internal.firestore.FetchCollectionResponse
 import com.peyess.salesapp.data.dao.lenses.utils.StoreLensCollectionPaginator
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
-import com.peyess.salesapp.data.internal.firestore.SimplePaginatorConfig
-import com.peyess.salesapp.data.internal.firestore.error.FirestoreError
-import com.peyess.salesapp.data.internal.firestore.error.Unexpected
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.FirestoreError
+import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.Unexpected
 import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager

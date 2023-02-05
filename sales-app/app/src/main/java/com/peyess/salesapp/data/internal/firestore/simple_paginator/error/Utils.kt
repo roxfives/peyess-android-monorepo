@@ -1,4 +1,4 @@
-package com.peyess.salesapp.data.internal.firestore.error
+package com.peyess.salesapp.data.internal.firestore.simple_paginator.error
 
 import com.google.firebase.firestore.FirebaseFirestoreException
 

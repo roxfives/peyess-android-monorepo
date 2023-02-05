@@ -131,7 +131,6 @@ fun ClientScreen(
             modifier = modifier,
 
             isLoadingClients = isLoading,
-
             pictureForClient = viewModel::pictureForClient,
             clientList = clientList,
 

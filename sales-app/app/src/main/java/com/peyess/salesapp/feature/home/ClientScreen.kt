@@ -50,6 +50,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.model.Client
+import com.peyess.salesapp.app.state.ClientListStream
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.feature.home.dialog.ExistingClientDialog
@@ -147,8 +148,7 @@ fun ClientScreen(
 private fun ClientScreenImpl(
     modifier: Modifier = Modifier,
 
-    clientList: Flow<PagingData<Client>> = emptyFlow(),
-
+    clientList: ClientListStream = emptyFlow(),
     isLoadingClients: Boolean = false,
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },

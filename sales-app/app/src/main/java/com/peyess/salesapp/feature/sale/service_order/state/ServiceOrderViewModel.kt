@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.sale.service_order.state
 
 import android.content.Context
 import android.net.Uri
+import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -694,7 +695,14 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     suspend fun pictureForClient(clientId: String): Uri {
-        return clientRepository.pictureForClient(clientId)
+        return Either.catch {
+            clientRepository.pictureForClient(clientId)
+        }.mapLeft {
+            Timber.e("Error getting picture for client $clientId: ${it.message}", it)
+        }.fold(
+            ifLeft = { Uri.EMPTY },
+            ifRight = { it },
+        )
     }
 
     fun onUpdateIsCreating(isCreating: Boolean) = setState {

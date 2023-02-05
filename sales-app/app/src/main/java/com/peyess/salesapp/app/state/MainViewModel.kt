@@ -368,7 +368,14 @@ class MainViewModel @AssistedInject constructor(
     }
 
     suspend fun pictureForClient(clientId: String): Uri {
-        return clientRepository.pictureForClient(clientId)
+        return Either.catch {
+            clientRepository.pictureForClient(clientId)
+        }.mapLeft {
+            Timber.e("Error getting picture for client $clientId: ${it.message}", it)
+        }.fold(
+            ifLeft = { Uri.EMPTY },
+            ifRight = { it },
+        )
     }
 
     fun generateServiceOrderPdf(

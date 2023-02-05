@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.sale.payment.state
 
 import android.net.Uri
+import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -511,7 +512,14 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     suspend fun pictureForClient(clientId: String): Uri {
-        return clientRepository.pictureForClient(clientId)
+        return Either.catch {
+            clientRepository.pictureForClient(clientId)
+        }.mapLeft {
+            Timber.e("Error getting picture for client $clientId: ${it.message}", it)
+        }.fold(
+            ifLeft = { Uri.EMPTY },
+            ifRight = { it },
+        )
     }
 
     fun onUpdatePaymentId(paymentId: Long) = setState {

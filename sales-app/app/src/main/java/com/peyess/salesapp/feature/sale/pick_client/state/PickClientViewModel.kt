@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.map
 import androidx.work.ExistingWorkPolicy
+import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
+import timber.log.Timber
 
 private typealias ViewModelFactory = MavericksViewModelFactory<PickClientViewModel, PickClientState>
 
@@ -237,7 +239,14 @@ class PickClientViewModel @AssistedInject constructor(
     }
 
     suspend fun pictureForClient(clientId: String): Uri {
-        return clientRepository.pictureForClient(clientId)
+        return Either.catch {
+            clientRepository.pictureForClient(clientId)
+        }.mapLeft {
+            Timber.e("Error getting picture for client $clientId: ${it.message}", it)
+        }.fold(
+            ifLeft = { Uri.EMPTY },
+            ifRight = { it },
+        )
     }
 
     fun findActiveCreatingClient() {

@@ -17,6 +17,11 @@ interface LocalClientDao {
     @Insert(onConflict = REPLACE)
     suspend fun insertClientStatus(clientStatus: LocalClientStatusEntity)
 
+    @Query("""
+        SELECT COUNT(id) FROM ${LocalClientEntity.tableName}
+    """)
+    suspend fun totalClients(): Int?
+
     @Query("SELECT * FROM ${LocalClientStatusEntity.tableName} WHERE id = :id")
     suspend fun clientStatus(id: Long): LocalClientStatusEntity?
     @Query("SELECT * FROM ${LocalClientStatusEntity.tableName} WHERE id = :id")

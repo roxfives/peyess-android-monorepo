@@ -64,7 +64,7 @@ data class LensPickState(
     val saleId: String = "",
 
     val filter: LensListFilter = LensListFilter(),
-    val lenses: Flow<PagingData<LensSuggestionModel>> = flowOf(),
+    val lenses: Flow<PagingData<LensSuggestionModel>> = emptyFlow(),
 
     val groupLensFilter: String = "",
     val specialtyLensFilter: String = "",

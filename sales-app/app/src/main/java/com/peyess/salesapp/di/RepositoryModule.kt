@@ -146,9 +146,15 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideServiceOrderRepository(
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
         serviceOrderDao: ServiceOrderDao,
     ): ServiceOrderRepository {
-        return ServiceOrderRepositoryImpl(serviceOrderDao)
+        return ServiceOrderRepositoryImpl(
+            salesApplication = salesApplication,
+            firebaseManager = firebaseManager,
+            serviceOrderDao = serviceOrderDao,
+        )
     }
 
     @Provides

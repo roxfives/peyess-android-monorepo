@@ -15,6 +15,7 @@ import com.peyess.salesapp.data.model.local_client.LocalClientStatusDocument
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientNotFoundError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryCreatePagingSourceError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryInsertError
+import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryReadError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryReadStatusError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryStatusNotFoundError
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryStatusUpdateError
@@ -31,6 +32,20 @@ private const val clientStatusId = 0L
 class LocalClientRepositoryImpl @Inject constructor(
     private val localClientDao: LocalClientDao,
 ): LocalClientRepository {
+    override suspend fun totalClients(): LocalClientTotalResponse = Either.catch {
+        localClientDao.totalClients()
+    }.mapLeft {
+        LocalClientRepositoryReadError(
+            description = "Error reading total clients: $it",
+            error = it,
+        )
+    }.leftIfNull {
+        UnexpectedLocalClientRepositoryError(
+            description = "Total clients not found",
+            error = Throwable("Total clients not found"),
+        )
+    }
+
     override suspend fun updateClientStatus(
         clientStatus: LocalClientStatusDocument,
     ): LocalClientStatusUpdateResponse = Either.catch {

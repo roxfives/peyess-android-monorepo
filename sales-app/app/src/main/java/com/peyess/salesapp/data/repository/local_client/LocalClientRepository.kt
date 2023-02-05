@@ -34,7 +34,11 @@ typealias LocalClientStreamSingleResponse =
 typealias LocalClientPaginateResponse =
         Either<LocalClientRepositoryPagingError, () -> PagingSource<Int, LocalClientDocument>>
 
+typealias LocalClientTotalResponse = Either<LocalClientRepositoryFetchError, Int>
+
 interface LocalClientRepository {
+    suspend fun totalClients(): LocalClientTotalResponse
+
     suspend fun updateClientStatus(
         clientStatus: LocalClientStatusDocument,
     ): LocalClientStatusUpdateResponse

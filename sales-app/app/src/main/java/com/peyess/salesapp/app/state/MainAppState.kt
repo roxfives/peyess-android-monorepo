@@ -14,6 +14,7 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientTotalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
@@ -56,6 +57,9 @@ data class MainAppState(
     val existingCreateClientAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val existingCreateClient: CacheCreateClientDocument = CacheCreateClientDocument(),
     val hasLookedForExistingClient: Boolean = false,
+
+    val totalClientsResponseAsync: Async<LocalClientTotalResponse> = Uninitialized,
+    val totalClients: Int = 0,
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),

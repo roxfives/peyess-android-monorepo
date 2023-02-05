@@ -161,6 +161,8 @@ fun HomeScreen(
     val isUpdatingProductsTable by viewModel.collectAsState(MainAppState::isUpdatingProducts)
     val hasProductsTableUpdateFailed by viewModel.collectAsState(MainAppState::hasProductUpdateFailed)
 
+    val totalClients by viewModel.collectAsState(MainAppState::totalClients)
+
     val activeSales by viewModel.collectAsState(MainAppState::activeSales)
     val isSearchingForActiveSales by viewModel.collectAsState(MainAppState::isSearchingForActiveSales)
 
@@ -257,9 +259,10 @@ fun HomeScreen(
         store = store,
         isLoadingStore = isLoadingStore,
 
-
         isUpdatingProductsTable = isUpdatingProductsTable,
         hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
+
+        totalClients = totalClients,
 
         onSettings = onSettings,
 
@@ -288,6 +291,8 @@ private fun HomeScreenImpl(
 
     isUpdatingProductsTable: Boolean = false,
     hasProductsTableUpdateFailed: Boolean = false,
+
+    totalClients: Int = 0,
 
     onSettings: () -> Unit = {},
     onSignOut: () -> Unit = {},
@@ -319,6 +324,7 @@ private fun HomeScreenImpl(
         Spacer(modifier = Modifier.height(sectionSpacerHeight))
 
         ButtonsPanel(
+            totalClients = totalClients,
             isUpdatingProductsTable = isUpdatingProductsTable,
             hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
 

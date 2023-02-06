@@ -292,6 +292,7 @@ private fun PaymentScreenImpl(
                 }
             },
 
+            isLoadingConstraints = isClientLoading || areCardFlagsLoading || arePaymentMethodsLoading,
             canGoNext = payment.value > 0.0,
             onNext = onDone,
         )

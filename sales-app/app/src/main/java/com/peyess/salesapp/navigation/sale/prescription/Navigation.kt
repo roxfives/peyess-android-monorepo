@@ -10,11 +10,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataScreen
-import com.peyess.salesapp.feature.sale.prescription_data.PrescriptionDataSymptomsScreen
-import com.peyess.salesapp.feature.sale.prescription_lens_type.PrescriptionLensTypeScreen
+import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionDataScreen
+import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionDataSymptomsScreen
+import com.peyess.salesapp.screen.sale.prescription_lens_type.PrescriptionLensTypeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.sale.prescription_picture.PrescriptionPictureScreen
+import com.peyess.salesapp.screen.sale.prescription_picture.PrescriptionPictureScreen
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenExitTransition
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataSymptomsScreenEnterTransition

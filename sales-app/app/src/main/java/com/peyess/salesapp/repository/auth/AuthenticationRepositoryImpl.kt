@@ -18,7 +18,7 @@ import com.peyess.salesapp.auth.exception.InvalidCredentialsError
 import com.peyess.salesapp.dao.auth.store.OpticalStoreDao
 import com.peyess.salesapp.dao.auth.store.OpticalStoreResponse
 import com.peyess.salesapp.dao.auth.users.CollaboratorsDao
-import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
+import com.peyess.salesapp.screen.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument

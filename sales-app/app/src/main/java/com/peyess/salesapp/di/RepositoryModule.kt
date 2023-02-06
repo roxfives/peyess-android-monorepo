@@ -36,7 +36,7 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepositoryImpl
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepositoryImpl
-import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
+import com.peyess.salesapp.screen.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.auth.AuthenticationRepositoryImpl

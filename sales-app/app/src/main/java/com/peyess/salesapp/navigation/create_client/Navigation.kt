@@ -3,17 +3,15 @@ package com.peyess.salesapp.navigation.create_client
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import arrow.core.Either
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.create_client.address.CreateClientAddressScreen
-import com.peyess.salesapp.feature.create_client.basic_info.BasicInfoScreen
-import com.peyess.salesapp.feature.create_client.communication.CreateClientCommunicationScreen
+import com.peyess.salesapp.screen.create_client.address.CreateClientAddressScreen
+import com.peyess.salesapp.screen.create_client.basic_info.BasicInfoScreen
+import com.peyess.salesapp.screen.create_client.communication.CreateClientCommunicationScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.create_client.address.clientAddressEnterTransition
 import com.peyess.salesapp.navigation.create_client.address.clientAddressExitTransition
@@ -24,7 +22,6 @@ import com.peyess.salesapp.navigation.create_client.communication.createClientCo
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
 
 const val clientIdParam = "clientId"
 const val paymentIdParam = "paymentId"

@@ -1,9 +1,8 @@
 package com.peyess.salesapp.data.adapter.raw_measuring
 
 import com.peyess.salesapp.data.model.local_sale.measure.LocalMeasuringDocument
-import com.peyess.salesapp.data.model.measuring.MeasuringDocument
 import com.peyess.salesapp.data.model.raw_measuring.RawMeasuring
-import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
+import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.features.measuring_correction.CorrectionField
 import com.peyess.salesapp.features.measuring_correction.correctionModelFactory
 

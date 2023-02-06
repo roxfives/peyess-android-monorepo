@@ -6,10 +6,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.home.ClientScreen
-import com.peyess.salesapp.feature.home.HomeScreen
+import com.peyess.salesapp.screen.home.ClientScreen
+import com.peyess.salesapp.screen.home.HomeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.home.SalesScreen
+import com.peyess.salesapp.screen.home.SalesScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute

@@ -11,9 +11,9 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.sale.frames_measure.LandingAnimationHelperScreen
-import com.peyess.salesapp.feature.sale.frames_measure.MeasureFramesScreen
-import com.peyess.salesapp.feature.sale.frames_measure.TakePictureScreen
+import com.peyess.salesapp.screen.sale.frames_measure.LandingAnimationHelperScreen
+import com.peyess.salesapp.screen.sale.frames_measure.MeasureFramesScreen
+import com.peyess.salesapp.screen.sale.frames_measure.TakePictureScreen
 import com.peyess.salesapp.navigation.sale.frames_measure.landing.landingAnimationEnterTransition
 import com.peyess.salesapp.navigation.sale.frames_measure.landing.landingAnimationExitTransition
 import com.peyess.salesapp.navigation.sale.frames_measure.measure.measureFramesEnterTransition

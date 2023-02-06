@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.adapter.measuring
 
 import com.peyess.salesapp.data.model.measuring.MeasuringDocument
-import com.peyess.salesapp.feature.sale.lens_pick.model.Measuring
+import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
 
 fun Measuring.toMeasuringDocument(
     documentId: String,

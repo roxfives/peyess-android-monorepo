@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.sale.pick_client.PickClientScreen
+import com.peyess.salesapp.screen.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute

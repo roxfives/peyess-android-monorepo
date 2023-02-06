@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.sale.service_order.ServiceOrderScreen
+import com.peyess.salesapp.screen.sale.service_order.CreateServiceOrderScreen
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
@@ -52,7 +52,7 @@ fun buildServiceOrderNavGraph(
         enterTransition = serviceOrderEnterTransition(),
         exitTransition = serviceOrderExitTransition(),
     ) {
-        ServiceOrderScreen(
+        CreateServiceOrderScreen(
             modifier = modifier,
             navHostController = navHostController,
 

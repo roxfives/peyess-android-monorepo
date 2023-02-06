@@ -19,7 +19,7 @@ import com.peyess.salesapp.app.state.AppAuthenticationState
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.root.SalesAppRoot
+import com.peyess.salesapp.screen.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import com.peyess.salesapp.workmanager.clients.enqueuePeriodicClientDownloadWorker

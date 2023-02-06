@@ -7,8 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.landing.Landing
-import com.peyess.salesapp.feature.sale.welcome.WelcomeScreen
+import com.peyess.salesapp.screen.sale.welcome.WelcomeScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)

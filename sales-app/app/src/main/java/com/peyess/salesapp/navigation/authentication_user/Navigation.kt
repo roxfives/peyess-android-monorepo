@@ -5,10 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.authentication_user.screen.authentication.UserAuthScreen
-import com.peyess.salesapp.feature.authentication_user.screen.local_password.LocalPasswordScreen
+import com.peyess.salesapp.screen.authentication_user.screen.authentication.UserAuthScreen
+import com.peyess.salesapp.screen.authentication_user.screen.local_password.LocalPasswordScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.feature.authentication_user.screen.user_list.UserListAuthScreen
+import com.peyess.salesapp.screen.authentication_user.screen.user_list.UserListAuthScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 fun buildUserAuthNavGraph(

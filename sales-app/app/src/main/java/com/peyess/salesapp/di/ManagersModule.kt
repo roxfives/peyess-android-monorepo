@@ -1,7 +1,7 @@
 package com.peyess.salesapp.di
 
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.feature.authentication_user.manager.LocalPasscodeManager
+import com.peyess.salesapp.screen.authentication_user.manager.LocalPasscodeManager
 import com.peyess.salesapp.firebase.FirebaseManager
 import dagger.Module
 import dagger.Provides

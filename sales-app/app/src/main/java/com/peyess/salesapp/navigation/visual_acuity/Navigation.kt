@@ -8,11 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.composable
-import com.peyess.salesapp.feature.demonstration.DemonstrationScreen
-import com.peyess.salesapp.feature.visual_acuity.VisualAcuityScreen
+import com.peyess.salesapp.screen.visual_acuity.VisualAcuityScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.navigation.visual_acuity.visualAcuityEnterTransition
-import com.peyess.salesapp.navigation.visual_acuity.visualAcuityExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)

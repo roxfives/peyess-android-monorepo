@@ -38,7 +38,7 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.sale.lens_pick.model.toMeasuring
-import com.peyess.salesapp.feature.sale.service_order.utils.adapter.toPaymentDocument
+import com.peyess.salesapp.feature.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.feature.sale.service_order.utils.error.AddClientError
 import com.peyess.salesapp.feature.sale.service_order.utils.error.AddProductError
 import com.peyess.salesapp.feature.sale.service_order.utils.error.ColoringNotFound

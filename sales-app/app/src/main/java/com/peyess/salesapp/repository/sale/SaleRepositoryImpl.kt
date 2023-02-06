@@ -147,34 +147,7 @@ class SaleRepositoryImpl @Inject constructor(
             )
     }
 
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private val currentPrescriptionData by lazy {
-//        currentSO
-//            .filterNotNull()
-//            .flatMapLatest { so ->
-//                prescriptionDataDao.getById(so.id).map {
-//                    Timber.i("Emitting prescription data")
-//                    it ?: PrescriptionDataEntity(soId = so.id)
-//            }.shareIn(
-//                scope = repositoryScope,
-//                replay = 1,
-//                started = SharingStarted.WhileSubscribed(),
-//            )
-//        }
-//    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPayments by lazy { emptyFlow<List<SalePaymentEntity>>() }
-
-//    by lazy {
-//        currentSO
-//            .filterNotNull()
-//            .flatMapLatest { salePaymentDao.getBySO(it.id) }.shareIn(
-//                scope = repositoryScope,
-//                replay = 1,
-//                started = SharingStarted.WhileSubscribed(),
-//            )
-//    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPositioningsByEye by lazy {

@@ -76,7 +76,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             loadPrescription(it.id)
         }
         
-        onEach { mikeMessageAmetropie() }
+        onEach(PrescriptionDataState::lensTypeCategoryName) { mikeMessageAmetropie() }
     }
 
     private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {

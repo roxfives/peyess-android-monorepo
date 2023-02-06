@@ -57,6 +57,7 @@ import com.peyess.salesapp.feature.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.feature.sale.pick_client.model.Client
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.feature.sale.pick_client.state.PickClientViewModel
+import com.peyess.salesapp.feature.sale.pick_client.utils.parseParameters
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.navigation.pick_client.paymentIdParam
 import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
@@ -116,28 +117,15 @@ fun PickClientScreen(
     val isLoading by viewModel.collectAsState(PickClientState::isLoading)
     val hasPickedClient by viewModel.collectAsState(PickClientState::hasPickedClient)
 
+    val paymentId by viewModel.collectAsState(PickClientState::paymentId)
     val pickScenario by viewModel.collectAsState(PickClientState::pickScenario)
     val pickedId by viewModel.collectAsState(PickClientState::pickedId)
 
-    val scenarioParameter = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getString(pickScenarioParam)
-
-    val paymentId = navHostController
-        .currentBackStackEntry
-        ?.arguments
-        ?.getLong(paymentIdParam)
-
-    LaunchedEffect(scenarioParameter) {
-        val scenario = PickScenario.fromName(scenarioParameter ?: "")
-
-        Timber.i("Using scenario $scenario")
-
-        if (scenario != null) {
-            viewModel.updatePickScenario(scenario)
-        }
-    }
+    parseParameters(
+        navController = navHostController,
+        onUpdatePaymentId = viewModel::updatePaymentId,
+        onUpdateCreateScenario = viewModel::updatePickScenario,
+    )
 
     val hasNavigated = remember { mutableStateOf(false) }
     val canNavigate = remember { mutableStateOf(false) }
@@ -149,7 +137,7 @@ fun PickClientScreen(
 
                 viewModel.clientPicked()
                 onClientPicked(
-                    paymentId ?: 0L,
+                    paymentId,
                     pickedId,
                     pickScenario,
                     saleId,
@@ -188,7 +176,7 @@ fun PickClientScreen(
         LaunchedEffect(Unit) {
             viewModel.startedCreatingClient()
             Timber.i("Creating client with id: $createClientId")
-            onCreateNewClient(createClientId, paymentId ?: 0L, pickScenario)
+            onCreateNewClient(createClientId, paymentId, pickScenario)
         }
     }
 

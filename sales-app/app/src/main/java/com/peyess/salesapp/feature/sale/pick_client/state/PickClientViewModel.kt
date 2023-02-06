@@ -298,6 +298,10 @@ class PickClientViewModel @AssistedInject constructor(
         copy(pickScenario = scenario)
     }
 
+    fun updatePaymentId(paymentId: Long) = setState {
+        copy(paymentId = paymentId)
+    }
+
     fun pickClient(client: Client) = withState {
         when (it.pickScenario) {
             PickScenario.ServiceOrder -> pickAllForServiceOrder(client)

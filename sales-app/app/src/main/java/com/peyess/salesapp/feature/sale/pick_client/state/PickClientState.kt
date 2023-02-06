@@ -29,6 +29,7 @@ data class PickClientState(
 
     val hasPickedClient: Boolean = false,
 
+    val paymentId: Long = 0L,
     val pickScenario: PickScenario = PickScenario.ServiceOrder,
     val pickedId: String = "",
 

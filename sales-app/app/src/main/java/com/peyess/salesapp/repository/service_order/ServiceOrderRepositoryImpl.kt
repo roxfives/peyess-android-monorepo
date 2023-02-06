@@ -47,7 +47,6 @@ class ServiceOrderRepositoryImpl @Inject constructor(
         val pagingSourceFactory = {
             MappingPagingSource(
                 originalSource = serviceOrderDao.paginateServiceOrder(query),
-                buildNewSource = { serviceOrderDao.paginateServiceOrder(query) },
                 mapper = { it.second.toServiceOrderDocument() }
             )
         }

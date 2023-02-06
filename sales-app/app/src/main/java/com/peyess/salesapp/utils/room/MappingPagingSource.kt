@@ -8,26 +8,17 @@ import androidx.paging.PagingState
 
 class MappingPagingSource<Key: Any, Value: Any, MappedValue: Any>(
     private val originalSource: PagingSource<Key, Value>,
-    private val buildNewSource: () -> PagingSource<Key, Value>,
     private val mapper: (Value) -> MappedValue,
 ): PagingSource<Key, MappedValue>() {
-    private var source: PagingSource<Key, Value>
-
     override val jumpingSupported: Boolean
         get() = originalSource.jumpingSupported
 
     init {
-        source = originalSource
-        source.registerInvalidatedCallback { this.invalidate() }
+        originalSource.registerInvalidatedCallback { this.invalidate() }
     }
 
     override fun getRefreshKey(state: PagingState<Key, MappedValue>): Key? {
-        if (source.invalid) {
-            source = buildNewSource()
-            source.registerInvalidatedCallback { this.invalidate() }
-        }
-
-        return source.getRefreshKey(
+        return originalSource.getRefreshKey(
             PagingState(
                 pages = emptyList(),
                 leadingPlaceholderCount = 0,
@@ -38,21 +29,7 @@ class MappingPagingSource<Key: Any, Value: Any, MappedValue: Any>(
     }
 
     override suspend fun load(params: LoadParams<Key>): LoadResult<Key, MappedValue> {
-//        val originalResult = originalSource.load(params)
-//        val result = LoadResult.Page(
-//            data = data,
-//            prevKey = args.prevKey,
-//            nextKey = args.nextKey,
-//            itemsBefore = args.itemsBefore,
-//            itemsAfter = args.itemsAfter
-//        )
-//        return result
-        if (source.invalid) {
-            source = buildNewSource()
-            source.registerInvalidatedCallback { this.invalidate() }
-        }
-
-        return when (val originalResult = source.load(params)) {
+        return when (val originalResult = originalSource.load(params)) {
             is LoadResult.Error ->
                 LoadResult.Error(originalResult.throwable)
 

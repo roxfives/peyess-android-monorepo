@@ -377,7 +377,6 @@ class LocalLensesRepositoryImpl @Inject constructor(
             val pagingSourceFactory = {
                 MappingPagingSource(
                     originalSource = localLensDao.getFilteredLenses(sqlQuery),
-                    buildNewSource = { localLensDao.getFilteredLenses(sqlQuery) },
                     mapper = { it.toStoreLensWithDetailsDocument() }
                 )
             }

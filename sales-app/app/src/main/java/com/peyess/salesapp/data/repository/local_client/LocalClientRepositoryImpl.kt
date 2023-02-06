@@ -199,9 +199,10 @@ class LocalClientRepositoryImpl @Inject constructor(
         val sqlQuery = query.toSqlQuery(selectStatement)
 
         val pagingSourceFactory =  {
-            MappingPagingSource(originalSource = localClientDao.paginateClients(sqlQuery),
-                buildNewSource = { localClientDao.paginateClients(sqlQuery) },
-                mapper = { it.toLocalClientDocument() })
+            MappingPagingSource(
+                originalSource = localClientDao.paginateClients(sqlQuery),
+                mapper = { it.toLocalClientDocument() },
+            )
         }
 
         pagingSourceFactory

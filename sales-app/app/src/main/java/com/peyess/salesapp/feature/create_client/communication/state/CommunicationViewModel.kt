@@ -266,10 +266,7 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun onNavigate() = setState {
-        copy(
-            clientCreated = false,
-            hasFinishedSettingCommunication = false,
-        )
+        copy(hasFinishedSettingCommunication = false)
     }
 
     fun onDetectEmailError() = setState {

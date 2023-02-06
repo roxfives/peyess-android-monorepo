@@ -124,7 +124,7 @@ fun buildCreateClientNavGraph(
             navHostController = navHostController,
             onDone = { clientId, createScenario, paymentId ->
                 when(createScenario) {
-                    is CreateScenario.Home ->
+                    CreateScenario.Home ->
                         navHostController.navigate(
                             buildAddressRoute(
                                 clientId = clientId,
@@ -163,7 +163,7 @@ fun buildCreateClientNavGraph(
             navHostController = navHostController,
             onDone = { clientId, createScenario, paymentId ->
                 when(createScenario) {
-                    is CreateScenario.Home ->
+                    CreateScenario.Home ->
                         navHostController.navigate(
                             buildCommunicationRoute(
                                 clientId = clientId,
@@ -203,21 +203,35 @@ fun buildCreateClientNavGraph(
             navHostController = navHostController,
             onDone = { createScenario, clientId, paymentId, saleId, serviceOrderId ->
                  when (createScenario) {
-                     is CreateScenario.Home ->
+                     CreateScenario.Home ->
                          navHostController.navigate(SalesAppScreens.Home.name) {
                              popUpTo(SalesAppScreens.Home.name) {
                                  inclusive = true
                              }
                          }
 
-                     is CreateScenario.ClientScreen ->
+                     CreateScenario.ServiceOrder -> {
+                         val route = buildServiceOrderRoute(
+                             isCreating = true,
+                             saleId = saleId,
+                             serviceOrderId = serviceOrderId,
+                         )
+
+                         navHostController.navigate(route) {
+                             popUpTo(basicInfoRoute) {
+                                 inclusive = true
+                             }
+                         }
+                     }
+
+                     CreateScenario.ClientScreen ->
                          navHostController.navigate(SalesAppScreens.Clients.name) {
                              popUpTo(SalesAppScreens.Clients.name) {
                                  inclusive = true
                              }
                          }
 
-                     is CreateScenario.Payment -> {
+                     CreateScenario.Payment -> {
                          val paymentRoute = buildPaymentNavRoute(
                              paymentId = paymentId,
                              clientId = clientId,

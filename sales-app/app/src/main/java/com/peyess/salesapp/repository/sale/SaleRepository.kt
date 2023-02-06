@@ -19,9 +19,12 @@ import kotlinx.coroutines.flow.Flow
 
 typealias ActiveSaleResponse = Either<ActiveSaleError, ActiveSalesEntity>
 typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOEntity>
+typealias ActiveServiceOrderStreamResponse = Flow<Either<ActiveServiceOrderError, ActiveSOEntity>>
 
 typealias ActiveSalesResponse = Either<ActiveSaleError, List<ActiveSalesEntity>>
 typealias ActiveSalesStreamResponse = Either<ActiveSaleError, Flow<List<ActiveSalesEntity>>>
+
+typealias LensTypeCategoriesResponse = Either<ActiveSaleError, List<LensTypeCategoryDocument>>
 
 typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
 
@@ -49,6 +52,7 @@ interface SaleRepository {
     fun activeSO(): Flow<ActiveSOEntity?>
     suspend fun currentServiceOrder(): ActiveServiceOrderResponse
     suspend fun serviceOrder(serviceOrderId: String): ActiveServiceOrderResponse
+    fun streamServiceOrder(serviceOrderId: String): ActiveServiceOrderStreamResponse
 
     fun updateSO(so: ActiveSOEntity)
 
@@ -59,7 +63,7 @@ interface SaleRepository {
     fun currentFramesData(): Flow<FramesEntity>
     suspend fun updateFrames(frames: FramesEntity)
 
-    fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>>
+    suspend fun lensTypeCategories(): LensTypeCategoriesResponse
 
     fun pickProduct(productPicked: ProductPickedEntity)
     fun pickedProduct(): Flow<ProductPickedEntity?>

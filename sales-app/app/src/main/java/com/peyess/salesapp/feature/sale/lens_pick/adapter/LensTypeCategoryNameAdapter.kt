@@ -8,5 +8,6 @@ fun LensTypeCategoryName.toLensType(): LensType {
         LensTypeCategoryName.Far -> LensType.MonofocalFar
         LensTypeCategoryName.Near -> LensType.MonofocalNear
         LensTypeCategoryName.Multi -> LensType.MultiFocal
+        LensTypeCategoryName.None -> LensType.None
     }
 }

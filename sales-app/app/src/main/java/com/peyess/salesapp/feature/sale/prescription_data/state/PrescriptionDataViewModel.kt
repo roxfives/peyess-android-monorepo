@@ -117,7 +117,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             LensTypeCategoryName.Far -> salesApplication.stringResource(R.string.mike_message_far)
             LensTypeCategoryName.Multi -> salesApplication.stringResource(R.string.mike_message_multi)
             LensTypeCategoryName.Near -> salesApplication.stringResource(R.string.mike_message_near)
-            null -> salesApplication.stringResource(R.string.mike_message_default)
+            else -> salesApplication.stringResource(R.string.mike_message_default)
         }
     }
 
@@ -163,7 +163,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             LensTypeCategoryName.Far -> R.raw.lottie_lens_far
             LensTypeCategoryName.Multi -> R.raw.lottie_lens_multi
             LensTypeCategoryName.Near -> R.raw.lottie_lens_near
-            null -> R.raw.lottie_lens_far
+            else -> R.raw.lottie_lens_far
         }
     }
 

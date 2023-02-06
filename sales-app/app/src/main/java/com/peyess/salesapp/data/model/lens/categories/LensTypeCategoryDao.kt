@@ -1,7 +1,13 @@
 package com.peyess.salesapp.data.model.lens.categories
 
+import arrow.core.Either
+import com.peyess.salesapp.data.model.lens.categories.error.LensCategoryDaoReadError
 import kotlinx.coroutines.flow.Flow
 
+typealias LensTypeCategoriesResponse =
+        Either<LensCategoryDaoReadError, List<LensTypeCategoryDocument>>
+
 interface LensTypeCategoryDao {
-    fun categories(): Flow<List<LensTypeCategoryDocument>>
+    fun streamCategories(): Flow<List<LensTypeCategoryDocument>>
+    suspend fun typeCategories(): LensTypeCategoriesResponse
 }

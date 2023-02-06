@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.leftIfNull
@@ -33,7 +34,6 @@ import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.firebase.FirebaseManager
-import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.adapter.toProductPickedDocument
@@ -91,7 +91,7 @@ class SaleRepositoryImpl @Inject constructor(
             .flatMapLatest { prefs ->
                 val soId = prefs[currentSOKey]
 
-                activeSODao.getById(soId ?: "")
+                activeSODao.streamServiceOrderById(soId ?: "")
             }.retryWhen { _ , attempt ->
                 attempt < currentSOThreshold
             }.shareIn(
@@ -227,7 +227,7 @@ class SaleRepositoryImpl @Inject constructor(
             val activeSO = ActiveSOEntity(
                 id = firebaseManager.uniqueId(),
                 saleId = activeSale.id,
-                lensTypeCategoryName = LensTypeCategoryName.Near,
+                lensTypeCategoryName = LensTypeCategoryName.None,
             )
 
             Timber.i("Creating sale $activeSale")
@@ -371,6 +371,18 @@ class SaleRepositoryImpl @Inject constructor(
         )
     }
 
+    override fun streamServiceOrder(serviceOrderId: String): ActiveServiceOrderStreamResponse {
+        return activeSODao.streamServiceOrderById(serviceOrderId).map {
+            if (it == null) {
+                Unexpected(
+                    description = "Error finding sale for service order $serviceOrderId",
+                ).left()
+            } else {
+                it.right()
+            }
+        }
+    }
+
     override suspend fun saleForServiceOrder(serviceOrderId: String): ActiveSaleResponse = Either.catch {
         val serviceOrder = activeSODao.getServiceOrderById(serviceOrderId)
 
@@ -471,8 +483,13 @@ class SaleRepositoryImpl @Inject constructor(
         positioningDao.add(positioning)
     }
 
-    override fun lensTypeCategories(): Flow<List<LensTypeCategoryDocument>> {
-        return lensTypeCategoryDao.categories()
+    override suspend fun lensTypeCategories(): LensTypeCategoriesResponse = either {
+        lensTypeCategoryDao.typeCategories().mapLeft {
+            Unexpected(
+                description = it.description,
+                error = it.error,
+            )
+        }.bind()
     }
 
     override fun pickProduct(productPicked: ProductPickedEntity) {

@@ -7,5 +7,6 @@ fun lensTypeName(lensType: LensTypeCategoryName): String {
         LensTypeCategoryName.Far -> "far"
         LensTypeCategoryName.Multi -> "multi"
         LensTypeCategoryName.Near -> "near"
+        LensTypeCategoryName.None -> "none"
     }
 }

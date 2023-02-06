@@ -14,9 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.feature.sale.prescription_lens_type.state.PrescriptionLensTypeState
@@ -40,15 +37,23 @@ fun PrescriptionLensTypeScreen(
 
     val categoryPicked by viewModel.collectAsState(PrescriptionLensTypeState::typeCategoryPicked)
 
+    val areLensTypeCategoriesLoading by
+        viewModel.collectAsState(PrescriptionLensTypeState::areCategoriesLoading)
+    val isMikeLoading by viewModel.collectAsState(PrescriptionLensTypeState::isMikeLoading)
+
     val canGoNext by viewModel.collectAsState(PrescriptionLensTypeState::canGoNext)
 
     PrescriptionTypeScreenImpl(
         modifier = modifier,
+
+        isMikeLoading = isMikeLoading,
         mikeText = mikeText,
 
+        areCategoriesLoading = areLensTypeCategoriesLoading,
         categoryPicked = categoryPicked,
         lensCategories = categories,
         onSelectChanged = viewModel::onPick,
+
         onDone = {
             if (canGoNext) {
                 onNext()
@@ -62,11 +67,13 @@ fun PrescriptionLensTypeScreen(
 private fun PrescriptionTypeScreenImpl(
     modifier: Modifier = Modifier,
 
+    areCategoriesLoading: Boolean = false,
     categoryPicked: LensTypeCategoryDocument? = null,
-    lensCategories: Async<List<LensTypeCategoryDocument>> = Uninitialized,
+    lensCategories: List<LensTypeCategoryDocument> = emptyList(),
     onSelectChanged: (categoryName: String) -> Unit =  {},
 
-    mikeText: Async<String> = Uninitialized,
+    isMikeLoading: Boolean = false,
+    mikeText: String = "",
     onDone: () -> Unit = {},
 ) {
 
@@ -75,15 +82,14 @@ private fun PrescriptionTypeScreenImpl(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        when (lensCategories) {
-            is Success ->
-                LensTypeCategories(
-                    selected = categoryPicked,
-                    categories = lensCategories.invoke(),
-                    onSelectChanged = onSelectChanged,
-                )
-            else ->
-                CircularProgressIndicator()
+        if (areCategoriesLoading) {
+            CircularProgressIndicator()
+        } else {
+            LensTypeCategories(
+                selected = categoryPicked,
+                categories = lensCategories,
+                onSelectChanged = onSelectChanged,
+            )
         }
 
         Spacer(modifier = Modifier.height(26.dp))
@@ -95,13 +101,13 @@ private fun PrescriptionTypeScreenImpl(
 
         Spacer(modifier = Modifier.height(26.dp))
 
-        if (mikeText is Success) {
+        if (isMikeLoading) {
+            CircularProgressIndicator()
+        } else {
             MikeBubbleRight(
                 modifier = Modifier.height(mikeHeight),
-                text = mikeText.invoke(),
+                text = mikeText,
             )
-        } else {
-            CircularProgressIndicator()
         }
 
         Spacer(modifier = Modifier.weight(1f))

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ActiveSODao {
     @Query("SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.id = :id")
-    fun getById(id: String): Flow<ActiveSOEntity?>
+    fun streamServiceOrderById(id: String): Flow<ActiveSOEntity?>
 
     @Query("SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.id = :id")
     suspend fun getServiceOrderById(id: String): ActiveSOEntity?

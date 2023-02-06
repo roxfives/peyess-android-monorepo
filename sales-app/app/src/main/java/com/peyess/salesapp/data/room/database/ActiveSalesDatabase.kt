@@ -50,7 +50,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
     ],
-    version = 55,
+    version = 56,
 )
 @TypeConverters(
     ConverterLocalDate::class,

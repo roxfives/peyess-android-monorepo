@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
+import arrow.fx.coroutines.Schedule
 import com.peyess.salesapp.data.adapter.local_client.toLocalClientDocument
 import com.peyess.salesapp.data.adapter.local_client.toLocalClientEntity
 import com.peyess.salesapp.data.adapter.local_client.toLocalClientStatusDocument
@@ -26,6 +27,9 @@ import com.peyess.salesapp.data.utils.query.adapter.toSqlQuery
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.toDuration
 
 private const val clientStatusId = 0L
 
@@ -115,21 +119,48 @@ class LocalClientRepositoryImpl @Inject constructor(
         )
     }
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun clientById(
         clientId: String,
-    ): LocalClientReadSingleResponse = Either.catch {
-        localClientDao.clientById(clientId)?.toLocalClientDocument()
-    }.mapLeft {
-        UnexpectedLocalClientRepositoryError(
-            description = "Error reading client: $it",
-            error = it,
-        )
-    }.leftIfNull {
-        LocalClientNotFoundError(
-            description = "Client not found",
-            error = null,
-        )
-    }
+    ): LocalClientReadSingleResponse = Schedule
+        .exponential<LocalClientReadSingleResponse>(
+            5.toDuration(DurationUnit.MILLISECONDS), 2.0,
+        ).whileOutput { it < 3.toDuration(DurationUnit.SECONDS) }
+        .andThen(
+            Schedule.spaced<LocalClientReadSingleResponse>(
+                5.toDuration(DurationUnit.MILLISECONDS)
+            ) and Schedule.recurs(10)
+        ).zipRight(Schedule.identity())
+        .repeat {
+            Either.catch {
+                localClientDao.clientById(clientId)?.toLocalClientDocument()
+            } .mapLeft {
+                UnexpectedLocalClientRepositoryError(
+                    description = "Error reading client: $it",
+                    error = it,
+                )
+            }.leftIfNull {
+                LocalClientNotFoundError(
+                    description = "Client not found",
+                    error = null,
+                )
+            }
+        }
+
+
+//        Either.catch {
+//        localClientDao.clientById(clientId)?.toLocalClientDocument()
+//    }.mapLeft {
+//        UnexpectedLocalClientRepositoryError(
+//            description = "Error reading client: $it",
+//            error = it,
+//        )
+//    }.leftIfNull {
+//        LocalClientNotFoundError(
+//            description = "Client not found",
+//            error = null,
+//        )
+//    }
 
     override suspend fun latestClientUpdated(): LocalClientReadSingleResponse = Either.catch {
         localClientDao.latestClientUpdated()?.toLocalClientDocument()

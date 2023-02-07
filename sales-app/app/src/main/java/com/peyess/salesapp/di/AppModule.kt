@@ -37,9 +37,7 @@ object AppModule {
                 context,
                 ActiveSalesDatabase::class.java,
                 "active_sales.db",
-            )
-            .fallbackToDestructiveMigration()
-            .build()
+            ).build()
     }
 
     @Provides

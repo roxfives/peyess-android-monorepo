@@ -156,7 +156,7 @@ fun HomeScreen(
     val isLoadingStore by viewModel.collectAsState(MainAppState::isLoadingStore)
 
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
-    val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
+    val hasCreatedSale by viewModel.collectAsState(MainAppState::hasCreatedSale)
 
     val isUpdatingProductsTable by viewModel.collectAsState(MainAppState::isUpdatingProducts)
     val hasProductsTableUpdateFailed by viewModel.collectAsState(MainAppState::hasProductUpdateFailed)
@@ -168,8 +168,6 @@ fun HomeScreen(
 
     val dismissActiveSales = remember { mutableStateOf(false) }
     val hasShownActiveSales = remember { mutableStateOf(false) }
-
-    val hasStartedNewSale = remember { mutableStateOf(false) }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val notificationsPermissionState =
@@ -210,21 +208,17 @@ fun HomeScreen(
         }
     }
 
-    if (createNewSale is Success && createNewSale.invoke()!!) {
+    if (hasCreatedSale) {
         LaunchedEffect(Unit) {
-            if (!hasStartedNewSale.value) {
-                onStartSale()
-            }
-
-            hasStartedNewSale.value = true
-            viewModel.newSaleStarted()
-
             firstStepViewModel.resetState()
             secondStepViewModel.resetState()
             thirdStepViewModel.resetState()
             fourthStepViewModel.resetState()
             fifthStepViewModel.resetState()
             sixthStepViewModel.resetState()
+
+            viewModel.newSaleStarted()
+            onStartSale()
         }
     }
 
@@ -232,7 +226,7 @@ fun HomeScreen(
     LaunchedEffect(dismissActiveSales.value, activeSales) {
         if (dismissActiveSales.value || activeSales.isEmpty()) {
             dialogState.hide()
-        } else if (!hasShownActiveSales.value && !isCreatingNewSale && createNewSale.invoke() != true) {
+        } else if (!hasShownActiveSales.value && !hasCreatedSale) {
             hasShownActiveSales.value = true
             dialogState.show()
         }

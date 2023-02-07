@@ -61,7 +61,6 @@ import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.app.state.ServiceOrderStream
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.navigation.sale.edit_service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -102,7 +101,7 @@ fun SalesScreen(
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
-    val createNewSale by viewModel.collectAsState(MainAppState::createNewSale)
+    val hasCreatedSale by viewModel.collectAsState(MainAppState::hasCreatedSale)
 
     val isUpdatingProducts by viewModel.collectAsState(MainAppState::isUpdatingProducts)
 
@@ -111,25 +110,17 @@ fun SalesScreen(
 
     val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
 
-    val hasStartedNewSale = remember {
-        mutableStateOf(false)
-    }
-
-    if (createNewSale is Success && createNewSale.invoke()!!) {
+    if (hasCreatedSale) {
         LaunchedEffect(Unit) {
-            if (!hasStartedNewSale.value) {
-                onStartNewSale()
-            }
-
-            hasStartedNewSale.value = true
-            viewModel.newSaleStarted()
-
             firstStepViewModel.resetState()
             secondStepViewModel.resetState()
             thirdStepViewModel.resetState()
             fourthStepViewModel.resetState()
             fifthStepViewModel.resetState()
             sixthStepViewModel.resetState()
+
+            viewModel.newSaleStarted()
+            onStartNewSale()
         }
     }
 

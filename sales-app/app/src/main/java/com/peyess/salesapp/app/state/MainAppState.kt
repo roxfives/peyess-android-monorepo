@@ -21,8 +21,8 @@ import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
+import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.ResumeSaleResponse
-import com.peyess.salesapp.repository.service_order.ServiceOrderPaginationResponse
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -43,7 +43,8 @@ sealed class AppAuthenticationState {
 data class MainAppState(
     val authState: AppAuthenticationState = AppAuthenticationState.Unauthenticated,
 
-    val createNewSale: Async<Boolean> = Success(false),
+    val createSaleResponseAsync: Async<CreateSaleResponse> = Uninitialized,
+    val hasCreatedSale: Boolean = false,
 
     val productsTableStatusAsync: Async<ProductsTableStatus?> = Uninitialized,
 
@@ -81,7 +82,7 @@ data class MainAppState(
 
     val isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
 ): MavericksState {
-    val isCreatingNewSale = createNewSale is Loading
+    val isCreatingNewSale = createSaleResponseAsync is Loading
 
     val isUpdatingProducts = productsTableStatusAsync.invoke()?.isUpdating ?: false
     val hasProductUpdateFailed = productsTableStatusAsync.invoke()?.hasUpdateFailed ?: true

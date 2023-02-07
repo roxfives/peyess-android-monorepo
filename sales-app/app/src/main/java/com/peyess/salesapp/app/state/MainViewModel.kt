@@ -13,6 +13,7 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
@@ -36,6 +37,7 @@ import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
+import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.utils.file.createPrintFile
@@ -74,12 +76,6 @@ class MainViewModel @AssistedInject constructor(
     init {
         streamActiveSales()
 
-        setState {
-            copy(
-                createNewSale = Success(false),
-            )
-        }
-
         onEach(MainAppState::authState) {
             if (it is AppAuthenticationState.Authenticated) {
                 countTotalClients()
@@ -99,6 +95,8 @@ class MainViewModel @AssistedInject constructor(
 
             }
         }
+
+        onAsync(MainAppState::createSaleResponseAsync) { processCreateSaleResponse(it) }
 
         onAsync(MainAppState::serviceOrderListResponseAsync) {
             processServiceOrderListResponse(it)
@@ -443,10 +441,23 @@ class MainViewModel @AssistedInject constructor(
             }
     }
 
+    private fun processCreateSaleResponse(response: CreateSaleResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(createSaleResponseAsync = Fail(it.error ?: Throwable(it.description)))
+            },
+
+            ifRight = {
+                copy(hasCreatedSale = true)
+            }
+        )
+    }
+
     fun startNewSale() = withState {
-        saleRepository.createSale().execute(Dispatchers.IO) {
-            Timber.i("Creating a new sale $it")
-            copy(createNewSale = it)
+        suspend {
+            saleRepository.createSale()
+        }.execute(Dispatchers.IO) {
+            copy(createSaleResponseAsync = it)
         }
     }
 
@@ -467,7 +478,10 @@ class MainViewModel @AssistedInject constructor(
     }
 
     fun newSaleStarted() = setState {
-        copy(createNewSale = Success(false))
+        copy(
+            createSaleResponseAsync = Uninitialized,
+            hasCreatedSale = false,
+        )
     }
 
     fun exit() {

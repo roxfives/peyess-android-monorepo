@@ -61,6 +61,7 @@ import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.app.state.ServiceOrderStream
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.navigation.sale.edit_service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -87,6 +88,7 @@ private val profilePicPadding = 8.dp
 fun SalesScreen(
     modifier: Modifier = Modifier,
     onStartNewSale: () -> Unit = {},
+    onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ ->},
 ) {
     val context = LocalContext.current
 
@@ -96,7 +98,6 @@ fun SalesScreen(
     val fourthStepViewModel: FourthStepViewModel = mavericksActivityViewModel()
     val fifthStepViewModel: FifthStepViewModel = mavericksActivityViewModel()
     val sixthStepViewModel: SixthStepViewModel = mavericksActivityViewModel()
-
 
     val viewModel: MainViewModel = mavericksActivityViewModel()
 
@@ -171,6 +172,10 @@ fun SalesScreen(
                         }
                     }
                 )
+            },
+
+            onEditServiceOrder = {
+                onEditServiceOrder(it, it)
             }
         )
     }
@@ -189,6 +194,9 @@ fun SaleList(
 
     isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
     onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
+
+    onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
+
     onStartNewSale: () -> Unit = {},
 ) {
     val serviceOrders = serviceOrderList.collectAsLazyPagingItems()
@@ -248,9 +256,12 @@ fun SaleList(
                         .fillMaxWidth(),
                     serviceOrder = it,
                     pictureForClient = pictureForClient,
+
                     isGeneratingPdf = isGeneratingPdfFor.first
                             && isGeneratingPdfFor.second == it.id,
                     onGenerateSalePdf = onGenerateSalePdf,
+
+                    onEditServiceOrder = onEditServiceOrder,
                 )
             }
         }
@@ -268,6 +279,8 @@ private fun ServiceOrderCard(
 
     onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
+
+    onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -296,7 +309,8 @@ private fun ServiceOrderCard(
                     MaterialTheme.colors.primary.copy(alpha = 0.5f),
                 ),
                 shape = RoundedCornerShape(6.dp),
-            ).clickable { },
+            )
+            .clickable { },
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -360,6 +374,7 @@ private fun ServiceOrderCard(
 
                     Text(
                         // TODO: update using Util function
+                        // TODO: use string resource
                         text = "Em andamento",
                         style = MaterialTheme.typography.body1
                     )
@@ -378,6 +393,12 @@ private fun ServiceOrderCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+//            Button(
+//                onClick = { onEditServiceOrder(serviceOrder.id) },
+//            ) {
+//                Text(text = stringResource(id = R.string.btn_open_pdf))
+//            }
+
             if (isGeneratingPdf) {
                 CircularProgressIndicator()
             } else {

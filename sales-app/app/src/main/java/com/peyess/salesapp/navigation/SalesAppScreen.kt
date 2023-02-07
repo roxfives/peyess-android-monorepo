@@ -36,6 +36,7 @@ enum class SalesAppScreens {
     LensComparison,
     PickClient,
     ServiceOrder,
+    EditServiceOrder,
     SalePayment,
     Discount,
     PaymentFee,
@@ -90,6 +91,7 @@ enum class SalesAppScreens {
                 LensComparison.name -> LensComparison
                 PickClient.name -> PickClient
                 ServiceOrder.name -> ServiceOrder
+                EditServiceOrder.name -> EditServiceOrder
                 SalePayment.name -> SalePayment
                 Discount.name -> Discount
                 PaymentFee.name -> PaymentFee
@@ -151,6 +153,7 @@ enum class SalesAppScreens {
                 LensComparison.name -> "Comparação da lente"
                 PickClient.name -> "Selecione o cadastro do cliente"
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
+                EditServiceOrder.name -> "Editando a Ordem de Serviço (O.S.)"
                 SalePayment.name -> "Pagamento"
                 Discount.name -> "Aplicar Desconto"
                 PaymentFee.name -> "Aplicar Taxa"

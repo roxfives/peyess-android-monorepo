@@ -19,7 +19,7 @@ interface ActiveSODao {
     suspend fun getServiceOrdersForSale(saleId: String): List<ActiveSOEntity>
 
     @Insert
-    fun add(activeSale: ActiveSOEntity)
+    suspend fun add(activeSale: ActiveSOEntity)
 
     @Update
     fun update(activeSale: ActiveSOEntity)

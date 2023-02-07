@@ -34,7 +34,7 @@ interface ActiveSalesDao {
     suspend fun getSaleById(id: String): ActiveSalesEntity?
 
     @Insert
-    fun add(activeSale: ActiveSalesEntity)
+    suspend fun add(activeSale: ActiveSalesEntity)
 
     @Update
     fun update(activeSale: ActiveSalesEntity)

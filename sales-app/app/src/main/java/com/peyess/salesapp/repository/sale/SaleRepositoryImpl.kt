@@ -44,6 +44,7 @@ import com.peyess.salesapp.repository.sale.error.ActiveSaleNotRegistered
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotRegistered
+import com.peyess.salesapp.repository.sale.error.CreateSaleError
 import com.peyess.salesapp.repository.sale.error.ProductPickedNotFound
 import com.peyess.salesapp.repository.sale.error.Unexpected
 import kotlinx.coroutines.CoroutineScope
@@ -189,32 +190,34 @@ class SaleRepositoryImpl @Inject constructor(
         }.toMap()
     }
 
-    override fun createSale(): Flow<Boolean> {
-        return authenticationRepository.currentUser().filterNotNull().map {
-            val activeSale = ActiveSalesEntity(
-                id = firebaseManager.uniqueId(),
-                collaboratorUid = it.id,
-                active = true,
-            )
+    override suspend fun createSale(): CreateSaleResponse = Either.catch {
+        val collaboratorId = authenticationRepository.fetchCurrentUserId()
+        val sale = ActiveSalesEntity(
+            id = firebaseManager.uniqueId(),
+            collaboratorUid = collaboratorId,
+            active = true,
+        )
+        val serviceOrder = ActiveSOEntity(
+            id = firebaseManager.uniqueId(),
+            saleId = sale.id,
+            lensTypeCategoryName = LensTypeCategoryName.None,
+        )
 
-            val activeSO = ActiveSOEntity(
-                id = firebaseManager.uniqueId(),
-                saleId = activeSale.id,
-                lensTypeCategoryName = LensTypeCategoryName.None,
-            )
-
-            Timber.i("Creating sale $activeSale")
-            Timber.i("Creating so $activeSO")
-
-            salesApplication.dataStoreCurrentSale.edit { prefs ->
-                prefs[currentSaleKey] = activeSale.id
-                prefs[currentSOKey] = activeSO.id
-            }
-
-            activeSalesDao.add(activeSale)
-            activeSODao.add(activeSO)
-            true
+        salesApplication.dataStoreCurrentSale.edit { prefs ->
+            prefs[currentSaleKey] = sale.id
+            prefs[currentSOKey] = serviceOrder.id
         }
+
+
+        activeSalesDao.add(sale)
+        activeSODao.add(serviceOrder)
+
+        Pair(sale.id, serviceOrder.id)
+    }.mapLeft {
+        CreateSaleError(
+            description = "Error creating sale",
+            error = it,
+        )
     }
 
     override suspend fun cancelCurrentSale(): CancelSaleResponse {

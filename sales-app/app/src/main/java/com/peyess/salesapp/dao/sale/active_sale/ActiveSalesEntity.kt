@@ -6,11 +6,17 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = ActiveSalesEntity.tableName)
 data class ActiveSalesEntity(
-    @PrimaryKey val id: String = "",
-    @ColumnInfo(name = "collaborator_uid") val collaboratorUid: String = "",
-    @ColumnInfo(name = "client_name") val clientName: String = "",
-    @ColumnInfo(name = "active") val active: Boolean = false,
-    @ColumnInfo(name = "is_uploading") val isUploading: Boolean = false,
+    @PrimaryKey
+    val id: String = "",
+
+    @ColumnInfo(name = "collaborator_uid")
+    val collaboratorUid: String = "",
+    @ColumnInfo(name = "client_name")
+    val clientName: String = "",
+    @ColumnInfo(name = "active")
+    val active: Boolean = false,
+    @ColumnInfo(name = "is_uploading")
+    val isUploading: Boolean = false,
 ) {
     companion object {
         const val tableName = "active_sales"

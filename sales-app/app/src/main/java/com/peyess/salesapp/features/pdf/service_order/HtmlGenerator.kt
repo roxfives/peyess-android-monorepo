@@ -19,6 +19,7 @@ import com.peyess.salesapp.features.pdf.service_order.html.style
 import com.peyess.salesapp.features.pdf.utils.printValue
 import timber.log.Timber
 import java.time.format.DateTimeFormatter
+import kotlin.math.max
 
 private fun printFramesReference(
     ref: String,
@@ -153,9 +154,11 @@ fun buildHtml(
         ),
         framesType = printValue(serviceOrder.framesProducts.type.toName()),
 
-        measuringBridge = "%.2f".format(serviceOrder.lBridge),
-        measuringVHoop = "%.2f".format(serviceOrder.lVerticalHoop),
-        measuringHHoop = "%.2f".format(serviceOrder.lHorizontalHoop),
+        measuringDiameter = "%.2f".format(max(serviceOrder.lDiameter, serviceOrder.rDiameter)),
+        measuringBridgeHoop = "%.2f".format(max(serviceOrder.lHorizontalBridgeHoop, serviceOrder.rHorizontalBridgeHoop)),
+        measuringBridge = "%.2f".format(max(serviceOrder.lBridge, serviceOrder.rBridge)),
+        measuringVHoop = "%.2f".format(max(serviceOrder.lVerticalHoop, serviceOrder.rVerticalHoop)),
+        measuringHHoop = "%.2f".format(max(serviceOrder.lHorizontalHoop, serviceOrder.rHorizontalHoop)),
 
         trackingCode = "",
         trackingPortalLink = "",

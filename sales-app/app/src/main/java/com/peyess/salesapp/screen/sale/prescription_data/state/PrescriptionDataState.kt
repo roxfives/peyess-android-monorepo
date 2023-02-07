@@ -6,7 +6,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionInsertResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.screen.sale.prescription_data.model.PrescriptionData

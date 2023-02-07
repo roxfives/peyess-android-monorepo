@@ -28,7 +28,7 @@ import com.peyess.salesapp.constants.stepCylindrical
 import com.peyess.salesapp.constants.stepPrismAxis
 import com.peyess.salesapp.constants.stepPrismDegree
 import com.peyess.salesapp.constants.stepSpherical
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.PrescriptionNotFound

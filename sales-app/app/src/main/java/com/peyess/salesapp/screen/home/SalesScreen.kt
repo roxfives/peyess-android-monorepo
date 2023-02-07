@@ -2,6 +2,9 @@ package com.peyess.salesapp.screen.home
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +31,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -384,15 +388,27 @@ private fun ServiceOrderCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-//            Button(
-//                onClick = { onEditServiceOrder(serviceOrder.id) },
-//            ) {
-//                Text(text = stringResource(id = R.string.btn_open_pdf))
-//            }
+            if (BuildConfig.DEBUG) {
+                Button(
+                    onClick = {
+                        onEditServiceOrder(serviceOrder.id)
+                    },
+                ) {
+                    Text(text = "Editar")
+                }
 
-            if (isGeneratingPdf) {
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+
+            AnimatedVisibility(
+                visible = isGeneratingPdf,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
                 CircularProgressIndicator()
-            } else {
+            }
+
+            AnimatedVisibility(visible = !isGeneratingPdf) {
                 Button(
                     onClick = {
                         if (!isGeneratingPdf) {

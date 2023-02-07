@@ -7,7 +7,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.LensTypeCategoriesResponse

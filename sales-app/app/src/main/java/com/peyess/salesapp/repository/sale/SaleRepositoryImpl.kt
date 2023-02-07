@@ -20,7 +20,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao

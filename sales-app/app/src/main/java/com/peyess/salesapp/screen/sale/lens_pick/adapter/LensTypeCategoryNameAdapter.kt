@@ -1,6 +1,6 @@
 package com.peyess.salesapp.screen.sale.lens_pick.adapter
 
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.features.disponibility.contants.LensType
 
 fun LensTypeCategoryName.toLensType(): LensType {

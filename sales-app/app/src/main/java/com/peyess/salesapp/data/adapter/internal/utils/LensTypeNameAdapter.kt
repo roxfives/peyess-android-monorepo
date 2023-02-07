@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.adapter.internal.utils
 
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 
 fun lensTypeName(lensType: LensTypeCategoryName): String {
     return when(lensType) {

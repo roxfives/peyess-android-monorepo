@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.room.converter
 
 import androidx.room.TypeConverter
-import com.peyess.salesapp.dao.sale.active_so.LensTypeCategoryName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 
 class ConverterLensTypeCategoryName {
     @TypeConverter

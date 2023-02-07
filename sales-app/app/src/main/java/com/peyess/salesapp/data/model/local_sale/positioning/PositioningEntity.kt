@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.typing.general.Eye
 import kotlin.math.abs
 
+// TODO: refactor these values
 private const val screenWidth = 2448.0
 private const val screenHeight = 3264.0
 

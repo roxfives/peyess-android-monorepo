@@ -92,6 +92,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
+import kotlin.math.max
 
 private val pictureSize = 60.dp
 private val pictureSizePx = 60
@@ -1246,7 +1247,7 @@ private fun MeasuresSection(
                 ) {
                     Text(text = stringResource(id = R.string.so_diameter))
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
-                    Text(text = "%.2f".format(java.lang.Double.max(measureLeft.fixedDiameter, measureRight.fixedDiameter)))
+                    Text(text = "%.2f".format(max(measureLeft.fixedDiameter, measureRight.fixedDiameter)))
                 }
 
                 Row(
@@ -1257,7 +1258,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            java.lang.Double.max(measureLeft.fixedHorizontalBridgeHoop, measureRight.fixedHorizontalBridgeHoop)
+                            max(measureLeft.fixedHorizontalBridgeHoop, measureRight.fixedHorizontalBridgeHoop)
                         )
                     )
                 }
@@ -1270,7 +1271,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            java.lang.Double.max(measureLeft.fixedVHoop, measureRight.fixedVHoop)
+                            max(measureLeft.fixedVHoop, measureRight.fixedVHoop)
                         )
                     )
                 }
@@ -1283,7 +1284,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            java.lang.Double.max(measureLeft.fixedHHoop, measureRight.fixedHHoop)
+                            max(measureLeft.fixedHHoop, measureRight.fixedHHoop)
                         )
                     )
                 }
@@ -1296,7 +1297,7 @@ private fun MeasuresSection(
                     Spacer(modifier = Modifier.width(spaceBetweenMeasureValue))
                     Text(
                         text = "%.2f".format(
-                            java.lang.Double.max(measureLeft.fixedBridge, measureRight.fixedBridge)
+                            max(measureLeft.fixedBridge, measureRight.fixedBridge)
                         )
                     )
                 }

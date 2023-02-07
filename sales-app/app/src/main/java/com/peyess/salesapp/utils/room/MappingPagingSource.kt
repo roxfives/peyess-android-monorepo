@@ -32,7 +32,6 @@ class MappingPagingSource<Key: Any, Value: Any, MappedValue: Any>(
         return when (val originalResult = originalSource.load(params)) {
             is LoadResult.Error ->
                 LoadResult.Error(originalResult.throwable)
-
             is LoadResult.Invalid ->
                 LoadResult.Invalid()
 

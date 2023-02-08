@@ -12,13 +12,14 @@ import java.math.BigDecimal
 
 data class PaymentFeeState(
     val currentFeeAsync: Async<PaymentFeeDocument?> = Uninitialized,
+    val currentPaymentFee: PaymentFee = PaymentFee(),
 
     val originalPrice: BigDecimal = BigDecimal(0),
     val pricePreview: BigDecimal = BigDecimal(0),
 
     val saleId: String = "",
+    val hasFinished: Boolean = false,
 ): MavericksState {
     val isPaymentFeeLoading: Boolean = currentFeeAsync is Loading
     val paymentFeeHasError: Boolean = currentFeeAsync is Fail
-    val fee: PaymentFee = currentFeeAsync.invoke()?.toPaymentFee()?.copy() ?: PaymentFee()
 }

@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -93,9 +94,18 @@ fun PaymentFeeScreen(
 
     val viewModel: PaymentFeeViewModel = mavericksViewModel()
 
-    val fee by viewModel.collectAsState(PaymentFeeState::fee)
+    val fee by viewModel.collectAsState(PaymentFeeState::currentPaymentFee)
     val pricePreview by viewModel.collectAsState(PaymentFeeState::pricePreview)
     val originalPrice by viewModel.collectAsState(PaymentFeeState::originalPrice)
+
+    val hasFinished by viewModel.collectAsState(PaymentFeeState::hasFinished)
+
+    if (hasFinished) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigate()
+            onDone()
+        }
+    }
 
     parseParameterSaleId(
         backStackEntry = backStackEntry.value,
@@ -118,7 +128,7 @@ fun PaymentFeeScreen(
         onChangeFeeMethod = viewModel::onChangeFeeMethod,
         onChangeFeeValue = { viewModel.onChangeFeeValue(it.toDouble()) },
 
-        onDone = onDone,
+        onDone = viewModel::onFinished,
     )
 }
 

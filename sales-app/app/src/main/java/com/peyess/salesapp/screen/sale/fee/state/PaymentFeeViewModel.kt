@@ -1,6 +1,8 @@
 package com.peyess.salesapp.screen.sale.fee.state
 
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
@@ -9,6 +11,7 @@ import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.screen.sale.fee.model.PaymentFee
 import com.peyess.salesapp.screen.sale.fee.model.toPaymentFeeDocument
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.screen.sale.fee.model.toPaymentFee
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -25,32 +28,38 @@ class PaymentFeeViewModel @AssistedInject constructor(
 ): MavericksViewModel<PaymentFeeState>(initialState) {
 
     init {
-     onEach(PaymentFeeState::saleId) {
-            loadDiscount(it)
-        }
+        onEach(PaymentFeeState::saleId) { loadFee(it) }
+        onEach(PaymentFeeState::currentPaymentFee) { calculatePricePreview(it) }
 
-        onEach(PaymentFeeState::fee) {
-            calculatePricePreview(it)
+        onAsync(PaymentFeeState::currentFeeAsync) { processFeeResponse(it) }
+    }
+
+    private fun loadFee(saleId: String) {
+        suspend {
+            paymentFeeRepository.getPaymentFeeForSale(saleId)
+        }.execute(Dispatchers.IO) {
+            copy(currentFeeAsync = it)
         }
     }
 
-    private fun loadDiscount(saleId: String) {
-        paymentFeeRepository
-            .watchPaymentFeeForSale(saleId)
-            .execute { copy(currentFeeAsync = it) }
+    private fun processFeeResponse(response: PaymentFeeDocument?) = setState {
+        if (response != null) {
+            val fee = response.toPaymentFee()
+
+            copy(currentPaymentFee = fee)
+        } else {
+            copy(
+                currentFeeAsync = Fail(Throwable("No fee found"))
+            )
+        }
     }
 
-    private fun updateFee(discount: PaymentFee) = withState {
+    private fun updateFee(fee: PaymentFee) = withState {
         viewModelScope.launch(Dispatchers.IO) {
             if (it.saleId.isNotBlank()) {
-                val document = discount.toPaymentFeeDocument(it.saleId)
+                val document = fee.toPaymentFeeDocument(it.saleId)
 
-                val update = limitToMaxFee(
-                    document,
-                    it.originalPrice,
-                )
-
-                paymentFeeRepository.updatePaymentFeeForSale(update)
+                paymentFeeRepository.updatePaymentFeeForSale(document)
             }
         }
     }
@@ -74,26 +83,25 @@ class PaymentFeeViewModel @AssistedInject constructor(
         copy(pricePreview = preview)
     }
 
-    private fun limitToMaxFee(
-        paymentFee: PaymentFeeDocument,
-        price: BigDecimal,
-    ): PaymentFeeDocument {
-        val fee = when (paymentFee.method) {
+    private fun limitToMaxFee(paymentFee: PaymentFee, price: BigDecimal): PaymentFee {
+        return when (paymentFee.method) {
             PaymentFeeCalcMethod.None ->
-                0.0
+                paymentFee.copy()
+
             PaymentFeeCalcMethod.Percentage -> {
+                val value = paymentFee.percentValue
                 val maxFee = 1.0
 
-                paymentFee.value.coerceAtMost(maxFee)
+                paymentFee.copy(percentValue = value.coerceAtMost(maxFee))
             }
+
             PaymentFeeCalcMethod.Whole -> {
+                val value = paymentFee.wholeValue
                 val maxFee = price.toDouble()
 
-                paymentFee.value.coerceAtMost(maxFee)
+                paymentFee.copy(wholeValue = value.coerceAtMost(maxFee))
             }
         }
-
-        return paymentFee.copy(value = fee)
     }
 
     fun setSaleId(saleId: String) = setState {
@@ -104,33 +112,41 @@ class PaymentFeeViewModel @AssistedInject constructor(
         copy(originalPrice = value)
     }
 
-    fun onChangeFeeValue(value: Double) = withState {
-        val fee = when(it.fee.method) {
+    fun onChangeFeeValue(value: Double) = setState {
+        val fee = when(currentPaymentFee.method) {
             PaymentFeeCalcMethod.Percentage ->
-                it.fee.copy(percentValue = value)
+                currentPaymentFee.copy(percentValue = value)
             PaymentFeeCalcMethod.Whole ->
-                it.fee.copy(wholeValue = value)
+                currentPaymentFee.copy(wholeValue = value)
             PaymentFeeCalcMethod.None ->
-                it.fee.copy()
+                currentPaymentFee.copy()
         }
 
-        updateFee(fee)
+        val update = limitToMaxFee(fee, originalPrice)
+
+        updateFee(update)
+        copy(currentPaymentFee = update)
     }
 
-    fun onChangeFeeMethod(method: PaymentFeeCalcMethod) = withState {
-        val fee = it.fee.copy(method = method)
+    fun onChangeFeeMethod(method: PaymentFeeCalcMethod) = setState {
+        val fee = currentPaymentFee.copy(method = method)
 
         updateFee(fee)
+        copy(currentPaymentFee = fee)
     }
 
-    fun resetFee() {
-        val discount = PaymentFee(
-            method = PaymentFeeCalcMethod.Percentage,
-            percentValue = 0.0,
-            wholeValue = 0.0,
-        )
+    fun onFinished() = withState {
+        suspend {
+            val document = it.currentPaymentFee.toPaymentFeeDocument(it.saleId)
 
-        updateFee(discount)
+            paymentFeeRepository.updatePaymentFeeForSale(document)
+        }.execute(Dispatchers.IO) {
+            copy(hasFinished = it is Success)
+        }
+    }
+
+    fun onNavigate() = setState {
+        copy(hasFinished = false)
     }
 
     // hilt

@@ -68,12 +68,13 @@ fun shouldShowTopBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return !(screen == SalesAppScreens.UserListAuthentication
-            || screen == SalesAppScreens.StoreAuthentication
-            || screen == SalesAppScreens.FramesMeasureTakePicture
-            || screen == SalesAppScreens.FramesMeasure
-            || screen == SalesAppScreens.Landing
-        )
+    return !(
+            screen == SalesAppScreens.UserListAuthentication
+                    || screen == SalesAppScreens.StoreAuthentication
+                    || screen == SalesAppScreens.FramesMeasureTakePicture
+                    || screen == SalesAppScreens.FramesMeasure
+                    || screen == SalesAppScreens.Landing
+    )
 }
 
 fun showNavigateBack(
@@ -85,14 +86,16 @@ fun showNavigateBack(
 
     return !(
         screen == SalesAppScreens.UserListAuthentication
-            || screen == SalesAppScreens.SaleWelcome
-            || screen == SalesAppScreens.SalePayment
-            || screen == SalesAppScreens.SaleScreen
-            || screen == SalesAppScreens.FramesMeasureTakePicture
-            || screen == SalesAppScreens.FramesMeasure
-            || screen == SalesAppScreens.Home
-            || screen == SalesAppScreens.Clients
-            || screen == SalesAppScreens.Landing
-            || screen == SalesAppScreens.SetFramesData
+                || screen == SalesAppScreens.SaleWelcome
+                || screen == SalesAppScreens.SalePayment
+                || screen == SalesAppScreens.SaleScreen
+                || screen == SalesAppScreens.FramesMeasureTakePicture
+                || screen == SalesAppScreens.FramesMeasure
+                || screen == SalesAppScreens.Home
+                || screen == SalesAppScreens.Clients
+                || screen == SalesAppScreens.Landing
+                || screen == SalesAppScreens.SetFramesData
+                || screen == SalesAppScreens.Discount
+                || screen == SalesAppScreens.PaymentFee
     )
 }

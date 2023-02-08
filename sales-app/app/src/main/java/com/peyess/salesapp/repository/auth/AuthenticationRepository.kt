@@ -25,6 +25,7 @@ interface AuthenticationRepository {
 
     fun currentUser(): Flow<CollaboratorDocument?>
     suspend fun fetchCurrentUserId(): String
+    suspend fun fetchCurrentUserName(): String
 
     fun userSignOut(): Flow<UserAuthenticationState>
 

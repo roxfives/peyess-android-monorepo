@@ -263,6 +263,26 @@ class AuthenticationRepositoryImpl @Inject constructor(
         return collaboratorId
     }
 
+    override suspend fun fetchCurrentUserName(): String {
+        var collaboratorName = ""
+
+        salesApplication.dataStoreCurrentUser.data.map { prefs -> prefs[currentCollaboratorKey] }
+            .map {
+                if (it == null || it.isBlank()) {
+                    Timber.i("Current user is not defined")
+                    null
+                } else {
+                    // TODO: find why it returns null
+                    collaboratorsDao.getById(it)?.toDocument()
+                }
+            }.take(1).collect {
+                collaboratorName = it?.name ?: ""
+            }
+
+        return collaboratorName
+    }
+
+
     override fun userFirebaseApp(uid: String): FirebaseApp? {
         return firebaseManager.userApplication(uid)
     }

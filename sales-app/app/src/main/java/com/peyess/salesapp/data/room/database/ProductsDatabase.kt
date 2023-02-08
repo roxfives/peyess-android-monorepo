@@ -182,7 +182,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalLensFullUnionDBView::class,
         LocalLensFullUnionWithHeightAndLensTypeDBView::class,
     ],
-    version = 95,
+    version = 96,
 )
 @TypeConverters(
     ConverterUri::class,

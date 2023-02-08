@@ -55,7 +55,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditSalePaymentDBView::class,
     ],
 
-    version = 1,
+    version = 2,
 )
 @TypeConverters(
     ConverterUri::class,

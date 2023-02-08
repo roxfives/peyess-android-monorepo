@@ -200,6 +200,7 @@ interface LocalLensDao {
     @RawQuery(observedEntities = [LocalLensesGroupDBView::class])
     fun getFilteredGroups(query: SimpleSQLiteQuery): List<LocalLensesGroupSimplified>
 
+    @Transaction
     @Query(
         """
             SELECT * FROM $coloringsTable AS colorings
@@ -211,9 +212,11 @@ interface LocalLensDao {
     suspend fun getColoringsForLens(lensId: String): List<LocalLensColoringWithExplanationsEntity>
 
 
+    @Transaction
     @Query("SELECT * FROM $coloringsTable WHERE id = :coloringId")
     suspend fun getColoringById(coloringId: String): LocalLensColoringWithExplanationsEntity?
 
+    @Transaction
     @Query(
         """
             SELECT * FROM $treatmentsTable AS treatments
@@ -224,6 +227,7 @@ interface LocalLensDao {
     )
     suspend fun getTreatmentsForLens(lensId: String): List<LocalLensTreatmentWithExplanationsEntity>
 
+    @Transaction
     @Query("SELECT * FROM $treatmentsTable WHERE id = :treatmentId")
     suspend fun getTreatmentById(treatmentId: String): LocalLensTreatmentWithExplanationsEntity?
 

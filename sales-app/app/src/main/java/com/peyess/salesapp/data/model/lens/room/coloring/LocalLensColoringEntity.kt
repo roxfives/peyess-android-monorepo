@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = LocalLensColoringEntity.tableName)
 data class LocalLensColoringEntity(
     @PrimaryKey
-    @ColumnInfo(name = "id")
+    @ColumnInfo(name = "id", index = true)
     val id: String = "",
 
     @ColumnInfo(name = "brand")

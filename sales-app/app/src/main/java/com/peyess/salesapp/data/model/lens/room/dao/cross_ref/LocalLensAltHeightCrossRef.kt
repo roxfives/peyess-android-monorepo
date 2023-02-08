@@ -8,10 +8,10 @@ import androidx.room.Entity
     primaryKeys = ["lens_id", "alt_height_id"],
 )
 data class LocalLensAltHeightCrossRef(
-    @ColumnInfo(name = "lens_id")
+    @ColumnInfo(name = "lens_id", index = true)
     val lensId: String = "",
 
-    @ColumnInfo(name = "alt_height_id")
+    @ColumnInfo(name = "alt_height_id", index = true)
     val altHeightId: String = "",
 ) {
     companion object {

@@ -23,7 +23,7 @@ data class LocalLensDisponibilityEntity(
     @ColumnInfo(name = "id")
     val id: Long = 0L,
 
-    @ColumnInfo(name = "lens_id")
+    @ColumnInfo(name = "lens_id", index = true)
     val lensId: String = "",
 
     @ColumnInfo(name = "diam")

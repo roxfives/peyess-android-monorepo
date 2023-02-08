@@ -23,7 +23,6 @@ import java.math.RoundingMode
 
 class PaymentFeeViewModel @AssistedInject constructor(
     @Assisted initialState: PaymentFeeState,
-    private val saleRepository: SaleRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
 ): MavericksViewModel<PaymentFeeState>(initialState) {
 

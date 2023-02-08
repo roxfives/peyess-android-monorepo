@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Percent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -93,9 +94,11 @@ fun DiscountScreen(
 
     val viewModel: DiscountViewModel = mavericksViewModel()
 
-    val discount by viewModel.collectAsState(DiscountState::discount)
+    val discount by viewModel.collectAsState(DiscountState::currentDiscount)
     val pricePreview by viewModel.collectAsState(DiscountState::pricePreview)
     val originalPrice by viewModel.collectAsState(DiscountState::originalPrice)
+
+    val hasFinished by viewModel.collectAsState(DiscountState::hasFinished)
 
     parseParameterSaleId(
         backStackEntry = backStackEntry.value,
@@ -105,6 +108,13 @@ fun DiscountScreen(
         backStackEntry = backStackEntry.value,
         onUpdate = viewModel::setFullPrice,
     )
+
+    if (hasFinished) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigate()
+            onDone()
+        }
+    }
 
     Timber.d("Current value: ${discount.value}")
     DiscountScreenImpl(
@@ -118,7 +128,7 @@ fun DiscountScreen(
         onChangeDiscountMethod = viewModel::onChangeDiscountMethod,
         onChangeDiscountValue = { viewModel.onChangeDiscountValue(it.toDouble()) },
 
-        onDone = onDone,
+        onDone = viewModel::onFinished,
     )
 }
 

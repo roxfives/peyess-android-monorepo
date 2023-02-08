@@ -1,10 +1,13 @@
 package com.peyess.salesapp.screen.sale.discount.state
 
+import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
+import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.group.DiscountGroupDocument
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.purchase.DiscountGroupRepository
@@ -12,7 +15,9 @@ import com.peyess.salesapp.screen.sale.discount.model.Discount
 import com.peyess.salesapp.screen.sale.discount.model.group.DiscountGroup
 import com.peyess.salesapp.screen.sale.discount.model.toOverallDiscountDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.screen.sale.discount.model.group.toDiscountGroup
+import com.peyess.salesapp.screen.sale.discount.model.toDiscount
+import com.peyess.salesapp.screen.sale.fee.model.toPaymentFeeDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -24,7 +29,6 @@ import java.math.RoundingMode
 
 class DiscountViewModel @AssistedInject constructor(
     @Assisted initialState: DiscountState,
-    private val saleRepository: SaleRepository,
     private val discountRepository: OverallDiscountRepository,
     private val collaboratorsRepository: CollaboratorsRepository,
     private val discountGroupRepository: DiscountGroupRepository,
@@ -34,12 +38,20 @@ class DiscountViewModel @AssistedInject constructor(
     init {
         loadDiscountGroup()
 
-        onEach(DiscountState::saleId) {
-            loadDiscount(it)
-        }
+        onEach(DiscountState::saleId) { loadDiscount(it) }
+        onEach(DiscountState::currentDiscount) { calculatePricePreview(it) }
 
-        onEach(DiscountState::discount) {
-            calculatePricePreview(it)
+        onAsync(DiscountState::discountGroupDocumentAsync) { processDiscountGroupResponse(it) }
+        onAsync(DiscountState::currentDiscountAsync) { processDiscountResponse(it) }
+    }
+
+    private fun updateDiscount(discount: Discount) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (it.saleId.isNotBlank()) {
+                val document = discount.toOverallDiscountDocument(it.saleId)
+
+                discountRepository.updateDiscountForSale(document)
+            }
         }
     }
 
@@ -55,26 +67,31 @@ class DiscountViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadDiscount(saleId: String) {
-        discountRepository
-            .watchDiscountForSale(saleId)
-            .execute { copy(currentDiscountAsync = it) }
+    private fun processDiscountGroupResponse(response: DiscountGroupDocument?) = setState {
+        if (response != null) {
+            copy(discountGroup = response.toDiscountGroup())
+        } else {
+            copy(
+                discountGroupDocumentAsync = Fail(Throwable("Discount group not found"))
+            )
+        }
     }
 
-    private fun updateDiscount(discount: Discount) = withState {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (it.saleId.isNotBlank()) {
-                val document = discount
-                    .toOverallDiscountDocument(it.saleId)
+    private fun loadDiscount(saleId: String) {
+        suspend {
+            discountRepository.getDiscountForSale(saleId)
+        }.execute(Dispatchers.IO) {
+            copy(currentDiscountAsync = it)
+        }
+    }
 
-                val update = limitToMaxDiscount(
-                    document,
-                    it.discountGroup,
-                    it.originalPrice,
-                )
-
-                discountRepository.updateDiscountForSale(update)
-            }
+    private fun processDiscountResponse(response: OverallDiscountDocument?) = setState {
+        if (response != null) {
+            copy(currentDiscount = response.toDiscount())
+        } else {
+            copy(
+                currentDiscountAsync = Fail(Throwable("Discount not found"))
+            )
         }
     }
 
@@ -98,32 +115,36 @@ class DiscountViewModel @AssistedInject constructor(
     }
 
     private fun limitToMaxDiscount(
-        overallDiscount: OverallDiscountDocument,
+        discount: Discount,
         discountGroup: DiscountGroup,
         price: BigDecimal,
-    ): OverallDiscountDocument {
-        val discount = when (overallDiscount.discountMethod) {
+    ): Discount {
+        return when (discount.method) {
             DiscountCalcMethod.None ->
-                0.0
+                discount.copy()
+
             DiscountCalcMethod.Percentage -> {
                 val maxDiscount = discountGroup.general
                     .maxValueAsPercentage(price)
                     .toDouble()
 
-                overallDiscount.overallDiscountValue
+                val limited = discount.percentValue
                     .coerceAtMost(maxDiscount)
+
+                discount.copy(percentValue = limited)
             }
+
             DiscountCalcMethod.Whole -> {
                 val maxDiscount = discountGroup.general
                     .maxValueAsWhole(price)
                     .toDouble()
 
-                overallDiscount.overallDiscountValue
+                val limited = discount.wholeValue
                     .coerceAtMost(maxDiscount)
+
+                discount.copy(wholeValue = limited)
             }
         }
-
-        return overallDiscount.copy(overallDiscountValue = discount)
     }
 
     fun setSaleId(saleId: String) = setState {
@@ -134,33 +155,45 @@ class DiscountViewModel @AssistedInject constructor(
         copy(originalPrice = value)
     }
 
-    fun onChangeDiscountValue(value: Double) = withState {
-        val discount = when(it.discount.method) {
+    fun onChangeDiscountValue(value: Double) = setState {
+        val discount = when(currentDiscount.method) {
             DiscountCalcMethod.Percentage ->
-                it.discount.copy(percentValue = value)
+                currentDiscount.copy(percentValue = value)
             DiscountCalcMethod.Whole ->
-                it.discount.copy(wholeValue = value)
+                currentDiscount.copy(wholeValue = value)
             DiscountCalcMethod.None ->
-                it.discount.copy()
+                currentDiscount.copy()
         }
 
-        updateDiscount(discount)
-    }
-
-    fun onChangeDiscountMethod(method: DiscountCalcMethod) = withState {
-        val discount = it.discount.copy(method = method)
-
-        updateDiscount(discount)
-    }
-
-    fun resetDiscount() {
-        val discount = Discount(
-            method = DiscountCalcMethod.None,
-            percentValue = 0.0,
-            wholeValue = 0.0,
+        val update = limitToMaxDiscount(
+            discount,
+            discountGroup,
+            originalPrice,
         )
 
+        updateDiscount(update)
+        copy(currentDiscount = update)
+    }
+
+    fun onChangeDiscountMethod(method: DiscountCalcMethod) = setState {
+        val discount = currentDiscount.copy(method = method)
+
         updateDiscount(discount)
+        copy(currentDiscount = discount)
+    }
+
+    fun onFinished() = withState {
+        suspend {
+            val document = it.currentDiscount.toOverallDiscountDocument(it.saleId)
+
+            discountRepository.updateDiscountForSale(document)
+        }.execute(Dispatchers.IO) {
+            copy(hasFinished = it is Success)
+        }
+    }
+
+    fun onNavigate() = setState {
+        copy(hasFinished = false)
     }
 
     // hilt

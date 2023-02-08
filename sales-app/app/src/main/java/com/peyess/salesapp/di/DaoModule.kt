@@ -54,6 +54,16 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
+import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment.EditSalePaymentDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
+import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
+import com.peyess.salesapp.data.dao.edit_service_order.prescription.EditPrescriptionDao
+import com.peyess.salesapp.data.dao.edit_service_order.product_picked.EditProductPickedDao
+import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
+import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDaoImpl
 import com.peyess.salesapp.data.dao.local_client.LocalClientDao
@@ -72,6 +82,7 @@ import com.peyess.salesapp.data.room.database.ProductsDatabase
 import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDao
 import com.peyess.salesapp.data.dao.purchase.discount.DiscountGroupDaoImpl
+import com.peyess.salesapp.data.room.database.EditSaleDatabase
 import com.peyess.salesapp.data.room.database.LocalClientDatabase
 import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -475,5 +486,85 @@ object DaoModule {
         clientsDatabase: LocalClientDatabase,
     ): LocalClientDao {
         return clientsDatabase.localClientDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditSaleDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditSaleDao {
+        return editSaleDatabase.editSaleDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditServiceOrderDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditServiceOrderDao {
+        return editSaleDatabase.editServiceOrderDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditFramesDataDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditFramesDataDao {
+        return editSaleDatabase.editFramesDataDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditLensComparisonDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditLensComparisonDao {
+        return editSaleDatabase.editLensComparisonDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditSalePaymentDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditSalePaymentDao {
+        return editSaleDatabase.editSalePaymentDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPaymentFeeDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditPaymentFeeDao {
+        return editSaleDatabase.editPaymentFeeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditOverallDiscountDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditOverallDiscountDao {
+        return editSaleDatabase.editOverallDiscountDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPositioningDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditPositioningDao {
+        return editSaleDatabase.editPositioningDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPrescriptionDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditPrescriptionDao {
+        return editSaleDatabase.editPrescriptionDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditProductPickedDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditProductPickedDao {
+        return editSaleDatabase.editProductPickedDao()
     }
 }

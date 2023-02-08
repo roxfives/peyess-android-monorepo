@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.data.room.database.CacheCreateClientDatabase
+import com.peyess.salesapp.data.room.database.EditSaleDatabase
 import com.peyess.salesapp.data.room.database.LocalClientDatabase
 import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.data.room.database.ProductsDatabase
@@ -38,6 +39,17 @@ object AppModule {
                 ActiveSalesDatabase::class.java,
                 "active_sales.db",
             ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEditSaleDatabase(@ApplicationContext context: Context): EditSaleDatabase {
+        return Room.databaseBuilder(
+                context,
+                EditSaleDatabase::class.java,
+                "picture_upload.db",
+            ).fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

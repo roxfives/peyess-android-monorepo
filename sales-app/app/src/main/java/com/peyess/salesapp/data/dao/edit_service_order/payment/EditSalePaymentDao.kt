@@ -5,6 +5,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
+import androidx.room.Transaction
+import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentDBView
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -13,17 +15,18 @@ interface EditSalePaymentDao {
     @Insert(onConflict = REPLACE)
     suspend fun addPayment(payment: EditSalePaymentEntity)
 
+    @Transaction
     @Query("""
-        SELECT * FROM ${EditSalePaymentEntity.tableName}
-        WHERE sale_id = :saleId
+        SELECT * FROM ${EditSalePaymentDBView.viewName}
+        WHERE saleId = :saleId
     """)
-    suspend fun paymentsForSale(saleId: String): List<EditSalePaymentEntity>
+    suspend fun paymentsForSale(saleId: String): List<EditSalePaymentDBView>
 
     @Query("""
-        SELECT * FROM ${EditSalePaymentEntity.tableName}
-        WHERE sale_id = :saleId
+        SELECT * FROM ${EditSalePaymentDBView.viewName}
+        WHERE saleId = :saleId
     """)
-    fun streamPaymentsForSale(saleId: String): Flow<List<EditSalePaymentEntity>>
+    fun streamPaymentsForSale(saleId: String): Flow<List<EditSalePaymentDBView>>
 
     @Query("""
         UPDATE ${EditSalePaymentEntity.tableName}

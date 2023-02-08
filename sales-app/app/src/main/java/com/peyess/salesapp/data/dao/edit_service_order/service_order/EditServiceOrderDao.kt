@@ -6,11 +6,28 @@ import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import com.peyess.salesapp.data.model.edit_service_order.service_order.EditServiceOrderEntity
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EditServiceOrderDao {
     @Insert(onConflict = REPLACE)
     suspend fun addServiceOrder(serviceOrder: EditServiceOrderEntity)
+
+    @Query(
+        """
+            SELECT * FROM ${EditServiceOrderEntity.tableName}
+            WHERE id = :serviceOrderId
+        """
+    )
+    suspend fun serviceOrderById(serviceOrderId: String): EditServiceOrderEntity?
+
+    @Query(
+        """
+            SELECT * FROM ${EditServiceOrderEntity.tableName}
+            WHERE id = :serviceOrderId
+        """
+    )
+    fun streamServiceOrderById(serviceOrderId: String): Flow<EditServiceOrderEntity?>
 
     @Query(
         """ 
@@ -21,7 +38,7 @@ interface EditServiceOrderDao {
     )
     suspend fun updateHasPrescription(
         id: String,
-        hasPrescription: Boolean,
+        hasPrescription: Int,
     )
 
     @Query(
@@ -57,6 +74,6 @@ interface EditServiceOrderDao {
     )
     suspend fun updateIsLensTypeMono(
         id: String,
-        isLensTypeMono: Boolean,
+        isLensTypeMono: Int,
     )
 }

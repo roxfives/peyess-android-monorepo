@@ -16,13 +16,13 @@ interface EditProductPickedDao {
         SELECT * FROM ${EditProductPickedEntity.tableName}
         WHERE so_id = :serviceOrderId
     """)
-    suspend fun productPickedForServiceOrder(serviceOrderId: String): List<EditProductPickedEntity>
+    suspend fun productPickedForServiceOrder(serviceOrderId: String): EditProductPickedEntity?
 
     @Query("""
         SELECT * FROM ${EditProductPickedEntity.tableName}
         WHERE so_id = :serviceOrderId
     """)
-    fun streamProductPickedForServiceOrder(serviceOrderId: String): Flow<List<EditProductPickedEntity>>
+    fun streamProductPickedForServiceOrder(serviceOrderId: String): Flow<EditProductPickedEntity?>
 
     @Query("""
         UPDATE ${EditProductPickedEntity.tableName}

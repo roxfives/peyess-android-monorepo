@@ -1,9 +1,7 @@
 package com.peyess.salesapp.data.dao.edit_service_order.frames
 
-import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.PrimaryKey
 import androidx.room.Query
 import com.peyess.salesapp.data.model.edit_service_order.frames.EditFramesDataEntity
 import com.peyess.salesapp.typing.frames.FramesType
@@ -12,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EditFramesDataDao {
     @Insert
-    suspend fun addFrame(frame: EditFramesDataEntity)
+    suspend fun addFrames(frame: EditFramesDataEntity)
 
     @Query("""
         SELECT * FROM ${EditFramesDataEntity.tableName}
@@ -29,49 +27,49 @@ interface EditFramesDataDao {
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET is_new = :isNew
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateIsNew(so_id: String, isNew: Boolean)
+    suspend fun updateIsNew(soId: String, isNew: Boolean)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET description = :description
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateDescription(so_id: String, description: String)
+    suspend fun updateDescription(soId: String, description: String)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET reference = :reference
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateReference(so_id: String, reference: String)
+    suspend fun updateReference(soId: String, reference: String)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET value = :value
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateValue(so_id: String, value: Double)
+    suspend fun updateValue(soId: String, value: Double)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET tag_code = :tagCode
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateTagCode(so_id: String, tagCode: String)
+    suspend fun updateTagCode(soId: String, tagCode: String)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET type = :type
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateType(so_id: String, type: FramesType)
+    suspend fun updateType(soId: String, type: FramesType)
 
     @Query("""
         UPDATE ${EditFramesDataEntity.tableName}
         SET info = :info
-        WHERE so_id = :so_id
+        WHERE so_id = :soId
     """)
-    suspend fun updateInfo(so_id: String, info: String)
+    suspend fun updateInfo(soId: String, info: String)
 }

@@ -20,7 +20,9 @@ import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 //    ]
 )
 data class ActiveSOEntity(
-    @PrimaryKey val id: String = "",
+    @PrimaryKey
+    val id: String = "",
+
     @ColumnInfo(name = "has_prescription")
     val hasPrescription: Boolean = true,
     @ColumnInfo(name = "sale_id")

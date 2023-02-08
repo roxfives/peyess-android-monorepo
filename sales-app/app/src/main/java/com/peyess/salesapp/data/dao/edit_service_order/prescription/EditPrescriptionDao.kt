@@ -19,7 +19,7 @@ interface EditPrescriptionDao {
         SELECT * FROM ${EditPrescriptionEntity.tableName}
         WHERE id = :id
     """)
-    suspend fun getPrescriptionById(id: String): EditPrescriptionEntity?
+    suspend fun prescriptionById(id: String): EditPrescriptionEntity?
 
     @Query("""
         SELECT * FROM ${EditPrescriptionEntity.tableName}
@@ -31,7 +31,7 @@ interface EditPrescriptionDao {
         SELECT * FROM ${EditPrescriptionEntity.tableName}
         WHERE so_id = :serviceOrderId
     """)
-    suspend fun getPrescriptionByServiceOrder(serviceOrderId: String): EditPrescriptionEntity?
+    suspend fun prescriptionByServiceOrder(serviceOrderId: String): EditPrescriptionEntity?
 
     @Query("""
         SELECT * FROM ${EditPrescriptionEntity.tableName}

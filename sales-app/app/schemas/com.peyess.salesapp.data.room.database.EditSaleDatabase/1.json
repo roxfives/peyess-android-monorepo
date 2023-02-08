@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "79d715b8e5c04eccecb7ba55d104db2b",
+    "identityHash": "68bc7fbb454277c389e6a2176a9516b3",
     "entities": [
       {
         "tableName": "edit_sale",
@@ -274,8 +274,14 @@
       },
       {
         "tableName": "edit_sale_payment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sale_id` TEXT NOT NULL, `client_id` TEXT NOT NULL, `method_id` TEXT NOT NULL, `method_name` TEXT NOT NULL, `method_type` TEXT NOT NULL, `value` REAL NOT NULL, `installments` INTEGER NOT NULL, `document` TEXT NOT NULL, `card_flag_name` TEXT NOT NULL, `card_flag_icon` TEXT NOT NULL, PRIMARY KEY(`sale_id`), FOREIGN KEY(`client_id`) REFERENCES `local_client`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sale_id` TEXT NOT NULL, `client_id` TEXT NOT NULL, `method_id` TEXT NOT NULL, `method_name` TEXT NOT NULL, `method_type` TEXT NOT NULL, `value` REAL NOT NULL, `installments` INTEGER NOT NULL, `document` TEXT NOT NULL, `card_flag_name` TEXT NOT NULL, `card_flag_icon` TEXT NOT NULL, FOREIGN KEY(`client_id`) REFERENCES `local_client`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "saleId",
             "columnName": "sale_id",
@@ -339,9 +345,9 @@
         ],
         "primaryKey": {
           "columnNames": [
-            "sale_id"
+            "id"
           ],
-          "autoGenerate": false
+          "autoGenerate": true
         },
         "indices": [
           {
@@ -1142,7 +1148,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '79d715b8e5c04eccecb7ba55d104db2b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '68bc7fbb454277c389e6a2176a9516b3')"
     ]
   }
 }

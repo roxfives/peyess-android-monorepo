@@ -20,7 +20,9 @@ import com.peyess.salesapp.data.model.local_client.LocalClientEntity
     ],
 )
 data class EditSalePaymentEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0L,
+
     @ColumnInfo(name = "sale_id")
     val saleId: String = "",
 

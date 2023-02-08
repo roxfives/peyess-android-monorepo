@@ -20,6 +20,16 @@ import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
+import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment.EditSalePaymentDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
+import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
+import com.peyess.salesapp.data.dao.edit_service_order.prescription.EditPrescriptionDao
+import com.peyess.salesapp.data.dao.edit_service_order.product_picked.EditProductPickedDao
+import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
+import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
 import com.peyess.salesapp.data.dao.lenses.StoreLensesDao
 import com.peyess.salesapp.data.dao.local_client.LocalClientDao
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
@@ -46,6 +56,26 @@ import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepositoryImpl
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
+import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
+import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningRepository
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
+import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedRepository
+import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.sale.EditSaleRepository
+import com.peyess.salesapp.data.repository.edit_service_order.sale.EditSaleRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepository
+import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepositoryImpl
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepositoryImpl
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -396,6 +426,106 @@ object RepositoryModule {
         return CacheCreateClientRepositoryImpl(
             firebaseManager = firebaseManager,
             cacheCreateClientDao = cacheCreateClientDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditSaleRepository(
+        editSaleDao: EditSaleDao,
+    ): EditSaleRepository {
+        return EditSaleRepositoryImpl(
+            saleDao = editSaleDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditServiceOrderRepository(
+        editServiceOrderDao: EditServiceOrderDao,
+    ): EditServiceOrderRepository {
+        return EditServiceOrderRepositoryImpl(
+            serviceOrderDao = editServiceOrderDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditFramesDataRepository(
+        editFramesDataDao: EditFramesDataDao,
+    ): EditFramesDataRepository {
+        return EditFramesDataRepositoryImpl(
+            editFramesDataDao = editFramesDataDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditLensComparisonRepository(
+        editLensComparisonDao: EditLensComparisonDao,
+    ): EditLensComparisonRepository {
+        return EditLensComparisonRepositoryImpl(
+            lensComparisonDao = editLensComparisonDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditSalePaymentRepository(
+        editSalePaymentDao: EditSalePaymentDao,
+    ): EditSalePaymentRepository {
+        return EditSalePaymentRepositoryImpl(
+            editSalePaymentDao = editSalePaymentDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPaymentFeeRepository(
+        editPaymentFeeDao: EditPaymentFeeDao,
+    ): EditPaymentFeeRepository {
+        return EditPaymentFeeRepositoryImpl(
+            paymentFeeDao = editPaymentFeeDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditOverallDiscountRepository(
+        editOverallDiscountDao: EditOverallDiscountDao,
+    ): EditPaymentDiscountRepository {
+        return EditPaymentDiscountRepositoryImpl(
+            paymentDiscountDao = editOverallDiscountDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPositioningRepository(
+        editPositioningDao: EditPositioningDao,
+    ): EditPositioningRepository {
+        return EditPositioningRepositoryImpl(
+            positioningDao = editPositioningDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditPrescriptionRepository(
+        editPrescriptionDao: EditPrescriptionDao,
+    ): EditPrescriptionRepository {
+        return EditPrescriptionRepositoryImpl(
+            prescriptionDao = editPrescriptionDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditProductPickedRepository(
+        editProductPickedDao: EditProductPickedDao,
+    ): EditProductPickedRepository {
+        return EditProductPickedRepositoryImpl(
+            productPickedDao = editProductPickedDao,
         )
     }
 }

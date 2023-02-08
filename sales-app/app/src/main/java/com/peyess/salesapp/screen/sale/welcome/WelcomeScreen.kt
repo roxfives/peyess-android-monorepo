@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,31 +44,32 @@ fun WelcomeScreen(
 
     val isLoading by viewModel.collectAsState(WelcomeState::isLoading)
 
-    val collaborator by viewModel.collectAsState(WelcomeState::collaboratorDocument)
-    val clientName by viewModel.collectAsState(WelcomeState::clientName)
+    val collaboratorName by viewModel.collectAsState(WelcomeState::collaboratorName)
+    val clientName by viewModel.collectAsState(WelcomeState::clientNameInput)
 
+    val hasFinished by viewModel.collectAsState(WelcomeState::hasFinished)
     val canGoNext by viewModel.collectAsState(WelcomeState::canGoNext)
-    val hasError by viewModel.collectAsState(WelcomeState::hasError)
+
+    if (hasFinished) {
+        LaunchedEffect(Unit) {
+            viewModel.onNavigate()
+            onNext()
+        }
+    }
 
     if (!isLoading) {
-        val collaboratorName = collaborator.invoke()!!.name
-
         WelcomeScreenImpl(
             modifier = modifier.fillMaxSize(),
             collaboratorName = collaboratorName,
             clientName = clientName,
-            hasError = hasError,
+            hasError = false,
             errorMessage = stringResource(id = R.string.error_client_name_empty),
             onClientNameChanged = viewModel::onClientNameChanged,
             canGoNext = canGoNext,
             onCancelSale = {
                 viewModel.onCancelSale(onCanceled = onCancelSale)
             },
-            onDone = {
-                if (canGoNext) {
-                    onNext()
-                }
-            },
+            onDone = viewModel::onFinished,
         )
     } else {
         PeyessProgressIndicatorInfinite()

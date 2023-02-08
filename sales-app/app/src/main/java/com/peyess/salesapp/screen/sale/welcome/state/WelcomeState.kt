@@ -7,27 +7,23 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.model.users.CollaboratorDocument
+import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
 
 data class WelcomeState(
-    val collaboratorDocument: Async<CollaboratorDocument> = Uninitialized,
-    val activeSO: Async<ActiveSOEntity?> = Uninitialized,
+    val collaboratorNameAsync: Async<String> = Uninitialized,
+    val collaboratorName: String = "",
+
+    val serviceOrderResponse: Async<ActiveServiceOrderResponse> = Uninitialized,
+    val serviceOrderId: String = "",
+    val clientNameInput: String = "",
 
     val cancelCurrentSaleAsync: Async<CancelSaleResponse> = Uninitialized,
 
-    val goNextAttempts: Int = 0,
-    val hasUpdatedSale: Boolean = false,
+    val hasFinished: Boolean = false,
 ): MavericksState {
-    val isLoading = collaboratorDocument is Loading || collaboratorDocument is Uninitialized
-            || activeSO is Loading || activeSO is Uninitialized
+    val isLoading = collaboratorNameAsync is Loading
+            || serviceOrderResponse is Loading
 
-    private val _activeSO: ActiveSOEntity? = activeSO.invoke()
-    val clientName = if (activeSO is Success && _activeSO != null) {
-        _activeSO.clientName
-    } else {
-        ""
-    }
-
-    val hasError = goNextAttempts > 0 && clientName.isEmpty()
-    val canGoNext = clientName.isNotBlank()
+    val canGoNext = clientNameInput.isNotBlank()
 }

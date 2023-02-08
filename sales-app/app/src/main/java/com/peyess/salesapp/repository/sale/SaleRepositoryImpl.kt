@@ -44,6 +44,7 @@ import com.peyess.salesapp.repository.sale.error.ActiveSaleNotRegistered
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderError
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotRegistered
+import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderUpdateError
 import com.peyess.salesapp.repository.sale.error.CreateSaleError
 import com.peyess.salesapp.repository.sale.error.ProductPickedNotFound
 import com.peyess.salesapp.repository.sale.error.Unexpected
@@ -297,6 +298,18 @@ class SaleRepositoryImpl @Inject constructor(
     override fun updateSO(so: ActiveSOEntity) {
         Timber.i("Updating sale to $so")
         activeSODao.update(so)
+    }
+
+    override suspend fun updateClientName(
+        serviceOrderId: String,
+        name: String
+    ): ServiceOrderUpdateResponse = Either.catch {
+        activeSODao.updateClientName(serviceOrderId, name)
+    }.mapLeft {
+        ActiveServiceOrderUpdateError(
+            description = "Error updating client name for service order $serviceOrderId",
+            error = it,
+        )
     }
 
     override fun activeSale(): Flow<ActiveSalesEntity?> {

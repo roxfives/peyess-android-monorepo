@@ -40,6 +40,10 @@ data class ActiveServiceOrderAlreadyExists(
     override val description: String,
     override val error: Throwable? = null,
 ): ActiveServiceOrderError
+data class ActiveServiceOrderUpdateError(
+    override val description: String,
+    override val error: Throwable? = null,
+): ActiveServiceOrderError
 
 sealed interface ProductPickedError: SaleRepositoryError
 data class ProductPickedNotFound(

@@ -24,6 +24,8 @@ typealias ActiveServiceOrderStreamResponse = Flow<Either<ActiveServiceOrderError
 typealias ActiveSalesResponse = Either<ActiveSaleError, List<ActiveSalesEntity>>
 typealias ActiveSalesStreamResponse = Either<ActiveSaleError, Flow<List<ActiveSalesEntity>>>
 
+typealias ServiceOrderUpdateResponse = Either<ActiveServiceOrderError, Unit>
+
 typealias LensTypeCategoriesResponse = Either<ActiveSaleError, List<LensTypeCategoryDocument>>
 
 typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocument>
@@ -57,7 +59,7 @@ interface SaleRepository {
     fun streamServiceOrder(serviceOrderId: String): ActiveServiceOrderStreamResponse
 
     fun updateSO(so: ActiveSOEntity)
-
+    suspend fun updateClientName(serviceOrderId: String, name: String): ServiceOrderUpdateResponse
 
     fun currentPositioning(eye: Eye): Flow<PositioningEntity>
     fun updatePositioning(positioning: PositioningEntity)

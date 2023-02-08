@@ -24,6 +24,13 @@ interface ActiveSODao {
     @Update
     fun update(activeSale: ActiveSOEntity)
 
+    @Query("""
+        UPDATE ${ActiveSOEntity.tableName} 
+        SET client_name = :name
+        WHERE id = :serviceOrderId
+    """)
+    suspend fun updateClientName(serviceOrderId: String, name: String)
+
     @Delete
     fun remove(activeSale: ActiveSOEntity)
 }

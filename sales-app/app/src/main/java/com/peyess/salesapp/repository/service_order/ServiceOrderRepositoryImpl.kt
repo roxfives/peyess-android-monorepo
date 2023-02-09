@@ -1,16 +1,18 @@
 package com.peyess.salesapp.repository.service_order
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.data.adapter.lenses.toStoreLensWithDetailsDocument
 import com.peyess.salesapp.data.adapter.service_order.toFSServiceOrder
 import com.peyess.salesapp.data.adapter.service_order.toServiceOrderDocument
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
+import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoFetchError
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryFetchError
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import kotlinx.coroutines.flow.Flow
@@ -69,5 +71,26 @@ class ServiceOrderRepositoryImpl @Inject constructor(
 
     override suspend fun add(serviceOrderDocument: ServiceOrderDocument) {
         serviceOrderDao.add(serviceOrderDocument.toFSServiceOrder())
+    }
+
+    override suspend fun serviceOrderById(
+        serviceOrderId: String,
+    ): ServiceOrderFetchResponse = either {
+        val response = serviceOrderDao.serviceOrderById(serviceOrderId).mapLeft {
+            when (it) {
+                is ServiceOrderDaoFetchError.ServiceOrderNotFound ->
+                    ServiceOrderRepositoryFetchError.ServiceOrderNotFound(
+                        description = it.description,
+                        throwable = it.throwable,
+                    )
+                is ServiceOrderDaoFetchError.Unexpected ->
+                    ServiceOrderRepositoryFetchError.Unexpected(
+                        description = it.description,
+                        throwable = it.throwable,
+                    )
+            }
+        }.bind()
+
+        response.toServiceOrderDocument()
     }
 }

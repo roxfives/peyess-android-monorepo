@@ -21,3 +21,18 @@ sealed class ServiceOrderDaoPaginationError: ServiceOrderDaoErrors {
     }
 }
 
+sealed class ServiceOrderDaoFetchError: ServiceOrderDaoErrors {
+    data class ServiceOrderNotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderDaoFetchError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderDaoFetchError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

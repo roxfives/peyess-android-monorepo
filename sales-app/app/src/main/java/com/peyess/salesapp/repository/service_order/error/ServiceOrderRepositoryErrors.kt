@@ -21,3 +21,18 @@ sealed class ServiceOrderRepositoryPaginationError: ServiceOrderRepositoryErrors
     }
 }
 
+sealed class ServiceOrderRepositoryFetchError: ServiceOrderRepositoryErrors {
+    data class ServiceOrderNotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderRepositoryFetchError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderRepositoryFetchError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

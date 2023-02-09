@@ -1,9 +1,12 @@
 package com.peyess.salesapp.data.dao.service_order
 
 import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoFetchError
 import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoPaginationError
 import com.peyess.salesapp.data.dao.service_order.utils.ServiceOrderPagingSource
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
@@ -120,5 +123,47 @@ class ServiceOrderDaoImpl @Inject constructor(
                 }
             }
             .await()
+    }
+
+    override suspend fun serviceOrderById(
+        serviceOrderId: String,
+    ): ServiceOrderFetchResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            ServiceOrderDaoFetchError.Unexpected(
+                description = "Firestore instance is null",
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            ServiceOrderDaoFetchError.Unexpected(
+                description = "Store not authenticated",
+            )
+        }
+
+        val soPath = salesApplication
+            .stringResource(id = R.string.fs_col_so)
+            .format(storeId)
+
+        val response = firestore
+            .collection(soPath)
+            .document(serviceOrderId)
+            .get()
+            .await()
+        ensure(response.exists()) {
+            ServiceOrderDaoFetchError.ServiceOrderNotFound(
+                description = "Service order with id $serviceOrderId not found",
+            )
+        }
+
+        val fsServiceOrder = response.toObject(FSServiceOrder::class.java)
+        ensureNotNull(fsServiceOrder) {
+            ServiceOrderDaoFetchError.Unexpected(
+                description = "Failed to convert service order document",
+            )
+        }
+
+        fsServiceOrder
     }
 }

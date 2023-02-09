@@ -8,6 +8,10 @@ sealed class LensTypeCategoryName {
 
     fun toName() = fromType(this)
 
+    fun isMono(): Boolean {
+        return this == Near || this == Far
+    }
+
     companion object {
         fun fromName(name: String?): LensTypeCategoryName {
             return when(name?.lowercase() ?: "") {

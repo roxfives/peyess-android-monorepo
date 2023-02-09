@@ -103,19 +103,19 @@ class ClientDaoImpl @Inject constructor(
     }
 
     override suspend fun getById(id: String): Either<FirestoreError, FSClient> = either {
-            val firestore = firebaseManager.storeFirestore
+        val firestore = firebaseManager.storeFirestore
 
-            ensureNotNull(firestore) {
-                Unexpected("Firestore instance is null", null)
-            }
-
-            val localLensPath = salesApplication
-                .stringResource(R.string.fs_doc_client)
-                .format(id)
-            val docRef = firestore.document(localLensPath)
-
-            fetchDocument(FSClient::class, docRef).bind()
+        ensureNotNull(firestore) {
+            Unexpected("Firestore instance is null", null)
         }
+
+        val localLensPath = salesApplication
+            .stringResource(R.string.fs_doc_client)
+            .format(id)
+        val docRef = firestore.document(localLensPath)
+
+        fetchDocument(FSClient::class, docRef).bind()
+    }
 
     override suspend fun simpleCollectionPaginator(
         query: PeyessQuery,

@@ -13,6 +13,20 @@ sealed class PaymentMethodType {
 
     fun toName() = toName(this)
 
+    fun toNameDisplay(): String {
+        return when (this) {
+            BankCheck -> "Cheque Bancário"
+            BankDeposit -> "Depósito Bancário"
+            Crediario -> "Crediario"
+            Credit -> "Crédito"
+            CreditFull -> "Crédito à vista"
+            Debit -> "Débito"
+            Money -> "Dinheiro"
+            Pix -> "Pix"
+            Unknown -> "Desconheciod"
+        }
+    }
+
     companion object {
         fun toName(state: PaymentMethodType): String {
             return when (state) {

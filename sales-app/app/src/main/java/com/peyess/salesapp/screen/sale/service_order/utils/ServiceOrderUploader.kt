@@ -30,7 +30,7 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
@@ -95,7 +95,7 @@ class ServiceOrderUploader constructor(
     private val framesRepository: LocalFramesRepository,
     private val localClientRepository: LocalClientRepository,
     private val clientPickedRepository: ClientPickedRepository,
-    private val salePaymentRepository: SalePaymentRepository,
+    private val localPaymentRepository: LocalPaymentRepository,
     private val firebaseManager: FirebaseManager,
 ) {
     var purchaseId = ""
@@ -604,7 +604,7 @@ class ServiceOrderUploader constructor(
             )
         }
 
-        val payments = salePaymentRepository
+        val payments = localPaymentRepository
             .paymentForSale(saleId)
             .mapLeft {
                 PurchaseCreationFailed(

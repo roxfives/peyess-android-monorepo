@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
-import com.peyess.salesapp.data.dao.edit_service_order.payment.EditSalePaymentDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
 import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
@@ -15,8 +15,8 @@ import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
 import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
 import com.peyess.salesapp.data.model.edit_service_order.frames.EditFramesDataEntity
 import com.peyess.salesapp.data.model.edit_service_order.lens_comparison.EditLensComparisonEntity
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentDBView
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentEntity
+import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentDBView
+import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
 import com.peyess.salesapp.data.model.edit_service_order.payment_discount.EditOverallDiscountEntity
 import com.peyess.salesapp.data.model.edit_service_order.payment_fee.EditPaymentFeeEntity
 import com.peyess.salesapp.data.model.edit_service_order.positioning.EditPositioningEntity
@@ -42,7 +42,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditServiceOrderEntity::class,
         EditFramesDataEntity::class,
         EditLensComparisonEntity::class,
-        EditSalePaymentEntity::class,
+        EditLocalPaymentEntity::class,
         EditPaymentFeeEntity::class,
         EditOverallDiscountEntity::class,
         EditPositioningEntity::class,
@@ -52,7 +52,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     ],
 
     views = [
-        EditSalePaymentDBView::class,
+        EditLocalPaymentDBView::class,
     ],
 
     version = 2,
@@ -78,7 +78,7 @@ abstract class EditSaleDatabase: RoomDatabase() {
 
     abstract fun editLensComparisonDao(): EditLensComparisonDao
 
-    abstract fun editSalePaymentDao(): EditSalePaymentDao
+    abstract fun editLocalPaymentDao(): EditLocalPaymentDao
 
     abstract fun editPaymentFeeDao(): EditPaymentFeeDao
 

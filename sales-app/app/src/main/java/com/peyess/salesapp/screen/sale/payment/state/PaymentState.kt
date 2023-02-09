@@ -13,8 +13,8 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentUpdateResult
 import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.screen.sale.payment.model.Client
@@ -65,14 +65,14 @@ data class PaymentState(
     val clientResponseAsync: Async<LocalClientReadSingleResponse> = Uninitialized,
     val client: Client = Client(),
 
-    val finishPaymentResponseAsync: Async<SalePaymentUpdateResult> = Uninitialized,
+    val finishPaymentResponseAsync: Async<LocalPaymentUpdateResult> = Uninitialized,
 
     val paymentResponseAsync: Async<SinglePaymentResponse> = Uninitialized,
     val paymentInput: Payment = Payment(),
 
     val cardFlagsAsync: Async<List<CardFlagDocument>> = Uninitialized,
 
-    val totalPaymentResponseAsync: Async<SalePaymentTotalResponse> = Uninitialized,
+    val totalPaymentResponseAsync: Async<LocalPaymentTotalResponse> = Uninitialized,
     val totalToPay: Double = 0.0,
 
     val totalPaid: Double = 0.0,

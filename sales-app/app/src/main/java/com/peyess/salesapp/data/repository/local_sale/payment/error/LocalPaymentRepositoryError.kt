@@ -1,23 +1,23 @@
 package com.peyess.salesapp.data.repository.local_sale.payment.error
 
-sealed interface SalePaymentRepositoryError {
+sealed interface LocalPaymentRepositoryError {
     val description: String
     val error: Throwable?
 }
 
-sealed interface SalePaymentReadError: SalePaymentRepositoryError
-data class SalePaymentNotFound(
+sealed interface LocalPaymentReadError: LocalPaymentRepositoryError
+data class LocalPaymentNotFound(
     override val description: String,
     override val error: Throwable? = null,
-): SalePaymentReadError
+): LocalPaymentReadError
 
-sealed interface SalePaymentWriteError: SalePaymentRepositoryError
-data class SalePaymentWriteFailed(
+sealed interface LocalPaymentWriteError: LocalPaymentRepositoryError
+data class LocalPaymentWriteFailed(
     override val description: String,
     override val error: Throwable? = null,
-): SalePaymentWriteError
+): LocalPaymentWriteError
 
 data class Unexpected(
     override val description: String,
     override val error: Throwable? = null,
-): SalePaymentRepositoryError, SalePaymentReadError, SalePaymentWriteError
+): LocalPaymentRepositoryError, LocalPaymentReadError, LocalPaymentWriteError

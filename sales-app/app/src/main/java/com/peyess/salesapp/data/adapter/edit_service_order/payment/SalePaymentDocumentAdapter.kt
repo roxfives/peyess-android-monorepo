@@ -1,10 +1,10 @@
 package com.peyess.salesapp.data.adapter.edit_service_order.payment
 
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentEntity
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
+import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 
-fun SalePaymentDocument.toEditSalePaymentEntity(): EditSalePaymentEntity {
-    return EditSalePaymentEntity(
+fun LocalPaymentDocument.toEditLocalPaymentEntity(): EditLocalPaymentEntity {
+    return EditLocalPaymentEntity(
         id = id,
         saleId = saleId,
         clientId = clientId,

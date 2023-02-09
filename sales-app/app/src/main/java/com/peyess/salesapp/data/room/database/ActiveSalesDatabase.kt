@@ -14,8 +14,8 @@ import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
@@ -46,7 +46,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LensComparisonEntity::class,
         ProductPickedEntity::class,
         ClientPickedEntity::class,
-        SalePaymentEntity::class,
+        LocalPaymentEntity::class,
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
     ],
@@ -81,7 +81,7 @@ abstract class ActiveSalesDatabase: RoomDatabase() {
 
     abstract fun clientPickedDao(): ClientPickedDao
 
-    abstract fun salePaymentsDao(): SalePaymentDao
+    abstract fun localPaymentsDao(): LocalPaymentDao
 
     abstract fun overallDiscountDao(): OverallDiscountDao
 

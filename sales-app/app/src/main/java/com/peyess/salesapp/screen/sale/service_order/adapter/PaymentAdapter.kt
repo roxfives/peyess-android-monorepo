@@ -1,10 +1,10 @@
 package com.peyess.salesapp.screen.sale.service_order.adapter
 
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.model.Payment
 
-fun Payment.toSalePaymentDocument(): SalePaymentDocument {
-    return SalePaymentDocument(
+fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
+    return LocalPaymentDocument(
         id = id,
         saleId = saleId,
         clientId = clientId,

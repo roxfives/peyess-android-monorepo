@@ -18,9 +18,9 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentWriteResult
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentWriteResult
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
@@ -74,7 +74,7 @@ data class ServiceOrderState(
     val positioningLeftAsync: Async<PositioningEntity> = Uninitialized,
     val positioningRightAsync: Async<PositioningEntity> = Uninitialized,
 
-    val paymentsResponseAsync: Async<SalePaymentResponse> = Uninitialized,
+    val paymentsResponseAsync: Async<LocalPaymentResponse> = Uninitialized,
     val payments: List<Payment> = emptyList(),
 
     val discountAsync: Async<OverallDiscountRepositoryResponse> = Uninitialized,
@@ -85,7 +85,7 @@ data class ServiceOrderState(
 
     val totalToPay: Double = 0.0,
     val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
-    val totalPaidAsync: Async<SalePaymentTotalResponse> = Uninitialized,
+    val totalPaidAsync: Async<LocalPaymentTotalResponse> = Uninitialized,
     val totalPaid: Double = 0.0,
 
     val hidServiceOrder: String = "",
@@ -109,7 +109,7 @@ data class ServiceOrderState(
     val addPositioningLeftResponseAsync: Async<PictureAddResponse> = Uninitialized,
     val addPositioningRightResponseAsync: Async<PictureAddResponse> = Uninitialized,
 
-    val creatingNewPaymentAsync: Async<SalePaymentWriteResult> = Uninitialized,
+    val creatingNewPaymentAsync: Async<LocalPaymentWriteResult> = Uninitialized,
 ): MavericksState {
     val isSaleDone: Boolean = serviceOrderGenerationResponseAsync is Success
             && serviceOrderGenerationResponseAsync.invoke().isRight()

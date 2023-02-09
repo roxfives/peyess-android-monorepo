@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 
 @Entity(
-    tableName = EditSalePaymentEntity.tableName,
+    tableName = EditLocalPaymentEntity.tableName,
     foreignKeys = [
         ForeignKey(
             entity = LocalClientEntity::class,
@@ -19,7 +19,7 @@ import com.peyess.salesapp.data.model.local_client.LocalClientEntity
         ),
     ],
 )
-data class EditSalePaymentEntity(
+data class EditLocalPaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
 

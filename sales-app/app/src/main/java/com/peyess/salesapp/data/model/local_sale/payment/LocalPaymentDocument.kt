@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.model.local_sale.payment
 
 import android.net.Uri
 
-data class SalePaymentDocument(
+data class LocalPaymentDocument(
     val id: Long = 0L,
     val saleId: String = "",
 

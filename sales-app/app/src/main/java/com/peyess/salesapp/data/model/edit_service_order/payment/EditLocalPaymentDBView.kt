@@ -4,11 +4,11 @@ import android.net.Uri
 import androidx.room.DatabaseView
 import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 
-private const val paymentTable = EditSalePaymentEntity.tableName
+private const val paymentTable = EditLocalPaymentEntity.tableName
 private const val clientsTable = LocalClientEntity.tableName
 
 @DatabaseView(
-    viewName = EditSalePaymentDBView.viewName,
+    viewName = EditLocalPaymentDBView.viewName,
     value = """
         SELECT
             payment.id AS id, 
@@ -30,7 +30,7 @@ private const val clientsTable = LocalClientEntity.tableName
          JOIN $clientsTable AS client ON payment.client_id = client.id
     """
 )
-data class EditSalePaymentDBView(
+data class EditLocalPaymentDBView(
     val id: Long = 0L,
     val saleId: String = "",
     val clientId: String = "",

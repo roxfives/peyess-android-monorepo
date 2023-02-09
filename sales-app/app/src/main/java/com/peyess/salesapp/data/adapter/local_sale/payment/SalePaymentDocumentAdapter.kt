@@ -1,10 +1,10 @@
 package com.peyess.salesapp.data.adapter.local_sale.payment
 
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
 
-fun SalePaymentDocument.toSalePaymentEntity(): SalePaymentEntity {
-    return SalePaymentEntity(
+fun LocalPaymentDocument.toLocalPaymentEntity(): LocalPaymentEntity {
+    return LocalPaymentEntity(
         id = id,
         saleId = saleId,
         clientId = clientId,

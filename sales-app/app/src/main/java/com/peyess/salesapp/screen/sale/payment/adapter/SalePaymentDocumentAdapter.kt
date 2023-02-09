@@ -1,9 +1,9 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.screen.sale.payment.model.Payment
 
-fun SalePaymentDocument.toPayment(): Payment {
+fun LocalPaymentDocument.toPayment(): Payment {
     return Payment(
         id = id,
         saleId = saleId,

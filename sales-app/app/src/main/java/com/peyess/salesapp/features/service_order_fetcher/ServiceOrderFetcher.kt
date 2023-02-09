@@ -7,23 +7,12 @@ import arrow.core.leftIfNull
 import com.peyess.salesapp.dao.sale.active_sale.LocalSaleDocument
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
-import com.peyess.salesapp.data.adapter.edit_service_order.frames.toLocalFramesDocument
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.data.model.edit_service_order.frames.EditFramesDataEntity
-import com.peyess.salesapp.data.model.edit_service_order.lens_comparison.EditLensComparisonEntity
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditSalePaymentEntity
-import com.peyess.salesapp.data.model.edit_service_order.payment_discount.EditOverallDiscountEntity
-import com.peyess.salesapp.data.model.edit_service_order.payment_fee.EditPaymentFeeEntity
-import com.peyess.salesapp.data.model.edit_service_order.positioning.EditPositioningEntity
-import com.peyess.salesapp.data.model.edit_service_order.prescription.EditPrescriptionEntity
-import com.peyess.salesapp.data.model.edit_service_order.product_picked.EditProductPickedEntity
-import com.peyess.salesapp.data.model.edit_service_order.sale.EditSaleEntity
-import com.peyess.salesapp.data.model.edit_service_order.service_order.EditServiceOrderEntity
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.local_sale.frames.LocalFramesDocument
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringDocument
@@ -36,9 +25,8 @@ import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
-import com.peyess.salesapp.data.repository.edit_service_order.frames.error.InsertFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
-import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepository
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningRepository
@@ -50,7 +38,6 @@ import com.peyess.salesapp.data.repository.lenses.room.LensNotFound
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.Unexpected
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
-import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
@@ -75,15 +62,12 @@ import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadP
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadPurchaseError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadServiceOrderError
 import com.peyess.salesapp.features.service_order_fetcher.error.ServiceOrderErrors
-import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryFetchError
-import com.peyess.salesapp.screen.sale.fee.model.PaymentFee
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
-import com.peyess.salesapp.typing.sale.PaymentMethodType
 import javax.inject.Inject
 
 private typealias FetchServiceOrderResponse =
@@ -127,7 +111,7 @@ class ServiceOrderFetcher @Inject constructor(
     private val localClientRepository: LocalClientRepository,
     private val localFramesRepository: EditFramesDataRepository,
     private val localLensComparisonRepository: EditLensComparisonRepository,
-    private val localPaymentRepository: EditSalePaymentRepository,
+    private val localPaymentRepository: EditLocalPaymentRepository,
     private val localPaymentFeeRepository: EditPaymentFeeRepository,
     private val localPaymentDiscountRepository: EditPaymentDiscountRepository,
     private val localPositioningRepository: EditPositioningRepository,
@@ -286,9 +270,9 @@ class ServiceOrderFetcher @Inject constructor(
 
     private fun buildLocalPayment(
         purchaseDocument: PurchaseDocument,
-    ): List<SalePaymentDocument> {
+    ): List<LocalPaymentDocument> {
         return purchaseDocument.payments.map {
-            SalePaymentDocument(
+            LocalPaymentDocument(
                 saleId = purchaseDocument.id,
                 value = it.amount,
                 clientId = it.payerUid,
@@ -479,7 +463,7 @@ class ServiceOrderFetcher @Inject constructor(
     }
 
     private suspend fun addPayment(
-        payment: SalePaymentDocument,
+        payment: LocalPaymentDocument,
     ): AddPaymentsResponse {
         return localPaymentRepository.addPayment(payment).mapLeft {
             AddPaymentsError.Unexpected(

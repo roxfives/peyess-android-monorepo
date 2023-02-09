@@ -6,7 +6,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedEntity
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
@@ -78,9 +78,9 @@ interface SaleRepository {
     fun pickClient(client: ClientPickedEntity)
     fun clientPicked(role: ClientRole): Flow<ClientPickedEntity?>
 
-    fun payments(): Flow<List<SalePaymentEntity>>
-    fun paymentById(paymentId: Long): Flow<SalePaymentEntity?>
-    fun addPayment(payment: SalePaymentEntity): Long
-    fun updatePayment(payment: SalePaymentEntity)
-    fun deletePayment(payment: SalePaymentEntity)
+    fun payments(): Flow<List<LocalPaymentEntity>>
+    fun paymentById(paymentId: Long): Flow<LocalPaymentEntity?>
+    fun addPayment(payment: LocalPaymentEntity): Long
+    fun updatePayment(payment: LocalPaymentEntity)
+    fun deletePayment(payment: LocalPaymentEntity)
 }

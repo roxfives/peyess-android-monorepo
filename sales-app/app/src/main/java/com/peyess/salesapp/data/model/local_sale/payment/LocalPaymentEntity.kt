@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = SalePaymentEntity.tableName,
+    tableName = LocalPaymentEntity.tableName,
 //    foreignKeys = [
 //        ForeignKey(
 //            entity = ActiveSOEntity::class,
@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
 //        )
 //    ]
 )
-data class SalePaymentEntity(
+data class LocalPaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
 

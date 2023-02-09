@@ -1,32 +1,32 @@
 package com.peyess.salesapp.data.repository.edit_service_order.payment.error
 
-sealed interface EditSalePaymentDataRepositoryError {
+sealed interface EditLocalPaymentDataRepositoryError {
     val description: String
     val error: Throwable
 }
 
-sealed class InsertSalePaymentError: EditSalePaymentDataRepositoryError {
+sealed class InsertLocalPaymentError: EditLocalPaymentDataRepositoryError {
     data class Unexpected(
         override val description: String,
         val throwable: Throwable? = null,
-    ): InsertSalePaymentError() {
+    ): InsertLocalPaymentError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class UpdateSalePaymentError: EditSalePaymentDataRepositoryError {
+sealed class UpdateLocalPaymentError: EditLocalPaymentDataRepositoryError {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable? = null,    ): UpdateSalePaymentError() {
+        val throwable: Throwable? = null,    ): UpdateLocalPaymentError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class ReadSalePaymentError: EditSalePaymentDataRepositoryError {
+sealed class ReadLocalPaymentError: EditLocalPaymentDataRepositoryError {
     data class Unexpected(
         override val description: String,
         val throwable: Throwable? = null,
-    ): ReadSalePaymentError() {
+    ): ReadLocalPaymentError() {
         override val error = throwable ?: Throwable(description)
     }
 }

@@ -26,8 +26,8 @@ import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
-import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentEntity
+import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.LocalPrescriptionDao
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
@@ -80,7 +80,7 @@ class SaleRepositoryImpl @Inject constructor(
     private val positioningDao: PositioningDao,
     private val productPickedDao: ProductPickedDao,
     private val clientPickedDao: ClientPickedDao,
-    private val salePaymentDao: SalePaymentDao,
+    private val localPaymentDao: LocalPaymentDao,
 ): SaleRepository {
     private val Context.dataStoreCurrentSale: DataStore<Preferences>
             by preferencesDataStore(currentSaleFileName)
@@ -151,7 +151,7 @@ class SaleRepositoryImpl @Inject constructor(
             )
     }
 
-    private val currentPayments by lazy { emptyFlow<List<SalePaymentEntity>>() }
+    private val currentPayments by lazy { emptyFlow<List<LocalPaymentEntity>>() }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val currentPositioningsByEye by lazy {
@@ -449,7 +449,7 @@ class SaleRepositoryImpl @Inject constructor(
         ProductPickedNotFound(description = "No picked products found on database")
     }
 
-    override fun payments(): Flow<List<SalePaymentEntity>> {
+    override fun payments(): Flow<List<LocalPaymentEntity>> {
         return currentPayments
     }
 
@@ -496,19 +496,19 @@ class SaleRepositoryImpl @Inject constructor(
         clientPickedDao.add(client)
     }
 
-    override fun addPayment(payment: SalePaymentEntity): Long {
-        return salePaymentDao.add(payment)
+    override fun addPayment(payment: LocalPaymentEntity): Long {
+        return localPaymentDao.add(payment)
     }
 
-    override fun updatePayment(payment: SalePaymentEntity) {
-        salePaymentDao.update(payment)
+    override fun updatePayment(payment: LocalPaymentEntity) {
+        localPaymentDao.update(payment)
     }
 
-    override fun deletePayment(payment: SalePaymentEntity) {
-        salePaymentDao.delete(payment)
+    override fun deletePayment(payment: LocalPaymentEntity) {
+        localPaymentDao.delete(payment)
     }
 
-    override fun paymentById(paymentId: Long): Flow<SalePaymentEntity?> {
+    override fun paymentById(paymentId: Long): Flow<LocalPaymentEntity?> {
         return emptyFlow()
     }
 

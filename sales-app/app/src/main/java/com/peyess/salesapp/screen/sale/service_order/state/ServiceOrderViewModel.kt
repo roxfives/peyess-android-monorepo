@@ -25,9 +25,9 @@ import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentTotalResponse
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
@@ -50,7 +50,7 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toPayment
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentFee
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPictureUploadDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPrescription
-import com.peyess.salesapp.screen.sale.service_order.adapter.toSalePaymentDocument
+import com.peyess.salesapp.screen.sale.service_order.adapter.toLocalPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.screen.sale.service_order.model.Coloring
 import com.peyess.salesapp.screen.sale.service_order.model.Frames
@@ -95,7 +95,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     private val prescriptionRepository: PrescriptionRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
-    private val salePaymentRepository: SalePaymentRepository,
+    private val localPaymentRepository: LocalPaymentRepository,
     private val discountRepository: OverallDiscountRepository,
     private val paymentFeeRepository: PaymentFeeRepository,
     private val localClientRepository: LocalClientRepository,
@@ -257,7 +257,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
             localClientRepository = localClientRepository,
             clientPickedRepository = clientPickedRepository,
             firebaseManager = firebaseManager,
-            salePaymentRepository = salePaymentRepository,
+            localPaymentRepository = localPaymentRepository,
         )
     }
 
@@ -294,7 +294,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     private fun loadPayments(saleId: String) {
-        salePaymentRepository.watchPaymentsForSale(saleId)
+        localPaymentRepository.watchPaymentsForSale(saleId)
             .execute(Dispatchers.IO) {
                 copy(paymentsResponseAsync = it)
             }
@@ -316,7 +316,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun processPaymentsResponse(response: SalePaymentResponse) = setState {
+    private fun processPaymentsResponse(response: LocalPaymentResponse) = setState {
         response.fold(
             ifLeft = {
                 copy(
@@ -462,7 +462,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
-    private fun processTotalPaidResponse(response: SalePaymentTotalResponse) = setState {
+    private fun processTotalPaidResponse(response: LocalPaymentTotalResponse) = setState {
         response.fold(
             ifLeft = {
                 copy(
@@ -477,7 +477,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     }
 
     private fun loadTotalPaid(saleId: String) {
-        salePaymentRepository.watchTotalPayment(saleId)
+        localPaymentRepository.watchTotalPayment(saleId)
             .execute(Dispatchers.IO) { copy(totalPaidAsync = it) }
     }
 
@@ -806,8 +806,8 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 saleId = it.saleId,
             )
 
-            salePaymentRepository
-                .addPaymentToSale(payment.toSalePaymentDocument())
+            localPaymentRepository
+                .addPaymentToSale(payment.toLocalPaymentDocument())
                 .tap {
                     withContext(Dispatchers.Main) {
                         onAdded(it)
@@ -820,7 +820,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     fun deletePayment(payment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
-            salePaymentRepository.deletePayment(payment.toSalePaymentDocument())
+            localPaymentRepository.deletePayment(payment.toLocalPaymentDocument())
         }
     }
 

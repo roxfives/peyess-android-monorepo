@@ -19,9 +19,9 @@ import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleRes
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentTotalResponse
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentUpdateResult
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentTotalResponse
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentUpdateResult
 import com.peyess.salesapp.data.repository.local_sale.payment.SinglePaymentResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
@@ -33,7 +33,7 @@ import com.peyess.salesapp.screen.sale.payment.adapter.toOverallDiscount
 import com.peyess.salesapp.screen.sale.payment.adapter.toPayment
 import com.peyess.salesapp.screen.sale.payment.adapter.toPaymentFee
 import com.peyess.salesapp.screen.sale.payment.adapter.toPaymentMethod
-import com.peyess.salesapp.screen.sale.payment.adapter.toSalePaymentDocument
+import com.peyess.salesapp.screen.sale.payment.adapter.toLocalPaymentDocument
 import com.peyess.salesapp.screen.sale.payment.adapter.toTreatment
 import com.peyess.salesapp.screen.sale.payment.model.Client
 import com.peyess.salesapp.screen.sale.payment.model.Coloring
@@ -72,7 +72,7 @@ class PaymentViewModel @AssistedInject constructor(
     private val clientRepository: ClientRepository,
     private val localLensesRepository: LocalLensesRepository,
     private val framesRepository: LocalFramesRepository,
-    private val salePaymentRepository: SalePaymentRepository,
+    private val localPaymentRepository: LocalPaymentRepository,
 ): MavericksViewModel<PaymentState>(initialState) {
 
     init {
@@ -144,7 +144,7 @@ class PaymentViewModel @AssistedInject constructor(
 
     private fun updatePayment(payment: Payment) {
         viewModelScope.launch(Dispatchers.IO) {
-            salePaymentRepository.updatePayment(payment.toSalePaymentDocument())
+            localPaymentRepository.updatePayment(payment.toLocalPaymentDocument())
         }
     }
 
@@ -177,7 +177,7 @@ class PaymentViewModel @AssistedInject constructor(
 
     private fun loadTotalPaid(saleId: String) = withState {
         suspend {
-            salePaymentRepository.totalPaymentForSale(saleId)
+            localPaymentRepository.totalPaymentForSale(saleId)
         }.execute(Dispatchers.IO) {
             copy(totalPaymentResponseAsync = it)
         }
@@ -329,7 +329,7 @@ class PaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun processTotalPaymentResponse(response: SalePaymentTotalResponse) = setState {
+    private fun processTotalPaymentResponse(response: LocalPaymentTotalResponse) = setState {
         response.fold(
             ifLeft = {
                 copy(
@@ -365,7 +365,7 @@ class PaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun processFinishPaymentResponse(response: SalePaymentUpdateResult) = setState {
+    private fun processFinishPaymentResponse(response: LocalPaymentUpdateResult) = setState {
         response.fold(
             ifLeft = {
                 copy(
@@ -447,7 +447,7 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private fun watchPaymentDataStream(paymentId: Long) {
-        salePaymentRepository
+        localPaymentRepository
             .watchPayment(paymentId)
             .execute(Dispatchers.IO) {
                 copy(paymentResponseAsync = it)
@@ -593,9 +593,9 @@ class PaymentViewModel @AssistedInject constructor(
 
     fun onFinishPayment() = withState {
         suspend {
-            val payment = it.paymentInput.toSalePaymentDocument()
+            val payment = it.paymentInput.toLocalPaymentDocument()
 
-            salePaymentRepository.updatePayment(payment)
+            localPaymentRepository.updatePayment(payment)
         }.execute(Dispatchers.IO) {
             copy(finishPaymentResponseAsync = it)
         }
@@ -603,9 +603,9 @@ class PaymentViewModel @AssistedInject constructor(
 
     fun cancelPayment() = withState {
         viewModelScope.launch(Dispatchers.IO) {
-            val payment = it.paymentInput.toSalePaymentDocument()
+            val payment = it.paymentInput.toLocalPaymentDocument()
 
-            val deleteResponse = salePaymentRepository.deletePayment(payment)
+            val deleteResponse = localPaymentRepository.deletePayment(payment)
             if (deleteResponse.isLeft()) {
                 Timber.e("Error deleting payment: $payment")
             }

@@ -8,8 +8,6 @@ import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toEd
 import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toOverallDiscountDocument
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.data.model.edit_service_order.payment_discount.EditOverallDiscountEntity
-import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentStreamResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.InsertPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.ReadPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.UpdatePaymentDiscountError

@@ -4,12 +4,12 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
-import com.peyess.salesapp.data.adapter.local_sale.payment.toSalePaymentDocument
-import com.peyess.salesapp.data.adapter.local_sale.payment.toSalePaymentEntity
-import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
-import com.peyess.salesapp.data.model.local_sale.payment.SalePaymentDocument
-import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentNotFound
-import com.peyess.salesapp.data.repository.local_sale.payment.error.SalePaymentReadError
+import com.peyess.salesapp.data.adapter.local_sale.payment.toLocalPaymentDocument
+import com.peyess.salesapp.data.adapter.local_sale.payment.toLocalPaymentEntity
+import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import com.peyess.salesapp.data.repository.local_sale.payment.error.LocalPaymentNotFound
+import com.peyess.salesapp.data.repository.local_sale.payment.error.LocalPaymentReadError
 import com.peyess.salesapp.data.repository.local_sale.payment.error.Unexpected
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,13 +17,13 @@ import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
 
-class SalePaymentRepositoryImpl @Inject constructor(
-    private val salePaymentDao: SalePaymentDao,
-): SalePaymentRepository {
-    override suspend fun paymentForSale(saleId: String): SalePaymentResponse = Either.catch {
-        salePaymentDao
+class LocalPaymentRepositoryImpl @Inject constructor(
+    private val localPaymentDao: LocalPaymentDao,
+): LocalPaymentRepository {
+    override suspend fun paymentForSale(saleId: String): LocalPaymentResponse = Either.catch {
+        localPaymentDao
             .paymentsForSale(saleId)
-            .map { it.toSalePaymentDocument() }
+            .map { it.toLocalPaymentDocument() }
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",
@@ -31,12 +31,12 @@ class SalePaymentRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun watchPaymentsForSale(saleId: String): Flow<SalePaymentResponse> {
-        return salePaymentDao.watchPaymentsForSale(saleId)
+    override fun watchPaymentsForSale(saleId: String): Flow<LocalPaymentResponse> {
+        return localPaymentDao.watchPaymentsForSale(saleId)
             .map {
                 it.map { payment ->
-                    payment.toSalePaymentDocument()
-                }.right() as SalePaymentResponse
+                    payment.toLocalPaymentDocument()
+                }.right() as LocalPaymentResponse
             }.catch {
                 val error = Unexpected(
                     description = it.message ?: "",
@@ -48,12 +48,12 @@ class SalePaymentRepositoryImpl @Inject constructor(
     }
 
     override fun watchPayment(paymentId: Long): Flow<SinglePaymentResponse> {
-        return salePaymentDao.watchPayment(paymentId)
+        return localPaymentDao.watchPayment(paymentId)
             .map {
-                it?.toSalePaymentDocument()?.right()
-                    ?: (SalePaymentNotFound(
+                it?.toLocalPaymentDocument()?.right()
+                    ?: (LocalPaymentNotFound(
                         description = "Payment with id $paymentId not found",
-                    ) as SalePaymentReadError).left()
+                    ) as LocalPaymentReadError).left()
             }.catch {
                 val error = Unexpected(
                     description = it.message ?: "",
@@ -64,10 +64,10 @@ class SalePaymentRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun watchTotalPayment(saleId: String): Flow<SalePaymentTotalResponse> {
-        return salePaymentDao.watchTotalPayment(saleId)
+    override fun watchTotalPayment(saleId: String): Flow<LocalPaymentTotalResponse> {
+        return localPaymentDao.watchTotalPayment(saleId)
             .map { (it ?: 0.0).right() }
-            .catch<SalePaymentTotalResponse> {
+            .catch<LocalPaymentTotalResponse> {
                 Timber.e(
                     message = "Error while watching total payment for sale $saleId: ${it.message}",
                     t = it,
@@ -83,22 +83,22 @@ class SalePaymentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun payment(paymentId: Long): SinglePaymentResponse = Either.catch {
-        salePaymentDao
+        localPaymentDao
             .payment(paymentId)
-            ?.toSalePaymentDocument()
+            ?.toLocalPaymentDocument()
     }.mapLeft {
         Unexpected(
             description = it.message ?: "Error while reading payment $paymentId",
             error = it,
         )
     }.leftIfNull {
-        SalePaymentNotFound(description = "Payment $paymentId not found")
+        LocalPaymentNotFound(description = "Payment $paymentId not found")
     }
 
     override suspend fun totalPaymentForSale(
         saleId: String,
-    ): SalePaymentTotalResponse = Either.catch {
-        salePaymentDao.totalPaymentForSale(saleId) ?: 0.0
+    ): LocalPaymentTotalResponse = Either.catch {
+        localPaymentDao.totalPaymentForSale(saleId) ?: 0.0
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",
@@ -107,11 +107,11 @@ class SalePaymentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addPaymentToSale(
-        paymentDocument: SalePaymentDocument,
-    ): SalePaymentWriteResult = Either.catch {
-        val entity = paymentDocument.toSalePaymentEntity()
+        paymentDocument: LocalPaymentDocument,
+    ): LocalPaymentWriteResult = Either.catch {
+        val entity = paymentDocument.toLocalPaymentEntity()
 
-        salePaymentDao.add(entity)
+        localPaymentDao.add(entity)
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",
@@ -120,11 +120,11 @@ class SalePaymentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updatePayment(
-        paymentDocument: SalePaymentDocument,
-    ): SalePaymentUpdateResult = Either.catch {
-        val entity = paymentDocument.toSalePaymentEntity()
+        paymentDocument: LocalPaymentDocument,
+    ): LocalPaymentUpdateResult = Either.catch {
+        val entity = paymentDocument.toLocalPaymentEntity()
 
-        salePaymentDao.update(entity)
+        localPaymentDao.update(entity)
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",
@@ -133,11 +133,11 @@ class SalePaymentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deletePayment(
-        paymentDocument: SalePaymentDocument,
-    ): SalePaymentDeleteResult = Either.catch {
-        val entity = paymentDocument.toSalePaymentEntity()
+        paymentDocument: LocalPaymentDocument,
+    ): LocalPaymentDeleteResult = Either.catch {
+        val entity = paymentDocument.toLocalPaymentEntity()
 
-        salePaymentDao.delete(entity)
+        localPaymentDao.delete(entity)
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",

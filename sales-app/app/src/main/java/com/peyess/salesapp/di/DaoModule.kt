@@ -45,7 +45,7 @@ import com.peyess.salesapp.dao.products.room.local_treatment.LocalTreatmentDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
-import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
+import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
@@ -56,7 +56,7 @@ import com.peyess.salesapp.data.dao.client_legal.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
-import com.peyess.salesapp.data.dao.edit_service_order.payment.EditSalePaymentDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
 import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
@@ -427,8 +427,8 @@ object DaoModule {
 
     @Singleton
     @Provides
-    fun provideSalePaymentDao(saleDatabase: ActiveSalesDatabase): SalePaymentDao {
-        return saleDatabase.salePaymentsDao()
+    fun provideLocalPaymentDao(saleDatabase: ActiveSalesDatabase): LocalPaymentDao {
+        return saleDatabase.localPaymentsDao()
     }
 
     @Singleton
@@ -522,10 +522,10 @@ object DaoModule {
 
     @Singleton
     @Provides
-    fun provideEditSalePaymentDao(
+    fun provideEditLocalPaymentDao(
         editSaleDatabase: EditSaleDatabase,
-    ): EditSalePaymentDao {
-        return editSaleDatabase.editSalePaymentDao()
+    ): EditLocalPaymentDao {
+        return editSaleDatabase.editLocalPaymentDao()
     }
 
     @Singleton

@@ -12,7 +12,7 @@ import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
-import com.peyess.salesapp.data.dao.local_sale.payment.SalePaymentDao
+import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
 import com.peyess.salesapp.data.dao.service_order.ServiceOrderDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
@@ -22,7 +22,7 @@ import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
-import com.peyess.salesapp.data.dao.edit_service_order.payment.EditSalePaymentDao
+import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
 import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
@@ -60,8 +60,8 @@ import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesD
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepositoryImpl
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepositoryImpl
-import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentRepository
-import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepositoryImpl
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepositoryImpl
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepository
@@ -90,8 +90,8 @@ import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensCompar
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LensComparisonRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepository
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringRepositoryImpl
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepository
-import com.peyess.salesapp.data.repository.local_sale.payment.SalePaymentRepositoryImpl
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentRepository
+import com.peyess.salesapp.data.repository.local_sale.payment.LocalPaymentRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.local_sale.positioning.error.LocalPositioningRepositoryImpl
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
@@ -277,7 +277,7 @@ object RepositoryModule {
         positioningDao: PositioningDao,
         productPickedDao: ProductPickedDao,
         clientPickedDao: ClientPickedDao,
-        salePaymentDao: SalePaymentDao,
+        localPaymentDao: LocalPaymentDao,
     ): SaleRepository {
         return SaleRepositoryImpl(
             application,
@@ -291,7 +291,7 @@ object RepositoryModule {
             positioningDao,
             productPickedDao,
             clientPickedDao,
-            salePaymentDao,
+            localPaymentDao,
         )
     }
 
@@ -371,10 +371,10 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideSalePaymentRepository(
-        salePaymentDao: SalePaymentDao,
-    ): SalePaymentRepository {
-        return SalePaymentRepositoryImpl(salePaymentDao)
+    fun provideLocalPaymentRepository(
+        localPaymentDao: LocalPaymentDao,
+    ): LocalPaymentRepository {
+        return LocalPaymentRepositoryImpl(localPaymentDao)
     }
 
     @Singleton
@@ -471,11 +471,11 @@ object RepositoryModule {
 
     @Singleton
     @Provides
-    fun provideEditSalePaymentRepository(
-        editSalePaymentDao: EditSalePaymentDao,
-    ): EditSalePaymentRepository {
-        return EditSalePaymentRepositoryImpl(
-            editSalePaymentDao = editSalePaymentDao,
+    fun provideEditLocalPaymentRepository(
+        editLocalPaymentDao: EditLocalPaymentDao,
+    ): EditLocalPaymentRepository {
+        return EditLocalPaymentRepositoryImpl(
+            editLocalPaymentDao = editLocalPaymentDao,
         )
     }
 

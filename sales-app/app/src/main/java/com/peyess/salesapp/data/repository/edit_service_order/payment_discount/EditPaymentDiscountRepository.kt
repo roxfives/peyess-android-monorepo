@@ -19,7 +19,7 @@ typealias EditPaymentUpdateResponse = Either<UpdatePaymentDiscountError, Unit>
 
 interface EditPaymentDiscountRepository {
     suspend fun addPaymentDiscount(
-        paymentDiscount: EditOverallDiscountEntity,
+        paymentDiscount: OverallDiscountDocument,
     ): EditPaymentDiscountInsertResponse
 
     suspend fun discountForSale(saleId: String): EditPaymentFetchResponse

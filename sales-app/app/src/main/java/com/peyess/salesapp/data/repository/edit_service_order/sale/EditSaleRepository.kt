@@ -16,7 +16,7 @@ typealias EditSaleStreamResponse = Flow<EditSaleFetchResponse>
 typealias EditSaleUpdateResponse = Either<UpdateSaleError, Unit>
 
 interface EditSaleRepository {
-    suspend fun addSale(sale: EditSaleEntity): EditSaleInsertResponse
+    suspend fun addSale(sale: LocalSaleDocument): EditSaleInsertResponse
 
     suspend fun findSaleById(id: String): EditSaleFetchResponse
     fun streamSaleById(id: String): EditSaleStreamResponse

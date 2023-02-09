@@ -4,8 +4,10 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
+import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toEditOverallDiscountEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toOverallDiscountDocument
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
+import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
 import com.peyess.salesapp.data.model.edit_service_order.payment_discount.EditOverallDiscountEntity
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditSalePaymentStreamResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.InsertPaymentDiscountError
@@ -19,9 +21,9 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
     private val paymentDiscountDao: EditOverallDiscountDao,
 ): EditPaymentDiscountRepository {
     override suspend fun addPaymentDiscount(
-        paymentDiscount: EditOverallDiscountEntity,
+        paymentDiscount: OverallDiscountDocument,
     ): EditPaymentDiscountInsertResponse = Either.catch {
-        paymentDiscountDao.addPaymentDiscount(paymentDiscount)
+        paymentDiscountDao.addPaymentDiscount(paymentDiscount.toEditOverallDiscountEntity())
     }.mapLeft {
         InsertPaymentDiscountError.Unexpected(
             description = "Error adding payment discount",

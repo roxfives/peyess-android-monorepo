@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
+import com.peyess.salesapp.dao.sale.active_sale.LocalSaleDocument
+import com.peyess.salesapp.data.adapter.edit_service_order.sale.toEditSaleEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.sale.toSaleDocument
 import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
 import com.peyess.salesapp.data.model.edit_service_order.sale.EditSaleEntity
@@ -17,9 +19,9 @@ class EditSaleRepositoryImpl @Inject constructor(
     private val saleDao: EditSaleDao,
 ): EditSaleRepository {
     override suspend fun addSale(
-        sale: EditSaleEntity,
+        sale: LocalSaleDocument,
     ): EditSaleInsertResponse = Either.catch {
-        saleDao.addSale(sale)
+        saleDao.addSale(sale.toEditSaleEntity())
     }.mapLeft {
         InsertSaleError.Unexpected(
             description = "Error while inserting sale $sale",

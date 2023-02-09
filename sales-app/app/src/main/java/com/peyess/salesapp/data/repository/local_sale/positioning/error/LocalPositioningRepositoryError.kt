@@ -5,6 +5,12 @@ sealed interface LocalPositioningRepositoryError {
     val error: Throwable?
 }
 
+sealed interface LocalPositioningWriteError: LocalPositioningRepositoryError
+data class InsertLocalPositioningError(
+    override val description: String,
+    override val error: Throwable? = null,
+): LocalPositioningReadError
+
 sealed interface LocalPositioningReadError: LocalPositioningRepositoryError
 data class LocalPositioningNotFoundError(
     override val description: String,

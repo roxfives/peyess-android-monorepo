@@ -2,8 +2,11 @@ package com.peyess.salesapp.data.repository.local_sale.positioning.error
 
 import arrow.core.Either
 import arrow.core.leftIfNull
+import com.peyess.salesapp.data.adapter.local_sale.positioning.toPositioningEntity
 import com.peyess.salesapp.data.adapter.positioning.toLocalPositioningDocument
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
+import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
+import com.peyess.salesapp.data.repository.local_sale.positioning.AddLocalPositioningResponse
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchBothResponse
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningRepository
 import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioningFetchSingleResponse
@@ -14,6 +17,17 @@ import javax.inject.Inject
 class LocalPositioningRepositoryImpl @Inject constructor(
     private val positioningDao: PositioningDao,
 ): LocalPositioningRepository {
+    override suspend fun addPositioning(
+        positioning: LocalPositioningDocument
+    ): AddLocalPositioningResponse = Either.catch {
+        positioningDao.add(positioning.toPositioningEntity())
+    }.mapLeft {
+        Unexpected(
+            "Unexpected error while adding positioning",
+            it,
+        )
+    }
+
     override suspend fun positioningForServiceOrder(
         serviceOrderId: String,
         eye: Eye,

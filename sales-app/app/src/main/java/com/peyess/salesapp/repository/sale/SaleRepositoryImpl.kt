@@ -37,6 +37,7 @@ import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.adapter.toProductPickedDocument
+import com.peyess.salesapp.repository.sale.adapter.toProductPickedEntity
 import com.peyess.salesapp.repository.sale.error.ActiveSaleError
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotCanceled
 import com.peyess.salesapp.repository.sale.error.ActiveSaleNotFound
@@ -48,6 +49,7 @@ import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderUpdateError
 import com.peyess.salesapp.repository.sale.error.CreateSaleError
 import com.peyess.salesapp.repository.sale.error.ProductPickedNotFound
 import com.peyess.salesapp.repository.sale.error.Unexpected
+import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -479,6 +481,10 @@ class SaleRepositoryImpl @Inject constructor(
                 error = it.error,
             )
         }.bind()
+    }
+
+    override suspend fun pickProduct(productPicked: ProductPickedDocument) {
+        productPickedDao.add(productPicked.toProductPickedEntity())
     }
 
     override fun pickProduct(productPicked: ProductPickedEntity) {

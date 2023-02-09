@@ -70,6 +70,7 @@ interface SaleRepository {
     suspend fun lensTypeCategories(): LensTypeCategoriesResponse
 
     fun pickProduct(productPicked: ProductPickedEntity)
+    suspend fun pickProduct(productPicked: ProductPickedDocument)
     fun pickedProduct(): Flow<ProductPickedEntity?>
 
     suspend fun productPicked(serviceOrderId: String): ProductPickedResponse

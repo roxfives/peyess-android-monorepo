@@ -35,8 +35,6 @@ data class PositioningEntity(
     @ColumnInfo(name = "picture")
     val picture: Uri = Uri.EMPTY,
 
-    @ColumnInfo(name = "rotation")
-    val rotation: Double = 0.0,
     @ColumnInfo(name = "device")
     val device: String = "",
 

@@ -349,7 +349,6 @@ class FramesMeasureViewModel @AssistedInject constructor(
         saleRepository.updatePositioning(
             positioning.copy(
                 picture = uri,
-                rotation = rotation,
                 device = deviceInfo,
             )
         )

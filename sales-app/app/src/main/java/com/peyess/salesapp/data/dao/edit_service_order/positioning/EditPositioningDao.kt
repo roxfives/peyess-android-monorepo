@@ -38,13 +38,6 @@ interface EditPositioningDao {
 
     @Query("""
         UPDATE ${EditPositioningEntity.tableName}
-        SET rotation = :rotation
-        WHERE so_id = :serviceOrderId AND eye = :eye
-    """)
-    suspend fun updateRotation(serviceOrderId: String, eye: Eye, rotation: Double)
-
-    @Query("""
-        UPDATE ${EditPositioningEntity.tableName}
         SET device = :device
         WHERE so_id = :serviceOrderId AND eye = :eye
     """)

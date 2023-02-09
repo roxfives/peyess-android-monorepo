@@ -9,7 +9,6 @@ fun LocalPositioningDocument.toEditPositioningEntity(): EditPositioningEntity {
         soId = soId,
         eye = eye,
         picture = picture,
-        rotation = rotation,
         device = device,
         baseLeft = baseLeft,
         baseLeftRotation = baseLeftRotation,

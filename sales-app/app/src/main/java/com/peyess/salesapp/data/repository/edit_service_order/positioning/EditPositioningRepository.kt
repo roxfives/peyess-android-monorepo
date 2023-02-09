@@ -33,11 +33,6 @@ interface EditPositioningRepository {
         eye: Eye,
         picture: Uri,
     ): EditPositioningUpdateResponse
-    suspend fun updateRotation(
-        serviceOrderId: String,
-        eye: Eye,
-        rotation: Double,
-    ): EditPositioningUpdateResponse
     suspend fun updateDevice(
         serviceOrderId: String,
         eye: Eye,

@@ -75,19 +75,6 @@ class EditPositioningRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun updateRotation(
-        serviceOrderId: String,
-        eye: Eye,
-        rotation: Double,
-    ): EditPositioningUpdateResponse = Either.catch {
-        positioningDao.updateRotation(serviceOrderId, eye, rotation)
-    }.mapLeft {
-        UpdatePositioningError.Unexpected(
-            description = "Failed to update rotation for positioning with service order" +
-                    "$serviceOrderId and eye $eye using value $rotation"
-        )
-    }
-
     override suspend fun updateDevice(
         serviceOrderId: String,
         eye: Eye,

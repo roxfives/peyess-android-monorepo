@@ -11,7 +11,6 @@ data class LocalPositioningDocument(
 
     val picture: Uri = Uri.EMPTY,
 
-    val rotation: Double = 0.0,
     val device: String = "",
 
     val baseLeft: Double = 0.0,

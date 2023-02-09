@@ -29,7 +29,7 @@ data class FramesDataState(
     val frames: Frames = Frames(),
 
     val areFramesNewInput: Boolean = false,
-    val descriptionInput: String = "",
+    val designInput: String = "",
     val infoInput: String = "",
     val referenceInput: String = "",
     val valueInput: Double = 0.0,

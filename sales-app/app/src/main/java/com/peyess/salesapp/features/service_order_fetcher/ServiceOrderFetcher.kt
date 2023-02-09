@@ -241,7 +241,7 @@ class ServiceOrderFetcher @Inject constructor(
         return LocalFramesDocument(
             soId = serviceOrderDocument.id,
             areFramesNew = !serviceOrderDocument.hasOwnFrames,
-            description = frames.design,
+            design = frames.design,
             reference = frames.reference,
             value = frames.price,
             tagCode = frames.code,

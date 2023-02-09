@@ -7,7 +7,8 @@ sealed interface LocalFramesRepositoryError {
 
 sealed interface LocalFramesResponseError: LocalFramesRepositoryError
 data class FramesDataNotFound(
-    override val description: String, override val error: Throwable? = null,
+    override val description: String,
+    override val error: Throwable? = null,
 ): LocalFramesResponseError
 
 data class Unexpected(

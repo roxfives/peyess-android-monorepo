@@ -116,7 +116,7 @@ class FramesDataViewModel @AssistedInject constructor(
                     frames = it.toFrames(),
 
                     areFramesNewInput = it.areFramesNew,
-                    descriptionInput = it.description,
+                    designInput = it.design,
                     infoInput = it.framesInfo,
                     referenceInput = it.reference,
                     valueInput = it.value,
@@ -189,7 +189,7 @@ class FramesDataViewModel @AssistedInject constructor(
         val update = frames.copy(description = value)
 
         updateFrames(update)
-        copy(frames = update, descriptionInput = value)
+        copy(frames = update, designInput = value)
     }
 
     fun onFramesReferenceChanged(value: String) = setState {

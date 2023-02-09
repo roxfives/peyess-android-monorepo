@@ -26,7 +26,7 @@ data class FramesEntity(
     val areFramesNew: Boolean = false,
 
     @ColumnInfo(name = "description")
-    val description: String = "",
+    val design: String = "",
     @ColumnInfo(name = "reference")
     val reference: String = "",
     @ColumnInfo(name = "value")
@@ -45,7 +45,7 @@ data class FramesEntity(
 }
 
 fun FramesEntity.name(): String {
-    return "$description, $reference ($tagCode)"
+    return "$design, $reference ($tagCode)"
 }
 
 fun FramesEntity.hasPotentialProblemsWith(prescriptionData: LocalPrescriptionDocument): Boolean {

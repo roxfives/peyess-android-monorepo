@@ -69,7 +69,7 @@ fun FramesDataScreen(
 
     val info by viewModel.collectAsState(FramesDataState::infoInput)
 
-    val description by viewModel.collectAsState(FramesDataState::descriptionInput)
+    val design by viewModel.collectAsState(FramesDataState::designInput)
     val reference by viewModel.collectAsState(FramesDataState::referenceInput)
     val value by viewModel.collectAsState(FramesDataState::valueInput)
     val tagCode by viewModel.collectAsState(FramesDataState::tagCodeInput)
@@ -97,7 +97,7 @@ fun FramesDataScreen(
         info = info,
         onInfoChange = viewModel::onFramesInfoChanged,
 
-        description = description,
+        description = design,
         onDescriptionChange = viewModel::onFramesDescriptionChanged,
 
         reference = reference,

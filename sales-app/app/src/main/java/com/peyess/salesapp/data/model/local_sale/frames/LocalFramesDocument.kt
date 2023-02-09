@@ -5,7 +5,7 @@ import com.peyess.salesapp.typing.frames.FramesType
 data class LocalFramesDocument(
     val soId: String = "",
     val areFramesNew: Boolean = false,
-    val description: String = "",
+    val design: String = "",
     val reference: String = "",
     val value: Double = 0.0,
     val tagCode: String = "",

@@ -16,7 +16,7 @@ fun FramesDocument.toDescription(): ProductSoldFramesDescriptionDocument {
         },
         discount = DiscountDescriptionDocument(),
         code = tagCode,
-        design = description,
+        design = design,
         reference = reference,
         info = framesInfo,
         color = "",

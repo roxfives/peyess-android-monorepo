@@ -7,7 +7,7 @@ fun FramesEntity.toFramesDocument(): FramesDocument {
     return FramesDocument(
         soId = soId,
         areFramesNew = areFramesNew,
-        description = description,
+        design = design,
         reference = reference,
         value = value,
         tagCode = tagCode,

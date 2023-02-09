@@ -7,7 +7,7 @@ fun FramesDocument.toFrames(): Frames {
     return Frames(
         soId = soId,
         areFramesNew = areFramesNew,
-        description = description,
+        description = design,
         reference = reference,
         value = value,
         tagCode = tagCode,

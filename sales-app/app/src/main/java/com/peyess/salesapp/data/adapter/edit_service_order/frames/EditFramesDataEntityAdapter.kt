@@ -7,7 +7,7 @@ fun EditFramesDataEntity.toLocalFramesDocument(): LocalFramesDocument {
     return LocalFramesDocument(
         soId = soId,
         areFramesNew = areFramesNew,
-        description = description,
+        design = description,
         reference = reference,
         value = value,
         tagCode = tagCode,

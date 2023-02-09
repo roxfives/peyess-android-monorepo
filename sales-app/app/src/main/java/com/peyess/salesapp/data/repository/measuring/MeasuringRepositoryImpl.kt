@@ -1,8 +1,12 @@
 package com.peyess.salesapp.data.repository.measuring
 
+import arrow.core.continuations.either
 import com.peyess.salesapp.data.adapter.measuring.toFSMeasuring
 import com.peyess.salesapp.data.dao.measuring.MeasuringDao
+import com.peyess.salesapp.data.dao.measuring.error.ReadMeasuringDaoError
 import com.peyess.salesapp.data.model.measuring.MeasuringDocument
+import com.peyess.salesapp.data.repository.measuring.adapter.toMeasuringDocument
+import com.peyess.salesapp.data.repository.measuring.error.ReadMeasuringRepositoryError
 import javax.inject.Inject
 
 class MeasuringRepositoryImpl @Inject constructor(
@@ -12,5 +16,26 @@ class MeasuringRepositoryImpl @Inject constructor(
         val fsMeasuring = measuring.toFSMeasuring()
 
         measuringDao.add(fsMeasuring)
+    }
+
+    override suspend fun measuringById(
+        measuringId: String,
+    ): ReadMeasuringRepositoryResponse = either {
+        measuringDao.measuringById(measuringId)
+            .map { it.toMeasuringDocument() }
+            .mapLeft {
+                when(it) {
+                    is ReadMeasuringDaoError.NotFound ->
+                        ReadMeasuringRepositoryError.NotFound(
+                            description = it.description,
+                            throwable = it.throwable,
+                        )
+                    is ReadMeasuringDaoError.Unexpected ->
+                        ReadMeasuringRepositoryError.Unexpected(
+                            description = it.description,
+                            throwable = it.throwable,
+                        )
+                }
+        }.bind()
     }
 }

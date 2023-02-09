@@ -15,6 +15,7 @@ fun FramesDocument.toDescription(): ProductSoldFramesDescriptionDocument {
             0.0
         },
         discount = DiscountDescriptionDocument(),
+        code = tagCode,
         design = description,
         reference = reference,
         info = framesInfo,

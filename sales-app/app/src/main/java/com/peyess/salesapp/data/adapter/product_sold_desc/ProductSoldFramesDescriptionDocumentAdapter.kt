@@ -10,6 +10,7 @@ fun ProductSoldFramesDescriptionDocument
     return FSProductSoldFramesDescription(
         id = id,
         design = design,
+        code = code,
         reference = reference,
         info = info,
         color = color,

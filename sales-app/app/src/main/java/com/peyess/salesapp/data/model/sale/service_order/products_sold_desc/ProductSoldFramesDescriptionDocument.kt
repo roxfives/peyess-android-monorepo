@@ -8,6 +8,7 @@ data class ProductSoldFramesDescriptionDocument(
 
     val info: String = "",
 
+    val code: String = "",
     val design: String = "",
     val reference: String = "",
     val color: String = "",

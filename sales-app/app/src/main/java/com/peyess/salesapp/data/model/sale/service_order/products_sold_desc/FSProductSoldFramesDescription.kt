@@ -19,6 +19,10 @@ data class FSProductSoldFramesDescription(
     val design: String = "",
     @Keep
     @JvmField
+    @PropertyName("code")
+    val code: String = "",
+    @Keep
+    @JvmField
     @PropertyName("reference")
     val reference: String = "",
     @Keep

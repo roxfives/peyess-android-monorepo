@@ -11,6 +11,7 @@ fun FSProductSoldFramesDescription
         id = id,
         design = design,
         reference = reference,
+        code = code,
         info = info,
         color = color,
         style = style,

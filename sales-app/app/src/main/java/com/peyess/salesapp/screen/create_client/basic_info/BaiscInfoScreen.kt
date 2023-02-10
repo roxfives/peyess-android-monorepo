@@ -98,6 +98,7 @@ private val pictureBoxSize = 256.dp
 private val dividerSpacerSize = 32.dp
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BasicInfoScreen(
     modifier: Modifier = Modifier,
@@ -144,7 +145,6 @@ fun BasicInfoScreen(
 
     val hasFinishedSettingBasicInfo
         by viewModel.collectAsState(BasicInfoState::hasFinishedSettingBasicInfo)
-
     if (hasFinishedSettingBasicInfo) {
         LaunchedEffect(Unit) {
             viewModel.onNavigate()
@@ -396,8 +396,6 @@ private fun ProfilePicture(
 ) {
     val context = LocalContext.current
 
-    var hasRequestedPermission by remember { mutableStateOf(false) }
-
     val pictureFile = remember { createClientFile(context) }
     val pictureFileUri = remember {
         FileProvider.getUriForFile(
@@ -418,17 +416,12 @@ private fun ProfilePicture(
     )
 
     val takePicture = {
-        if (cameraPermissionState.status == PermissionStatus.Granted) {
-            cameraLauncher.launch(pictureFileUri)
-        } else {
-            hasRequestedPermission = true
+        if (cameraPermissionState.status != PermissionStatus.Granted) {
             cameraPermissionState.launchPermissionRequest()
+        } else {
+            cameraLauncher.launch(pictureFileUri)
         }
     }
-
-//    if (cameraPermissionState.status == PermissionStatus.Granted && hasRequestedPermission) {
-//        takePicture()
-//    }
 
     Box(modifier = modifier.size(pictureBoxSize)) {
         AsyncImage(

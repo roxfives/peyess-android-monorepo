@@ -37,7 +37,6 @@ data class FSServiceOrder(
     @PropertyName("salesperson_uid")
     val salespersonUid: String = "",
 
-
     @Keep
     @JvmField
     @PropertyName("client_uid")
@@ -244,11 +243,6 @@ data class FSServiceOrder(
     @PropertyName("payer_documents")
     val payerDocuments: List<String> = emptyList(),
 
-//    @Keep
-//    @JvmField
-//    @PropertyName("products")
-//    val products: FSProductsSold = FSProductsSold(),
-
     @Keep
     @JvmField
     @PropertyName("has_own_frames")
@@ -270,7 +264,7 @@ data class FSServiceOrder(
     @PropertyName("misc_products")
     val miscProducts: List<FSProductSoldDescription> = emptyList(),
 
-    // Denormilized prescription data
+    // Denormalized prescription data
     @Keep
     @JvmField
     @PropertyName("prescription_id")

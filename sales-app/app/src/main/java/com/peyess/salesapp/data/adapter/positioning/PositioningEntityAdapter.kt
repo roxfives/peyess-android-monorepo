@@ -69,6 +69,8 @@ fun PositioningEntity.toPositioningDocument(
         proportionToPictureHorizontal = proportionToPictureHorizontal,
         proportionToPictureVertical = proportionToPictureVertical,
 
+        device = device,
+
         takenByUid = takenByUid,
         serviceOrders = listOf(soId),
         patientUid = patientUid,

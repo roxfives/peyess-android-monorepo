@@ -43,6 +43,7 @@ fun FSPositioning.toPositioningDocument(): PositioningDocument {
         opticCenterY = opticCenterY,
         proportionToPictureHorizontal = proportionToPictureHorizontal,
         proportionToPictureVertical = proportionToPictureVertical,
+        device = device,
         created = created.toZonedDateTime(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,

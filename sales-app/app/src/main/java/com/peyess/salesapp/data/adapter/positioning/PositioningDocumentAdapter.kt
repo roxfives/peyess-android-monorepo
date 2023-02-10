@@ -48,6 +48,8 @@ fun PositioningDocument.toFSPositioning(): FSPositioning {
         proportionToPictureHorizontal = proportionToPictureHorizontal,
         proportionToPictureVertical = proportionToPictureVertical,
 
+        device = device,
+
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,

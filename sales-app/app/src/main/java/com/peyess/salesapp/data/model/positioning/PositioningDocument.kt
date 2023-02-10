@@ -66,12 +66,12 @@ data class PositioningDocument(
     val opticCenterRadius: Double = 0.0,
 
     val opticCenterX: Double = 0.0,
-
     val opticCenterY: Double = 0.0,
 
     val proportionToPictureHorizontal: Double = 0.0,
-
     val proportionToPictureVertical: Double = 0.0,
+
+    val device: String = "",
 
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy: String = "",

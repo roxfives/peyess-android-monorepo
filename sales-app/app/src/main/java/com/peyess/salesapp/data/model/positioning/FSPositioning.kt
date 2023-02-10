@@ -190,6 +190,11 @@ data class FSPositioning(
     @PropertyName("proportion_to_picture_vertical")
     val proportionToPictureVertical: Double = 0.0,
 
+    @JvmField
+    @Keep
+    @PropertyName("device")
+    val device: String = "",
+
     @Keep
     @JvmField
     @PropertyName("doc_version")

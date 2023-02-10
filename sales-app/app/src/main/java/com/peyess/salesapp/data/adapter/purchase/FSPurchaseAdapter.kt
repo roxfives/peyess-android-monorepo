@@ -4,6 +4,7 @@ import com.peyess.salesapp.data.adapter.client.toDenormalizedClientDocument
 import com.peyess.salesapp.data.adapter.payment.toPaymentDocument
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toDiscountDescriptionDocument
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toPurchaseProductsDiscountDocument
+import com.peyess.salesapp.data.adapter.purchase.fee.toFeeDescriptionDocument
 import com.peyess.salesapp.data.adapter.service_order.toDenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
@@ -52,26 +53,33 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         salespersonUid = salespersonUid,
         salespersonName = salespersonName,
 
-        isDiscountPerProduct = isDiscountPerProduct,
+        isDiscountOverall = isDiscountOverall,
         overallDiscount = overallDiscount.toDiscountDescriptionDocument(),
+        paymentFee = paymentFee.toFeeDescriptionDocument(),
+        discountServiceOrder = discountServiceOrder.mapValues {
+            it.value.toPurchaseProductsDiscountDocument()
+        },
 
-        price = price,
-        priceWithDiscount = priceWithDiscount,
-        prodDiscount = prodDiscount.mapValues { it.value.toPurchaseProductsDiscountDocument() },
+        fullPrice = fullPrice,
+        finalPrice = finalPrice,
+        leftToPay = leftToPay,
+        totalPaid = totalPaid,
+
+        totalDiscount = totalDiscount,
+        totalFee = totalFee,
 
         state = PurchaseState.fromName(state),
-
         payerUids = payerUids,
-        payerDocuments = payerUids,
+        payerDocuments = payerDocuments,
         payments = payments.map { it.toPaymentDocument() },
-
         soStates = soStates.mapValues { SOState.fromName(it.value) },
+
         soIds = soIds,
-        soPreviews = soPreviews.mapValues {  it.value.toDenormalizedServiceOrderDescDocument() },
+        soPreviews = soPreviews.mapValues { it.value.toDenormalizedServiceOrderDescDocument() },
         soWithIssues = soWithIssues,
+
         hasRectifiedSo = hasRectifiedSo,
         isLegalCustom = isLegalCustom,
-
         legalText = legalText,
         legalVersion = legalVersion,
 

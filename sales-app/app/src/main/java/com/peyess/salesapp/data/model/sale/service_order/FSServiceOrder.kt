@@ -15,12 +15,10 @@ import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.Prod
 @Keep
 @IgnoreExtraProperties
 data class FSServiceOrder(
-
     @Keep
     @JvmField
     @PropertyName("id")
     val id: String = "",
-
     @Keep
     @JvmField
     @PropertyName("hid")
@@ -30,12 +28,10 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("store_id")
     val storeId: String = "",
-
     @Keep
     @JvmField
     @PropertyName("store_ids")
     val storeIds: List<String> = emptyList(),
-
     @Keep
     @JvmField
     @PropertyName("salesperson_uid")
@@ -466,28 +462,18 @@ data class FSServiceOrder(
 
     @Keep
     @JvmField
-    @PropertyName("left_to_pay")
-    val leftToPay: Double = 0.0,
+    @PropertyName("full_price")
+    val fullPrice:  Double = 0.0,
 
     @Keep
     @JvmField
-    @PropertyName("total")
-    val total:  Double = 0.0,
+    @PropertyName("final_price")
+    val finalPrice:  Double = 0.0,
 
     @Keep
     @JvmField
-    @PropertyName("total_paid")
-    val totalPaid:  Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("total_discount")
-    val totalDiscount:  Double = 0.0,
-
-    @Keep
-    @JvmField
-    @PropertyName("total_fee")
-    val totalFee:  Double = 0.0,
+    @PropertyName("observation")
+    val observation:  String = "",
 
     @Keep
     @JvmField

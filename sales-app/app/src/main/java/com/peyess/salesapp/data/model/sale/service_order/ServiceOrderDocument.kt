@@ -13,7 +13,6 @@ data class ServiceOrderDocument(
     val storeIds: List<String> = emptyList(),
 
     val salespersonUid: String = "",
-    val salespersonName: String = "",
 
     val clientUid: String = "",
     val clientDocument: String = "",
@@ -75,6 +74,11 @@ data class ServiceOrderDocument(
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),
 
+    val fullPrice: Double = 0.0,
+    val finalPrice: Double = 0.0,
+
+    val observation: String = "",
+
     val hasOwnFrames: Boolean = false,
     val leftProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
     val rightProducts: ProductSoldEyeSetDocument = ProductSoldEyeSetDocument(),
@@ -135,13 +139,6 @@ data class ServiceOrderDocument(
     val measureConfirmedBy: String = "",
     val discountAllowedBy: String = "",
 
-    val leftToPay: Double = 0.0,
-
-    val total:  Double = 0.0,
-    val totalPaid:  Double = 0.0,
-    val totalDiscount:  Double = 0.0,
-    val totalFee:  Double = 0.0,
-
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy:  String = "",
     val createAllowedBy:  String = "",
@@ -150,11 +147,8 @@ data class ServiceOrderDocument(
     val updatedBy:  String = "",
     val updateAllowedBy:  String = "",
 ) {
-    val isPaymentFull = leftToPay <= 0.0
+    val isPaymentFull = fullPrice > finalPrice
 
     val hasAxisLeft = lCylinder < 0
     val hasAxisRight = rCylinder < 0
-
-    val totalWithDiscount = total * (1 - totalDiscount)
-    val totalWithFee = totalWithDiscount * (1 + totalFee)
 }

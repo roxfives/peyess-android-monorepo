@@ -1,6 +1,6 @@
 package com.peyess.salesapp.data.adapter.purchase.discount.description
 
-import com.peyess.salesapp.data.adapter.payment_value_desc.toPaymentValueDescriptionDocument
+import com.peyess.salesapp.data.adapter.purchase.discount.product_discount_desc.toDiscountEyeSetDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseProductsDiscount
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseProductsDiscountDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
@@ -15,13 +15,11 @@ fun DiscountDescriptionDocument.toFSDiscountDescription(): FSDiscountDescription
 
 fun FSPurchaseProductsDiscount.toPurchaseProductsDiscountDocument(): PurchaseProductsDiscountDocument {
     return PurchaseProductsDiscountDocument(
-        lenses = lenses.map { it.toPaymentValueDescriptionDocument() },
-        colorings = colorings.map { it.toPaymentValueDescriptionDocument() },
-        treatments = treatments.map { it.toPaymentValueDescriptionDocument() },
-
-        frames = frames.map  { it.toPaymentValueDescriptionDocument() },
-
-        misc = misc.map { it.toPaymentValueDescriptionDocument() },
+        isOverall = isOverall,
+        overall = overall.toDiscountDescriptionDocument(),
+        hasOwnFrames = hasOwnFrames,
+        frames = frames.toDiscountDescriptionDocument(),
+        leftProducts = leftProducts.toDiscountEyeSetDocument(),
+        rightProducts = rightProducts.toDiscountEyeSetDocument(),
     )
 }
-

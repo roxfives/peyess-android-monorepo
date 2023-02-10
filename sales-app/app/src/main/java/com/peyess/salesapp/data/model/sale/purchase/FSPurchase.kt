@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
 import com.peyess.salesapp.typing.sale.PurchaseState
 
 @Keep
@@ -151,24 +152,49 @@ data class FSPurchase(
 
     @Keep
     @JvmField
-    @PropertyName("is_discount_per_product")
-    val isDiscountPerProduct: Boolean = false,
+    @PropertyName("is_discount_overall")
+    val isDiscountOverall: Boolean = true,
     @Keep
     @JvmField
     @PropertyName("overall_discount")
     val overallDiscount: FSDiscountDescription = FSDiscountDescription(),
     @Keep
     @JvmField
-    @PropertyName("price")
-    val price: Double = 0.0,
+    @PropertyName("payment_fee")
+    val paymentFee: FSFeeDescription = FSFeeDescription(),
     @Keep
     @JvmField
-    @PropertyName("price_with_discount")
-    val priceWithDiscount: Double = 0.0,
+    @PropertyName("discount_so")
+    val discountServiceOrder: Map<String, FSPurchaseProductsDiscount> = emptyMap(),
+
     @Keep
     @JvmField
-    @PropertyName("prod_discount")
-    val prodDiscount: Map<String, FSPurchaseProductsDiscount> = emptyMap(),
+    @PropertyName("full_price")
+    val fullPrice: Double = 0.0,
+    @Keep
+    @JvmField
+    @PropertyName("final_price")
+    val finalPrice: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("left_to_pay")
+    val leftToPay: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total_paid")
+    val totalPaid: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total_discount")
+    val totalDiscount: Double = 0.0,
+
+    @Keep
+    @JvmField
+    @PropertyName("total_fee")
+    val totalFee: Double = 0.0,
 
     @Keep
     @JvmField

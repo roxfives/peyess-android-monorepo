@@ -299,12 +299,11 @@ class ServiceOrderFetcher @Inject constructor(
 
     private fun buildLocalPaymentFee(
         purchaseDocument: PurchaseDocument,
-        serviceOrderDocument: ServiceOrderDocument,
     ): PaymentFeeDocument {
         return PaymentFeeDocument(
             saleId = purchaseDocument.id,
             method = PaymentFeeCalcMethod.Percentage,
-            value = serviceOrderDocument.totalFee,
+            value = purchaseDocument.totalFee,
         )
     }
 
@@ -586,7 +585,7 @@ class ServiceOrderFetcher @Inject constructor(
         val localFrames = buildLocalFrames(serviceOrder)
         val localComparison = buildLocalLensComparison(serviceOrder)
         val localPayments = buildLocalPayment(purchase)
-        val localPaymentFee = buildLocalPaymentFee(purchase, serviceOrder)
+        val localPaymentFee = buildLocalPaymentFee(purchase)
         val localPaymentDiscount = buildLocalPaymentDiscount(purchase)
 
         val localProductPicked = buildLocalProductPicked(serviceOrder)

@@ -723,9 +723,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
     fun generateSale(context: Context) = withState { state ->
         suspend {
+            val collaboratorName = authenticationRepository.fetchCurrentUserName()
+
             val sale = serviceOrderUploader.generateSaleData(
                 context = context,
                 hid = state.hidServiceOrder,
+                collaboratorName = collaboratorName,
                 serviceOrderId = state.serviceOrderId,
                 localSaleId = state.saleId,
                 uploadPartialData = true,
@@ -751,12 +754,14 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onPdfGenerationFailed: () -> Unit,
     ) = withState {
         suspend {
+            val collaboratorName = authenticationRepository.fetchCurrentUserName()
             val htmlToPdfConverter = HtmlToPdfConvertor(context)
 
             val salePair = serviceOrderUploader
                 .generateSaleData(
                     context = context,
                     hid = it.hidServiceOrder,
+                    collaboratorName = collaboratorName,
                     serviceOrderId = it.serviceOrderId,
                     localSaleId = it.saleId,
                     uploadPartialData = false,
@@ -767,7 +772,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 )
 
             val html = if (salePair != null) {
-                buildHtml(context, salePair.first, salePair.second)
+                buildHtml(context, collaboratorName, salePair.first, salePair.second)
             } else {
                 null
             }

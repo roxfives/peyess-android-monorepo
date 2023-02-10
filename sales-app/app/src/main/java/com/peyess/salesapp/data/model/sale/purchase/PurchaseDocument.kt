@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.sale.purchase
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
 import java.time.ZonedDateTime
@@ -49,11 +50,17 @@ data class PurchaseDocument(
     val salespersonUid: String = "",
     val salespersonName: String = "",
 
-    val isDiscountPerProduct: Boolean = false,
+    val isDiscountOverall: Boolean = false,
     val overallDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
-    val price: Double = 0.0,
-    val priceWithDiscount: Double = 0.0,
-    val prodDiscount: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
+    val paymentFee: FeeDescriptionDocument = FeeDescriptionDocument(),
+    val discountServiceOrder: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
+
+    val fullPrice: Double = 0.0,
+    val finalPrice: Double = 0.0,
+    val leftToPay: Double = 0.0,
+    val totalPaid: Double = 0.0,
+    val totalDiscount: Double = 0.0,
+    val totalFee: Double = 0.0,
 
     val state: PurchaseState = PurchaseState.Unknown,
 

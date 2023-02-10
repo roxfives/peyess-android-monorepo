@@ -4,8 +4,12 @@ import com.peyess.salesapp.data.adapter.product_sold_desc.toFSProductSoldFramesD
 import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescription
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductSoldEyeSet
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldFramesDescription
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
@@ -15,7 +19,6 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         storeId = storeId,
         storeIds = storeIds,
         salespersonUid = salespersonUid,
-
         clientUid = clientUid,
         clientDocument = clientDocument,
         clientName = clientName,
@@ -28,7 +31,6 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         clientState = clientState,
         clientHouseNumber = clientHouseNumber,
         clientZipcode = clientZipcode,
-
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,
@@ -41,9 +43,8 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         responsibleState = responsibleState,
         responsibleHouseNumber = responsibleHouseNumber,
         responsibleZipcode = responsibleZipcode,
-
-        hasWitness = hasWitness,
         witnessUid = witnessUid,
+        hasWitness = hasWitness,
         witnessDocument = witnessDocument,
         witnessName = witnessName,
         witnessBirthday = witnessBirthday.toTimestamp(),
@@ -55,17 +56,9 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         witnessState = witnessState,
         witnessHouseNumber = witnessHouseNumber,
         witnessZipcode = witnessZipcode,
-
         hasTakeaway = hasTakeaway,
         takeawayName = takeawayName,
         takeawayDocument = takeawayDocument,
-
-        hasOwnFrames = hasOwnFrames,
-        leftProducts = leftProducts.toFSProductSoldEyeSet(),
-        rightProducts = rightProducts.toFSProductSoldEyeSet(),
-        framesProducts = framesProducts.toFSProductSoldFramesDescription(),
-        miscProducts = miscProducts.map { it.toFSSoldProductDescription() },
-
         state = state,
         rectified = rectified,
         areThereIssues = areThereIssues,
@@ -74,16 +67,18 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         purchaseId = purchaseId,
         payerUids = payerUids,
         payerDocuments = payerDocuments,
+        hasOwnFrames = hasOwnFrames,
+        leftProducts = leftProducts.toFSProductSoldEyeSet(),
+        rightProducts = rightProducts.toFSProductSoldEyeSet(),
+        framesProducts = framesProducts.toFSProductSoldFramesDescription(),
+        miscProducts = miscProducts.map { it.toFSSoldProductDescription() },
         prescriptionId = prescriptionId,
-
         isCopy = isCopy,
         professionalName = professionalName,
         professionalId = professionalId,
         prescriptionDate = prescriptionDate.toTimestamp(),
-
         hasAddition = hasAddition,
         hasPrism = hasPrism,
-
         lCylinder = lCylinder,
         lSpheric = lSpheric,
         lAxisDegree = lAxisDegree,
@@ -98,11 +93,11 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         rPrismAxis = rPrismAxis,
         rPrismDegree = rPrismDegree,
         rPrismPos = rPrismPos,
-        lIpd = lIpd,
         lPositioningId = lPositioningId,
         rPositioningId = rPositioningId,
         lMeasuringId = lMeasuringId,
         rMeasuringId = rMeasuringId,
+        lIpd = lIpd,
         lBridge = lBridge,
         lDiameter = lDiameter,
         lHe = lHe,
@@ -119,13 +114,11 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         soldBy = soldBy,
         measureConfirmedBy = measureConfirmedBy,
         discountAllowedBy = discountAllowedBy,
-
-        leftToPay = leftToPay,
-        total = total,
-        totalPaid = totalPaid,
-        totalDiscount = totalDiscount,
-        totalFee = totalFee,
-
+        docVersion = 0,
+        isEditable = true,
+        fullPrice = fullPrice,
+        finalPrice = finalPrice,
+        observation = observation,
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,

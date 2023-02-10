@@ -22,6 +22,7 @@ import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
+import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
@@ -407,12 +408,12 @@ class ServiceOrderUploader constructor(
             }
 
         if (user == null) {
-            error("Could not find current collaborator: user == $user")
+            error("Could not find current collaborator: user is null")
         }
 
         return so.copy(
             salespersonUid = user!!.id,
-            salespersonName = user!!.name,
+//            salespersonName = user!!.name,
 
             soldBy = user!!.id,
             measureConfirmedBy = user!!.id,
@@ -500,7 +501,7 @@ class ServiceOrderUploader constructor(
         so.copy(
             samePurchaseSo = listOf(so.id),
 
-            total = total,
+            fullPrice = total,
             hasOwnFrames = !frames.areFramesNew,
             leftProducts = ProductSoldEyeSetDocument(
                 lenses = lens.toDescription(),
@@ -529,36 +530,34 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    private suspend fun addDiscountData(
+    private suspend fun calculateDiscount(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
-    ): ServiceOrderDocument {
+    ): Double {
         val discount = discountRepository.getDiscountForSale(saleId)
         val totalDiscount = when (discount?.discountMethod) {
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.total
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
             DiscountCalcMethod.None, null -> 0.0
         }
 
-        return serviceOrder.copy(
-            totalDiscount = totalDiscount,
-            discountAllowedBy = serviceOrder.createAllowedBy,
-        )
+        return totalDiscount
     }
 
-    private suspend fun addFeeData(
+    private suspend fun calculateFee(
         saleId: String,
+        discount: Double,
         serviceOrder: ServiceOrderDocument,
-    ): ServiceOrderDocument {
-
+    ): Double {
+        val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
         val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
         val totalFee = when (fee?.method) {
             PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole ->  fee.value / serviceOrder.totalWithDiscount
+            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
             PaymentFeeCalcMethod.None, null -> 0.0
         }
 
-        return serviceOrder.copy(totalFee = totalFee)
+        return totalFee
     }
 
 
@@ -583,19 +582,19 @@ class ServiceOrderUploader constructor(
     }
 
     private suspend fun createPurchase(
-        context: Context,
         saleId: String,
+        discount: Double,
+        fee: Double,
         serviceOrder: ServiceOrderDocument,
     ): PurchaseCreationResponse = either {
-//        val id = purchaseId.ifBlank {
-//            val uniqueId = firebaseManager.uniqueId()
-//            purchaseId = uniqueId
-//
-//            uniqueId
-//        }
-
         purchaseId = saleId
         val id = purchaseId
+
+        val discountDocument = discountRepository.getDiscountForSale(saleId)
+        val feeDocument = paymentFeeRepository.getPaymentFeeForSale(saleId)
+
+        val fullPrice = serviceOrder.fullPrice
+        val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {
@@ -612,6 +611,15 @@ class ServiceOrderUploader constructor(
                     error = it.error,
                 )
             }.bind()
+
+        val totalPaid = if (payments.isEmpty()) {
+            0.0
+        } else {
+            payments.map { it.value }.reduce { acc, payment -> acc + payment }
+        }
+        val totalLeft = BigDecimal(abs((finalPrice - totalPaid)))
+            .setScale(2, RoundingMode.HALF_EVEN)
+            .toDouble()
 
         PurchaseDocument(
             id = id,
@@ -656,14 +664,26 @@ class ServiceOrderUploader constructor(
             witnessZipcode = serviceOrder.witnessZipcode,
 
             salespersonUid = serviceOrder.salespersonUid,
-            salespersonName = serviceOrder.salespersonName,
 
-            isDiscountPerProduct = false, // serviceOrder.is_discount_per_product,
-            overallDiscount = DiscountDescriptionDocument(), // serviceOrder.overall_discount,
+            isDiscountOverall = true,
+            overallDiscount = DiscountDescriptionDocument(
+                method = discountDocument?.discountMethod ?: DiscountCalcMethod.Percentage,
+                value = BigDecimal(discountDocument?.overallDiscountValue ?: 0.0),
 
-            price = serviceOrder.total,
-            priceWithDiscount = 0.0, // serviceOrder.price_with_discount,
-            prodDiscount = emptyMap(),
+            ),
+            paymentFee = FeeDescriptionDocument(
+                method = feeDocument?.method ?: PaymentFeeCalcMethod.Percentage,
+                value = BigDecimal(feeDocument?.value ?: 0.0),
+            ),
+
+            fullPrice = fullPrice,
+            finalPrice = finalPrice,
+
+            leftToPay = totalLeft,
+            totalPaid = totalPaid,
+
+            totalDiscount = discount,
+            totalFee = fee,
 
             state = PurchaseState.PendingConfirmation,
 
@@ -697,6 +717,7 @@ class ServiceOrderUploader constructor(
     suspend fun generateSaleData(
         context: Context,
         hid: String,
+        collaboratorName: String,
         serviceOrderId: String,
         localSaleId: String,
         uploadPartialData: Boolean,
@@ -733,32 +754,23 @@ class ServiceOrderUploader constructor(
 
         serviceOrder = addProductsData(serviceOrder).bind()
 
-        serviceOrder = addDiscountData(localSaleId, serviceOrder)
-        serviceOrder = addFeeData(localSaleId, serviceOrder)
+        val discount = calculateDiscount(localSaleId, serviceOrder)
+        val fee = calculateFee(localSaleId, discount, serviceOrder)
 
-        var purchase = createPurchase(context, localSaleId, serviceOrder).bind()
-
-        val totalPaid = if (purchase.payments.isEmpty()) {
-            0.0
-        } else {
-            purchase.payments
-                .map { it.amount }
-                .reduce { acc, payment -> acc + payment }
-        }
-        val totalLeft = BigDecimal(abs((serviceOrder.totalWithFee - totalPaid)))
-            .setScale(2, RoundingMode.HALF_EVEN)
-            .toDouble()
+        var purchase = createPurchase(
+            saleId = localSaleId,
+            discount = discount,
+            fee = fee,
+            serviceOrder = serviceOrder,
+        ).bind()
 
         serviceOrder = serviceOrder.copy(
             purchaseId = purchaseId,
             payerUids = purchase.payerUids,
             payerDocuments = purchase.payerDocuments,
-
-            totalPaid = totalPaid,
-            leftToPay = totalLeft,
         )
 
-        val legalText = buildHtml(context, serviceOrder, purchase)
+        val legalText = buildHtml(context, collaboratorName, serviceOrder, purchase)
         purchase = purchase.copy(legalText = legalText)
 
         Pair(serviceOrder, purchase)

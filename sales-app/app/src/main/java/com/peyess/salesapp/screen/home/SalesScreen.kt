@@ -290,8 +290,9 @@ private fun ServiceOrderCard(
     }
 
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val message = stringResource(id = R.string.so_card_message).format(
-            NumberFormat.getCurrencyInstance().format(serviceOrder.total),
+    val message = stringResource(id = R.string.so_card_message)
+        .format(
+            NumberFormat.getCurrencyInstance().format(serviceOrder.finalPrice),
             serviceOrder.created.format(formatter),
             serviceOrder.responsibleName,
         )

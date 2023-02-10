@@ -4,9 +4,12 @@ import com.peyess.salesapp.data.adapter.client.toFSDenormalizedClient
 import com.peyess.salesapp.data.adapter.payment.toFSPayment
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSDiscountDescription
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSPurchaseProductsDiscount
+import com.peyess.salesapp.data.adapter.purchase.fee.toFSFeeDescription
 import com.peyess.salesapp.data.adapter.service_order.toFSDenormalizedServiceOrderDesc
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun PurchaseDocument.toFSPurchase(): FSPurchase {
@@ -14,8 +17,8 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         id = id,
         hid = hid,
 
-        storeId = storeId,
         storeIds = storeIds,
+        storeId = storeId,
 
         clientUids = clientUids,
         clients = clients.map { it.toFSDenormalizedClient() },
@@ -50,17 +53,23 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         salespersonUid = salespersonUid,
         salespersonName = salespersonName,
 
-        isDiscountPerProduct = isDiscountPerProduct,
+        isDiscountOverall = isDiscountOverall,
         overallDiscount = overallDiscount.toFSDiscountDescription(),
+        paymentFee = paymentFee.toFSFeeDescription(),
+        discountServiceOrder = discountServiceOrder.mapValues {
+            it.value.toFSPurchaseProductsDiscount()
+        },
 
-        price = price,
-        priceWithDiscount = priceWithDiscount,
-        prodDiscount = prodDiscount.mapValues { it.value.toFSPurchaseProductsDiscount() },
-
+        fullPrice = fullPrice,
+        finalPrice = finalPrice,
+        leftToPay = leftToPay,
+        totalPaid = totalPaid,
+        totalDiscount = totalDiscount,
+        totalFee = totalFee,
         state = state.toName(),
 
         payerUids = payerUids,
-        payerDocuments = payerUids,
+        payerDocuments = payerDocuments,
         payments = payments.map { it.toFSPayment() },
 
         soStates = soStates.mapValues { it.value.toName() },
@@ -68,8 +77,8 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         soPreviews = soPreviews.mapValues { it.value.toFSDenormalizedServiceOrderDesc() },
         soWithIssues = soWithIssues,
         hasRectifiedSo = hasRectifiedSo,
-        isLegalCustom = isLegalCustom,
 
+        isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
 

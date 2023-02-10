@@ -121,7 +121,7 @@ private fun buildProductList(
     frames: List<ProductSoldFramesDescriptionDocument>,
     misc: List<ProductSoldDescriptionDocument>,
 
-    isGeneralDiscount: Boolean = false,
+    isOverallDiscount: Boolean = true,
     generalDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
     generalFee: PaymentFeeDocument = PaymentFeeDocument(),
 ): String {
@@ -140,35 +140,35 @@ private fun buildProductList(
     var miscFee: PaymentFeeDocument
 
     eyeSets.forEach { set ->
-        lensDiscount = if (isGeneralDiscount) {
+        lensDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
             set.lenses.discount
         }
-        lensFee = if (isGeneralDiscount) {
+        lensFee = if (isOverallDiscount) {
             generalFee
         } else {
             PaymentFeeDocument()
         }
 
 
-        coloringsDiscount = if (isGeneralDiscount) {
+        coloringsDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
             set.colorings.discount
         }
-        coloringsFee = if (isGeneralDiscount) {
+        coloringsFee = if (isOverallDiscount) {
             generalFee
         } else {
             PaymentFeeDocument()
         }
 
-        treatmentsDiscount = if (isGeneralDiscount) {
+        treatmentsDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
             set.treatments.discount
         }
-        treatmentsFee = if (isGeneralDiscount) {
+        treatmentsFee = if (isOverallDiscount) {
             generalFee
         } else {
             PaymentFeeDocument()
@@ -234,12 +234,12 @@ private fun buildProductList(
     }
 
     frames.forEach {
-        framesDiscount = if (isGeneralDiscount) {
+        framesDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
             it.discount
         }
-        framesFee = if (isGeneralDiscount) {
+        framesFee = if (isOverallDiscount) {
             generalFee
         } else {
             PaymentFeeDocument()
@@ -262,12 +262,12 @@ private fun buildProductList(
     }
 
     misc.forEach {
-        miscDiscount = if (isGeneralDiscount) {
+        miscDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
             it.discount
         }
-        miscFee = if (isGeneralDiscount) {
+        miscFee = if (isOverallDiscount) {
             generalFee
         } else {
             PaymentFeeDocument()
@@ -314,7 +314,7 @@ fun buildProductListDescription(
         frames = frames,
         misc = misc,
 
-        isGeneralDiscount = true,
+        isOverallDiscount = true,
         generalDiscount = DiscountDescriptionDocument(
             method = DiscountCalcMethod.Percentage,
             value = BigDecimal(discount),

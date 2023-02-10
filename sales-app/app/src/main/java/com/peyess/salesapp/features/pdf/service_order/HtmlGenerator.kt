@@ -67,6 +67,7 @@ private fun printAxisData(value: String, hasAxis: Boolean = false): String {
 
 fun buildHtml(
     context: Context,
+    collaboratorName: String,
     serviceOrder: ServiceOrderDocument,
     purchase: PurchaseDocument,
 ): String {
@@ -183,10 +184,10 @@ fun buildHtml(
         frames = framesSet,
         misc = miscSet,
 
-        salesPersonName = serviceOrder.salespersonName,
-        priceWithoutDiscount = serviceOrder.total,
-        discount = serviceOrder.totalDiscount,
-        fee = serviceOrder.totalFee,
+        salesPersonName = collaboratorName,
+        priceWithoutDiscount = purchase.fullPrice,
+        discount = purchase.totalDiscount,
+        fee = purchase.totalFee,
     )
 
     val paymentSection = buildPaymentSection(

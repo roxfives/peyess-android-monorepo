@@ -266,7 +266,7 @@ private fun legalTextForFullPayment(
     currencyFormatter.maximumFractionDigits = 2
     currencyFormatter.minimumFractionDigits = 2
 
-    val totalPaid = currencyFormatter.format(serviceOrderDocument.totalPaid)
+    val totalPaid = currencyFormatter.format(purchaseDocument.totalPaid)
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +
@@ -290,7 +290,7 @@ private fun legalTextWithoutFullPayment(
     currencyFormatter.maximumFractionDigits = 2
     currencyFormatter.minimumFractionDigits = 2
 
-    val totalToPay = currencyFormatter.format(serviceOrderDocument.totalWithFee)
+    val totalToPay = currencyFormatter.format(purchaseDocument.finalPrice)
 
     return if (hasMultiplePayers) {
         "Declaramos para os devidos fins que somos responsáveis pelas obrigações assumidas pelo " +
@@ -340,6 +340,7 @@ private fun buildPaymentList(
 
 private fun buildPaymentIncomplete(
     context: Context,
+    purchaseDocument: PurchaseDocument,
     serviceOrder: ServiceOrderDocument,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
@@ -357,7 +358,7 @@ private fun buildPaymentIncomplete(
 
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-    val totalLeft = serviceOrder.leftToPay
+    val totalLeft = purchaseDocument.leftToPay
     val fineOnDefault = 0.01
     val cumulativeFineOnDefault = 0.02
     val limit = serviceOrder.updated
@@ -387,7 +388,7 @@ fun buildPaymentSection(
     val header = buildHeader(context, purchase, serviceOrder)
     val paymentList = buildPaymentList(context, serviceOrder, purchase.payments)
     val paymentIncomplete = if (!serviceOrder.isPaymentFull) {
-        buildPaymentIncomplete(context, serviceOrder)
+        buildPaymentIncomplete(context, purchase, serviceOrder)
     } else {
         ""
     }

@@ -3,33 +3,37 @@ package com.peyess.salesapp.data.model.sale.purchase
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
+import com.peyess.salesapp.data.model.sale.purchase.discount.product_discount_desc.FSDiscountEyeSet
 
 @Keep
 @IgnoreExtraProperties
 data class FSPurchaseProductsDiscount(
     @Keep
     @JvmField
-    @PropertyName("lenses")
-    val lenses: List<FSPaymentValueDescription> = emptyList(),
+    @PropertyName("is_overall")
+    val isOverall: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("overall")
+    val overall: FSDiscountDescription = FSDiscountDescription(),
 
     @Keep
     @JvmField
-    @PropertyName("colorings")
-    val colorings: List<FSPaymentValueDescription> = emptyList(),
-
-    @Keep
-    @JvmField
-    @PropertyName("treatments")
-    val treatments: List<FSPaymentValueDescription> = emptyList(),
-
+    @PropertyName("has_own_frames")
+    val hasOwnFrames: Boolean = false,
     @Keep
     @JvmField
     @PropertyName("frames")
-    val frames: List<FSPaymentValueDescription> = emptyList(),
+    val frames: FSDiscountDescription = FSDiscountDescription(),
 
     @Keep
     @JvmField
-    @PropertyName("misc")
-    val misc: List<FSPaymentValueDescription> = emptyList(),
+    @PropertyName("left_products")
+    val leftProducts: FSDiscountEyeSet = FSDiscountEyeSet(),
 
+    @Keep
+    @JvmField
+    @PropertyName("right_products")
+    val rightProducts: FSDiscountEyeSet = FSDiscountEyeSet(),
 )

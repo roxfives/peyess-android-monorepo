@@ -159,7 +159,7 @@ class MainViewModel @AssistedInject constructor(
 
     private fun loadCurrentCollaborator() = withState {
         authenticationRepository.currentUser().execute(Dispatchers.IO) {
-            Timber.i("Current colalborator is $it")
+            Timber.i("Current collaborator is $it")
             copy(currentCollaboratorDocumentAsync = it)
         }
     }

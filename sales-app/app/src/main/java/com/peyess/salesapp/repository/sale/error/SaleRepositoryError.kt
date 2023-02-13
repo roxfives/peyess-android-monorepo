@@ -6,6 +6,10 @@ sealed interface SaleRepositoryError {
 }
 
 sealed interface ActiveSaleError: SaleRepositoryError
+data class DeactivateSaleError(
+    override val description: String,
+    override val error: Throwable? = null,
+): ActiveSaleError
 data class CreateSaleError(
     override val description: String,
     override val error: Throwable? = null,

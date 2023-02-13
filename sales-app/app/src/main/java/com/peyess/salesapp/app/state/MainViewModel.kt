@@ -464,6 +464,7 @@ class MainViewModel @AssistedInject constructor(
 
     fun startNewSale() = withState {
         suspend {
+            saleRepository.deactivateSales()
             saleRepository.createSale()
         }.execute(Dispatchers.IO) {
             copy(createSaleResponseAsync = it)

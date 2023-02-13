@@ -34,9 +34,13 @@ typealias ProductPickedResponse = Either<ProductPickedError, ProductPickedDocume
 typealias CancelSaleResponse = Either<ActiveSaleError, Unit>
 typealias ResumeSaleResponse = Either<ActiveSaleError, Unit>
 
+typealias DeactivateSaleResponse = Either<ActiveSaleError, Unit>
+
 typealias CreateSaleResponse = Either<ActiveSaleError, Pair<String, String>>
 
 interface SaleRepository {
+    suspend fun deactivateSales(): DeactivateSaleResponse
+
     suspend fun createSale(): CreateSaleResponse
 
     suspend fun cancelCurrentSale(): CancelSaleResponse

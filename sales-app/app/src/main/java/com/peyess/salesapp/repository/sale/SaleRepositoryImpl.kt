@@ -47,6 +47,7 @@ import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotFound
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderNotRegistered
 import com.peyess.salesapp.repository.sale.error.ActiveServiceOrderUpdateError
 import com.peyess.salesapp.repository.sale.error.CreateSaleError
+import com.peyess.salesapp.repository.sale.error.DeactivateSaleError
 import com.peyess.salesapp.repository.sale.error.ProductPickedNotFound
 import com.peyess.salesapp.repository.sale.error.Unexpected
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
@@ -191,6 +192,15 @@ class SaleRepositoryImpl @Inject constructor(
                     started = SharingStarted.WhileSubscribed(),
                 )
         }.toMap()
+    }
+
+    override suspend fun deactivateSales(): DeactivateSaleResponse = Either.catch {
+        activeSalesDao.deactivateAllSales()
+    }.mapLeft {
+        DeactivateSaleError(
+            description = "Error deactivating sales",
+            error = it,
+        )
     }
 
     override suspend fun createSale(): CreateSaleResponse = Either.catch {

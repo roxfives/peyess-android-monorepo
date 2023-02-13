@@ -39,6 +39,12 @@ interface ActiveSalesDao {
         WHERE id = :saleId
     """)
     suspend fun updateSaleStatus(saleId: String, isActive: Int, isFinished: Int, hasCanceled: Int)
+
+    @Query("""
+        UPDATE ${ActiveSalesEntity.tableName}
+        SET active = 0
+    """)
+    suspend fun deactivateAllSales()
     
     @Insert
     suspend fun add(activeSale: ActiveSalesEntity)

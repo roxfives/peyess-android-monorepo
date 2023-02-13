@@ -31,7 +31,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -56,14 +55,15 @@ import androidx.core.content.FileProvider
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.app.state.ServiceOrderStream
+import com.peyess.salesapp.app.state.PurchaseStream
+import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -110,7 +110,7 @@ fun SalesScreen(
     val isUpdatingProducts by viewModel.collectAsState(MainAppState::isUpdatingProducts)
 
     val isServiceOrderListLoading by viewModel.collectAsState(MainAppState::isServiceOrderListLoading)
-    val serviceOrderList by viewModel.collectAsState(MainAppState::serviceOrderListStream)
+    val serviceOrderList by viewModel.collectAsState(MainAppState::purchaseListStream)
 
     val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
 
@@ -148,7 +148,7 @@ fun SalesScreen(
             onGenerateSalePdf = {
                 viewModel.generateServiceOrderPdf(
                     context = context,
-                    serviceOrder = it,
+                    purchase = it,
                     onPdfGenerationFailure = {},
                     onPdfGenerated = {
                         val intent = Intent(Intent.ACTION_VIEW)
@@ -183,12 +183,12 @@ fun SaleList(
     isUpdatingProducts: Boolean = true,
     isServiceOrderListLoading: Boolean = false,
 
-    serviceOrderList: ServiceOrderStream = emptyFlow(),
+    serviceOrderList: PurchaseStream = emptyFlow(),
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 
     isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
-    onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
+    onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
 
     onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
 
@@ -249,7 +249,7 @@ fun SaleList(
                     modifier = Modifier
                         .padding(SalesAppTheme.dimensions.grid_1_5)
                         .fillMaxWidth(),
-                    serviceOrder = it,
+                    purchase = it,
                     pictureForClient = pictureForClient,
 
                     isGeneratingPdf = isGeneratingPdfFor.first
@@ -270,31 +270,35 @@ fun SaleList(
 @Composable
 private fun ServiceOrderCard(
     modifier: Modifier = Modifier,
-    serviceOrder: ServiceOrderDocument = ServiceOrderDocument(),
+    purchase: PurchaseDocument = PurchaseDocument(),
 
-    onGenerateSalePdf: (serviceOrder: ServiceOrderDocument) -> Unit = {},
+    onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
     onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
+    val client = remember {
+        purchase.clients.firstOrNull() ?: DenormalizedClientDocument()
+    }
+
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            val picture = pictureForClient(serviceOrder.clientUid)
+            val picture = pictureForClient(client.uid)
 
             pictureUri.value = picture
         }
     }
 
     val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-    val message = stringResource(id = R.string.so_card_message)
+    val message = stringResource(id = R.string.purchase_card_message)
         .format(
-            NumberFormat.getCurrencyInstance().format(serviceOrder.finalPrice),
-            serviceOrder.created.format(formatter),
-            serviceOrder.responsibleName,
+            NumberFormat.getCurrencyInstance().format(purchase.finalPrice),
+            purchase.created.format(formatter),
+            purchase.responsibleName,
         )
 
     Column(
@@ -343,7 +347,7 @@ private fun ServiceOrderCard(
                 verticalArrangement = Arrangement.Top,
             ) {
                 Text(
-                    text = serviceOrder.clientName,
+                    text = client.name,
                     style = MaterialTheme.typography.subtitle1
                         .copy(fontWeight = FontWeight.Bold),
                 )
@@ -392,7 +396,7 @@ private fun ServiceOrderCard(
             if (BuildConfig.DEBUG) {
                 Button(
                     onClick = {
-                        onEditServiceOrder(serviceOrder.id)
+                        onEditServiceOrder(purchase.id)
                     },
                 ) {
                     Text(text = "Editar")
@@ -413,7 +417,7 @@ private fun ServiceOrderCard(
                 Button(
                     onClick = {
                         if (!isGeneratingPdf) {
-                            onGenerateSalePdf(serviceOrder)
+                            onGenerateSalePdf(purchase)
                         }
                     },
                 ) {
@@ -438,10 +442,7 @@ private fun ServiceOrderCardPreview() {
     SalesAppTheme {
         ServiceOrderCard(
             modifier = Modifier.fillMaxWidth(),
-            serviceOrder = ServiceOrderDocument(
-                clientName = "Nome do cliente",
-                responsibleName = "Nome do responsável"
-            )
+            purchase = PurchaseDocument()
         )
     }
 }

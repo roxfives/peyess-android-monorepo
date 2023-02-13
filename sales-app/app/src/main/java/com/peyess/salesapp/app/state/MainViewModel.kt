@@ -22,6 +22,7 @@ import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
@@ -39,7 +40,6 @@ import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
-import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
@@ -54,10 +54,12 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
 
+private const val purchasesTablePageSize = 20
 private const val clientsTablePageSize = 20
 private const val lensesTablePrefetchDistance = 10
 
@@ -66,7 +68,6 @@ class MainViewModel @AssistedInject constructor(
     private val authenticationRepository: AuthenticationRepository,
     private val collaboratorsRepository: CollaboratorsRepository,
     private val saleRepository: SaleRepository,
-    private val serviceOrderRepository: ServiceOrderRepository,
     private val purchaseRepository: PurchaseRepository,
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val localClientRepository: LocalClientRepository,
@@ -81,7 +82,7 @@ class MainViewModel @AssistedInject constructor(
             if (it is AppAuthenticationState.Authenticated) {
                 countTotalClients()
                 updateClientList()
-                loadServiceOrders()
+                loadPurchases()
             }
         }
 
@@ -101,7 +102,7 @@ class MainViewModel @AssistedInject constructor(
 
         onAsync(MainAppState::createSaleResponseAsync) { processCreateSaleResponse(it) }
 
-        onAsync(MainAppState::serviceOrderListResponseAsync) {
+        onAsync(MainAppState::purchaseListResponseAsync) {
             processServiceOrderListResponse(it)
         }
 
@@ -244,7 +245,7 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun getServiceOrderStream(): ServiceOrderListResponse = either {
+    private suspend fun getPurchasesStream(): PurchaseListResponse = either {
         val query = PeyessQuery(
             queryFields = emptyList(),
             orderBy = listOf(
@@ -256,11 +257,11 @@ class MainViewModel @AssistedInject constructor(
             groupBy = emptyList(),
         )
 
-        serviceOrderRepository.paginateServiceOrders(query).map { pagingSourceFactory ->
+        purchaseRepository.paginatePurchases(query).map { pagingSourceFactory ->
             val pager = Pager(
                 pagingSourceFactory = pagingSourceFactory,
                 config = PagingConfig(
-                    pageSize = clientsTablePageSize,
+                    pageSize = purchasesTablePageSize,
                     enablePlaceholders = true,
                     prefetchDistance = lensesTablePrefetchDistance,
                 ),
@@ -270,23 +271,23 @@ class MainViewModel @AssistedInject constructor(
         }.bind()
     }
 
-    private fun processServiceOrderListResponse(response: ServiceOrderListResponse) = setState {
+    private fun processServiceOrderListResponse(response: PurchaseListResponse) = setState {
         response.fold(
             ifLeft = {
-                copy(serviceOrderListResponseAsync = Fail(it.error))
+                copy(purchaseListResponseAsync = Fail(it.error))
             },
 
             ifRight = {
-                copy(serviceOrderListStream = it)
-            }
+                copy(purchaseListStream = it)
+            },
         )
     }
 
-    private fun loadServiceOrders() {
+    private fun loadPurchases() {
         suspend {
-            getServiceOrderStream()
+            getPurchasesStream()
         }.execute(Dispatchers.IO) {
-            copy(serviceOrderListResponseAsync = it)
+            copy(purchaseListResponseAsync = it)
         }
     }
 
@@ -405,38 +406,29 @@ class MainViewModel @AssistedInject constructor(
 
     fun generateServiceOrderPdf(
         context: Context,
-        serviceOrder: ServiceOrderDocument,
+        purchase: PurchaseDocument,
         onPdfGenerationFailure: (err: Throwable) -> Unit = {},
         onPdfGenerated: (file: File) -> Unit = {}
-    ) = withState {
+    ) {
         suspend {
-            purchaseRepository
-                .getById(serviceOrder.purchaseId)
-        }.execute(Dispatchers.IO) {
-            if (it is Success && it.invoke() != null) {
-                viewModelScope.launch(Dispatchers.Main) {
-                    val htmlToPdfConverter = HtmlToPdfConvertor(context)
+            val htmlToPdfConverter = HtmlToPdfConvertor(context)
+            val html = purchase.legalText
+            val file = createPrintFile(context)
 
-                    val purchase = it.invoke()
-                    val html = purchase?.legalText
-
-                    val file = createPrintFile(context)
-                    if (html != null) {
-                        htmlToPdfConverter.convert(
-                            file,
-                            html,
-                            onPdfGenerationFailure,
-                            { onPdfGenerated(it) },
-                        )
-                    }
+            withContext(Dispatchers.Main) {
+                htmlToPdfConverter.convert(
+                    file,
+                    html,
+                    onPdfGenerationFailure,
+                ) {
+                    onPdfGenerated(it)
                 }
             }
-
+        }.execute(Dispatchers.IO) {
             val isGeneratingPdf = it is Loading
-            val generatingFor = if (isGeneratingPdf) serviceOrder.id else ""
 
             copy(
-                isGeneratingPdfFor = Pair(isGeneratingPdf, generatingFor),
+                isGeneratingPdfFor = Pair(isGeneratingPdf, purchase.id),
             )
         }
     }

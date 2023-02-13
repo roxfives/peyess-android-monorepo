@@ -10,12 +10,13 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientTotalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
+import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.navigation.pick_client.PickScenario
@@ -23,7 +24,6 @@ import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.ResumeSaleResponse
-import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -31,9 +31,9 @@ import kotlinx.coroutines.flow.emptyFlow
 typealias ClientListStream = Flow<PagingData<Client>>
 typealias ClientsListResponse = Either<LocalClientRepositoryPagingError, ClientListStream>
 
-typealias ServiceOrderStream = Flow<PagingData<ServiceOrderDocument>>
-typealias ServiceOrderListResponse =
-        Either<ServiceOrderRepositoryPaginationError, ServiceOrderStream>
+typealias PurchaseStream = Flow<PagingData<PurchaseDocument>>
+typealias PurchaseListResponse =
+        Either<PurchaseRepositoryPaginationError, PurchaseStream>
 
 sealed class AppAuthenticationState {
     object Unauthenticated: AppAuthenticationState()
@@ -49,8 +49,8 @@ data class MainAppState(
 
     val productsTableStatusAsync: Async<ProductsTableStatus?> = Uninitialized,
 
-    val serviceOrderListResponseAsync: Async<ServiceOrderListResponse> = Uninitialized,
-    val serviceOrderListStream: ServiceOrderStream = emptyFlow(),
+    val purchaseListResponseAsync: Async<PurchaseListResponse> = Uninitialized,
+    val purchaseListStream: PurchaseStream = emptyFlow(),
 
     val createClientResponseAsync: Async<CacheCreateClientCreateResponse> = Uninitialized,
     val createClientId: String = "",
@@ -107,7 +107,7 @@ data class MainAppState(
     val isSearchingForActiveSales = unfinishedSalesStreamAsync is Loading
     val hasActiveSales = unfinishedSales.isNotEmpty()
 
-    val isServiceOrderListLoading = serviceOrderListResponseAsync is Loading
+    val isServiceOrderListLoading = purchaseListResponseAsync is Loading
 //    val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()
 
     val isLookingForCreatingClient = existingCreateClientAsync is Loading

@@ -1,7 +1,9 @@
 package com.peyess.salesapp.data.dao.purchase
 
+import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.dao.purchase.utils.PurchasePagingSource
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
@@ -50,5 +52,9 @@ class PurchaseDaoImpl @Inject constructor(
         val fsPurchase = purchaseDoc.toObject(FSPurchase::class.java)
 
         return fsPurchase
+    }
+
+    override fun paginatePurchases(query: Query): PurchasePagingSource {
+        return PurchasePagingSource(query)
     }
 }

@@ -1,17 +1,13 @@
 package com.peyess.salesapp.data.dao.service_order
 
-import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoFetchError
-import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoPaginationError
 import com.peyess.salesapp.data.dao.service_order.utils.ServiceOrderPagingSource
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
-import com.peyess.salesapp.data.utils.query.PeyessQuery
-import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

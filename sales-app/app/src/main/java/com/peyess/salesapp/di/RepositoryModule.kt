@@ -258,9 +258,15 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePurchaseRepository(
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
         purchaseDao: PurchaseDao
     ): PurchaseRepository {
-        return PurchaseRepositoryImpl(purchaseDao)
+        return PurchaseRepositoryImpl(
+            salesApplication = salesApplication,
+            firebaseManager = firebaseManager,
+            purchaseDao = purchaseDao,
+        )
     }
 
     @Provides

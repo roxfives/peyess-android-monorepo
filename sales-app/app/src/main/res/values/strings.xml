@@ -121,7 +121,7 @@
 
     <!--    UI Component: Sales -->
     <string name="go_next_default">Próximo</string>
-    <string name="so_card_message">Ordem de Serviço no valor de %1$s emitida no dia %2$s com responsável %3$s</string>
+    <string name="purchase_card_message">Venda no valor de %1$s feita no dia %2$s com responsável %3$s</string>
 
     <string name="btn_open_pdf">Abrir PDF</string>
     <string name="btn_edit_service_order">Editar Ordem de Serviço</string>

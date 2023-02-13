@@ -18,9 +18,10 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.app.adapter.toClient
+import com.peyess.salesapp.app.adapter.toUnfinishedSale
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
-import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
+import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
@@ -40,6 +41,7 @@ import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
@@ -47,6 +49,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -61,7 +64,6 @@ private const val lensesTablePrefetchDistance = 10
 
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
-    private val salesApplication: SalesApplication,
     private val authenticationRepository: AuthenticationRepository,
     private val collaboratorsRepository: CollaboratorsRepository,
     private val saleRepository: SaleRepository,
@@ -96,6 +98,8 @@ class MainViewModel @AssistedInject constructor(
             }
         }
 
+        onEach(MainAppState::unfinishedSalesStream) { processUnfinishedSaleStreamResponse(it) }
+
         onAsync(MainAppState::createSaleResponseAsync) { processCreateSaleResponse(it) }
 
         onAsync(MainAppState::serviceOrderListResponseAsync) {
@@ -108,8 +112,8 @@ class MainViewModel @AssistedInject constructor(
 
         onAsync(MainAppState::clientListResponseAsync) { processClientListResponse(it) }
 
-        onAsync(MainAppState::activeSalesStreamAsync) { processActiveSalesStreamResponse(it) }
-        onAsync(MainAppState::activeSalesAsync) { processActiveSalesStream(it) }
+        onAsync(MainAppState::unfinishedSalesStreamAsync) { processActiveSalesStreamResponse(it) }
+        onAsync(MainAppState::unfinishedSalesAsync) { this.updateUnfinishedSales(it) }
 
         loadProductTableStatus()
         loadCurrentCollaborator()
@@ -287,24 +291,30 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    private fun processActiveSalesStreamResponse(response: ActiveSalesStreamResponse) {
+    private fun processActiveSalesStreamResponse(
+        response: ActiveSalesStreamResponse,
+    ) = setState {
         response.fold(
             ifLeft = {
-                setState {
-                    copy(activeSalesStreamAsync = Fail(it.error ?: Throwable(it.description)))
-                }
+                copy(unfinishedSalesStreamAsync = Fail(it.error ?: Throwable(it.description)))
             },
 
-            ifRight = { stream ->
-                stream.execute(Dispatchers.IO) {
-                    copy(activeSalesAsync = it)
-                }
+            ifRight = {
+                copy(unfinishedSalesStream = it)
             }
         )
     }
 
-    private fun processActiveSalesStream(sales: List<ActiveSalesEntity>) = setState {
-        copy(activeSales = sales)
+    private fun processUnfinishedSaleStreamResponse(
+        response: Flow<List<ServiceOrderDBView>>,
+    ) {
+        response.execute {
+            copy(unfinishedSalesAsync = it)
+        }
+    }
+
+    private fun updateUnfinishedSales(sales: List<ServiceOrderDBView>) = setState {
+        copy(unfinishedSales = sales.map { it.toUnfinishedSale() })
     }
 
     private fun processCreateNewClientResponse(
@@ -437,7 +447,7 @@ class MainViewModel @AssistedInject constructor(
             .filterNotNull()
             .map { saleRepository.activeSalesStreamFor(it.id) }
             .execute(Dispatchers.IO) {
-                copy(activeSalesStreamAsync = it)
+                copy(unfinishedSalesStreamAsync = it)
             }
     }
 
@@ -461,17 +471,17 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    fun resumeSale(sale: ActiveSalesEntity) {
+    fun resumeSale(sale: UnfinishedSale) {
         suspend {
-            saleRepository.resumeSale(sale)
+            saleRepository.resumeSale(sale.saleId, sale.serviceOrderId)
         }.execute(Dispatchers.IO) {
             copy(resumeSaleResponseAsync = it)
         }
     }
 
-    fun cancelSale(sale: ActiveSalesEntity) {
+    fun cancelSale(sale: UnfinishedSale) {
         suspend {
-            saleRepository.cancelSale(sale)
+            saleRepository.cancelSale(sale.saleId)
         }.execute(Dispatchers.IO) {
             copy(cancelSaleResponseAsync = it)
         }

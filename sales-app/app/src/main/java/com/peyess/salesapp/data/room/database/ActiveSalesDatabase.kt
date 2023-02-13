@@ -8,6 +8,7 @@ import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesDao
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSODao
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.dao.sale.frames.FramesDataDao
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
@@ -50,7 +51,10 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
     ],
-    version = 60,
+    views = [
+        ServiceOrderDBView::class,
+    ],
+    version = 61,
 )
 @TypeConverters(
     ConverterLocalDate::class,

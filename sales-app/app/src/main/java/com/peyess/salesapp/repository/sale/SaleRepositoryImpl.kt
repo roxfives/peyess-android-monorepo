@@ -237,12 +237,10 @@ class SaleRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun cancelSale(
-        sale: ActiveSalesEntity,
-    ): CancelSaleResponse = Either.catch {
-        activeSalesDao.update(sale.copy(active = false))
+    override suspend fun cancelSale(saleId: String): CancelSaleResponse = Either.catch {
+        activeSalesDao.updateSaleIsActive(saleId, 0)
     }.mapLeft {
-        ActiveSaleNotCanceled(description = "Error cancelling sale ${sale.id}")
+        ActiveSaleNotCanceled(description = "Error cancelling sale $saleId")
     }
 
     override suspend fun findActiveSaleFor(
@@ -252,7 +250,8 @@ class SaleRepositoryImpl @Inject constructor(
         activeSalesDao.activeSalesFor(collaboratorId).map {
             activeServiceOrder = activeSODao.getServiceOrdersForSale(it.id).first()
 
-            it.copy(clientName = activeServiceOrder.clientName)
+//            it.copy(clientName = activeServiceOrder.clientName)
+            it
         }
     }.mapLeft {
         Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
@@ -261,40 +260,26 @@ class SaleRepositoryImpl @Inject constructor(
     override fun activeSalesStreamFor(
         collaboratorId: String,
     ): ActiveSalesStreamResponse = Either.catch {
-        var activeServiceOrder: ActiveSOEntity
-        activeSalesDao.activeSalesStreamFor(collaboratorId).map {
-            it.map { sale ->
-                activeServiceOrder = activeSODao.getServiceOrdersForSale(sale.id).first()
-
-                sale.copy(clientName = activeServiceOrder.clientName)
-            }
-        }
+        activeSODao.streamServiceOrdersForUser(collaboratorId)
     }.mapLeft {
         Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
     }
 
     override suspend fun resumeSale(
-        activeSale: ActiveSalesEntity,
+        saleId: String,
+        serviceOrderId: String,
     ): ResumeSaleResponse = Either.catch {
-        val serviceOrders = activeSODao.getServiceOrdersForSale(activeSale.id)
-
-        if (serviceOrders.isEmpty()) {
-            error("No service order found for sale ${activeSale.id}")
-        }
-
-        val activeSO = serviceOrders.first()
-
-        Timber.i("Resuming sale $activeSale")
-        Timber.i("Resuming so $activeSO")
+        Timber.i("Resuming sale $saleId")
+        Timber.i("Resuming so $serviceOrderId")
 
         salesApplication.dataStoreCurrentSale.edit { prefs ->
-            prefs[currentSaleKey] = activeSale.id
-            prefs[currentSOKey] = activeSO.id
+            prefs[currentSaleKey] = saleId
+            prefs[currentSOKey] = serviceOrderId
         }
 
         Timber.i("Sale resumed")
     }.mapLeft {
-        Unexpected(description = "Error resuming sale ${activeSale.id}", it)
+        Unexpected(description = "Error resuming sale $saleId", it)
     }
 
     override fun updateSO(so: ActiveSOEntity) {

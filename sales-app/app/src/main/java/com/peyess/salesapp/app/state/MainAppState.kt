@@ -8,7 +8,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.app.model.Client
-import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
+import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
@@ -24,6 +24,7 @@ import com.peyess.salesapp.repository.sale.CancelSaleResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.ResumeSaleResponse
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
+import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -73,9 +74,10 @@ data class MainAppState(
     val pickScenario: PickScenario = PickScenario.ServiceOrder,
     val pickedId: String = "",
 
-    val activeSalesStreamAsync: Async<ActiveSalesStreamResponse> = Uninitialized,
-    val activeSalesAsync: Async<List<ActiveSalesEntity>> = Uninitialized,
-    val activeSales: List<ActiveSalesEntity> = emptyList(),
+    val unfinishedSalesStreamAsync: Async<ActiveSalesStreamResponse> = Uninitialized,
+    val unfinishedSalesStream: Flow<List<ServiceOrderDBView>> = emptyFlow(),
+    val unfinishedSalesAsync: Async<List<ServiceOrderDBView>> = Uninitialized,
+    val unfinishedSales: List<UnfinishedSale> = emptyList(),
 
     val cancelSaleResponseAsync: Async<CancelSaleResponse> = Uninitialized,
     val resumeSaleResponseAsync: Async<ResumeSaleResponse> = Uninitialized,
@@ -102,8 +104,8 @@ data class MainAppState(
         currentStoreAsync.invoke()
     }
 
-    val isSearchingForActiveSales = activeSalesStreamAsync is Loading
-    val hasActiveSales = activeSales.isNotEmpty()
+    val isSearchingForActiveSales = unfinishedSalesStreamAsync is Loading
+    val hasActiveSales = unfinishedSales.isNotEmpty()
 
     val isServiceOrderListLoading = serviceOrderListResponseAsync is Loading
 //    val serviceOrderList = serviceOrderListAsync.invoke() ?: emptyList()

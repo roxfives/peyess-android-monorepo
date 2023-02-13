@@ -33,6 +33,13 @@ interface ActiveSalesDao {
     )
     suspend fun getSaleById(id: String): ActiveSalesEntity?
 
+    @Query("""
+        UPDATE ${ActiveSalesEntity.tableName} 
+        SET active = :isActive
+        WHERE id = :saleId
+    """)
+    suspend fun updateSaleIsActive(saleId: String, isActive: Int)
+
     @Insert
     suspend fun add(activeSale: ActiveSalesEntity)
 

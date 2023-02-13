@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +18,12 @@ interface ActiveSODao {
 
     @Query("SELECT * FROM ${ActiveSOEntity.tableName} as so WHERE so.sale_id = :saleId")
     suspend fun getServiceOrdersForSale(saleId: String): List<ActiveSOEntity>
+
+    @Query("""
+        SELECT * FROM ${ServiceOrderDBView.viewName} 
+        WHERE collaboratorId = :collaboratorId AND isActive = 1
+    """)
+    fun streamServiceOrdersForUser(collaboratorId: String): Flow<List<ServiceOrderDBView>>
 
     @Insert
     suspend fun add(activeSale: ActiveSOEntity)

@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 60,
-    "identityHash": "15f2a66343b369dc4993c80d491411ea",
+    "version": 61,
+    "identityHash": "5ca39b1a3904578b83c07d20bca56020",
     "entities": [
       {
         "tableName": "active_sales",
@@ -874,10 +874,15 @@
         "foreignKeys": []
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "service_order_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            sale.id AS saleId,\n            sale.collaborator_uid AS collaboratorId,\n            sale.active AS isActive,\n            service_order.id AS serviceOrderId,\n            service_order.client_name AS clientName\n         FROM active_so AS service_order\n         JOIN active_sales AS sale ON sale.id = service_order.sale_id"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '15f2a66343b369dc4993c80d491411ea')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5ca39b1a3904578b83c07d20bca56020')"
     ]
   }
 }

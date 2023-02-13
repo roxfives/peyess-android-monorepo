@@ -62,7 +62,6 @@ import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -71,7 +70,6 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.screen.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -81,6 +79,7 @@ import com.peyess.salesapp.screen.sale.anamnesis.sixth_step_time.state.SixthStep
 import com.peyess.salesapp.screen.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
+import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import com.peyess.salesapp.ui.component.button.HomeScreenButton
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
@@ -163,8 +162,9 @@ fun HomeScreen(
 
     val totalClients by viewModel.collectAsState(MainAppState::totalClients)
 
-    val activeSales by viewModel.collectAsState(MainAppState::activeSales)
-    val isSearchingForActiveSales by viewModel.collectAsState(MainAppState::isSearchingForActiveSales)
+    val unfinishedSales by viewModel.collectAsState(MainAppState::unfinishedSales)
+    val isSearchingForUnfinishedSales
+        by viewModel.collectAsState(MainAppState::isSearchingForActiveSales)
 
     val dismissActiveSales = remember { mutableStateOf(false) }
     val hasShownActiveSales = remember { mutableStateOf(false) }
@@ -222,9 +222,9 @@ fun HomeScreen(
         }
     }
 
-    val dialogState = rememberMaterialDialogState(initialValue = activeSales.isNotEmpty())
-    LaunchedEffect(dismissActiveSales.value, activeSales) {
-        if (dismissActiveSales.value || activeSales.isEmpty()) {
+    val dialogState = rememberMaterialDialogState(initialValue = unfinishedSales.isNotEmpty())
+    LaunchedEffect(dismissActiveSales.value, unfinishedSales) {
+        if (dismissActiveSales.value || unfinishedSales.isEmpty()) {
             dialogState.hide()
         } else if (!hasShownActiveSales.value && !hasCreatedSale) {
             hasShownActiveSales.value = true
@@ -234,7 +234,7 @@ fun HomeScreen(
 
     ActiveSalesDialog(
         dialogState = dialogState,
-        sales = activeSales,
+        sales = unfinishedSales,
         onDismiss = { dismissActiveSales.value = true },
         onCancelSale = viewModel::cancelSale,
         onResumeSale = {
@@ -681,9 +681,9 @@ private fun NotificationsPanel(
 @Composable
 private fun ActiveSalesDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    sales: List<ActiveSalesEntity> = emptyList(),
-    onCancelSale: (ActiveSalesEntity) -> Unit = {},
-    onResumeSale: (ActiveSalesEntity) -> Unit = {},
+    sales: List<UnfinishedSale> = emptyList(),
+    onCancelSale: (UnfinishedSale) -> Unit = {},
+    onResumeSale: (UnfinishedSale) -> Unit = {},
     onDismiss: () -> Unit = {},
 ) {
     MaterialDialog(
@@ -721,12 +721,15 @@ private fun ActiveSalesDialog(
 @Composable
 private fun ActiveSale(
     modifier: Modifier = Modifier,
-    sale: ActiveSalesEntity,
-    onCancelSale: (ActiveSalesEntity) -> Unit = {},
-    onResumeSale: (ActiveSalesEntity) -> Unit = {},
+    sale: UnfinishedSale = UnfinishedSale(),
+    onCancelSale: (UnfinishedSale) -> Unit = {},
+    onResumeSale: (UnfinishedSale) -> Unit = {},
 ) {
     Row(modifier = modifier) {
-        Text(text = stringResource(id = R.string.home_dialog_sale_found).format(sale.clientName))
+        Text(
+            text = stringResource(id = R.string.home_dialog_sale_found)
+                .format(sale.clientName),
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 

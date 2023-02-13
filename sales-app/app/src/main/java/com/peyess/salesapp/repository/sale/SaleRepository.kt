@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.dao.sale.active_sale.ActiveSalesEntity
 import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
+import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.dao.sale.frames.FramesEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
@@ -22,7 +23,7 @@ typealias ActiveServiceOrderResponse = Either<ActiveServiceOrderError, ActiveSOE
 typealias ActiveServiceOrderStreamResponse = Flow<Either<ActiveServiceOrderError, ActiveSOEntity>>
 
 typealias ActiveSalesResponse = Either<ActiveSaleError, List<ActiveSalesEntity>>
-typealias ActiveSalesStreamResponse = Either<ActiveSaleError, Flow<List<ActiveSalesEntity>>>
+typealias ActiveSalesStreamResponse = Either<ActiveSaleError, Flow<List<ServiceOrderDBView>>>
 
 typealias ServiceOrderUpdateResponse = Either<ActiveServiceOrderError, Unit>
 
@@ -40,13 +41,13 @@ interface SaleRepository {
 
     suspend fun cancelCurrentSale(): CancelSaleResponse
 
-    suspend fun cancelSale(sale: ActiveSalesEntity): CancelSaleResponse
+    suspend fun cancelSale(saleId: String): CancelSaleResponse
 
     suspend fun findActiveSaleFor(collaboratorId: String): ActiveSalesResponse
 
     fun activeSalesStreamFor(collaboratorId: String): ActiveSalesStreamResponse
 
-    suspend fun resumeSale(activeSale: ActiveSalesEntity): ResumeSaleResponse
+    suspend fun resumeSale(saleId: String, serviceOrderId: String): ResumeSaleResponse
 
     fun activeSale(): Flow<ActiveSalesEntity?>
     suspend fun currentSale(): ActiveSaleResponse

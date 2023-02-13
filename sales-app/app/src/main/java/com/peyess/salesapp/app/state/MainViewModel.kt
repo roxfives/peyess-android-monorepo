@@ -16,7 +16,6 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.app.adapter.toClient
 import com.peyess.salesapp.app.adapter.toUnfinishedSale
 import com.peyess.salesapp.auth.StoreAuthState
@@ -76,7 +75,7 @@ class MainViewModel @AssistedInject constructor(
 ): MavericksViewModel<MainAppState>(initialState) {
 
     init {
-        streamActiveSales()
+        streamUnfinishedSales()
 
         onEach(MainAppState::authState) {
             if (it is AppAuthenticationState.Authenticated) {
@@ -442,10 +441,10 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    private fun streamActiveSales() {
+    private fun streamUnfinishedSales() {
         authenticationRepository.currentUser()
             .filterNotNull()
-            .map { saleRepository.activeSalesStreamFor(it.id) }
+            .map { saleRepository.unfinishedSalesStreamFor(it.id) }
             .execute(Dispatchers.IO) {
                 copy(unfinishedSalesStreamAsync = it)
             }

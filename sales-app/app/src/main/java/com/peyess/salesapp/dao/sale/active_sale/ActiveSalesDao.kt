@@ -35,11 +35,11 @@ interface ActiveSalesDao {
 
     @Query("""
         UPDATE ${ActiveSalesEntity.tableName} 
-        SET active = :isActive
+        SET active = :isActive, finished = :isFinished, canceled = :hasCanceled
         WHERE id = :saleId
     """)
-    suspend fun updateSaleIsActive(saleId: String, isActive: Int)
-
+    suspend fun updateSaleStatus(saleId: String, isActive: Int, isFinished: Int, hasCanceled: Int)
+    
     @Insert
     suspend fun add(activeSale: ActiveSalesEntity)
 

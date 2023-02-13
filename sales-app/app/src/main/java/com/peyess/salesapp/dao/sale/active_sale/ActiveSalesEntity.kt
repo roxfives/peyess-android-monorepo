@@ -11,10 +11,13 @@ data class ActiveSalesEntity(
 
     @ColumnInfo(name = "collaborator_uid")
     val collaboratorUid: String = "",
-//    @ColumnInfo(name = "client_name")
-//    val clientName: String = "",
+
     @ColumnInfo(name = "active")
     val active: Boolean = false,
+    @ColumnInfo(name = "finished")
+    val finished: Boolean = false,
+    @ColumnInfo(name = "canceled")
+    val canceled: Boolean = false,
     @ColumnInfo(name = "is_uploading")
     val isUploading: Boolean = false,
 ) {

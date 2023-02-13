@@ -21,9 +21,11 @@ interface ActiveSODao {
 
     @Query("""
         SELECT * FROM ${ServiceOrderDBView.viewName} 
-        WHERE collaboratorId = :collaboratorId AND isActive = 1
+        WHERE collaboratorId = :collaboratorId AND hasFinished = 0
     """)
-    fun streamServiceOrdersForUser(collaboratorId: String): Flow<List<ServiceOrderDBView>>
+    fun streamUnfinishedServiceOrdersForUser(
+        collaboratorId: String,
+    ): Flow<List<ServiceOrderDBView>>
 
     @Insert
     suspend fun add(activeSale: ActiveSOEntity)

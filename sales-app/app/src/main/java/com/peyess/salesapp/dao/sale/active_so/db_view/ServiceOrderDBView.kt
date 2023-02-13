@@ -14,6 +14,7 @@ private const val serviceOrderTable = ActiveSOEntity.tableName
             sale.id AS saleId,
             sale.collaborator_uid AS collaboratorId,
             sale.active AS isActive,
+            sale.finished AS hasFinished,
             service_order.id AS serviceOrderId,
             service_order.client_name AS clientName
          FROM $serviceOrderTable AS service_order
@@ -24,6 +25,7 @@ data class ServiceOrderDBView(
     val saleId: String,
     val collaboratorId: String,
     val isActive: Boolean,
+    val hasFinished: Boolean,
     val serviceOrderId: String,
     val clientName: String,
 ) {

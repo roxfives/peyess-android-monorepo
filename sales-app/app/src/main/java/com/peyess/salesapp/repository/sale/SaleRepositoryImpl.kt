@@ -238,7 +238,7 @@ class SaleRepositoryImpl @Inject constructor(
     }
 
     override suspend fun cancelSale(saleId: String): CancelSaleResponse = Either.catch {
-        activeSalesDao.updateSaleIsActive(saleId, 0)
+        activeSalesDao.updateSaleStatus(saleId, 0, 1, 1)
     }.mapLeft {
         ActiveSaleNotCanceled(description = "Error cancelling sale $saleId")
     }
@@ -257,10 +257,10 @@ class SaleRepositoryImpl @Inject constructor(
         Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
     }
 
-    override fun activeSalesStreamFor(
+    override fun unfinishedSalesStreamFor(
         collaboratorId: String,
     ): ActiveSalesStreamResponse = Either.catch {
-        activeSODao.streamServiceOrdersForUser(collaboratorId)
+        activeSODao.streamUnfinishedServiceOrdersForUser(collaboratorId)
     }.mapLeft {
         Unexpected(description = "Error finding active sale for collaborator $collaboratorId")
     }

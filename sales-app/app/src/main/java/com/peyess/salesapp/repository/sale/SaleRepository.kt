@@ -45,7 +45,7 @@ interface SaleRepository {
 
     suspend fun findActiveSaleFor(collaboratorId: String): ActiveSalesResponse
 
-    fun activeSalesStreamFor(collaboratorId: String): ActiveSalesStreamResponse
+    fun unfinishedSalesStreamFor(collaboratorId: String): ActiveSalesStreamResponse
 
     suspend fun resumeSale(saleId: String, serviceOrderId: String): ResumeSaleResponse
 

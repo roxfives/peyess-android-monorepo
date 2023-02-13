@@ -814,7 +814,13 @@ class ServiceOrderUploader constructor(
         if (sale != null) {
             salesDatabase
                 .activeSalesDao()
-                .update(sale!!.copy(active = false, isUploading = false))
+                .update(
+                    sale!!.copy(
+                        active = false,
+                        finished = true,
+                        isUploading = false,
+                    )
+                )
         }
     }
 }

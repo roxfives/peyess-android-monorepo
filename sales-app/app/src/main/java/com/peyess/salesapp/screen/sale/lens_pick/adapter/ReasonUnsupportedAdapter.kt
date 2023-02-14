@@ -9,9 +9,9 @@ fun ReasonUnsupported.toStringResource(
 ): String {
     return when (this) {
         ReasonUnsupported.LensTypeShouldBeMono ->
-            salesApplication.getString(R.string.lens_incompatible_reason_required_mono)
-        ReasonUnsupported.LensTypeShouldBeMulti ->
             salesApplication.getString(R.string.lens_incompatible_reason_required_multi)
+        ReasonUnsupported.LensTypeShouldBeMulti ->
+            salesApplication.getString(R.string.lens_incompatible_reason_required_mono)
 
         ReasonUnsupported.Diameter ->
             salesApplication.getString(R.string.lens_incompatible_reason_diameter)

@@ -2,6 +2,7 @@ package com.peyess.salesapp.screen.root
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.FabPosition
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -81,8 +82,8 @@ fun SalesAppRoot(
         }
     ) {
         Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colors.background
+            modifier = Modifier.padding(it).fillMaxSize(),
+            color = MaterialTheme.colors.background,
         ) {
             SalesAppNavHost(
                 scaffoldState = scaffoldState,

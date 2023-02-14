@@ -55,6 +55,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +93,7 @@ private val betweenSectionSpacer = 32.dp
 
 private val symptomsButtonSize = 48.dp
 private val symptomsButtonPaddingSize = 12.dp
+private val symptomsButtonSpacer = 2.dp
 
 @Composable
 fun PrescriptionDataScreen(
@@ -401,21 +403,34 @@ private fun PrescriptionScreenDataImpl(
 
         PeyessStepperFooter(
             middle = {
-                IconButton(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colors.primary,
-                            shape = CircleShape,
-                        ),
-                    onClick = onShowSymptoms,
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
+                    IconButton(
                         modifier = Modifier
-                            .size(symptomsButtonSize)
-                            .padding(symptomsButtonPaddingSize),
-                        imageVector = Icons.Filled.Assistant,
-                        contentDescription = "Info",
-                        tint = MaterialTheme.colors.onPrimary,
+                            .background(
+                                color = MaterialTheme.colors.primary,
+                                shape = CircleShape,
+                            ),
+                        onClick = onShowSymptoms,
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(symptomsButtonSize)
+                                .padding(symptomsButtonPaddingSize),
+                            imageVector = Icons.Filled.Assistant,
+                            contentDescription = "Info",
+                            tint = MaterialTheme.colors.onPrimary,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(symptomsButtonSpacer))
+
+                    Text(
+                        text = stringResource(id = R.string.curiosities).lowercase(),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
                     )
                 }
             },

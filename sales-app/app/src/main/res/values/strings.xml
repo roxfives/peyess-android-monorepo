@@ -219,6 +219,7 @@
 
     <!-- UI Component: Frames data   -->
     <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
+    <string name="btn_cancel_frames">Cancelar</string>
 
     <string name="ib_message_less_than_3_5">Armações mais planas possiveis (Evite Nylon)</string>
     <string name="ib_message_between_3_5_and_5">Armações mais planas</string>

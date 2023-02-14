@@ -10,6 +10,7 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepository
 import com.peyess.salesapp.data.repository.local_sale.frames.LocalFramesRepositoryResponse
+import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.screen.sale.frames.data.adapter.toFrames
@@ -225,6 +226,18 @@ class FramesDataViewModel @AssistedInject constructor(
         suspend {
             framesRepository.createFramesIfNotExists(it.serviceOrderId)
             framesRepository.updateFrames(it.frames.toFramesDocument())
+        }.execute(Dispatchers.IO) {
+            copy(
+                finishSettingFramesAsync = it,
+                finishedSettingFrames = it is Success,
+            )
+        }
+    }
+
+    fun onCancel() = withState {
+        suspend {
+            framesRepository.createFramesIfNotExists(it.serviceOrderId)
+            framesRepository.updateFrames(FramesDocument(soId = it.serviceOrderId))
         }.execute(Dispatchers.IO) {
             copy(
                 finishSettingFramesAsync = it,

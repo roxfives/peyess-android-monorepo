@@ -21,7 +21,6 @@ data class PrescriptionDataState(
     val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val prescriptionResponse: PrescriptionData = PrescriptionData(),
 
-    val clientName: Async<String> = Uninitialized,
     val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
     val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
@@ -30,8 +29,10 @@ data class PrescriptionDataState(
 
     val isLoading: Boolean = false,
 ): MavericksState {
-    val saleId: String = activeServiceOrderResponse.saleId
-    val serviceOrderId: String = activeServiceOrderResponse.id
+    val saleId = activeServiceOrderResponse.saleId
+    val serviceOrderId = activeServiceOrderResponse.id
+
+    val clientName = activeServiceOrderResponse.clientName
 
     val isMessageLoading = generalMessage is Loading
 

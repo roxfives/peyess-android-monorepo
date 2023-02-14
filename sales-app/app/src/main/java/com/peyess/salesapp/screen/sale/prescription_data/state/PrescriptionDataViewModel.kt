@@ -58,7 +58,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         loadHasAddition()
         loadAnimation()
         loadMessage()
-        loadClientName()
+//        loadClientName()
         loadLensTypeCategory()
         loadServiceOrderData()
 
@@ -76,7 +76,12 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             loadPrescription(it.id)
         }
         
-        onEach(PrescriptionDataState::lensTypeCategoryName) { mikeMessageAmetropie() }
+        onEach(
+            PrescriptionDataState::lensTypeCategoryName,
+            PrescriptionDataState::clientName,
+        ) { _, _ ->
+            mikeMessageAmetropie()
+        }
     }
 
     private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
@@ -150,13 +155,13 @@ class PrescriptionDataViewModel @AssistedInject constructor(
                 copy(animationId = it)
             }
     }
-
-    private fun loadClientName() = withState {
-        saleRepository.activeSO()
-            .filterNotNull()
-            .map { it.clientName }
-            .execute { copy(clientName = it) }
-    }
+//
+//    private fun loadClientName() = withState {
+//        saleRepository.activeSO()
+//            .filterNotNull()
+//            .map { it.clientName }
+//            .execute { copy(clientName = it) }
+//    }
 
     private fun animationFor(categoryName: LensTypeCategoryName?): Int {
         return when (categoryName) {
@@ -231,9 +236,12 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         }
 
         eyeErrors = leftEyeErrors + rightEyeErrors
-        val clientName = if (it.clientName is Success) it.clientName.invoke() else "cliente"
+        // TODO: use string resource for fallback
+        val clientName = it.clientName.ifBlank { "Olá" }
         val message = if (eyeErrors == "") {
-            salesApplication.getString(R.string.mike_refractive_errors_none).format(clientName)
+            salesApplication
+                .getString(R.string.mike_refractive_errors_none)
+                .format(clientName)
         } else {
             baseMessage.format(clientName, eyeErrors)
         }

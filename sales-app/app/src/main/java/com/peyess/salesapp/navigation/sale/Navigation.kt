@@ -3,6 +3,8 @@ package com.peyess.salesapp.navigation.sale
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import com.peyess.salesapp.navigation.edit_service_order.buildEditServiceOrderNavGraph
+import com.peyess.salesapp.navigation.edit_service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.navigation.pick_client.buildPickClientNavGraph
 import com.peyess.salesapp.navigation.sale.anamnesis.buildAnamnesisNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
@@ -27,4 +29,5 @@ fun buildSaleNavGraph(
     buildServiceOrderNavGraph(modifier, navHostController, builder)
     buildPaymentNavGraph(modifier, navHostController, builder)
     buildAnamnesisNavGraph(modifier, navHostController, builder)
+    buildEditServiceOrderNavGraph(modifier, navHostController, builder)
 }

@@ -169,8 +169,8 @@ fun SalesScreen(
                 )
             },
 
-            onEditServiceOrder = {
-                onEditServiceOrder(it, it)
+            onEditServiceOrder = { saleId, serviceOrderId ->
+                onEditServiceOrder(saleId, serviceOrderId)
             }
         )
     }
@@ -190,7 +190,7 @@ fun SaleList(
     isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
 
-    onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
+    onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
     onStartNewSale: () -> Unit = {},
 ) {
@@ -275,7 +275,7 @@ private fun ServiceOrderCard(
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
-    onEditServiceOrder: (serviceOrderId: String) -> Unit = {},
+    onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -396,7 +396,9 @@ private fun ServiceOrderCard(
             if (BuildConfig.DEBUG) {
                 Button(
                     onClick = {
-                        onEditServiceOrder(purchase.id)
+                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+
+                        onEditServiceOrder(purchase.id, serviceOrderId)
                     },
                 ) {
                     Text(text = "Editar")

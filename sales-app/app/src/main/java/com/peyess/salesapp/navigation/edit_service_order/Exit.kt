@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.sale.edit_service_order
+package com.peyess.salesapp.navigation.edit_service_order
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition

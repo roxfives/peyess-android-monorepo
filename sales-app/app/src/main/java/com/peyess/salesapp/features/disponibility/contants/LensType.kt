@@ -13,5 +13,13 @@ sealed class LensType {
         fun isLensTypeMono(lensType: LensType): Boolean {
             return lensType is MonofocalFar || lensType is MonofocalNear
         }
+
+        fun fromLensName(name: String?): LensType {
+            return when(name?.lowercase() ?: "") {
+                "monofocal" -> MonofocalNear
+                "multifocal" -> MultiFocal
+                else -> None
+            }
+        }
     }
 }

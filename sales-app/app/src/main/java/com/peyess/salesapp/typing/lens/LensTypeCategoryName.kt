@@ -27,7 +27,7 @@ sealed class LensTypeCategoryName {
                 Near -> "perto"
                 Far -> "longe"
                 Multi -> "multifocal"
-                else -> "nonw"
+                else -> "none"
             }
         }
     }

@@ -9,8 +9,8 @@ private fun checkLensTypeMatch(
     prescription: Prescription,
 ): List<Disponibility> {
     return disponibilities.filter {
-        prescription.lensType.isLensTypeMono() && it.isLensTypeMono
-                || !prescription.lensType.isLensTypeMono() && !it.isLensTypeMono
+        (prescription.lensType.isLensTypeMono() && it.isLensTypeMono)
+                || (!prescription.lensType.isLensTypeMono() && !it.isLensTypeMono)
     }
 }
 

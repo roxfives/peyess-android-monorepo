@@ -25,6 +25,7 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.types.Order
+import com.peyess.salesapp.features.disponibility.contants.LensType
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.screen.sale.lens_pick.adapter.buildPrescription
 import com.peyess.salesapp.screen.sale.lens_pick.adapter.toDisponibility
@@ -434,7 +435,7 @@ class LensPickViewModel @AssistedInject constructor(
         val disponibilities = lens.disponibilities.map {
             it.toDisponibility(
                 height = lens.height,
-                lensType = prescription.lensType,
+                lensType = LensType.fromLensName(lens.typeName),
                 alternativeHeights = lens.altHeights,
             )
         }

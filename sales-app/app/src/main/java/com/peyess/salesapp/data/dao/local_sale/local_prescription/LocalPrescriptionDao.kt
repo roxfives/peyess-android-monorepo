@@ -17,9 +17,19 @@ interface LocalPrescriptionDao {
     @Query("SELECT * FROM ${PrescriptionEntity.tableName} as p WHERE p.so_id = :soId ")
     fun getById(soId: String): Flow<PrescriptionEntity?>
 
-    @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} as p WHERE p.so_id = :soId ")
+    @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} as p WHERE p.so_id = :soId")
     fun streamExists(soId: String): Flow<Int>
 
     @Query("SELECT * FROM ${PrescriptionEntity.tableName} as p WHERE p.so_id = :soId ")
     suspend fun getPrescriptionForServiceOrder(soId: String): PrescriptionEntity?
+
+    @Query("""
+        UPDATE ${PrescriptionEntity.tableName}
+        SET has_addition = :hasAddition
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun updateHasAddition(serviceOrderId: String, hasAddition: Int)
+
+    @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} WHERE so_id = :serviceOrderId")
+    suspend fun exitsForServiceOrder(serviceOrderId: String): Int?
 }

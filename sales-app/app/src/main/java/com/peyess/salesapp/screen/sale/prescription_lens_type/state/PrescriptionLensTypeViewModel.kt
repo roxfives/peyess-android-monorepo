@@ -9,6 +9,8 @@ import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
+import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionRepository
+import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.LensTypeCategoriesResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -16,11 +18,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PrescriptionLensTypeViewModel @AssistedInject constructor(
     @Assisted initialState: PrescriptionLensTypeState,
-    val salesApplication: SalesApplication,
+    private val salesApplication: SalesApplication,
     private val salesRepository: SaleRepository,
+    private val prescriptionRepository: LocalPrescriptionRepository,
 ) : MavericksViewModel<PrescriptionLensTypeState>(initialState) {
 
     init {
@@ -155,15 +159,14 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
             salesRepository.updateSO(
                 state.serviceOrder.copy(
                     isLensTypeMono = picked.isMono,
-                    lensTypeCategoryName = LensTypeCategoryName.fromName(picked.name)!!
+                    lensTypeCategoryName = LensTypeCategoryName.fromName(picked.name),
                 )
             )
-        }
 
-//        copy(
-//            typeIdPicked = picked?.id ?: "",
-//            typeCategoryPicked = picked,
-//        )
+            viewModelScope.launch(Dispatchers.IO) {
+                prescriptionRepository.updateHasAddition(state.serviceOrderId, !picked.isMono)
+            }
+        }
     }
 
     fun onNext() = setState {

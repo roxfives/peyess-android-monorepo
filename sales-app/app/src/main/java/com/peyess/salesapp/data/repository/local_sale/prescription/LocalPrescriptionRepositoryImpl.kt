@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.repository.local_sale.prescription
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
@@ -22,6 +23,11 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
     override suspend fun createPrescriptionForServiceOrder(
         serviceOrderId: String,
     ): LocalPrescriptionInsertResponse = Either.catch {
+        val exists = (localPrescriptionDao.exitsForServiceOrder(serviceOrderId) ?: 0) > 0
+        if (exists) {
+            return@catch
+        }
+
         val uniqueId = firebaseManager.uniqueId()
         val prescription = PrescriptionEntity(
             id = uniqueId,
@@ -45,6 +51,25 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
             description = "Unexpected error while updating prescription for service order ${prescription.soId}",
             error = it,
         )
+    }
+
+    override suspend fun updateHasAddition(
+        serviceOrderId: String,
+        hasAddition: Boolean
+    ): LocalPrescriptionUpdateResponse = either {
+        val exists = (localPrescriptionDao.exitsForServiceOrder(serviceOrderId) ?: 0) > 0
+        if (!exists) {
+            createPrescriptionForServiceOrder(serviceOrderId).bind()
+        }
+
+        val asInt = if (hasAddition) 1 else 0
+        Either.catch { localPrescriptionDao.updateHasAddition(serviceOrderId, asInt) }
+            .mapLeft {
+                Unexpected(
+                    description = "Unexpected error while updating prescription for service order $serviceOrderId",
+                    error = it,
+                )
+            }.bind()
     }
 
     override fun streamPrescriptionForServiceOrderExists(

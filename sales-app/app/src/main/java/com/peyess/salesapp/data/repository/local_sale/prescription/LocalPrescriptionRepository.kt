@@ -26,6 +26,11 @@ interface LocalPrescriptionRepository {
         prescription: LocalPrescriptionDocument,
     ): LocalPrescriptionUpdateResponse
 
+    suspend fun updateHasAddition(
+        serviceOrderId: String,
+        hasAddition: Boolean,
+    ): LocalPrescriptionUpdateResponse
+
     fun streamPrescriptionForServiceOrderExists(
         soId: String,
     ): LocalPrescriptionStreamExistsResponse

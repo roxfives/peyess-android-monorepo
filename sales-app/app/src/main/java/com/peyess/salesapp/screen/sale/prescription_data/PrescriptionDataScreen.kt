@@ -6,6 +6,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -21,15 +22,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
@@ -37,7 +39,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Assistant
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.SmartDisplay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,8 +87,11 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
 
-internal val sectionTitleSpacer = 16.dp
-internal val betweenSectionSpacer = 32.dp
+private val sectionTitleSpacer = 16.dp
+private val betweenSectionSpacer = 32.dp
+
+private val symptomsButtonSize = 48.dp
+private val symptomsButtonPaddingSize = 12.dp
 
 @Composable
 fun PrescriptionDataScreen(
@@ -393,14 +400,26 @@ private fun PrescriptionScreenDataImpl(
         Spacer(modifier = Modifier.weight(1f))
 
         PeyessStepperFooter(
-            startButton = {
-                OutlinedButton(
-                    modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+            middle = {
+                IconButton(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colors.primary,
+                            shape = CircleShape,
+                        ),
                     onClick = onShowSymptoms,
                 ) {
-                    Text(text = stringResource(id = R.string.curiosities))
+                    Icon(
+                        modifier = Modifier
+                            .size(symptomsButtonSize)
+                            .padding(symptomsButtonPaddingSize),
+                        imageVector = Icons.Filled.Assistant,
+                        contentDescription = "Info",
+                        tint = MaterialTheme.colors.onPrimary,
+                    )
                 }
             },
+
             onNext = onNext,
         )
     }

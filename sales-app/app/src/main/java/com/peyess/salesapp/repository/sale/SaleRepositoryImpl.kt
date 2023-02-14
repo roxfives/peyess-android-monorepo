@@ -235,7 +235,7 @@ class SaleRepositoryImpl @Inject constructor(
 
     override suspend fun cancelCurrentSale(): CancelSaleResponse {
         return currentSale().flatMap {
-            val canceled = it.copy(active = false)
+            val canceled = it.copy(active = false, finished = true, canceled = true)
 
             try {
                 activeSalesDao.update(canceled).right()

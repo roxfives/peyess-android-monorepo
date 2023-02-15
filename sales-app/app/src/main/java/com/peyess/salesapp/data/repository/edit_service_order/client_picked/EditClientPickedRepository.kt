@@ -2,7 +2,6 @@ package com.peyess.salesapp.data.repository.edit_service_order.client_picked
 
 import arrow.core.Either
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
-import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedEntity
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.InsertClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.UpdateClientPickedError
@@ -17,7 +16,7 @@ typealias EditClientPickedUpdateResponse = Either<UpdateClientPickedError, Unit>
 
 interface EditClientPickedRepository {
     suspend fun insertClientPicked(
-        clientPicked: EditClientPickedEntity,
+        clientPicked: EditClientPickedDocument,
     ): EditClientPickedAddResponse
 
     suspend fun findClientPickedForServiceOrder(

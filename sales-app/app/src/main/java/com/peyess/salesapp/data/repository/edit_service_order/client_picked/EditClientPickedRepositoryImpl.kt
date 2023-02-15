@@ -5,7 +5,9 @@ import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.edit_service_order.client_picked.toEditClientPickedDocument
+import com.peyess.salesapp.data.adapter.edit_service_order.client_picked.toEditClientPickedEntity
 import com.peyess.salesapp.data.dao.edit_service_order.client_picked.EditClientPickedDao
+import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedEntity
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.InsertClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
@@ -19,9 +21,9 @@ class EditClientPickedRepositoryImpl @Inject constructor(
     private val clientPickedDao: EditClientPickedDao
 ): EditClientPickedRepository {
     override suspend fun insertClientPicked(
-        clientPicked: EditClientPickedEntity,
+        clientPicked: EditClientPickedDocument,
     ): EditClientPickedAddResponse = Either.catch {
-        clientPickedDao.insertClientPicked(clientPicked)
+        clientPickedDao.insertClientPicked(clientPicked.toEditClientPickedEntity())
     }.mapLeft {
         InsertClientPickedError.Unexpected(
             description = "Unexpected error when inserting client picked $clientPicked",

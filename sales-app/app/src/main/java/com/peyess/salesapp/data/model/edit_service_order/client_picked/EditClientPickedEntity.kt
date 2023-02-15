@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.model.edit_service_order.client_picked
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.typing.sale.ClientRole
 
 @Entity(
@@ -25,7 +26,7 @@ data class EditClientPickedEntity(
     val name: String = "",
 
     @ColumnInfo(name = "sex")
-    val sex: String = "",
+    val sex: Sex = Sex.Unknown,
 
     @ColumnInfo(name = "email")
     val email: String = "",

@@ -579,6 +579,10 @@ class ServiceOrderFetcher @Inject constructor(
             fetchClient(serviceOrder.responsibleUid).bind()
         }
         val witness = serviceOrder.witnessUid.ifBlank { null }?.let { fetchClient(it).bind() }
+        val payers = purchase.payerUids.filter {
+            it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
+        }.map { fetchClient(it).bind() }
+
 
         val lens = fetchLocalLens(serviceOrder.leftProducts.lenses.id).bind()
 
@@ -598,7 +602,7 @@ class ServiceOrderFetcher @Inject constructor(
         val localSale = buildLocalSale(purchase)
 
 
-        listOfNotNull(client, responsible, witness).forEach {
+        (listOfNotNull(client, responsible, witness) + payers).forEach {
             addClient(it).bind()
         }
 

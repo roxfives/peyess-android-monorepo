@@ -48,7 +48,7 @@ object AppModule {
         return Room.databaseBuilder(
                 context,
                 EditSaleDatabase::class.java,
-                "picture_upload.db",
+                "edit_sales.db",
             ).fallbackToDestructiveMigration()
             .build()
     }

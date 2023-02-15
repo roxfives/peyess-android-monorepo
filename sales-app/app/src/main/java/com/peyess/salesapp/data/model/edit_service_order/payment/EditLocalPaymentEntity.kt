@@ -9,15 +9,15 @@ import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 
 @Entity(
     tableName = EditLocalPaymentEntity.tableName,
-    foreignKeys = [
-        ForeignKey(
-            entity = LocalClientEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["client_id"],
-            onDelete = ForeignKey.NO_ACTION,
-            onUpdate = ForeignKey.NO_ACTION,
-        ),
-    ],
+//    foreignKeys = [
+//        ForeignKey(
+//            entity = LocalClientEntity::class,
+//            parentColumns = ["id"],
+//            childColumns = ["client_id"],
+//            onDelete = ForeignKey.NO_ACTION,
+//            onUpdate = ForeignKey.NO_ACTION,
+//        ),
+//    ],
 )
 data class EditLocalPaymentEntity(
     @PrimaryKey(autoGenerate = true)

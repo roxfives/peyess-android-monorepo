@@ -9,7 +9,9 @@ import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.local_sale.frames.LocalFramesDocument
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
@@ -24,6 +26,7 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
@@ -71,6 +74,7 @@ import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepository
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.ClientRole
 import javax.inject.Inject
 
 private typealias FindLocalSaleResponse = Either<FindSaleError, Boolean>
@@ -124,6 +128,7 @@ class ServiceOrderFetcher @Inject constructor(
     private val localProductPickedRepository: EditProductPickedRepository,
     private val localServiceOrderRepository: EditServiceOrderRepository,
     private val localSaleRepository: EditSaleRepository,
+    private val localClientPickedRepository: EditClientPickedRepository,
 ) {
     private suspend fun saleExistsLocally(saleId: String): FindLocalSaleResponse {
         return localSaleRepository.saleExits(saleId).mapLeft {
@@ -438,6 +443,24 @@ class ServiceOrderFetcher @Inject constructor(
         )
     }
 
+    private fun buildClientPicked(
+        serviceOrderId: String,
+        role: ClientRole,
+        localClient: LocalClientDocument,
+    ): EditClientPickedDocument {
+        return EditClientPickedDocument(
+            id = localClient.id,
+            soId = serviceOrderId,
+            clientRole = role,
+            nameDisplay = localClient.nameDisplay,
+            name = localClient.name,
+            sex = localClient.sex,
+            email = localClient.email,
+            document = localClient.document,
+            shortAddress = localClient.shortAddress,
+        )
+    }
+
     private suspend fun addClient(
         client: ClientDocument,
     ): AddAllClientsResponse {
@@ -573,6 +596,19 @@ class ServiceOrderFetcher @Inject constructor(
             }
     }
 
+    private suspend fun addClientPicked(
+        pickedClient: EditClientPickedDocument,
+    ): AddServiceOrderResponse {
+        return localClientPickedRepository
+            .insertClientPicked(pickedClient)
+            .mapLeft {
+                AddServiceOrderError.Unexpected(
+                    description = "Error adding service order to local database",
+                    throwable = it.error,
+                )
+            }
+    }
+
     suspend fun fetchFullSale(
         serviceOrderId: String,
         purchaseId: String,
@@ -618,6 +654,28 @@ class ServiceOrderFetcher @Inject constructor(
 
         val localServiceOrder = buildLocalServiceOrder(serviceOrder, lens)
         val localSale = buildLocalSale(purchase)
+
+        val clientPicked = buildClientPicked(
+            serviceOrderId = serviceOrderId,
+            role = ClientRole.User,
+            localClient = client.toLocalClientDocument(),
+        )
+        val responsiblePicked = buildClientPicked(
+            serviceOrderId = serviceOrderId,
+            role = ClientRole.Responsible,
+            localClient = responsible?.toLocalClientDocument() ?: client.toLocalClientDocument(),
+        )
+        val witnessPicked = witness?.let {
+            buildClientPicked(
+                serviceOrderId = serviceOrderId,
+                role = ClientRole.Witness,
+                localClient = it.toLocalClientDocument(),
+            )
+        }
+        
+        addClientPicked(clientPicked).bind()
+        addClientPicked(responsiblePicked).bind()
+        witnessPicked?.let { addClientPicked(it).bind() }
 
         addSale(localSale).bind()
         addServiceOrder(localServiceOrder).bind()

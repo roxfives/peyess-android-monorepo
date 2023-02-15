@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.product_picked.er
 
 sealed interface EditProductPickedRepositoryError {
     val description: String
-    val error: Throwable?
+    val error: Throwable
 }
 
 sealed class InsertProductPickedError: EditProductPickedRepositoryError {

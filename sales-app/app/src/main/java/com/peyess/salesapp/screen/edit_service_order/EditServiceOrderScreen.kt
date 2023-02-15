@@ -29,10 +29,19 @@ fun EditServiceOrderScreen(
     val serviceOrderId by viewModel.collectAsState(EditServiceOrderState::serviceOrderId)
 
     val prescription by viewModel.collectAsState(EditServiceOrderState::prescription)
+
+    val lens by viewModel.collectAsState(EditServiceOrderState::lens)
+    val coloring by viewModel.collectAsState(EditServiceOrderState::coloring)
+    val treatment by viewModel.collectAsState(EditServiceOrderState::treatment)
+    val frames by viewModel.collectAsState(EditServiceOrderState::frames)
     
     ServiceOrderUI(
         modifier = modifier,
 
         prescription = prescription,
+        lens = lens,
+        coloring = coloring,
+        treatment = treatment,
+        frames = frames,
     )
 }

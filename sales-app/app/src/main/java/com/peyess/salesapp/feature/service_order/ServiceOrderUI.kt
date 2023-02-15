@@ -2062,7 +2062,7 @@ private fun FramesCardPreview() {
         FramesCard(
             modifier = Modifier.fillMaxWidth(),
             frames = Frames(
-                description = "Descrição",
+                design = "Descrição",
                 reference = "Referência",
                 tagCode = "XXXXXX",
                 value = 450.0,

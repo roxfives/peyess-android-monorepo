@@ -38,3 +38,12 @@ sealed class ReadSaleError: EditSaleRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class SaleExistsError: EditSaleRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ReadSaleError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

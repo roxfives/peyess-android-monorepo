@@ -24,4 +24,10 @@ interface EditSaleDao {
         WHERE id = :id
     """)
     suspend fun updateIsUploading(id: String, isUploading: Boolean)
+
+    @Query("""
+        SELECT COUNT(*) FROM ${EditSaleEntity.tableName}
+        WHERE id = :id
+    """)
+    suspend fun saleExists(id: String): Int
 }

@@ -11,6 +11,7 @@ import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
 import com.peyess.salesapp.data.model.edit_service_order.sale.EditSaleEntity
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.InsertSaleError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.ReadSaleError
+import com.peyess.salesapp.data.repository.edit_service_order.sale.error.SaleExistsError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.UpdateSaleError
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -26,6 +27,14 @@ class EditSaleRepositoryImpl @Inject constructor(
         InsertSaleError.Unexpected(
             description = "Error while inserting sale $sale",
             throwable = it,
+        )
+    }
+
+    override suspend fun saleExits(id: String): SaleExistsResponse = Either.catch {
+        saleDao.saleExists(id) > 0
+    }.mapLeft {
+        SaleExistsError.Unexpected(
+            description = "Error while checking if sale exists with id $id",
         )
     }
 

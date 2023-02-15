@@ -20,6 +20,7 @@ import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.client_picked.EditClientPickedDao
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
@@ -56,6 +57,8 @@ import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepositoryImpl
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepositoryImpl
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepositoryImpl
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepositoryImpl
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
@@ -534,6 +537,16 @@ object RepositoryModule {
     ): EditProductPickedRepository {
         return EditProductPickedRepositoryImpl(
             productPickedDao = editProductPickedDao,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditClientPickedRepository(
+        editClientPickedDao: EditClientPickedDao,
+    ): EditClientPickedRepository {
+        return EditClientPickedRepositoryImpl(
+            clientPickedDao = editClientPickedDao,
         )
     }
 }

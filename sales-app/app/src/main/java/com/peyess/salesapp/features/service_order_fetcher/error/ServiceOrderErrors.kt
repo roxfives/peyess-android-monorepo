@@ -117,102 +117,110 @@ sealed class SaleFetcherReadLensError: ServiceOrderErrors {
     }
 }
 
-sealed class AddAllClientsError(): ServiceOrderErrors {
+sealed class AddAllClientsError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddAllClientsError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddFramesError(): ServiceOrderErrors {
+sealed class AddFramesError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddFramesError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddLensComparisonError(): ServiceOrderErrors {
+sealed class AddLensComparisonError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddLensComparisonError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddPaymentsError(): ServiceOrderErrors {
+sealed class AddPaymentsError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddPaymentsError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddPaymentDiscountError(): ServiceOrderErrors {
+sealed class AddPaymentDiscountError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddPaymentDiscountError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddPaymentFeeError(): ServiceOrderErrors {
+sealed class AddPaymentFeeError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddPaymentFeeError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddPositioningError(): ServiceOrderErrors {
+sealed class AddPositioningError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddPositioningError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddPrescriptionError(): ServiceOrderErrors {
+sealed class AddPrescriptionError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddPrescriptionError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddProductPickedError(): ServiceOrderErrors {
+sealed class AddProductPickedError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddProductPickedError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddSaleError(): ServiceOrderErrors {
+sealed class AddSaleError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddSaleError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
-sealed class AddServiceOrderError(): ServiceOrderErrors {
+sealed class AddServiceOrderError: ServiceOrderErrors {
     data class Unexpected(
         override val description: String,
-        val throwable: Throwable?,
+        val throwable: Throwable? = null,
     ): AddServiceOrderError() {
         override val error = throwable ?: Throwable(description)
     }
 }
 
+sealed class FindSaleError: ServiceOrderErrors {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): FindSaleError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

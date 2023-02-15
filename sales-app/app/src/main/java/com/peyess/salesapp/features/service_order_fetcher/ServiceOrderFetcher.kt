@@ -33,6 +33,8 @@ import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPo
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.sale.EditSaleRepository
+import com.peyess.salesapp.data.repository.edit_service_order.sale.error.ReadSaleError
+import com.peyess.salesapp.data.repository.edit_service_order.sale.error.SaleExistsError
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepository
 import com.peyess.salesapp.data.repository.lenses.room.LensNotFound
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -54,6 +56,7 @@ import com.peyess.salesapp.features.service_order_fetcher.error.AddPrescriptionE
 import com.peyess.salesapp.features.service_order_fetcher.error.AddProductPickedError
 import com.peyess.salesapp.features.service_order_fetcher.error.AddSaleError
 import com.peyess.salesapp.features.service_order_fetcher.error.AddServiceOrderError
+import com.peyess.salesapp.features.service_order_fetcher.error.FindSaleError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadClientError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadLensError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadMeasuringError
@@ -69,6 +72,8 @@ import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import javax.inject.Inject
+
+private typealias FindLocalSaleResponse = Either<FindSaleError, Boolean>
 
 private typealias FetchServiceOrderResponse =
         Either<SaleFetcherReadServiceOrderError, ServiceOrderDocument>
@@ -120,6 +125,15 @@ class ServiceOrderFetcher @Inject constructor(
     private val localServiceOrderRepository: EditServiceOrderRepository,
     private val localSaleRepository: EditSaleRepository,
 ) {
+    private suspend fun saleExistsLocally(saleId: String): FindLocalSaleResponse {
+        return localSaleRepository.saleExits(saleId).mapLeft {
+                FindSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+        }
+    }
+
     private suspend fun fetchServiceOrder(
         serviceOrderId: String,
     ): FetchServiceOrderResponse = either {
@@ -563,14 +577,13 @@ class ServiceOrderFetcher @Inject constructor(
         serviceOrderId: String,
         purchaseId: String,
     ): ServiceOrderFetchResponse = either {
+        val saleExists = saleExistsLocally(purchaseId).bind()
+        if (saleExists) {
+            return@either
+        }
+
         val serviceOrder = fetchServiceOrder(serviceOrderId).bind()
         val purchase = fetchPurchase(purchaseId).bind()
-
-        val prescription = fetchPrescription(serviceOrder.prescriptionId).bind()
-        val leftPositioning = fetchPositioning(serviceOrder.lPositioningId).bind()
-        val rightPositioning = fetchPositioning(serviceOrder.rPositioningId).bind()
-        val leftMeasuring = fetchMeasuring(serviceOrder.lMeasuringId).bind()
-        val rightMeasuring = fetchMeasuring(serviceOrder.rMeasuringId).bind()
 
         val client = fetchClient(serviceOrder.clientUid).bind()
         val responsible = if (serviceOrder.clientUid == serviceOrder.responsibleUid) {
@@ -583,6 +596,11 @@ class ServiceOrderFetcher @Inject constructor(
             it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
         }.map { fetchClient(it).bind() }
 
+        val prescription = fetchPrescription(serviceOrder.prescriptionId).bind()
+        val leftPositioning = fetchPositioning(serviceOrder.lPositioningId).bind()
+        val rightPositioning = fetchPositioning(serviceOrder.rPositioningId).bind()
+        val leftMeasuring = fetchMeasuring(serviceOrder.lMeasuringId).bind()
+        val rightMeasuring = fetchMeasuring(serviceOrder.rMeasuringId).bind()
 
         val lens = fetchLocalLens(serviceOrder.leftProducts.lenses.id).bind()
 
@@ -601,13 +619,12 @@ class ServiceOrderFetcher @Inject constructor(
         val localServiceOrder = buildLocalServiceOrder(serviceOrder, lens)
         val localSale = buildLocalSale(purchase)
 
+        addSale(localSale).bind()
+        addServiceOrder(localServiceOrder).bind()
 
         (listOfNotNull(client, responsible, witness) + payers).forEach {
             addClient(it).bind()
         }
-
-        addSale(localSale).bind()
-        addServiceOrder(localServiceOrder).bind()
 
         addFrames(localFrames).bind()
         addLensComparison(localComparison).bind()

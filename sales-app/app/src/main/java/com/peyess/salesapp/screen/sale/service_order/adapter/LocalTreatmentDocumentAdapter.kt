@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.service_order.adapter
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.screen.sale.service_order.model.Treatment
+import com.peyess.salesapp.feature.service_order.model.Treatment
 
 fun LocalLensTreatmentDocument.toTreatment(): Treatment {
     return Treatment(

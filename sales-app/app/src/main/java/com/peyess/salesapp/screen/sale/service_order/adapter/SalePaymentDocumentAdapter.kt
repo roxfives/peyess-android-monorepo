@@ -2,7 +2,7 @@ package com.peyess.salesapp.screen.sale.service_order.adapter
 
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
-import com.peyess.salesapp.screen.sale.service_order.model.Payment
+import com.peyess.salesapp.feature.service_order.model.Payment
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 import com.peyess.salesapp.typing.sale.PaymentMethodType
 

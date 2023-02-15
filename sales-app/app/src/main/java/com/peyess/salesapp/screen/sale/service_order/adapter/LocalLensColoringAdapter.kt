@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.service_order.adapter
 
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.screen.sale.service_order.model.Coloring
+import com.peyess.salesapp.feature.service_order.model.Coloring
 
 fun LocalLensColoringDocument.toColoring(): Coloring {
     return Coloring(

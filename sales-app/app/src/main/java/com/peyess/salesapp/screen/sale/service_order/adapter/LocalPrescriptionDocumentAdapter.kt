@@ -4,7 +4,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
-import com.peyess.salesapp.screen.sale.service_order.model.Prescription
+import com.peyess.salesapp.feature.service_order.model.Prescription
 import java.time.ZonedDateTime
 
 fun LocalPrescriptionDocument.toPictureUploadDocument(

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.service_order.model
+package com.peyess.salesapp.feature.service_order.model
 
 data class Lens(
     val id: String = "",

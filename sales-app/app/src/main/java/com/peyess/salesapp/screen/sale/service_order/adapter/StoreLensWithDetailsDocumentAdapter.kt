@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.service_order.adapter
 
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.screen.sale.service_order.model.Lens
+import com.peyess.salesapp.feature.service_order.model.Lens
 
 fun StoreLensWithDetailsDocument.toLens(): Lens {
     return Lens(

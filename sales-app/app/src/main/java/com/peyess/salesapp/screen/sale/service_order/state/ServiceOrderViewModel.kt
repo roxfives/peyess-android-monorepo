@@ -52,11 +52,11 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toPictureUploadDocu
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPrescription
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLocalPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
-import com.peyess.salesapp.screen.sale.service_order.model.Coloring
-import com.peyess.salesapp.screen.sale.service_order.model.Frames
-import com.peyess.salesapp.screen.sale.service_order.model.Lens
-import com.peyess.salesapp.screen.sale.service_order.model.Payment
-import com.peyess.salesapp.screen.sale.service_order.model.Treatment
+import com.peyess.salesapp.feature.service_order.model.Coloring
+import com.peyess.salesapp.feature.service_order.model.Frames
+import com.peyess.salesapp.feature.service_order.model.Lens
+import com.peyess.salesapp.feature.service_order.model.Payment
+import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.screen.sale.service_order.utils.SaleDataGenerationResponse
 import com.peyess.salesapp.screen.sale.service_order.utils.ServiceOrderUploader
 import com.peyess.salesapp.features.pdf.service_order.buildHtml

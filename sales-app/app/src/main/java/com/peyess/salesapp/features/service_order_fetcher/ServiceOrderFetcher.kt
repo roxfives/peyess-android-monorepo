@@ -654,22 +654,22 @@ class ServiceOrderFetcher @Inject constructor(
 
         val localServiceOrder = buildLocalServiceOrder(serviceOrder, lens)
         val localSale = buildLocalSale(purchase)
-
+        
         val clientPicked = buildClientPicked(
-            serviceOrderId = serviceOrderId,
-            role = ClientRole.User,
-            localClient = client.toLocalClientDocument(),
+            serviceOrderId = serviceOrderId, 
+            role = ClientRole.User, 
+            localClient = client.toLocalClientDocument(), 
         )
         val responsiblePicked = buildClientPicked(
-            serviceOrderId = serviceOrderId,
-            role = ClientRole.Responsible,
-            localClient = responsible?.toLocalClientDocument() ?: client.toLocalClientDocument(),
+            serviceOrderId = serviceOrderId, 
+            role = ClientRole.Responsible, 
+            localClient = responsible?.toLocalClientDocument() ?: client.toLocalClientDocument(), 
         )
-        val witnessPicked = witness?.let {
+        val witnessPicked = witness?.let { 
             buildClientPicked(
-                serviceOrderId = serviceOrderId,
-                role = ClientRole.Witness,
-                localClient = it.toLocalClientDocument(),
+                serviceOrderId = serviceOrderId, 
+                role = ClientRole.Witness, 
+                localClient = it.toLocalClientDocument(), 
             )
         }
         

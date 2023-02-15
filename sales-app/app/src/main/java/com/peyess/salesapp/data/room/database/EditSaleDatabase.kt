@@ -15,7 +15,6 @@ import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
 import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
 import com.peyess.salesapp.data.model.edit_service_order.frames.EditFramesDataEntity
 import com.peyess.salesapp.data.model.edit_service_order.lens_comparison.EditLensComparisonEntity
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentDBView
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
 import com.peyess.salesapp.data.model.edit_service_order.payment_discount.EditOverallDiscountEntity
 import com.peyess.salesapp.data.model.edit_service_order.payment_fee.EditPaymentFeeEntity
@@ -51,11 +50,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalClientEntity::class,
     ],
 
-    views = [
-        EditLocalPaymentDBView::class,
-    ],
-
-    version = 6,
+    version = 7,
 )
 @TypeConverters(
     ConverterUri::class,

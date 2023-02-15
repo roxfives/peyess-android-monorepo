@@ -34,6 +34,8 @@ fun EditServiceOrderScreen(
     val coloring by viewModel.collectAsState(EditServiceOrderState::coloring)
     val treatment by viewModel.collectAsState(EditServiceOrderState::treatment)
     val frames by viewModel.collectAsState(EditServiceOrderState::frames)
+
+    val payments by viewModel.collectAsState(EditServiceOrderState::payments)
     
     ServiceOrderUI(
         modifier = modifier,
@@ -43,5 +45,7 @@ fun EditServiceOrderScreen(
         coloring = coloring,
         treatment = treatment,
         frames = frames,
+
+        payments = payments,
     )
 }

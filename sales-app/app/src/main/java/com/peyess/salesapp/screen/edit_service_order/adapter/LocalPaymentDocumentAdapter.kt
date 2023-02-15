@@ -1,16 +1,16 @@
-package com.peyess.salesapp.data.adapter.edit_service_order.payment
+package com.peyess.salesapp.screen.edit_service_order.adapter
 
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentDBView
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import com.peyess.salesapp.feature.service_order.model.Payment
 
-fun EditLocalPaymentDBView.toLocalPaymentDocument(): LocalPaymentDocument {
-    return LocalPaymentDocument(
+fun LocalPaymentDocument.toPayment(): Payment {
+    return Payment(
         id = id,
         saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
         clientName = clientName,
-        clientAddress = "$clientCity, $clientState",
+        clientAddress = clientAddress,
         methodId = methodId,
         methodName = methodName,
         methodType = methodType,

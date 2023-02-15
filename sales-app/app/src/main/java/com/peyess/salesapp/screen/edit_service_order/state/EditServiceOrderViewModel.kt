@@ -7,6 +7,8 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
@@ -19,6 +21,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
 import com.peyess.salesapp.screen.edit_service_order.adapter.toFrames
+import com.peyess.salesapp.screen.edit_service_order.adapter.toPayment
 import com.peyess.salesapp.screen.edit_service_order.adapter.toPrescription
 import com.peyess.salesapp.screen.edit_service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
@@ -41,6 +44,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val editPrescriptionRepository: EditPrescriptionRepository,
     private val editProductPickedRepository: EditProductPickedRepository,
     private val editFramesDataRepository: EditFramesDataRepository,
+    private val editLocalPaymentRepository: EditLocalPaymentRepository,
 
     private val localLensesRepository: LocalLensesRepository,
 ): MavericksViewModel<EditServiceOrderState>(initialState) {
@@ -66,6 +70,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                 loadPrescription(it.id)
                 loadLensProducts(it.id)
                 loadFrames(it.id)
+
+                streamPayments(it.saleId)
             }
         }
 
@@ -91,6 +97,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onAsync(EditServiceOrderState::coloringResponseAsync) { processColoringResponse(it) }
         onAsync(EditServiceOrderState::treatmentResponseAsync) { processTreatmentResponse(it) }
         onAsync(EditServiceOrderState::framesResponseAsync) { processFramesResponse(it) }
+        onAsync(EditServiceOrderState::paymentsResponseAsync) { processPaymentsResponse(it) }
     }
 
     private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String) {
@@ -243,6 +250,27 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
             ifRight = {
                 copy(frames = it.toFrames())
+            },
+        )
+    }
+
+    private fun streamPayments(saleId: String) {
+        editLocalPaymentRepository.streamPaymentsForSale(saleId)
+            .execute(Dispatchers.IO) {
+                copy(paymentsResponseAsync = it)
+            }
+    }
+
+    private fun processPaymentsResponse(
+        response: EditLocalPaymentFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(paymentsResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(payments = it.map { p -> p.toPayment() })
             },
         )
     }

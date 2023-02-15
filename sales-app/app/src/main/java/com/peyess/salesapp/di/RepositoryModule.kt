@@ -479,9 +479,11 @@ object RepositoryModule {
     @Provides
     fun provideEditLocalPaymentRepository(
         editLocalPaymentDao: EditLocalPaymentDao,
+        localClientDao: LocalClientDao,
     ): EditLocalPaymentRepository {
         return EditLocalPaymentRepositoryImpl(
             editLocalPaymentDao = editLocalPaymentDao,
+            localClientDao = localClientDao,
         )
     }
 

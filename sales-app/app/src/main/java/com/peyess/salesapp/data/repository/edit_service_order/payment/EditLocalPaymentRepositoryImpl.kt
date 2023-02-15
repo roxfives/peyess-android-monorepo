@@ -6,6 +6,7 @@ import arrow.core.right
 import com.peyess.salesapp.data.adapter.edit_service_order.payment.toEditLocalPaymentEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.payment.toLocalPaymentDocument
 import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
+import com.peyess.salesapp.data.dao.local_client.LocalClientDao
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.InsertLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
@@ -19,6 +20,7 @@ private const val attemptThreshold = 10L
 
 class EditLocalPaymentRepositoryImpl @Inject constructor(
     private val editLocalPaymentDao: EditLocalPaymentDao,
+    private val localClientDao: LocalClientDao,
 ): EditLocalPaymentRepository {
     override suspend fun addPayment(
         payment: LocalPaymentDocument,
@@ -35,7 +37,16 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         saleId: String,
     ): EditLocalPaymentFetchResponse = Either.catch {
         editLocalPaymentDao.paymentsForSale(saleId).map {
-            it.toLocalPaymentDocument()
+            val client = localClientDao.clientById(it.clientId)
+            if (client == null) {
+                error("Client ${it.clientId} not found for payment $it")
+            }
+
+            it.toLocalPaymentDocument(
+                clientDocument = client.document,
+                clientName = client.name,
+                clientAddress = "${client.city}, ${client.state}",
+            )
         }
     }.mapLeft {
         ReadLocalPaymentError.Unexpected(
@@ -50,7 +61,16 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         return editLocalPaymentDao.streamPaymentsForSale(saleId)
             .map {
                 it.map { payment ->
-                    payment.toLocalPaymentDocument()
+                    val client = localClientDao.clientById(payment.clientId)
+                    if (client == null) {
+                        error("Client ${payment.clientId} not found for payment $payment")
+                    }
+
+                    payment.toLocalPaymentDocument(
+                        clientDocument = client.document,
+                        clientName = client.name,
+                        clientAddress = "${client.city}, ${client.state}",
+                    )
                 }.right()
             }.retryWhen { cause, attempt ->
                 Timber.e(cause, "Error while fetching payments for sale " +
@@ -58,7 +78,6 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
                 attempt < attemptThreshold
             }
-
     }
 
     override suspend fun updateClientId(

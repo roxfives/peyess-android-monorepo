@@ -6,6 +6,7 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
@@ -15,6 +16,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
 import com.peyess.salesapp.feature.service_order.model.Lens
+import com.peyess.salesapp.feature.service_order.model.Payment
 import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetchResponse
@@ -47,6 +49,9 @@ data class EditServiceOrderState(
 
     val framesResponseAsync: Async<EditFramesFetchResponse> = Uninitialized,
     val frames: Frames = Frames(),
+
+    val paymentsResponseAsync: Async<EditLocalPaymentFetchResponse> = Uninitialized,
+    val payments: List<Payment> = emptyList(),
 ): MavericksState {
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()

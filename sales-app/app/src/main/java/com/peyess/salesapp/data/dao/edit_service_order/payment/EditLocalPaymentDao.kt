@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
-import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentDBView
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -17,16 +16,16 @@ interface EditLocalPaymentDao {
 
     @Transaction
     @Query("""
-        SELECT * FROM ${EditLocalPaymentDBView.viewName}
-        WHERE saleId = :saleId
+        SELECT * FROM ${EditLocalPaymentEntity.tableName}
+        WHERE sale_id = :saleId
     """)
-    suspend fun paymentsForSale(saleId: String): List<EditLocalPaymentDBView>
+    suspend fun paymentsForSale(saleId: String): List<EditLocalPaymentEntity>
 
     @Query("""
-        SELECT * FROM ${EditLocalPaymentDBView.viewName}
-        WHERE saleId = :saleId
+        SELECT * FROM ${EditLocalPaymentEntity.tableName}
+        WHERE sale_id = :saleId
     """)
-    fun streamPaymentsForSale(saleId: String): Flow<List<EditLocalPaymentDBView>>
+    fun streamPaymentsForSale(saleId: String): Flow<List<EditLocalPaymentEntity>>
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}

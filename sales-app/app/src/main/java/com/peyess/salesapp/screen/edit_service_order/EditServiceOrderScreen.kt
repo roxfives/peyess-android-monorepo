@@ -27,8 +27,12 @@ fun EditServiceOrderScreen(
 
     val saleId by viewModel.collectAsState(EditServiceOrderState::saleId)
     val serviceOrderId by viewModel.collectAsState(EditServiceOrderState::serviceOrderId)
+
+    val prescription by viewModel.collectAsState(EditServiceOrderState::prescription)
     
     ServiceOrderUI(
         modifier = modifier,
+
+        prescription = prescription,
     )
 }

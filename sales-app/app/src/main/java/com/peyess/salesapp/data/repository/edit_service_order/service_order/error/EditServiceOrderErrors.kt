@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.service_order.err
 
 sealed interface EditServiceOrderRepositoryError {
     val description: String
-    val error: Throwable?
+    val error: Throwable
 }
 
 sealed class InsertServiceOrderError: EditServiceOrderRepositoryError {

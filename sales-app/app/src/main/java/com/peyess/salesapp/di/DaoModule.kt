@@ -54,6 +54,7 @@ import com.peyess.salesapp.data.dao.card_flag.CardFlagDaoImpl
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDaoImpl
 import com.peyess.salesapp.data.dao.discount.OverallDiscountDao
+import com.peyess.salesapp.data.dao.edit_service_order.client_picked.EditClientPickedDao
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
@@ -566,5 +567,13 @@ object DaoModule {
         editSaleDatabase: EditSaleDatabase,
     ): EditProductPickedDao {
         return editSaleDatabase.editProductPickedDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideEditClientPickedDao(
+        editSaleDatabase: EditSaleDatabase,
+    ): EditClientPickedDao {
+        return editSaleDatabase.editClientPickedDao()
     }
 }

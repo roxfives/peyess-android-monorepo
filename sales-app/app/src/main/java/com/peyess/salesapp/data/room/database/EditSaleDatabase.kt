@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.room.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.peyess.salesapp.data.dao.edit_service_order.client_picked.EditClientPickedDao
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
 import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
@@ -13,6 +14,7 @@ import com.peyess.salesapp.data.dao.edit_service_order.prescription.EditPrescrip
 import com.peyess.salesapp.data.dao.edit_service_order.product_picked.EditProductPickedDao
 import com.peyess.salesapp.data.dao.edit_service_order.sale.EditSaleDao
 import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
+import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedEntity
 import com.peyess.salesapp.data.model.edit_service_order.frames.EditFramesDataEntity
 import com.peyess.salesapp.data.model.edit_service_order.lens_comparison.EditLensComparisonEntity
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
@@ -47,10 +49,10 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditPositioningEntity::class,
         EditPrescriptionEntity::class,
         EditProductPickedEntity::class,
-        LocalClientEntity::class,
+        EditClientPickedEntity::class,
     ],
 
-    version = 7,
+    version = 8,
 )
 @TypeConverters(
     ConverterUri::class,
@@ -84,4 +86,6 @@ abstract class EditSaleDatabase: RoomDatabase() {
     abstract fun editPrescriptionDao(): EditPrescriptionDao
 
     abstract fun editProductPickedDao(): EditProductPickedDao
+
+    abstract fun editClientPickedDao(): EditClientPickedDao
 }

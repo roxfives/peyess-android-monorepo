@@ -184,3 +184,6 @@ dependencies {
     testImplementation("net.datafaker:datafaker:1.6.0")
     testImplementation("io.kotest:kotest-assertions-core:5.5.4")
 }
+android {
+    namespace = "com.peyess.salesapp"
+}

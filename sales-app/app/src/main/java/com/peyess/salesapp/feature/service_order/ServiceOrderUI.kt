@@ -68,7 +68,6 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.R
-import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring

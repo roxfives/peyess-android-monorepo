@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order.model
+package com.peyess.salesapp.screen.edit_service_order.service_order.model
 
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 

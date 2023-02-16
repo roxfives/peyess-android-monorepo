@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order.adapter
+package com.peyess.salesapp.screen.edit_service_order.service_order.adapter
 
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
 import com.peyess.salesapp.feature.service_order.model.Client

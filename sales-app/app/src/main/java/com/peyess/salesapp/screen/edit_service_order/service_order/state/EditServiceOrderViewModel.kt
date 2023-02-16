@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order.state
+package com.peyess.salesapp.screen.edit_service_order.service_order.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -29,11 +29,11 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
-import com.peyess.salesapp.screen.edit_service_order.adapter.toClient
-import com.peyess.salesapp.screen.edit_service_order.adapter.toFrames
-import com.peyess.salesapp.screen.edit_service_order.adapter.toPayment
-import com.peyess.salesapp.screen.edit_service_order.adapter.toPrescription
-import com.peyess.salesapp.screen.edit_service_order.adapter.toServiceOrder
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toClient
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toFrames
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toPayment
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toPrescription
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLens
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment

@@ -8,9 +8,9 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.feature.service_order.ServiceOrderUI
-import com.peyess.salesapp.screen.edit_service_order.state.EditServiceOrderState
-import com.peyess.salesapp.screen.edit_service_order.state.EditServiceOrderViewModel
-import com.peyess.salesapp.screen.edit_service_order.utils.ParseParameters
+import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderState
+import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderViewModel
+import com.peyess.salesapp.screen.edit_service_order.service_order.utils.ParseParameters
 
 @Composable
 fun EditServiceOrderScreen(

@@ -1,7 +1,7 @@
-package com.peyess.salesapp.screen.edit_service_order.adapter
+package com.peyess.salesapp.screen.edit_service_order.service_order.adapter
 
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
-import com.peyess.salesapp.screen.edit_service_order.model.ServiceOrder
+import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder
 
 fun LocalServiceOrderDocument.toServiceOrder(): ServiceOrder {
     return ServiceOrder(

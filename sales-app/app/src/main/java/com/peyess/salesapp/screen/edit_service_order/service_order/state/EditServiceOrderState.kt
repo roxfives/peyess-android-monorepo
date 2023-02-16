@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order.state
+package com.peyess.salesapp.screen.edit_service_order.service_order.state
 
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
@@ -13,7 +13,6 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalP
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningFetchBothResponse
-import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
@@ -30,8 +29,8 @@ import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
-import com.peyess.salesapp.screen.edit_service_order.adapter.toMeasuring
-import com.peyess.salesapp.screen.edit_service_order.model.ServiceOrder
+import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
+import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 

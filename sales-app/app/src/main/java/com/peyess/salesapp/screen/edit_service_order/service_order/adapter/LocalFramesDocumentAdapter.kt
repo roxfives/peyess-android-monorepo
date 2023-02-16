@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order.adapter
+package com.peyess.salesapp.screen.edit_service_order.service_order.adapter
 
 import com.peyess.salesapp.data.model.local_sale.frames.LocalFramesDocument
 import com.peyess.salesapp.feature.service_order.model.Frames

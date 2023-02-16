@@ -2,9 +2,11 @@ package com.peyess.salesapp.data.repository.edit_service_order.positioning
 
 import android.net.Uri
 import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
+import arrow.core.zip
 import com.peyess.salesapp.data.adapter.edit_service_order.positioning.toEditPositioningEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.positioning.toLocalPositioningDocument
 import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
@@ -12,7 +14,9 @@ import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDoc
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.UpdatePositioningError
+import com.peyess.salesapp.data.repository.local_sale.positioning.typing.PositioningPair
 import com.peyess.salesapp.typing.general.Eye
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -60,6 +64,32 @@ class EditPositioningRepositoryImpl @Inject constructor(
                     it.toLocalPositioningDocument().right()
                 }
             }
+    }
+
+    override suspend fun bothPositioningForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningFetchBothResponse = either {
+        val left = positioningForServiceOrder(serviceOrderId, Eye.Left).bind()
+        val right = positioningForServiceOrder(serviceOrderId, Eye.Right).bind()
+
+        PositioningPair(left, right)
+    }
+
+    override fun streamBothPositioningForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningStreamBothResponse {
+        return combine(listOf(
+            streamPositioningForServiceOrder(serviceOrderId, Eye.Left),
+            streamPositioningForServiceOrder(serviceOrderId, Eye.Right),
+        )) {
+            it[0].zip(it[1]).map{ (left, right) ->
+                PositioningPair(left, right)
+            }.mapLeft {
+                ReadPositioningError.PositioningNotFound(
+                    description = "No positioning found for service order $serviceOrderId",
+                )
+            }
+        }
     }
 
     override suspend fun updatePicture(

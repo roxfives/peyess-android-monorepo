@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDoc
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.UpdatePositioningError
+import com.peyess.salesapp.data.repository.local_sale.positioning.typing.PositioningPair
 import com.peyess.salesapp.typing.general.Eye
 import kotlinx.coroutines.flow.Flow
 
@@ -13,6 +14,9 @@ typealias EditPositioningInsertResponse = Either<InsertPositioningError, Unit>
 
 typealias EditPositioningFetchResponse = Either<ReadPositioningError, LocalPositioningDocument>
 typealias EditPositioningStreamResponse = Flow<EditPositioningFetchResponse>
+
+typealias EditPositioningFetchBothResponse = Either<ReadPositioningError, PositioningPair>
+typealias EditPositioningStreamBothResponse = Flow<EditPositioningFetchBothResponse>
 
 typealias EditPositioningUpdateResponse = Either<UpdatePositioningError, Unit>
 
@@ -27,6 +31,13 @@ interface EditPositioningRepository {
         serviceOrderId: String,
         eye: Eye,
     ): EditPositioningStreamResponse
+
+    suspend fun bothPositioningForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningFetchBothResponse
+    fun streamBothPositioningForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningStreamBothResponse
 
     suspend fun updatePicture(
         serviceOrderId: String,

@@ -12,6 +12,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.client.ClientRepository
@@ -41,6 +42,7 @@ import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryRespo
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
+import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toFrames
@@ -66,6 +68,7 @@ import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.screen.sale.service_order.adapter.toClient
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
@@ -121,6 +124,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
         onAsync(ServiceOrderState::activeStoreIdAsync) {
             setState { copy(activeStoreId = it) }
         }
+
+        onAsync(ServiceOrderState::userClientAsync) { processUserResponse(it) }
+        onAsync(ServiceOrderState::responsibleClientAsync) { processResponsibleResponse(it) }
+        onAsync(ServiceOrderState::witnessClientAsync) { processWitnessResponse(it) }
 
         onAsync(ServiceOrderState::productPickedResponseAsync) { processProductPickedResponse(it) }
         onAsync(ServiceOrderState::lensResponseAsync) { processLensPickedResponse(it) }
@@ -272,6 +279,22 @@ class ServiceOrderViewModel @AssistedInject constructor(
 
         saleRepository.clientPicked(ClientRole.Witness).execute(Dispatchers.IO) {
             copy(witnessClientAsync = it)
+        }
+    }
+
+    private fun processUserResponse(response: ClientPickedEntity?) = setState {
+        copy(userClient = response?.toClient() ?: Client())
+    }
+
+    private fun processResponsibleResponse(response: ClientPickedEntity?) = setState {
+        copy(responsibleClient = response?.toClient() ?: Client())
+    }
+
+    private fun processWitnessResponse(response: ClientPickedEntity?) = setState {
+        if (response != null) {
+            copy(witnessClient = response.toClient())
+        } else {
+            copy(hasWitness = false)
         }
     }
 

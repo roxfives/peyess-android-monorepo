@@ -82,6 +82,7 @@ fun CreateServiceOrderScreen(
     val user by viewModel.collectAsState(ServiceOrderState::userClient)
     val responsible by viewModel.collectAsState(ServiceOrderState::responsibleClient)
     val witness by viewModel.collectAsState(ServiceOrderState::witnessClient)
+    val hasWitness by viewModel.collectAsState(ServiceOrderState::hasWitness)
 
     val userIsLoading by viewModel.collectAsState(ServiceOrderState::isUserLoading)
     val responsibleIsLoading by viewModel.collectAsState(ServiceOrderState::isResponsibleLoading)
@@ -144,6 +145,7 @@ fun CreateServiceOrderScreen(
             user = user,
             responsible = responsible,
             witness = witness,
+            hasWitness = hasWitness,
 
             isPrescriptionLoading = isPrescriptionLoading,
             prescription = prescription,

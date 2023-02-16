@@ -70,6 +70,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
@@ -125,9 +126,10 @@ fun ServiceOrderUI(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 
     areUsersLoading: Boolean = false,
-    user: ClientPickedEntity = ClientPickedEntity(),
-    responsible: ClientPickedEntity = ClientPickedEntity(),
-    witness: ClientPickedEntity? = null,
+    user: Client = Client(),
+    responsible: Client = Client(),
+    hasWitness: Boolean = false,
+    witness: Client = Client(),
     onChangeResponsible: () -> Unit = {},
     onChangeUser: () -> Unit = {},
     onChangeWitness: () -> Unit = {},
@@ -191,6 +193,7 @@ fun ServiceOrderUI(
 
                 user = user,
                 responsible = responsible,
+                hasWitness = hasWitness,
                 witness = witness,
             )
 
@@ -339,9 +342,10 @@ private fun ClientSection(
     onChangeWitness: () -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
-    user: ClientPickedEntity = ClientPickedEntity(),
-    responsible: ClientPickedEntity = ClientPickedEntity(),
-    witness: ClientPickedEntity? = null,
+    user: Client = Client(),
+    responsible: Client = Client(),
+    hasWitness: Boolean = false,
+    witness: Client = Client(),
 ) {
     Column(
         modifier = modifier
@@ -397,7 +401,7 @@ private fun ClientSection(
                 onEditClient = onChangeResponsible,
             )
 
-            if (witness != null) {
+            if (hasWitness) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SubSectionTitle(
@@ -459,7 +463,7 @@ fun SubSectionTitlePreview() {
 private fun ClientCard(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false,
-    client: ClientPickedEntity,
+    client: Client = Client(),
     onEditClient: () -> Unit = {},
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -2101,8 +2105,8 @@ private fun PrescriptionSectionPreview() {
 private fun ClientSectionPreview() {
     SalesAppTheme {
         ClientSection(
-            user = ClientPickedEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
-            responsible = ClientPickedEntity(name = "João da Silva", shortAddress = "São Paulo, SP"),
+            user = Client(name = "João da Silva", shortAddress = "São Paulo, SP"),
+            responsible = Client(name = "João da Silva", shortAddress = "São Paulo, SP"),
         )
     }
 }

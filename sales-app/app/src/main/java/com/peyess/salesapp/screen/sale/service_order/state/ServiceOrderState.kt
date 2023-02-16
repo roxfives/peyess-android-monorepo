@@ -25,6 +25,7 @@ import com.peyess.salesapp.data.repository.local_sale.positioning.LocalPositioni
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
+import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
 import com.peyess.salesapp.screen.sale.lens_pick.model.toMeasuring
 import com.peyess.salesapp.feature.service_order.model.Coloring
@@ -53,8 +54,14 @@ data class ServiceOrderState(
     val activeStoreId: String = "",
 
     val userClientAsync: Async<ClientPickedEntity?> = Uninitialized,
+    val userClient: Client = Client(),
+
     val responsibleClientAsync: Async<ClientPickedEntity?> = Uninitialized,
+    val responsibleClient: Client = Client(),
+
     val witnessClientAsync: Async<ClientPickedEntity?> = Uninitialized,
+    val witnessClient: Client = Client(),
+    val hasWitness: Boolean = false,
 
     val productPickedResponseAsync: Async<ProductPickedResponse> = Uninitialized,
     val productPicked: ProductPickedDocument = ProductPickedDocument(),
@@ -123,21 +130,8 @@ data class ServiceOrderState(
     val hasSaleFailed = serviceOrderGenerationResponseAsync is Fail
 
     val isUserLoading = userClientAsync is Loading
-    val userClient = if (userClientAsync is Success) {
-        userClientAsync.invoke() ?: ClientPickedEntity()
-    } else {
-        ClientPickedEntity()
-    }
-
     val isResponsibleLoading = responsibleClientAsync is Loading
-    val responsibleClient = if (responsibleClientAsync is Success) {
-        responsibleClientAsync.invoke() ?: ClientPickedEntity()
-    } else {
-        ClientPickedEntity()
-    }
-
     val isWitnessLoading = witnessClientAsync is Loading
-    val witnessClient = witnessClientAsync.invoke()
 
     val isPrescriptionLoading = localPrescriptionResponseAsync is Loading
 

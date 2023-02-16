@@ -152,7 +152,7 @@ fun ServiceOrderUI(
 
     canAddNewPayment: Boolean = false,
     totalPaid: Double = 0.0,
-    totalToPay: Double = 0.0,
+    finalPrice: Double = 0.0,
     isPaymentLoading: Boolean = false,
     payments: List<Payment> = emptyList(),
     onAddPayment: () -> Unit = {},
@@ -235,7 +235,7 @@ fun ServiceOrderUI(
 
                 canAddNewPayment = canAddNewPayment,
                 totalPaid = totalPaid,
-                totalToPay = totalToPay,
+                totalToPay = finalPrice,
 
                 pictureForClient = pictureForClient,
 

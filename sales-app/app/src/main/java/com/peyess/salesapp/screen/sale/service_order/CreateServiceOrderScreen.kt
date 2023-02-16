@@ -170,7 +170,7 @@ fun CreateServiceOrderScreen(
 
             canAddNewPayment = canAddNewPayment,
             totalPaid = totalPaid,
-            totalToPay = totalToPayWithFee,
+            finalPrice = totalToPayWithFee,
             isPaymentLoading = isPaymentsLoading,
             payments = payments,
             onAddPayment = {

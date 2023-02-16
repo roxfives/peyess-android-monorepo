@@ -8,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
 import com.peyess.salesapp.screen.edit_service_order.EditServiceOrderScreen
 
 const val serviceOrderIdParam = "serviceOrderId"
@@ -114,10 +115,10 @@ fun buildEditServiceOrderNavGraph(
 //                    .navigate(buildDiscountNavRoute(saleId, fullPrice))
 //            },
 //
-//            onAddPaymentFee = { saleId, fullPrice ->
-//                navHostController
-//                    .navigate(buildFeeNavRoute(saleId, fullPrice))
-//            },
+            onAddPaymentFee = { saleId, fullPrice ->
+                navHostController
+                    .navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
+            },
 //
 //            onFinishSale = {
 //                navHostController.navigate(SalesAppScreens.Home.name) {

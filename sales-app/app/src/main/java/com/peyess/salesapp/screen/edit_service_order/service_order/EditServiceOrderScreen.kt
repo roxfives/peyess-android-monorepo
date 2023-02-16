@@ -16,6 +16,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.utils.ParsePa
 fun EditServiceOrderScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
 ) {
     val viewModel: EditServiceOrderViewModel = mavericksViewModel()
     
@@ -68,5 +69,7 @@ fun EditServiceOrderScreen(
         payments = payments,
         totalPaid = totalPaid,
         finalPrice = finalPrice,
+
+        onAddPaymentFee = { onAddPaymentFee(saleId, finalPrice) },
     )
 }

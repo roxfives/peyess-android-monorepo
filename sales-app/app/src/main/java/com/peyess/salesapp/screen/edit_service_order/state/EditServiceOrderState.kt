@@ -5,17 +5,19 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
+import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
-import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
@@ -26,6 +28,8 @@ import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.screen.edit_service_order.model.ServiceOrder
+import com.peyess.salesapp.typing.products.DiscountCalcMethod
+import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 
 data class EditServiceOrderState(
     val serviceOrderId: String = "",
@@ -56,20 +60,75 @@ data class EditServiceOrderState(
     val lens: Lens = Lens(),
 
     val coloringResponseAsync: Async<SingleColoringResponse> = Uninitialized,
-    val coloring: Coloring = Coloring(),
+    val coloringResponse: Coloring = Coloring(),
 
     val treatmentResponseAsync: Async<SingleTreatmentResponse> = Uninitialized,
-    val treatment: Treatment = Treatment(),
+    val treatmentResponse: Treatment = Treatment(),
 
     val framesResponseAsync: Async<EditFramesFetchResponse> = Uninitialized,
     val frames: Frames = Frames(),
 
     val paymentsResponseAsync: Async<EditLocalPaymentFetchResponse> = Uninitialized,
     val payments: List<Payment> = emptyList(),
+    val totalPaid: Double = 0.0,
+
+    val discountResponseAsync: Async<EditPaymentDiscountFetchResponse> = Uninitialized,
+    val discount: OverallDiscountDocument = OverallDiscountDocument(),
+
+    val feeResponseAsync: Async<EditPaymentFeeFetchResponse> = Uninitialized,
+    val fee: PaymentFeeDocument = PaymentFeeDocument(),
 ): MavericksState {
+    val coloring = Pair(lens, coloringResponse).let {
+        if (lens.isColoringDiscounted || lens.isColoringIncluded) {
+            coloringResponse.copy(price = 0.0)
+        } else {
+            coloringResponse
+        }
+    }
+
+    val treatment = Pair(lens, treatmentResponse).let {
+        if (lens.isTreatmentDiscounted || lens.isTreatmentIncluded) {
+            treatmentResponse.copy(price = 0.0)
+        } else {
+            treatmentResponse
+        }
+    }
+
+    val fullPrice = lens.price +
+            coloring.price +
+            treatment.price +
+            frames.let {
+                if (it.areFramesNew) {
+                    it.value
+                } else {
+                    0.0
+                }
+            }
+    val finalPrice = calculateFinalPrice(fullPrice, discount, fee)
+
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()
     val errorWhileFetchingServiceOrder = serviceOrderFetchResponseAsync is Fail ||
-        (serviceOrderFetchResponseAsync is Success
-                && serviceOrderFetchResponseAsync.invoke().isLeft())
+            (serviceOrderFetchResponseAsync is Success
+                    && serviceOrderFetchResponseAsync.invoke().isLeft())
+
+    private fun calculateFinalPrice(
+        fullPrice: Double,
+        discount: OverallDiscountDocument,
+        fee: PaymentFeeDocument
+    ): Double {
+        val discountAsPercentage = when (discount.discountMethod) {
+            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
+        }
+
+        val feeAsPercentage = when (fee.method) {
+            PaymentFeeCalcMethod.None -> 0.0
+            PaymentFeeCalcMethod.Percentage -> fee.value
+            PaymentFeeCalcMethod.Whole -> fee.value / (fullPrice * (1 - discountAsPercentage))
+        }
+
+        return fullPrice * (1 - discountAsPercentage) * (1 + feeAsPercentage)
+    }
 }

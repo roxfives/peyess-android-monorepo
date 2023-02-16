@@ -41,6 +41,8 @@ fun EditServiceOrderScreen(
     val frames by viewModel.collectAsState(EditServiceOrderState::frames)
 
     val payments by viewModel.collectAsState(EditServiceOrderState::payments)
+    val totalPaid by viewModel.collectAsState(EditServiceOrderState::totalPaid)
+    val finalPrice by viewModel.collectAsState(EditServiceOrderState::finalPrice)
     
     ServiceOrderUI(
         modifier = modifier,
@@ -58,5 +60,7 @@ fun EditServiceOrderScreen(
         frames = frames,
 
         payments = payments,
+        totalPaid = totalPaid,
+        finalPrice = finalPrice,
     )
 }

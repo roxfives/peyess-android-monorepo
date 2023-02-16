@@ -12,6 +12,10 @@ import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesD
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepository
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepository
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
@@ -22,7 +26,6 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
-import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
 import com.peyess.salesapp.screen.edit_service_order.adapter.toClient
@@ -53,6 +56,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val editFramesDataRepository: EditFramesDataRepository,
     private val editLocalPaymentRepository: EditLocalPaymentRepository,
     private val editClientPickedRepository: EditClientPickedRepository,
+    private val editPaymentDiscountRepository: EditPaymentDiscountRepository,
+    private val editPaymentFeeRepository: EditPaymentFeeRepository,
 
     private val localLensesRepository: LocalLensesRepository,
     private val localClientRepository: LocalClientRepository,
@@ -85,6 +90,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                 loadFrames(it.id)
 
                 streamPayments(it.saleId)
+                streamDiscount(it.saleId)
+                streamFee(it.saleId)
             }
         }
 
@@ -123,6 +130,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onAsync(EditServiceOrderState::treatmentResponseAsync) { processTreatmentResponse(it) }
         onAsync(EditServiceOrderState::framesResponseAsync) { processFramesResponse(it) }
         onAsync(EditServiceOrderState::paymentsResponseAsync) { processPaymentsResponse(it) }
+        onAsync(EditServiceOrderState::discountResponseAsync) { processDiscountResponse(it) }
+        onAsync(EditServiceOrderState::feeResponseAsync) { processFeeResponse(it) }
     }
 
     private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String) {
@@ -305,7 +314,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                copy(coloring = it.toColoring())
+                copy(coloringResponse = it.toColoring())
             },
         )
     }
@@ -325,7 +334,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                copy(treatment = it.toTreatment())
+                copy(treatmentResponse = it.toTreatment())
             },
         )
     }
@@ -366,7 +375,59 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                copy(payments = it.map { p -> p.toPayment() })
+                val totalPaid = if (it.isEmpty()) {
+                    0.0
+                } else {
+                    it.map { p -> p.value }
+                        .reduce { acc, value -> acc + value }
+                }
+
+                copy(
+                    payments = it.map { p -> p.toPayment() },
+                    totalPaid = totalPaid,
+                )
+            },
+        )
+    }
+
+    private fun streamDiscount(saleId: String) {
+        editPaymentDiscountRepository.streamDiscountForSale(saleId)
+            .execute(Dispatchers.IO) {
+                copy(discountResponseAsync = it)
+            }
+    }
+
+    private fun processDiscountResponse(
+        response: EditPaymentDiscountFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(discountResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(discount = it)
+            },
+        )
+    }
+
+    private fun streamFee(saleId: String) {
+        editPaymentFeeRepository.streamPaymentFeeForSale(saleId)
+            .execute(Dispatchers.IO) {
+                copy(feeResponseAsync = it)
+            }
+    }
+
+    private fun processFeeResponse(
+        response: EditPaymentFeeFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(feeResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(fee = it)
             },
         )
     }

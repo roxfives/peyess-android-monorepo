@@ -21,9 +21,11 @@ interface EditClientPickedRepository {
 
     suspend fun findClientPickedForServiceOrder(
         serviceOrderId: String,
+        role: ClientRole,
     ): EditClientPickedFetchResponse
     fun streamClientPickedForServiceOrder(
         serviceOrderId: String,
+        role: ClientRole,
     ): EditClientPickedStreamResponse
 
     suspend fun updateClientRole(

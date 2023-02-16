@@ -33,9 +33,10 @@ class EditClientPickedRepositoryImpl @Inject constructor(
 
     override suspend fun findClientPickedForServiceOrder(
         serviceOrderId: String,
+        role: ClientRole,
     ): EditClientPickedFetchResponse = Either.catch {
         clientPickedDao
-            .findClientPickedForServiceOrder(serviceOrderId)
+            .findClientPickedForServiceOrder(serviceOrderId, role)
             ?.toEditClientPickedDocument()
     }.mapLeft {
         ReadClientPickedError.Unexpected(
@@ -50,8 +51,9 @@ class EditClientPickedRepositoryImpl @Inject constructor(
 
     override fun streamClientPickedForServiceOrder(
         serviceOrderId: String,
+        role: ClientRole,
     ): EditClientPickedStreamResponse {
-        return clientPickedDao.streamClientPickedForServiceOrder(serviceOrderId).map {
+        return clientPickedDao.streamClientPickedForServiceOrder(serviceOrderId, role).map {
             if (it != null) {
                 it.toEditClientPickedDocument().right()
             } else {

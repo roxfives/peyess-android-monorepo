@@ -15,15 +15,21 @@ interface EditClientPickedDao {
 
     @Query("""
         SELECT * FROM ${EditClientPickedEntity.tableName}
-        WHERE so_id = :serviceOrderId
+        WHERE so_id = :serviceOrderId AND role = :role
     """)
-    suspend fun findClientPickedForServiceOrder(serviceOrderId: String): EditClientPickedEntity?
+    suspend fun findClientPickedForServiceOrder(
+        serviceOrderId: String,
+        role: ClientRole,
+    ): EditClientPickedEntity?
 
     @Query("""
         SELECT * FROM ${EditClientPickedEntity.tableName}
-        WHERE so_id = :serviceOrderId
+        WHERE so_id = :serviceOrderId AND role = :role
     """)
-    fun streamClientPickedForServiceOrder(serviceOrderId: String): Flow<EditClientPickedEntity?>
+    fun streamClientPickedForServiceOrder(
+        serviceOrderId: String,
+        role: ClientRole,
+    ): Flow<EditClientPickedEntity?>
 
     @Query("""
         UPDATE ${EditClientPickedEntity.tableName}

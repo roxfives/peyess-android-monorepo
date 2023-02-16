@@ -31,7 +31,7 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
 
     override suspend fun discountForSale(
         saleId: String,
-    ): EditPaymentFetchResponse = Either.catch {
+    ): EditPaymentDiscountFetchResponse = Either.catch {
         paymentDiscountDao.discountForSale(saleId)?.toOverallDiscountDocument()
     }.mapLeft {
         ReadPaymentDiscountError.Unexpected(
@@ -44,7 +44,7 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun streamDiscountForSale(saleId: String): EditPaymentStreamResponse {
+    override fun streamDiscountForSale(saleId: String): EditPaymentDiscountStreamResponse {
         return paymentDiscountDao.streamDiscountForSale(saleId)
             .map {
                 if (it == null) {
@@ -60,7 +60,7 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
     override suspend fun updateMethod(
         saleId: String,
         method: DiscountCalcMethod,
-    ): EditPaymentUpdateResponse = Either.catch {
+    ): EditPaymentDiscountUpdateResponse = Either.catch {
         paymentDiscountDao.updateMethod(saleId, method)
     }.mapLeft {
         UpdatePaymentDiscountError.Unexpected(
@@ -72,7 +72,7 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
     override suspend fun updateValue(
         saleId: String,
         value: Double,
-    ): EditPaymentUpdateResponse = Either.catch {
+    ): EditPaymentDiscountUpdateResponse = Either.catch {
         paymentDiscountDao.updateValue(saleId, value)
     }.mapLeft {
         UpdatePaymentDiscountError.Unexpected(

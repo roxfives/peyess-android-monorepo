@@ -31,7 +31,7 @@ class EditPaymentFeeRepositoryImpl @Inject constructor(
 
     override suspend fun paymentFeeForSale(
         saleId: String,
-    ): EditPaymentFetchResponse = Either.catch {
+    ): EditPaymentFeeFetchResponse = Either.catch {
         paymentFeeDao.paymentFeeForSale(saleId)?.toPaymentFeeDocument()
     }.mapLeft {
         ReadPaymentFeeError.Unexpected(
@@ -44,7 +44,7 @@ class EditPaymentFeeRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun streamPaymentFeeForSale(saleId: String): EditPaymentStreamResponse {
+    override fun streamPaymentFeeForSale(saleId: String): EditPaymentFeeStreamResponse {
         return paymentFeeDao.streamPaymentFeeForSale(saleId)
             .map {
                 if (it == null) {
@@ -60,7 +60,7 @@ class EditPaymentFeeRepositoryImpl @Inject constructor(
     override suspend fun updateMethod(
         saleId: String,
         method: PaymentFeeCalcMethod,
-    ): EditPaymentUpdateResponse = Either.catch {
+    ): EditPaymentFeeUpdateResponse = Either.catch {
         paymentFeeDao.updateMethod(saleId, method)
     }.mapLeft {
         UpdatePaymentFeeError.Unexpected(
@@ -72,7 +72,7 @@ class EditPaymentFeeRepositoryImpl @Inject constructor(
     override suspend fun updateValue(
         saleId: String,
         value: Double,
-    ): EditPaymentUpdateResponse = Either.catch {
+    ): EditPaymentFeeUpdateResponse = Either.catch {
         paymentFeeDao.updateValue(saleId, value)
     }.mapLeft {
         UpdatePaymentFeeError.Unexpected(

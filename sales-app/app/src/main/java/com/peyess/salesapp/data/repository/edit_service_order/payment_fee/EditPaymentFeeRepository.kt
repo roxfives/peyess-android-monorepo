@@ -10,20 +10,20 @@ import kotlinx.coroutines.flow.Flow
 
 typealias EditPaymentFeeInsertResponse = Either<InsertPaymentFeeError, Unit>
 
-typealias EditPaymentFetchResponse = Either<ReadPaymentFeeError, PaymentFeeDocument>
-typealias EditPaymentStreamResponse = Flow<EditPaymentFetchResponse>
+typealias EditPaymentFeeFetchResponse = Either<ReadPaymentFeeError, PaymentFeeDocument>
+typealias EditPaymentFeeStreamResponse = Flow<EditPaymentFeeFetchResponse>
 
-typealias EditPaymentUpdateResponse = Either<UpdatePaymentFeeError, Unit>
+typealias EditPaymentFeeUpdateResponse = Either<UpdatePaymentFeeError, Unit>
 
 interface EditPaymentFeeRepository {
     suspend fun addPaymentFee(paymentFee: PaymentFeeDocument): EditPaymentFeeInsertResponse
 
-    suspend fun paymentFeeForSale(saleId: String): EditPaymentFetchResponse
-    fun streamPaymentFeeForSale(saleId: String): EditPaymentStreamResponse
+    suspend fun paymentFeeForSale(saleId: String): EditPaymentFeeFetchResponse
+    fun streamPaymentFeeForSale(saleId: String): EditPaymentFeeStreamResponse
 
     suspend fun updateMethod(
         saleId: String,
         method: PaymentFeeCalcMethod,
-    ): EditPaymentUpdateResponse
-    suspend fun updateValue(saleId: String, value: Double): EditPaymentUpdateResponse
+    ): EditPaymentFeeUpdateResponse
+    suspend fun updateValue(saleId: String, value: Double): EditPaymentFeeUpdateResponse
 }

@@ -10,19 +10,19 @@ import kotlinx.coroutines.flow.Flow
 
 typealias EditPaymentDiscountInsertResponse = Either<InsertPaymentDiscountError, Unit>
 
-typealias EditPaymentFetchResponse = Either<ReadPaymentDiscountError, OverallDiscountDocument>
-typealias EditPaymentStreamResponse = Flow<EditPaymentFetchResponse>
+typealias EditPaymentDiscountFetchResponse = Either<ReadPaymentDiscountError, OverallDiscountDocument>
+typealias EditPaymentDiscountStreamResponse = Flow<EditPaymentDiscountFetchResponse>
 
-typealias EditPaymentUpdateResponse = Either<UpdatePaymentDiscountError, Unit>
+typealias EditPaymentDiscountUpdateResponse = Either<UpdatePaymentDiscountError, Unit>
 
 interface EditPaymentDiscountRepository {
     suspend fun addPaymentDiscount(
         paymentDiscount: OverallDiscountDocument,
     ): EditPaymentDiscountInsertResponse
 
-    suspend fun discountForSale(saleId: String): EditPaymentFetchResponse
-    fun streamDiscountForSale(saleId: String): EditPaymentStreamResponse
+    suspend fun discountForSale(saleId: String): EditPaymentDiscountFetchResponse
+    fun streamDiscountForSale(saleId: String): EditPaymentDiscountStreamResponse
 
-    suspend fun updateMethod(saleId: String, method: DiscountCalcMethod): EditPaymentUpdateResponse
-    suspend fun updateValue(saleId: String, value: Double): EditPaymentUpdateResponse
+    suspend fun updateMethod(saleId: String, method: DiscountCalcMethod): EditPaymentDiscountUpdateResponse
+    suspend fun updateValue(saleId: String, value: Double): EditPaymentDiscountUpdateResponse
 }

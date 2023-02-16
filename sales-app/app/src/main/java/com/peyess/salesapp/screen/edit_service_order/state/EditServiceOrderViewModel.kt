@@ -5,6 +5,9 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
@@ -19,7 +22,10 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
+import com.peyess.salesapp.screen.edit_service_order.adapter.toClient
 import com.peyess.salesapp.screen.edit_service_order.adapter.toFrames
 import com.peyess.salesapp.screen.edit_service_order.adapter.toPayment
 import com.peyess.salesapp.screen.edit_service_order.adapter.toPrescription
@@ -27,6 +33,7 @@ import com.peyess.salesapp.screen.edit_service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLens
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
+import com.peyess.salesapp.typing.sale.ClientRole
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -45,8 +52,10 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val editProductPickedRepository: EditProductPickedRepository,
     private val editFramesDataRepository: EditFramesDataRepository,
     private val editLocalPaymentRepository: EditLocalPaymentRepository,
+    private val editClientPickedRepository: EditClientPickedRepository,
 
     private val localLensesRepository: LocalLensesRepository,
+    private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<EditServiceOrderState>(initialState) {
 
     init {
@@ -67,6 +76,10 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
         onEach(EditServiceOrderState::serviceOrder) {
             if (it.id.isNotBlank()) {
+                loadUserPicked(it.id)
+                loadResponsiblePicked(it.id)
+                loadWitnessPicked(it.id)
+
                 loadPrescription(it.id)
                 loadLensProducts(it.id)
                 loadFrames(it.id)
@@ -83,6 +96,18 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
         onAsync(EditServiceOrderState::serviceOrderResponseAsync) {
             processServiceOrderResponse(it)
+        }
+
+        onAsync(EditServiceOrderState::userPickedResponseAsync) {
+            processUserPickedResponse(it)
+        }
+
+        onAsync(EditServiceOrderState::responsiblePickedResponseAsync) {
+            processResponsiblePickedResponse(it)
+        }
+
+        onAsync(EditServiceOrderState::witnessPickedResponseAsync) {
+            processWitnessPickedResponse(it)
         }
 
         onAsync(EditServiceOrderState::prescriptionResponseAsync) {
@@ -126,6 +151,77 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
             ifRight = {
                 copy(serviceOrder = it.toServiceOrder())
+            },
+        )
+    }
+
+    private fun loadUserPicked(serviceOrderId: String) {
+        editClientPickedRepository
+            .streamClientPickedForServiceOrder(serviceOrderId, ClientRole.User)
+            .execute(Dispatchers.IO) {
+                copy(userPickedResponseAsync = it)
+            }
+    }
+
+    private fun processUserPickedResponse(
+        response: EditClientPickedFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(userPickedResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(userPicked = it.toClient())
+            },
+        )
+    }
+
+    private fun loadResponsiblePicked(serviceOrderId: String) {
+        editClientPickedRepository
+            .streamClientPickedForServiceOrder(serviceOrderId, ClientRole.Responsible)
+            .execute(Dispatchers.IO) {
+                copy(responsiblePickedResponseAsync = it)
+            }
+    }
+
+    private fun processResponsiblePickedResponse(
+        response: EditClientPickedFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(responsiblePickedResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(responsiblePicked = it.toClient())
+            },
+        )
+    }
+
+    private fun loadWitnessPicked(serviceOrderId: String) {
+        editClientPickedRepository
+            .streamClientPickedForServiceOrder(serviceOrderId, ClientRole.Witness)
+            .execute(Dispatchers.IO) {
+                copy(witnessPickedResponseAsync = it)
+            }
+    }
+
+    private fun processWitnessPickedResponse(
+        response: EditClientPickedFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                when (it) {
+                    is ReadClientPickedError.ClientPickedNotFound ->
+                        copy(hasWitness = false)
+                    is ReadClientPickedError.Unexpected ->
+                        copy(witnessPickedResponseAsync = Fail(it.error))
+                }
+            },
+
+            ifRight = {
+                copy(witnessPicked = it.toClient())
             },
         )
     }

@@ -28,6 +28,11 @@ fun EditServiceOrderScreen(
     val saleId by viewModel.collectAsState(EditServiceOrderState::saleId)
     val serviceOrderId by viewModel.collectAsState(EditServiceOrderState::serviceOrderId)
 
+    val userPicked by viewModel.collectAsState(EditServiceOrderState::userPicked)
+    val responsiblePicked by viewModel.collectAsState(EditServiceOrderState::responsiblePicked)
+    val witnessPicked by viewModel.collectAsState(EditServiceOrderState::witnessPicked)
+    val hasWitness by viewModel.collectAsState(EditServiceOrderState::hasWitness)
+
     val prescription by viewModel.collectAsState(EditServiceOrderState::prescription)
 
     val lens by viewModel.collectAsState(EditServiceOrderState::lens)
@@ -41,6 +46,12 @@ fun EditServiceOrderScreen(
         modifier = modifier,
 
         prescription = prescription,
+
+        hasWitness = hasWitness,
+        user = userPicked,
+        responsible = responsiblePicked,
+        witness = witnessPicked,
+
         lens = lens,
         coloring = coloring,
         treatment = treatment,

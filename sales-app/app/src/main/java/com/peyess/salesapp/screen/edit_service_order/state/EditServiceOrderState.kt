@@ -5,6 +5,8 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
+import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
@@ -13,6 +15,8 @@ import com.peyess.salesapp.data.repository.edit_service_order.service_order.Edit
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
+import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
 import com.peyess.salesapp.feature.service_order.model.Lens
@@ -31,6 +35,16 @@ data class EditServiceOrderState(
 
     val serviceOrderResponseAsync: Async<EditServiceOrderFetchResponse> = Uninitialized,
     val serviceOrder: ServiceOrder = ServiceOrder(),
+
+    val userPickedResponseAsync: Async<EditClientPickedFetchResponse> = Uninitialized,
+    val userPicked: Client = Client(),
+
+    val responsiblePickedResponseAsync: Async<EditClientPickedFetchResponse> = Uninitialized,
+    val responsiblePicked: Client = Client(),
+
+    val witnessPickedResponseAsync: Async<EditClientPickedFetchResponse> = Uninitialized,
+    val witnessPicked: Client = Client(),
+    val hasWitness: Boolean = false,
 
     val prescriptionResponseAsync: Async<EditPrescriptionFetchResponse> = Uninitialized,
     val prescription: Prescription = Prescription(),

@@ -17,7 +17,7 @@ import com.peyess.salesapp.screen.sale.discount.model.toOverallDiscountDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.screen.sale.discount.model.group.toDiscountGroup
 import com.peyess.salesapp.screen.sale.discount.model.toDiscount
-import com.peyess.salesapp.screen.sale.fee.model.toPaymentFeeDocument
+import com.peyess.salesapp.screen.sale.fee.adapter.toPaymentFeeDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

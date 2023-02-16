@@ -11,7 +11,7 @@ import com.peyess.salesapp.screen.sale.discount.model.Discount
 import com.peyess.salesapp.screen.sale.discount.model.group.DiscountGroup
 import com.peyess.salesapp.screen.sale.discount.model.group.toDiscountGroup
 import com.peyess.salesapp.screen.sale.discount.model.toDiscount
-import com.peyess.salesapp.screen.sale.fee.model.PaymentFee
+import com.peyess.salesapp.feature.payment_fee.model.PaymentFee
 import java.math.BigDecimal
 
 data class DiscountState(

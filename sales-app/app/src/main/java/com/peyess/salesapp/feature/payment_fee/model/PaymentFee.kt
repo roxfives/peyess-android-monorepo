@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.fee.model
+package com.peyess.salesapp.feature.payment_fee.model
 
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 

@@ -8,10 +8,10 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
-import com.peyess.salesapp.screen.sale.fee.model.PaymentFee
-import com.peyess.salesapp.screen.sale.fee.model.toPaymentFeeDocument
+import com.peyess.salesapp.feature.payment_fee.model.PaymentFee
+import com.peyess.salesapp.screen.sale.fee.adapter.toPaymentFeeDocument
 import com.peyess.salesapp.repository.sale.SaleRepository
-import com.peyess.salesapp.screen.sale.fee.model.toPaymentFee
+import com.peyess.salesapp.screen.sale.fee.adapter.toPaymentFee
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

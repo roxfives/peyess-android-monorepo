@@ -6,8 +6,8 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
-import com.peyess.salesapp.screen.sale.fee.model.PaymentFee
-import com.peyess.salesapp.screen.sale.fee.model.toPaymentFee
+import com.peyess.salesapp.feature.payment_fee.model.PaymentFee
+import com.peyess.salesapp.screen.sale.fee.adapter.toPaymentFee
 import java.math.BigDecimal
 
 data class PaymentFeeState(

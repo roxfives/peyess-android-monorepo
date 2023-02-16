@@ -35,6 +35,9 @@ fun EditServiceOrderScreen(
 
     val prescription by viewModel.collectAsState(EditServiceOrderState::prescription)
 
+    val measuringLeft by viewModel.collectAsState(EditServiceOrderState::measuringLeft)
+    val measuringRight by viewModel.collectAsState(EditServiceOrderState::measuringRight)
+
     val lens by viewModel.collectAsState(EditServiceOrderState::lens)
     val coloring by viewModel.collectAsState(EditServiceOrderState::coloring)
     val treatment by viewModel.collectAsState(EditServiceOrderState::treatment)
@@ -48,6 +51,9 @@ fun EditServiceOrderScreen(
         modifier = modifier,
 
         prescription = prescription,
+
+        measureLeft = measuringLeft,
+        measureRight = measuringRight,
 
         hasWitness = hasWitness,
         user = userPicked,

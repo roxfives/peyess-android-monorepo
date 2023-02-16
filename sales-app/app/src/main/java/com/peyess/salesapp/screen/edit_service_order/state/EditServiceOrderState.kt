@@ -12,12 +12,15 @@ import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesF
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningFetchBothResponse
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.data.repository.local_sale.positioning.typing.PositioningPair
 import com.peyess.salesapp.feature.service_order.model.Client
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
@@ -27,6 +30,7 @@ import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
+import com.peyess.salesapp.screen.edit_service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.edit_service_order.model.ServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
@@ -53,6 +57,9 @@ data class EditServiceOrderState(
     val prescriptionResponseAsync: Async<EditPrescriptionFetchResponse> = Uninitialized,
     val prescription: Prescription = Prescription(),
 
+    val positioningsResponseAsync: Async<EditPositioningFetchBothResponse> = Uninitialized,
+    val positioningPair: PositioningPair = PositioningPair(),
+
     val productPickedResponseAsync: Async<EditProductPickedFetchResponse> = Uninitialized,
     val productPicked: ProductPickedDocument = ProductPickedDocument(),
 
@@ -78,6 +85,9 @@ data class EditServiceOrderState(
     val feeResponseAsync: Async<EditPaymentFeeFetchResponse> = Uninitialized,
     val fee: PaymentFeeDocument = PaymentFeeDocument(),
 ): MavericksState {
+    val measuringLeft = positioningPair.left.toMeasuring()
+    val measuringRight = positioningPair.right.toMeasuring()
+
     val coloring = Pair(lens, coloringResponse).let {
         if (lens.isColoringDiscounted || lens.isColoringIncluded) {
             coloringResponse.copy(price = 0.0)

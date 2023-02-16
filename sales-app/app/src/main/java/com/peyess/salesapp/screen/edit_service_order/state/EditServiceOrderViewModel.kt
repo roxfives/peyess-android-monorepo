@@ -16,6 +16,8 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.E
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeRepository
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningFetchBothResponse
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPositioningRepository
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedFetchResponse
@@ -26,7 +28,6 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
-import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
 import com.peyess.salesapp.screen.edit_service_order.adapter.toClient
 import com.peyess.salesapp.screen.edit_service_order.adapter.toFrames
@@ -58,9 +59,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val editClientPickedRepository: EditClientPickedRepository,
     private val editPaymentDiscountRepository: EditPaymentDiscountRepository,
     private val editPaymentFeeRepository: EditPaymentFeeRepository,
+    private val editPositioningRepository: EditPositioningRepository,
 
     private val localLensesRepository: LocalLensesRepository,
-    private val localClientRepository: LocalClientRepository,
 ): MavericksViewModel<EditServiceOrderState>(initialState) {
 
     init {
@@ -86,6 +87,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                 loadWitnessPicked(it.id)
 
                 loadPrescription(it.id)
+                streamPositionings(it.id)
                 loadLensProducts(it.id)
                 loadFrames(it.id)
 
@@ -119,6 +121,10 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
         onAsync(EditServiceOrderState::prescriptionResponseAsync) {
             processPrescriptionResponse(it)
+        }
+
+        onAsync(EditServiceOrderState::positioningsResponseAsync) {
+            processPositioningsResponse(it)
         }
 
         onAsync(EditServiceOrderState::productPickedResponseAsync) {
@@ -253,6 +259,28 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
             ifRight = {
                 copy(prescription = it.toPrescription())
+            },
+        )
+    }
+
+    private fun streamPositionings(serviceOrderId: String) {
+        editPositioningRepository
+            .streamBothPositioningForServiceOrder(serviceOrderId)
+            .execute(Dispatchers.IO) {
+                copy(positioningsResponseAsync = it)
+            }
+    }
+
+    private fun processPositioningsResponse(
+        response: EditPositioningFetchBothResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+              copy(positioningsResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(positioningPair = it)
             },
         )
     }

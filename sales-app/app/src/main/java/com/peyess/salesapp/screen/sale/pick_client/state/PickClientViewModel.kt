@@ -27,7 +27,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.screen.sale.pick_client.adapter.toClient
 import com.peyess.salesapp.screen.sale.pick_client.adapter.toClientPickedEntity
-import com.peyess.salesapp.screen.sale.pick_client.model.Client
+import com.peyess.salesapp.feature.client_list.model.Client
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker

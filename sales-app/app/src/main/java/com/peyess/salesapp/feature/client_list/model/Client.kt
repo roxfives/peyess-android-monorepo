@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.pick_client.model
+package com.peyess.salesapp.feature.client_list.model
 
 import com.peyess.salesapp.typing.client.Sex
 import java.time.ZonedDateTime

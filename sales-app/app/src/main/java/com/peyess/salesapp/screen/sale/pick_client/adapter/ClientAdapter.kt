@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.pick_client.adapter
 
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
-import com.peyess.salesapp.screen.sale.pick_client.model.Client
+import com.peyess.salesapp.feature.client_list.model.Client
 import com.peyess.salesapp.typing.sale.ClientRole
 
 fun Client.toClientPickedEntity(

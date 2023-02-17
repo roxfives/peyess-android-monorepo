@@ -81,6 +81,7 @@ fun EditServiceOrderScreen(
         onChangeWitness = { onChangeWitness(saleId, serviceOrderId) },
 
         onAddPaymentFee = { onAddPaymentFee(saleId, priceWithDiscount) },
-        onAddDiscount = { onAddDiscount(saleId, fullPrice) }
+        onAddDiscount = { onAddDiscount(saleId, fullPrice) },
+        onDeletePayment = { viewModel.deletePayment(it.id) },
     )
 }

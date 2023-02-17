@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.payment.toLocalPaymen
 import com.peyess.salesapp.data.dao.edit_service_order.payment.EditLocalPaymentDao
 import com.peyess.salesapp.data.dao.local_client.LocalClientDao
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment.error.DeleteLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.InsertLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
@@ -29,6 +30,17 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     }.mapLeft {
         InsertLocalPaymentError.Unexpected(
             description = "Error while inserting payment $payment",
+            throwable = it,
+        )
+    }
+
+    override suspend fun deletePayment(
+        paymentId: Long,
+    ): EditLocalPaymentDeleteResponse = Either.catch {
+        editLocalPaymentDao.deletePayment(paymentId)
+    }.mapLeft {
+        DeleteLocalPaymentError.Unexpected(
+            description = "Error while deleting payment $paymentId",
             throwable = it,
         )
     }

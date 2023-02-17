@@ -14,6 +14,15 @@ sealed class InsertLocalPaymentError: EditLocalPaymentDataRepositoryError {
     }
 }
 
+sealed class DeleteLocalPaymentError: EditLocalPaymentDataRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteLocalPaymentError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}
+
 sealed class UpdateLocalPaymentError: EditLocalPaymentDataRepositoryError {
     data class Unexpected(
         override val description: String,

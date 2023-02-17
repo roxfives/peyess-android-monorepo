@@ -14,6 +14,12 @@ interface EditLocalPaymentDao {
     @Insert(onConflict = REPLACE)
     suspend fun addPayment(payment: EditLocalPaymentEntity)
 
+    @Query("""
+        DELETE FROM ${EditLocalPaymentEntity.tableName}
+        WHERE id = :paymentId
+    """)
+    suspend fun deletePayment(paymentId: Long)
+
     @Transaction
     @Query("""
         SELECT * FROM ${EditLocalPaymentEntity.tableName}

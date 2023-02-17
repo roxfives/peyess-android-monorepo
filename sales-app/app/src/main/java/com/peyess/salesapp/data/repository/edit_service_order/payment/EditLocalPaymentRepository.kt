@@ -3,12 +3,14 @@ package com.peyess.salesapp.data.repository.edit_service_order.payment
 import android.net.Uri
 import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment.error.DeleteLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.InsertLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
 import kotlinx.coroutines.flow.Flow
 
 typealias EditLocalPaymentInsertResponse = Either<InsertLocalPaymentError, Unit>
+typealias EditLocalPaymentDeleteResponse = Either<DeleteLocalPaymentError, Unit>
 
 typealias EditLocalPaymentFetchResponse = Either<ReadLocalPaymentError, List<LocalPaymentDocument>>
 typealias EditLocalPaymentStreamResponse = Flow<EditLocalPaymentFetchResponse>
@@ -17,6 +19,7 @@ typealias EditLocalPaymentUpdateResponse = Either<UpdateLocalPaymentError, Unit>
 
 interface EditLocalPaymentRepository {
     suspend fun addPayment(payment: LocalPaymentDocument): EditLocalPaymentInsertResponse
+    suspend fun deletePayment(paymentId: Long): EditLocalPaymentDeleteResponse
 
     suspend fun paymentsForSale(saleId: String): EditLocalPaymentFetchResponse
     fun streamPaymentsForSale(saleId: String): EditLocalPaymentStreamResponse

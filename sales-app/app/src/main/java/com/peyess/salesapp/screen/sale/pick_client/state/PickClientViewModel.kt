@@ -28,7 +28,6 @@ import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.screen.sale.pick_client.adapter.toClient
 import com.peyess.salesapp.screen.sale.pick_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.feature.client_list.model.Client
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
@@ -57,38 +56,11 @@ class PickClientViewModel @AssistedInject constructor(
 
     init {
         updateClientList()
-        loadServiceOrderData()
 
         onAsync(PickClientState::existingCreateClientAsync) { processActiveCreatingClientResponse(it) }
         onAsync(PickClientState::createClientResponseAsync) { processCreateNewClientResponse(it) }
 
         onAsync(PickClientState::clientListResponseAsync) { processClientListResponse(it) }
-
-        onAsync(PickClientState::activeServiceOrderResponseAsync) {
-            processServiceOrderDataResponse(it)
-        }
-    }
-
-    private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
-        response.fold(
-            ifLeft = {
-                copy(
-                    activeServiceOrderResponseAsync = Fail(
-                        it.error ?: Throwable(it.description)
-                    ),
-                )
-            },
-
-            ifRight = { copy(activeServiceOrderResponse = it) }
-        )
-    }
-
-    private fun loadServiceOrderData() {
-        suspend {
-            saleRepository.currentServiceOrder()
-        }.execute(Dispatchers.IO) {
-            copy(activeServiceOrderResponseAsync = it)
-        }
     }
 
     private fun pickAllForServiceOrder(client: Client) = withState {
@@ -225,6 +197,14 @@ class PickClientViewModel @AssistedInject constructor(
                 )
             }
         )
+    }
+
+    fun setSaleId(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
+    fun setServiceOrderId(serviceOrderId: String) = setState {
+        copy(serviceOrderId = serviceOrderId)
     }
 
     fun syncClients(context: Context) {

@@ -21,8 +21,8 @@ typealias ClientListStream = Flow<PagingData<Client>>
 typealias ClientsListResponse = Either<LocalClientRepositoryPagingError, ClientListStream>
 
 data class PickClientState(
-    val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
-    val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
+    val saleId: String = "",
+    val serviceOrderId: String = "",
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
@@ -41,9 +41,6 @@ data class PickClientState(
     val existingCreateClient: CacheCreateClientDocument = CacheCreateClientDocument(),
     val hasLookedForExistingClient: Boolean = false,
 ): MavericksState {
-    val saleId: String = activeServiceOrderResponse.saleId
-    val serviceOrderId: String = activeServiceOrderResponse.id
-
     val isLoading = clientListResponseAsync is Loading
 
     val isLookingForCreatingClient = existingCreateClientAsync is Loading

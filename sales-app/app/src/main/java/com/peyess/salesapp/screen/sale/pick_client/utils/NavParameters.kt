@@ -6,9 +6,39 @@ import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.paymentIdParam
 import com.peyess.salesapp.navigation.client_list.pickScenarioParam
+import com.peyess.salesapp.navigation.client_list.saleIdParam
+import com.peyess.salesapp.navigation.client_list.serviceOrderIdParam
 
 @Composable
-private fun parseParameterPaymentId(
+private fun ParseParameterSaleId(
+    backStackEntry: NavBackStackEntry? = null,
+    defaultValue: String = "",
+    onUpdate: (value: String) -> Unit = {}
+) {
+    val args = backStackEntry?.arguments
+    val saleId = args
+        ?.getString(saleIdParam, defaultValue)
+        ?: defaultValue
+
+    onUpdate(saleId)
+}
+
+@Composable
+private fun ParseParameterServiceOrderId(
+    backStackEntry: NavBackStackEntry? = null,
+    defaultValue: String = "",
+    onUpdate: (value: String) -> Unit = {}
+) {
+    val args = backStackEntry?.arguments
+    val serviceOrderId = args
+        ?.getString(serviceOrderIdParam, defaultValue)
+        ?: defaultValue
+
+    onUpdate(serviceOrderId)
+}
+
+@Composable
+private fun ParseParameterPaymentId(
     backStackEntry: NavBackStackEntry? = null,
     defaultValue: Long = 0L,
     onUpdate: (value: Long) -> Unit = {}
@@ -22,7 +52,7 @@ private fun parseParameterPaymentId(
 }
 
 @Composable
-private fun parseParameterCreateScenario(
+private fun ParseParameterCreateScenario(
     backStackEntry: NavBackStackEntry? = null,
     defaultValue: String = "",
     onUpdate: (value: PickScenario) -> Unit = {}
@@ -38,17 +68,29 @@ private fun parseParameterCreateScenario(
 }
 
 @Composable
-fun parseParameters(
+fun ParseParameters(
     navController: NavHostController,
+    onUpdateSaleId: (String) -> Unit,
+    onUpdateServiceOrderId: (String) -> Unit,
     onUpdatePaymentId: (Long) -> Unit,
     onUpdateCreateScenario: (PickScenario) -> Unit,
 ) {
-    parseParameterPaymentId(
+    ParseParameterSaleId(
+        backStackEntry = navController.currentBackStackEntry,
+        onUpdate = onUpdateSaleId
+    )
+
+    ParseParameterServiceOrderId(
+        backStackEntry = navController.currentBackStackEntry,
+        onUpdate = onUpdateServiceOrderId
+    )
+
+    ParseParameterPaymentId(
         backStackEntry = navController.currentBackStackEntry,
         onUpdate = onUpdatePaymentId
     )
 
-    parseParameterCreateScenario(
+    ParseParameterCreateScenario(
         backStackEntry = navController.currentBackStackEntry,
         onUpdate = onUpdateCreateScenario,
     )

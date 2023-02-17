@@ -20,7 +20,7 @@ import com.peyess.salesapp.feature.client_list.ClientListScreenUI
 import com.peyess.salesapp.screen.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientViewModel
-import com.peyess.salesapp.screen.sale.pick_client.utils.parseParameters
+import com.peyess.salesapp.screen.sale.pick_client.utils.ParseParameters
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import timber.log.Timber
@@ -61,8 +61,10 @@ fun PickClientScreen(
     val pickScenario by viewModel.collectAsState(PickClientState::pickScenario)
     val pickedId by viewModel.collectAsState(PickClientState::pickedId)
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
+        onUpdateSaleId = viewModel::setSaleId,
+        onUpdateServiceOrderId = viewModel::setServiceOrderId,
         onUpdatePaymentId = viewModel::updatePaymentId,
         onUpdateCreateScenario = viewModel::updatePickScenario,
     )

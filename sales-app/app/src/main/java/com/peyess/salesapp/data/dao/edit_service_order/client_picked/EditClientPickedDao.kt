@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.dao.edit_service_order.client_picked
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedEntity
 import com.peyess.salesapp.typing.client.Sex
@@ -10,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EditClientPickedDao {
-    @Insert
+    @Insert(onConflict = REPLACE)
     suspend fun insertClientPicked(clientPicked: EditClientPickedEntity)
 
     @Query("""

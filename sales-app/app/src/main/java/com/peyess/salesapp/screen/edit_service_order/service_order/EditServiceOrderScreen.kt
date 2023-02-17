@@ -16,6 +16,9 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.utils.ParsePa
 fun EditServiceOrderScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    onChangeUser: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onChangeResponsible: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onChangeWitness: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
     onAddDiscount: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
 ) {
@@ -72,6 +75,10 @@ fun EditServiceOrderScreen(
         payments = payments,
         totalPaid = totalPaid,
         finalPrice = finalPrice,
+
+        onChangeUser = { onChangeUser(saleId, serviceOrderId) },
+        onChangeResponsible = { onChangeResponsible(saleId, serviceOrderId) },
+        onChangeWitness = { onChangeWitness(saleId, serviceOrderId) },
 
         onAddPaymentFee = { onAddPaymentFee(saleId, priceWithDiscount) },
         onAddDiscount = { onAddDiscount(saleId, fullPrice) }

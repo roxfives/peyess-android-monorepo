@@ -8,6 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.navigation.client_list.PickScenario
+import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderEnterTransition
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderExitTransition
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
@@ -17,7 +19,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOr
 const val serviceOrderIdParam = "serviceOrderId"
 const val saleIdParam = "saleId"
 
-private val editServiceOrderRoute = SalesAppScreens.EditServiceOrder.name +
+val editServiceOrderRoute = SalesAppScreens.EditServiceOrder.name +
         "/{$saleIdParam}" +
         "/{$serviceOrderIdParam}"
 
@@ -49,30 +51,45 @@ fun buildEditServiceOrderNavGraph(
             modifier = modifier,
             navHostController = navHostController,
 
-//            onChangeUser = {
-//                val isPicking = true
-//                val pickScenario = PickScenario.User.toName()
-//
-//                navHostController
-//                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
-//            },
-//
-//            onChangeResponsible = {
-//                val isPicking = true
-//                val pickScenario = PickScenario.Responsible.toName()
-//
-//                navHostController
-//                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
-//            },
-//
-//            onChangeWitness = {
-//                val isPicking = true
-//                val pickScenario = PickScenario.Witness.toName()
-//
-//                navHostController
-//                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
-//            },
-//
+            onChangeUser = { saleId, serviceOrderId ->
+                val isPicking = true
+                val pickScenario = PickScenario.EditUser.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
+
+                navHostController.navigate(route)
+            },
+
+            onChangeResponsible = { saleId, serviceOrderId ->
+                val isPicking = true
+                val pickScenario = PickScenario.Responsible.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
+
+                navHostController.navigate(route)
+            },
+
+            onChangeWitness = { saleId, serviceOrderId ->
+                val isPicking = true
+                val pickScenario = PickScenario.Witness.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
+
+                navHostController.navigate(route)
+            },
+
 //            onEditPrescription = {
 //                val isUpdating = true
 //

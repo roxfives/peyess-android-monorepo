@@ -11,8 +11,11 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
+import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderRoute
+import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
+import com.peyess.salesapp.navigation.sale.service_order.serviceOrderRoute
 
 const val saleIdParam = "saleId"
 const val serviceOrderIdParam = "serviceOrderId"
@@ -84,6 +87,10 @@ fun buildPickClientListNavGraph(
                     PickScenario.Responsible -> CreateScenario.Responsible
                     PickScenario.User -> CreateScenario.User
                     PickScenario.Witness -> CreateScenario.Witness
+                    PickScenario.EditPayment -> CreateScenario.EditPayment
+                    PickScenario.EditResponsible -> CreateScenario.EditResponsible
+                    PickScenario.EditUser -> CreateScenario.EditUser
+                    PickScenario.EditWitness -> CreateScenario.EditWitness
                 }
 
                 val basicInfoRoute = buildBasicInfoRoute(
@@ -112,7 +119,16 @@ fun buildPickClientListNavGraph(
                         }
                     }
 
-                    PickScenario.ServiceOrder,
+                    PickScenario.ServiceOrder -> {
+                        val route = buildServiceOrderRoute(
+                            isCreating = true,
+                            saleId = saleId,
+                            serviceOrderId = serviceOrderId,
+                        )
+
+                        navHostController.navigate(route)
+                    }
+
                     PickScenario.User,
                     PickScenario.Responsible,
                     PickScenario.Witness -> {
@@ -122,7 +138,28 @@ fun buildPickClientListNavGraph(
                             serviceOrderId = serviceOrderId,
                         )
 
-                        navHostController.navigate(route)
+                        navHostController.navigate(route) {
+                            popUpTo(serviceOrderRoute) {
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                    PickScenario.EditPayment -> {}
+
+                    PickScenario.EditResponsible,
+                    PickScenario.EditUser,
+                    PickScenario.EditWitness -> {
+                        val route = buildEditServiceOrderRoute(
+                            saleId = saleId,
+                            serviceOrderId = serviceOrderId,
+                        )
+
+                        navHostController.navigate(route) {
+                            popUpTo(editServiceOrderRoute) {
+                                inclusive = true
+                            }
+                        }
                     }
                 }
             }
@@ -136,31 +173,42 @@ sealed class PickScenario {
     object Responsible: PickScenario()
     object Witness: PickScenario()
     object Payment: PickScenario()
-//    object EditUser: PickScenario()
-//    object EditResponsible: PickScenario()
-//    object EditWitness: PickScenario()
-//    object EditPayment: PickScenario()
+    object EditUser: PickScenario()
+    object EditResponsible: PickScenario()
+    object EditWitness: PickScenario()
+    object EditPayment: PickScenario()
 
     fun toName() = toName(this)
 
     companion object {
         fun toName(scenario: PickScenario): String {
             return when (scenario) {
-                Responsible -> "Client"
-                Payment -> "Payment"
                 ServiceOrder -> "ServiceOrder"
+                Payment -> "Payment"
                 User -> "User"
+                Responsible -> "Client"
                 Witness -> "Witness"
+                EditPayment -> "EditPayment"
+                EditResponsible -> "EditUser"
+                EditUser -> "EditClient"
+                EditWitness -> "EditWitness"
             }
         }
 
         fun fromName(name: String): PickScenario? {
             return when (name) {
                 "Client" -> Responsible
+
                 "Payment" -> Payment
                 "ServiceOrder" -> ServiceOrder
                 "User" -> User
                 "Witness" -> Witness
+
+                "EditPayment" -> EditPayment
+                "EditUser" -> EditResponsible
+                "EditClient" -> EditUser
+                "EditWitness" -> EditWitness
+
                 else -> null
             }
         }

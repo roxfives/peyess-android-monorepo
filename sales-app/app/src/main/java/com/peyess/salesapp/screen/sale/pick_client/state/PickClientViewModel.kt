@@ -19,6 +19,7 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -29,6 +30,7 @@ import com.peyess.salesapp.screen.sale.pick_client.adapter.toClient
 import com.peyess.salesapp.screen.sale.pick_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.feature.client_list.model.Client
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.screen.sale.pick_client.adapter.toEditClientPickedDocument
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -41,7 +43,9 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 
-private typealias ViewModelFactory = MavericksViewModelFactory<PickClientViewModel, PickClientState>
+private typealias ViewModelFactory = AssistedViewModelFactory<PickClientViewModel, PickClientState>
+private typealias PickClientViewModelFactory =
+        MavericksViewModelFactory<PickClientViewModel, PickClientState>
 
 private const val clientsTablePageSize = 20
 private const val lensesTablePrefetchDistance = 10
@@ -49,6 +53,7 @@ private const val lensesTablePrefetchDistance = 10
 class PickClientViewModel @AssistedInject constructor(
     @Assisted initialState: PickClientState,
     private val saleRepository: SaleRepository,
+    private val editClientPickedRepository: EditClientPickedRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val clientRepository: ClientRepository,
     private val localClientRepository: LocalClientRepository,
@@ -94,6 +99,19 @@ class PickClientViewModel @AssistedInject constructor(
                     copy(hasPickedClient = false, pickedId = client.id)
                 }
             }
+    }
+
+    private fun editOnlyOne(client: Client, role: ClientRole) = withState {
+        suspend {
+            editClientPickedRepository.insertClientPicked(
+                clientPicked = client.toEditClientPickedDocument(
+                    serviceOrderId = it.serviceOrderId,
+                    clientRole = role,
+                )
+            )
+        }.execute(Dispatchers.IO) {
+            copy(hasPickedClient = it is Success, pickedId = client.id)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -282,10 +300,16 @@ class PickClientViewModel @AssistedInject constructor(
     fun pickClient(client: Client) = withState {
         when (it.pickScenario) {
             PickScenario.ServiceOrder -> pickAllForServiceOrder(client)
-            PickScenario.Responsible -> pickOnlyOne(client, ClientRole.Responsible)
+
+            PickScenario.Payment -> pickIdOnly(client)
             PickScenario.User -> pickOnlyOne(client, ClientRole.User)
+            PickScenario.Responsible -> pickOnlyOne(client, ClientRole.Responsible)
             PickScenario.Witness -> pickOnlyOne(client, ClientRole.Witness)
-            else -> pickIdOnly(client)
+
+            PickScenario.EditPayment -> pickIdOnly(client)
+            PickScenario.EditUser -> editOnlyOne(client, ClientRole.User)
+            PickScenario.EditResponsible -> editOnlyOne(client, ClientRole.Responsible)
+            PickScenario.EditWitness -> editOnlyOne(client, ClientRole.Witness)
         }
     }
 
@@ -295,9 +319,9 @@ class PickClientViewModel @AssistedInject constructor(
 
     // hilt
     @AssistedFactory
-    interface Factory: AssistedViewModelFactory<PickClientViewModel, PickClientState> {
+    interface Factory: ViewModelFactory {
         override fun create(state: PickClientState): PickClientViewModel
     }
 
-    companion object: ViewModelFactory by hiltMavericksViewModelFactory()
+    companion object: PickClientViewModelFactory by hiltMavericksViewModelFactory()
 }

@@ -266,10 +266,15 @@ sealed class CreateScenario {
     object ClientScreen: CreateScenario()
     object ServiceOrder: CreateScenario()
 
-    object Responsible: CreateScenario()
-    object User: CreateScenario()
-    object Witness: CreateScenario()
     object Payment: CreateScenario()
+    object User: CreateScenario()
+    object Responsible: CreateScenario()
+    object Witness: CreateScenario()
+
+    object EditPayment: CreateScenario()
+    object EditUser: CreateScenario()
+    object EditResponsible: CreateScenario()
+    object EditWitness: CreateScenario()
 
     fun toName() = toName(this)
 
@@ -280,9 +285,13 @@ sealed class CreateScenario {
                 ClientScreen -> "ClientScreen"
                 ServiceOrder -> "ServiceOrder"
                 Payment -> "Payment"
-                Responsible -> "Responsible"
                 User -> "User"
+                Responsible -> "Responsible"
                 Witness -> "Witness"
+                EditPayment -> "EditPayment"
+                EditUser -> "EditUser"
+                EditResponsible -> "EditResponsible"
+                EditWitness -> "EditWitness"
             }
         }
 
@@ -295,6 +304,10 @@ sealed class CreateScenario {
                 "Responsible" -> Responsible
                 "User" -> User
                 "Witness" -> Witness
+                "EditPayment" -> EditPayment
+                "EditUser" -> EditUser
+                "EditResponsible" -> EditResponsible
+                "EditWitness" -> EditWitness
                 else -> null
             }
         }

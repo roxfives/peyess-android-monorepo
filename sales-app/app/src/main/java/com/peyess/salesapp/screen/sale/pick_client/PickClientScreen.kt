@@ -21,7 +21,7 @@ import com.peyess.salesapp.screen.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientState
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.screen.sale.pick_client.utils.parseParameters
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import timber.log.Timber
 

@@ -12,7 +12,7 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.feature.client_list.model.Client
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

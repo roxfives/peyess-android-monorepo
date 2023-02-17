@@ -19,7 +19,7 @@ import com.peyess.salesapp.data.repository.local_client.error.LocalClientReposit
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CancelSaleResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse

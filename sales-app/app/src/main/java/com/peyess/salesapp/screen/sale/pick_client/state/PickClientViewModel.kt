@@ -20,7 +20,7 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleRes
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.typing.sale.ClientRole
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery

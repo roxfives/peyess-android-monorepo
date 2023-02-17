@@ -3,9 +3,9 @@ package com.peyess.salesapp.screen.sale.pick_client.utils
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import com.peyess.salesapp.navigation.pick_client.PickScenario
-import com.peyess.salesapp.navigation.pick_client.paymentIdParam
-import com.peyess.salesapp.navigation.pick_client.pickScenarioParam
+import com.peyess.salesapp.navigation.client_list.PickScenario
+import com.peyess.salesapp.navigation.client_list.paymentIdParam
+import com.peyess.salesapp.navigation.client_list.pickScenarioParam
 
 @Composable
 private fun parseParameterPaymentId(

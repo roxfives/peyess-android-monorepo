@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.pick_client
+package com.peyess.salesapp.navigation.client_list
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.Modifier

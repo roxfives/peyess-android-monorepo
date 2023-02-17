@@ -14,7 +14,7 @@ import com.peyess.salesapp.screen.create_client.basic_info.utils.validateName
 import com.peyess.salesapp.screen.create_client.basic_info.utils.validateNameDisplay
 import com.peyess.salesapp.screen.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.typing.client.Sex
 import java.time.ZonedDateTime
 

@@ -11,7 +11,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.screen.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.lens_pick.ui.LensSuggestionScreen
-import com.peyess.salesapp.navigation.pick_client.PickScenario
+import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition

@@ -117,8 +117,8 @@ fun LensSuggestionScreen(
     )
 
     val isEditingParameter by viewModel.collectAsState(LensPickState::isEditingParameter)
-    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
     val saleId by viewModel.collectAsState(LensPickState::saleId)
+    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
 
     val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
 

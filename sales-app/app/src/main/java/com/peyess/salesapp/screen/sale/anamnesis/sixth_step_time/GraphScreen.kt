@@ -62,8 +62,8 @@ fun GraphsScreen(
         viewModel.loadSale()
     }
 
-    val serviceOrderId by viewModel.collectAsState(SixthStepState::serviceOrderId)
     val saleId by viewModel.collectAsState(SixthStepState::saleId)
+    val serviceOrderId by viewModel.collectAsState(SixthStepState::serviceOrderId)
 
     val farUsage by viewModel.collectAsState(SixthStepState::farUsage)
     val nearUsage by viewModel.collectAsState(SixthStepState::nearUsage)

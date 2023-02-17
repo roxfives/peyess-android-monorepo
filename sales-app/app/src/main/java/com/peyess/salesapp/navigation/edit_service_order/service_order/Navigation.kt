@@ -10,8 +10,9 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderEnterTransition
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderExitTransition
+import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
-import com.peyess.salesapp.screen.edit_service_order.EditServiceOrderScreen
+import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOrderScreen
 
 const val serviceOrderIdParam = "serviceOrderId"
 const val saleIdParam = "saleId"
@@ -112,14 +113,12 @@ fun buildEditServiceOrderNavGraph(
 //                navHostController.navigate(route)
 //            },
 //
-//            onAddDiscount = { saleId, fullPrice ->
-//                navHostController
-//                    .navigate(buildDiscountNavRoute(saleId, fullPrice))
-//            },
+            onAddDiscount = { saleId, fullPrice ->
+                navHostController.navigate(buildEditPaymentDiscountRoute(saleId, fullPrice))
+            },
 //
             onAddPaymentFee = { saleId, fullPrice ->
-                navHostController
-                    .navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
+                navHostController.navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
             },
 //
 //            onFinishSale = {

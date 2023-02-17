@@ -16,4 +16,4 @@ data class EditPaymentFeeState(
     val currentPaymentFee: PaymentFee = PaymentFee(),
 
     val pricePreview: BigDecimal = BigDecimal(0),
-): MavericksState {}
+): MavericksState

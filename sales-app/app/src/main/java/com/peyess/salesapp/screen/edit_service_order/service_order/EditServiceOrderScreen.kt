@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.edit_service_order
+package com.peyess.salesapp.screen.edit_service_order.service_order
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,6 +17,7 @@ fun EditServiceOrderScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
     onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
+    onAddDiscount: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
 ) {
     val viewModel: EditServiceOrderViewModel = mavericksViewModel()
     
@@ -46,8 +47,9 @@ fun EditServiceOrderScreen(
 
     val payments by viewModel.collectAsState(EditServiceOrderState::payments)
     val totalPaid by viewModel.collectAsState(EditServiceOrderState::totalPaid)
-    val finalPrice by viewModel.collectAsState(EditServiceOrderState::finalPrice)
+    val fullPrice by viewModel.collectAsState(EditServiceOrderState::fullPrice)
     val priceWithDiscount by viewModel.collectAsState(EditServiceOrderState::priceWithDiscountOnly)
+    val finalPrice by viewModel.collectAsState(EditServiceOrderState::finalPrice)
 
     ServiceOrderUI(
         modifier = modifier,
@@ -72,5 +74,6 @@ fun EditServiceOrderScreen(
         finalPrice = finalPrice,
 
         onAddPaymentFee = { onAddPaymentFee(saleId, priceWithDiscount) },
+        onAddDiscount = { onAddDiscount(saleId, fullPrice) }
     )
 }

@@ -12,6 +12,7 @@ import com.peyess.salesapp.screen.create_client.address.state.ClientAddressViewM
 import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.screen.demonstration.state.DemonstrationViewModel
+import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.EditPaymentDiscountViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment_fee.state.EditPaymentFeeViewModel
 import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
@@ -48,222 +49,229 @@ interface ViewModelsModule {
     @IntoMap
     @ViewModelKey(WelcomeViewModel::class)
     fun bindWelcomeViewModelFactory(
-        factory: WelcomeViewModel.Factory
+        factory: WelcomeViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
     @Binds
     @IntoMap
     @ViewModelKey(MainViewModel::class)
     fun bindMainViewModelFactory(
-        factory: MainViewModel.Factory
+        factory: MainViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(AuthenticationViewModel::class)
     fun bindStoreAuthenticationViewModelFactory(
-        factory: AuthenticationViewModel.Factory
+        factory: AuthenticationViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(UserListViewModel::class)
     fun bindUserListViewModelFactory(
-        factory: UserListViewModel.Factory
+        factory: UserListViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(UserAuthViewModel::class)
     fun bindUserAuthViewModelFactory(
-        factory: UserAuthViewModel.Factory
+        factory: UserAuthViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(LocalPasswordViewModel::class)
     fun bindLocalPasswordViewModelFactory(
-        factory: LocalPasswordViewModel.Factory
+        factory: LocalPasswordViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PrescriptionLensTypeViewModel::class)
     fun bindPrescriptionLensTypeViewModelFactory(
-        factory: PrescriptionLensTypeViewModel.Factory
+        factory: PrescriptionLensTypeViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PrescriptionPictureViewModel::class)
     fun bindPrescriptionPictureViewModelFactory(
-        factory: PrescriptionPictureViewModel.Factory
+        factory: PrescriptionPictureViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PrescriptionDataViewModel::class)
     fun bindPrescriptionDataViewModelFactory(
-        factory: PrescriptionDataViewModel.Factory
+        factory: PrescriptionDataViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FramesLandingViewModel::class)
     fun bindFramesViewModelFactory(
-        factory: FramesLandingViewModel.Factory
+        factory: FramesLandingViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FramesMeasureViewModel::class)
     fun bindFramesMeasureViewModelFactory(
-        factory: FramesMeasureViewModel.Factory
+        factory: FramesMeasureViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(LensPickViewModel::class)
     fun bindLensPickViewModelFactory(
-        factory: LensPickViewModel.Factory
+        factory: LensPickViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(LensComparisonViewModel::class)
     fun bindLensComparisonViewModelFactory(
-        factory: LensComparisonViewModel.Factory
+        factory: LensComparisonViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PickClientViewModel::class)
     fun bindPickClientViewModelFactory(
-        factory: PickClientViewModel.Factory
+        factory: PickClientViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(ServiceOrderViewModel::class)
     fun bindServiceOrderViewModelFactory(
-        factory: ServiceOrderViewModel.Factory
+        factory: ServiceOrderViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PaymentViewModel::class)
     fun bindPaymentViewModelFactory(
-        factory: PaymentViewModel.Factory
+        factory: PaymentViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FirstTimeViewModel::class)
     fun bindFirstTimeViewModelFactory(
-        factory: FirstTimeViewModel.Factory
+        factory: FirstTimeViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(SecondStepViewModel::class)
     fun bindSecondStepViewModelFactory(
-        factory: SecondStepViewModel.Factory
+        factory: SecondStepViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(ThirdStepViewModel::class)
     fun bindThirdStepViewModelFactory(
-        factory: ThirdStepViewModel.Factory
+        factory: ThirdStepViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FourthStepViewModel::class)
     fun bindFourthStepViewModelFactory(
-        factory: FourthStepViewModel.Factory
+        factory: FourthStepViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FifthStepViewModel::class)
     fun bindFifthStepViewModelFactory(
-        factory: FifthStepViewModel.Factory
+        factory: FifthStepViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(SixthStepViewModel::class)
     fun bindSixthStepViewModelFactory(
-        factory: SixthStepViewModel.Factory
+        factory: SixthStepViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(DemonstrationViewModel::class)
     fun bindDemonstrationViewModelFactory(
-        factory: DemonstrationViewModel.Factory
+        factory: DemonstrationViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(BasicInfoViewModel::class)
     fun bindBasicInfoViewModelFactory(
-        factory: BasicInfoViewModel.Factory
+        factory: BasicInfoViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(ClientAddressViewModel::class)
     fun bindClientAddressViewModelFactory(
-        factory: ClientAddressViewModel.Factory
+        factory: ClientAddressViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(CommunicationViewModel::class)
     fun bindCommunicationViewModelFactory(
-        factory: CommunicationViewModel.Factory
+        factory: CommunicationViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(SettingsAndActionViewModel::class)
     fun bindSettingsAndActionViewModelFactory(
-        factory: SettingsAndActionViewModel.Factory
+        factory: SettingsAndActionViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(DiscountViewModel::class)
     fun bindDiscountViewModelFactory(
-        factory: DiscountViewModel.Factory
+        factory: DiscountViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(PaymentFeeViewModel::class)
     fun bindPaymentFeeViewModelFactory(
-        factory: PaymentFeeViewModel.Factory
+        factory: PaymentFeeViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(FramesDataViewModel::class)
     fun bindFramesDataViewModelFactory(
-        factory: FramesDataViewModel.Factory
+        factory: FramesDataViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(EditServiceOrderViewModel::class)
     fun bindEditServiceOrderViewModelFactory(
-        factory: EditServiceOrderViewModel.Factory
+        factory: EditServiceOrderViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(EditPaymentFeeViewModel::class)
     fun bindEditPaymentFeeViewModelFactory(
-        factory: EditPaymentFeeViewModel.Factory
+        factory: EditPaymentFeeViewModel.Factory,
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditPaymentDiscountViewModel::class)
+    fun bindEditPaymentDiscountViewModel(
+        factory: EditPaymentDiscountViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 }

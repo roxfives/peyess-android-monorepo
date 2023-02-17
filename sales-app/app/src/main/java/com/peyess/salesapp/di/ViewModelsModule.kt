@@ -12,6 +12,7 @@ import com.peyess.salesapp.screen.create_client.address.state.ClientAddressViewM
 import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.screen.demonstration.state.DemonstrationViewModel
+import com.peyess.salesapp.screen.edit_service_order.payment_fee.state.EditPaymentFeeViewModel
 import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -257,5 +258,12 @@ interface ViewModelsModule {
     @ViewModelKey(EditServiceOrderViewModel::class)
     fun bindEditServiceOrderViewModelFactory(
         factory: EditServiceOrderViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditPaymentFeeViewModel::class)
+    fun bindEditPaymentFeeViewModelFactory(
+        factory: EditPaymentFeeViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 }

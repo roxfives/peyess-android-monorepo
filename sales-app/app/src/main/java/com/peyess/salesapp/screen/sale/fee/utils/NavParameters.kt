@@ -2,12 +2,14 @@ package com.peyess.salesapp.screen.sale.fee.utils
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.sale.fee.fullPriceArgumentName
 import com.peyess.salesapp.navigation.sale.fee.saleIdArgumentName
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
-fun parseParameterSaleId(
+private fun ParseParameterSaleId(
     backStackEntry: NavBackStackEntry? = null,
     onUpdate: (value: String) -> Unit = {}
 ) {
@@ -20,7 +22,7 @@ fun parseParameterSaleId(
 }
 
 @Composable
-fun parseParameterFullPrice(
+private fun ParseParameterFullPrice(
     backStackEntry: NavBackStackEntry? = null,
     onUpdate: (value: BigDecimal) -> Unit = {}
 ) {
@@ -28,6 +30,6 @@ fun parseParameterFullPrice(
     val fullPriceStr = args?.getString(fullPriceArgumentName, "0")
 
     if (!fullPriceStr.isNullOrBlank()) {
-        onUpdate(BigDecimal(fullPriceStr).setScale(2))
+        onUpdate(BigDecimal(fullPriceStr).setScale(2, RoundingMode.HALF_EVEN))
     }
 }

@@ -47,7 +47,8 @@ fun EditServiceOrderScreen(
     val payments by viewModel.collectAsState(EditServiceOrderState::payments)
     val totalPaid by viewModel.collectAsState(EditServiceOrderState::totalPaid)
     val finalPrice by viewModel.collectAsState(EditServiceOrderState::finalPrice)
-    
+    val priceWithDiscount by viewModel.collectAsState(EditServiceOrderState::priceWithDiscountOnly)
+
     ServiceOrderUI(
         modifier = modifier,
 
@@ -70,6 +71,6 @@ fun EditServiceOrderScreen(
         totalPaid = totalPaid,
         finalPrice = finalPrice,
 
-        onAddPaymentFee = { onAddPaymentFee(saleId, finalPrice) },
+        onAddPaymentFee = { onAddPaymentFee(saleId, priceWithDiscount) },
     )
 }

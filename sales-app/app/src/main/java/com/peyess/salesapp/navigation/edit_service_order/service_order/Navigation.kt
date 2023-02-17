@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.edit_service_order
+package com.peyess.salesapp.navigation.edit_service_order.service_order
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.Modifier
@@ -8,6 +8,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderEnterTransition
+import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderExitTransition
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
 import com.peyess.salesapp.screen.edit_service_order.EditServiceOrderScreen
 

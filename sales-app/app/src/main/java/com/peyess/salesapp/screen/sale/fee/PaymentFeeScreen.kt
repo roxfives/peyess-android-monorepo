@@ -11,10 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.feature.payment_fee.PaymentFeeUI
+import com.peyess.salesapp.screen.sale.discount.utils.parseParameterFullPrice
+import com.peyess.salesapp.screen.sale.discount.utils.parseParameterSaleId
 import com.peyess.salesapp.screen.sale.fee.state.PaymentFeeState
 import com.peyess.salesapp.screen.sale.fee.state.PaymentFeeViewModel
-import com.peyess.salesapp.screen.sale.fee.utils.parseParameterFullPrice
-import com.peyess.salesapp.screen.sale.fee.utils.parseParameterSaleId
 import timber.log.Timber
 import java.math.BigDecimal
 

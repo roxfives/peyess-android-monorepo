@@ -114,12 +114,26 @@ data class EditServiceOrderState(
                 }
             }
     val finalPrice = calculateFinalPrice(fullPrice, discount, fee)
+    val priceWithDiscountOnly = calculatePriceWithDiscount(fullPrice, discount)
 
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()
     val errorWhileFetchingServiceOrder = serviceOrderFetchResponseAsync is Fail ||
             (serviceOrderFetchResponseAsync is Success
                     && serviceOrderFetchResponseAsync.invoke().isLeft())
+
+    private fun calculatePriceWithDiscount(
+        fullPrice: Double,
+        discount: OverallDiscountDocument,
+    ): Double {
+        val discountAsPercentage = when (discount.discountMethod) {
+            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
+        }
+
+        return fullPrice * (1 - discountAsPercentage)
+    }
 
     private fun calculateFinalPrice(
         fullPrice: Double,

@@ -48,6 +48,7 @@ fun EditServiceOrderScreen(
     val treatment by viewModel.collectAsState(EditServiceOrderState::treatment)
     val frames by viewModel.collectAsState(EditServiceOrderState::frames)
 
+    val canAddNewPayment by viewModel.collectAsState(EditServiceOrderState::canAddNewPayment)
     val payments by viewModel.collectAsState(EditServiceOrderState::payments)
     val totalPaid by viewModel.collectAsState(EditServiceOrderState::totalPaid)
     val fullPrice by viewModel.collectAsState(EditServiceOrderState::fullPrice)
@@ -72,6 +73,7 @@ fun EditServiceOrderScreen(
         treatment = treatment,
         frames = frames,
 
+        canAddNewPayment = canAddNewPayment,
         payments = payments,
         totalPaid = totalPaid,
         finalPrice = finalPrice,

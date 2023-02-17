@@ -115,6 +115,8 @@ data class EditServiceOrderState(
             }
     val finalPrice = calculateFinalPrice(fullPrice, discount, fee)
     val priceWithDiscountOnly = calculatePriceWithDiscount(fullPrice, discount)
+    val canAddNewPayment = totalPaid < finalPrice
+
 
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()

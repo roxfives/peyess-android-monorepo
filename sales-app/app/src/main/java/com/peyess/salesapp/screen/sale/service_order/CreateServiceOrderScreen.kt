@@ -42,9 +42,9 @@ fun CreateServiceOrderScreen(
 
     navHostController: NavHostController = rememberNavController(),
 
-    onChangeUser: () -> Unit = {},
-    onChangeResponsible: () -> Unit = {},
-    onChangeWitness: () -> Unit = {},
+    onChangeUser: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onChangeResponsible: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onChangeWitness: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
     onEditPrescription: () -> Unit = {},
 
@@ -52,7 +52,11 @@ fun CreateServiceOrderScreen(
 
     onConfirmMeasure: () -> Unit = {},
 
-    onAddPayment: (paymentId: Long) -> Unit = {},
+    onAddPayment: (
+        saleId: String,
+        serviceOrderId: String,
+        paymentId: Long,
+    ) -> Unit = { _, _, _ -> },
     onEditPayment: (
         paymentId: Long,
         clientId: String,
@@ -137,9 +141,9 @@ fun CreateServiceOrderScreen(
 
             pictureForClient = viewModel::pictureForClient,
 
-            onChangeResponsible = onChangeResponsible,
-            onChangeUser = onChangeUser,
-            onChangeWitness = onChangeWitness,
+            onChangeResponsible = { onChangeResponsible(saleId, serviceOrderId) },
+            onChangeUser = { onChangeUser(saleId, serviceOrderId) },
+            onChangeWitness = { onChangeWitness(saleId, serviceOrderId) },
 
             areUsersLoading = userIsLoading || responsibleIsLoading || witnessIsLoading,
             user = user,
@@ -175,7 +179,7 @@ fun CreateServiceOrderScreen(
             payments = payments,
             onAddPayment = {
                 viewModel.createPayment {
-                    onAddPayment(it)
+                    onAddPayment(saleId, serviceOrderId, it)
                 }
             },
             onAddPaymentFee = {

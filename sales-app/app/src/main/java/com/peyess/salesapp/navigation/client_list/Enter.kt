@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun pickclientEnterTransition(transitionDuration: Int = 500):
+fun clientListEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
         when (SalesAppScreens.fromRoute(initialState.destination.route)) {
                 SalesAppScreens.LensComparison,

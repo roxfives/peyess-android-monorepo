@@ -10,6 +10,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.service_order.CreateServiceOrderScreen
 import com.peyess.salesapp.navigation.client_list.PickScenario
+import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.client_list.paymentIdParam
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
@@ -20,7 +21,7 @@ const val serviceOrderIdParam = "serviceOrderId"
 const val saleIdParam = "saleId"
 const val isCreatingParam = "isCreating"
 
-private val serviceOrderRoute = SalesAppScreens.ServiceOrder.name +
+val serviceOrderRoute = SalesAppScreens.ServiceOrder.name +
         "/{$isCreatingParam}" +
         "/{$saleIdParam}" +
         "/{$serviceOrderIdParam}"
@@ -56,26 +57,41 @@ fun buildServiceOrderNavGraph(
             modifier = modifier,
             navHostController = navHostController,
 
-            onChangeUser = {
+            onChangeUser = { saleId, serviceOrderId ->
                 val isPicking = true
                 val pickScenario = PickScenario.User.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
 
-                navHostController
-                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+                navHostController.navigate(route)
             },
-            onChangeResponsible = {
+            onChangeResponsible = { saleId, serviceOrderId ->
                 val isPicking = true
                 val pickScenario = PickScenario.Responsible.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
 
-                navHostController
-                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+                navHostController.navigate(route)
             },
-            onChangeWitness = {
+            onChangeWitness = { saleId, serviceOrderId ->
                 val isPicking = true
                 val pickScenario = PickScenario.Witness.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                )
 
-                navHostController
-                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+                navHostController.navigate(route)
             },
 
             onEditPrescription = {
@@ -97,13 +113,18 @@ fun buildServiceOrderNavGraph(
                     .navigate(route)
             },
 
-            onAddPayment = {
+            onAddPayment = { saleId, serviceOrderId, paymentId ->
                 val isPicking = true
                 val pickScenario = PickScenario.Payment.toName()
-                val paymentId = it
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                    paymentId = paymentId,
+                )
 
-                navHostController
-                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario?$paymentIdParam=$paymentId")
+                navHostController.navigate(route)
             },
             onEditPayment = { paymentId, clientId, saleId, serviceOrderId ->
                 val client = clientId.ifBlank { "-" }

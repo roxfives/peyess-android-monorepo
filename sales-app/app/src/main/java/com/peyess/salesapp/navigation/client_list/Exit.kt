@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun pickclientExitTransition(transitionDuration: Int = 500):
+fun clientListExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
         when (SalesAppScreens.fromRoute(targetState.destination.route)) {
                 SalesAppScreens.ServiceOrder,

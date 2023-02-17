@@ -34,7 +34,7 @@ enum class SalesAppScreens {
     LensSuggestion,
     LensSuggestionWithoutSuggestions,
     LensComparison,
-    PickClient,
+    ClientList,
     ServiceOrder,
     EditServiceOrder,
     EditPaymentFee,
@@ -91,7 +91,7 @@ enum class SalesAppScreens {
                 LensSuggestion.name -> LensSuggestion
                 LensSuggestionWithoutSuggestions.name -> LensSuggestionWithoutSuggestions
                 LensComparison.name -> LensComparison
-                PickClient.name -> PickClient
+                ClientList.name -> ClientList
                 ServiceOrder.name -> ServiceOrder
                 EditServiceOrder.name -> EditServiceOrder
                 EditPaymentFee.name -> EditPaymentFee
@@ -155,7 +155,7 @@ enum class SalesAppScreens {
                 LensSuggestion.name -> "Sugestões de lentes"
                 LensSuggestionWithoutSuggestions.name -> "Tabela de produtos"
                 LensComparison.name -> "Comparação da lente"
-                PickClient.name -> "Selecione o cadastro do cliente"
+                ClientList.name -> "Selecione o cadastro do cliente"
                 ServiceOrder.name -> "Ordem de Serviço (O.S.)"
                 EditServiceOrder.name -> "Editando a Ordem de Serviço (O.S.)"
                 EditPaymentFee.name -> "Editando o desconto"

@@ -13,7 +13,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 fun editPaymentFeeExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
     when (SalesAppScreens.fromRoute(targetState.destination.route)) {
-        SalesAppScreens.PickClient -> slideOutHorizontally(
+        SalesAppScreens.ClientList -> slideOutHorizontally(
             targetOffsetX = { -it },
             animationSpec = tween(transitionDuration),
         )

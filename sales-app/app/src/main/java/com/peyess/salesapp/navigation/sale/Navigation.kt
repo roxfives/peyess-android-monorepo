@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeNavGraph
-import com.peyess.salesapp.navigation.client_list.buildPickClientNavGraph
+import com.peyess.salesapp.navigation.client_list.buildPickClientListNavGraph
 import com.peyess.salesapp.navigation.sale.anamnesis.buildAnamnesisNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
@@ -26,7 +26,7 @@ fun buildSaleNavGraph(
     buildFramesNavGraph(modifier, navHostController, builder)
     buildFramesMeasureNavGraph(modifier, navHostController, builder)
     buildLensSuggestionNavGraph(modifier, navHostController, builder)
-    buildPickClientNavGraph(modifier, navHostController, builder)
+    buildPickClientListNavGraph(modifier, navHostController, builder)
     buildServiceOrderNavGraph(modifier, navHostController, builder)
     buildPaymentNavGraph(modifier, navHostController, builder)
     buildAnamnesisNavGraph(modifier, navHostController, builder)

@@ -12,7 +12,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 fun editPaymentDiscountEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
     when (SalesAppScreens.fromRoute(initialState.destination.route)) {
-        SalesAppScreens.PickClient,
+        SalesAppScreens.ClientList,
         SalesAppScreens.LensComparison,
         SalesAppScreens.SalePrescriptionData ->
             slideInHorizontally(

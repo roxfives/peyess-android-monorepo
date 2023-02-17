@@ -12,11 +12,13 @@ import com.peyess.salesapp.screen.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.lens_pick.ui.LensSuggestionScreen
 import com.peyess.salesapp.navigation.client_list.PickScenario
+import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition
 import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionExitTransition
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
+import com.peyess.salesapp.navigation.sale.service_order.serviceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val isEditingParam = "isEditing"
@@ -145,22 +147,27 @@ fun buildLensSuggestionNavGraph(
             navHostController = navHostController,
             onAddComparison = { navHostController.popBackStack() },
             onLensPicked = { isEditing, saleId, serviceOrderId ->
-                val isPicking = true
-                val pickScenario = PickScenario.ServiceOrder.toName()
-
-                val route = buildServiceOrderRoute(
-                    isCreating = true,
-                    saleId = saleId,
-                    serviceOrderId = serviceOrderId,
-                )
-
                 if (isEditing) {
+                    val route = buildServiceOrderRoute(
+                        isCreating = true,
+                        saleId = saleId,
+                        serviceOrderId = serviceOrderId,
+                    )
+
                     navHostController.navigate(route) {
-                        popUpTo(route) { inclusive = true }
+                        popUpTo(serviceOrderRoute) { inclusive = true }
                     }
                 } else {
-                    navHostController
-                        .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario")
+                    val isPicking = true
+                    val pickScenario = PickScenario.ServiceOrder.toName()
+                    val route = buildClientListRoute(
+                        saleId = saleId,
+                        serviceOrderId = serviceOrderId,
+                        isPicking = isPicking,
+                        pickScenario = pickScenario,
+                    )
+
+                    navHostController.navigate(route)
                 }
             }
         )

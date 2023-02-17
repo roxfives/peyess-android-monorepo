@@ -13,6 +13,7 @@ import com.peyess.salesapp.screen.create_client.address.CreateClientAddressScree
 import com.peyess.salesapp.screen.create_client.basic_info.BasicInfoScreen
 import com.peyess.salesapp.screen.create_client.communication.CreateClientCommunicationScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.navigation.client_list.clientListRoute
 import com.peyess.salesapp.navigation.create_client.address.clientAddressEnterTransition
 import com.peyess.salesapp.navigation.create_client.address.clientAddressExitTransition
 import com.peyess.salesapp.navigation.create_client.basic_info.createClientEnterTransition
@@ -50,11 +51,11 @@ fun buildBasicInfoRoute(
     return when(createScenario) {
         CreateScenario.Home ->
             SalesAppScreens.CreateNewClientBasicInfo.name +
-                    "/${clientId}" +
+                    "/$clientId" +
                     "/${createScenario.toName()}"
         else ->
             SalesAppScreens.CreateNewClientBasicInfo.name +
-                    "/${clientId}" +
+                    "/$clientId" +
                     "/${createScenario.toName()}" +
                     "?$paymentIdParam=$paymentId"
     }
@@ -237,7 +238,7 @@ fun buildCreateClientNavGraph(
                          )
 
                          navHostController.navigate(paymentRoute) {
-                                 popUpTo("${SalesAppScreens.PickClient.name}/{$isPickingParam}/{$pickScenarioParam}?$paymentIdParam={$paymentIdParam}") {
+                                 popUpTo(clientListRoute) {
                                      inclusive = true
                                  }
                              }

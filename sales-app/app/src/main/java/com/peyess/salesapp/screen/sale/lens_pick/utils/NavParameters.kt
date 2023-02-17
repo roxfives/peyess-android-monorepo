@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
+import com.peyess.salesapp.navigation.sale.lens_pick.saleIdArgumentName
 import com.peyess.salesapp.navigation.sale.lens_pick.soIdArgumentName
 
 @Composable
@@ -42,7 +43,7 @@ private fun parseParameterSaleId(
 ) {
     val args = backStackEntry?.arguments
     val saleId = args
-        ?.getString(soIdArgumentName, defaultValue)
+        ?.getString(saleIdArgumentName, defaultValue)
         ?: defaultValue
 
     onUpdate(saleId)

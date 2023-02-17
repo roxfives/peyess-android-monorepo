@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.screen.sale.payment.model.Lens
+import com.peyess.salesapp.feature.payment.model.Lens
 
 fun StoreLensWithDetailsDocument.toLens(): Lens {
     return Lens(

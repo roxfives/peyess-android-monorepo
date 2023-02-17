@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.screen.sale.payment.model.Treatment
+import com.peyess.salesapp.feature.payment.model.Treatment
 
 fun LocalLensTreatmentDocument.toTreatment(): Treatment {
     return Treatment(

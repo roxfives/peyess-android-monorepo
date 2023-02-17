@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.screen.sale.payment.model.Coloring
+import com.peyess.salesapp.feature.payment.model.Coloring
 
 fun LocalLensColoringDocument.toColoring(): Coloring {
     return Coloring(

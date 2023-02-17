@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.payment.model
+package com.peyess.salesapp.feature.payment.model
 
 data class Treatment(
     val id: String = "",

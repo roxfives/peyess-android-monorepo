@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.payment_method.PaymentMethodDocument
-import com.peyess.salesapp.screen.sale.payment.model.PaymentMethod
+import com.peyess.salesapp.feature.payment.model.PaymentMethod
 
 fun PaymentMethodDocument.toPaymentMethod(): PaymentMethod {
     return PaymentMethod(

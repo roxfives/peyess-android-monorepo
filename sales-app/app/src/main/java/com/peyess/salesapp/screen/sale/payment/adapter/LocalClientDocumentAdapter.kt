@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
-import com.peyess.salesapp.screen.sale.payment.model.Client
+import com.peyess.salesapp.feature.payment.model.Client
 
 fun LocalClientDocument.toClient(): Client {
     return Client(

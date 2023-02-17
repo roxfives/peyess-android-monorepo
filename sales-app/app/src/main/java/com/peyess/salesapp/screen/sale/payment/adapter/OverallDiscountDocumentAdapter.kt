@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
-import com.peyess.salesapp.screen.sale.payment.model.OverallDiscount
+import com.peyess.salesapp.feature.payment.model.OverallDiscount
 
 fun OverallDiscountDocument.toOverallDiscount(): OverallDiscount {
     return OverallDiscount(

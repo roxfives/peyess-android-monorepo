@@ -68,9 +68,9 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
-import com.peyess.salesapp.screen.sale.payment.model.Client
-import com.peyess.salesapp.screen.sale.payment.model.Payment
-import com.peyess.salesapp.screen.sale.payment.model.PaymentMethod
+import com.peyess.salesapp.feature.payment.model.Client
+import com.peyess.salesapp.feature.payment.model.Payment
+import com.peyess.salesapp.feature.payment.model.PaymentMethod
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentPlaceholder
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentTitle
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource

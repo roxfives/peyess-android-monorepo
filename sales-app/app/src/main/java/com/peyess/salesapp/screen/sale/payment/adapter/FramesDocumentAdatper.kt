@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.payment.adapter
 
 import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocument
-import com.peyess.salesapp.screen.sale.payment.model.Frames
+import com.peyess.salesapp.feature.payment.model.Frames
 
 fun FramesDocument.toFrames(): Frames {
     return Frames(

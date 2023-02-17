@@ -7,11 +7,8 @@ import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.group.DiscountGroupDocument
-import com.peyess.salesapp.screen.sale.discount.model.Discount
-import com.peyess.salesapp.screen.sale.discount.model.group.DiscountGroup
-import com.peyess.salesapp.screen.sale.discount.model.group.toDiscountGroup
-import com.peyess.salesapp.screen.sale.discount.model.toDiscount
-import com.peyess.salesapp.feature.payment_fee.model.PaymentFee
+import com.peyess.salesapp.feature.payment_discount.model.Discount
+import com.peyess.salesapp.feature.payment_discount.model.group.DiscountGroup
 import java.math.BigDecimal
 
 data class DiscountState(

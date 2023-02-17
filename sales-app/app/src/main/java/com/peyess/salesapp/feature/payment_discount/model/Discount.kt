@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.discount.model
+package com.peyess.salesapp.feature.payment_discount.model
 
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 

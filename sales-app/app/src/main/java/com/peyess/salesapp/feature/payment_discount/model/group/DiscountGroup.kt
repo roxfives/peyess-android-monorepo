@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.discount.model.group
+package com.peyess.salesapp.feature.payment_discount.model.group
 
 import com.peyess.salesapp.data.model.sale.purchase.discount.group.DiscountGroupDocument
 

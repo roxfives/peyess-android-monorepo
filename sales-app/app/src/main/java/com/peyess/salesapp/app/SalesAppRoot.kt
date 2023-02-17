@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.root
+package com.peyess.salesapp.app
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.peyess.salesapp.app.navigation.SalesAppNavHost
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.component.bottom_bar.BottomBar
 import com.peyess.salesapp.ui.component.bottom_bar.BottomNavBarActions

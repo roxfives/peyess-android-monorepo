@@ -15,11 +15,17 @@ typealias EditLocalPaymentDeleteResponse = Either<DeleteLocalPaymentError, Unit>
 typealias EditLocalPaymentFetchResponse = Either<ReadLocalPaymentError, List<LocalPaymentDocument>>
 typealias EditLocalPaymentStreamResponse = Flow<EditLocalPaymentFetchResponse>
 
+typealias EditLocalPaymentFetchTotalResponse = Either<ReadLocalPaymentError, Double>
+typealias EditLocalPaymentStreamTotalResponse = Flow<EditLocalPaymentFetchTotalResponse>
+
 typealias EditLocalPaymentUpdateResponse = Either<UpdateLocalPaymentError, Unit>
 
 interface EditLocalPaymentRepository {
     suspend fun addPayment(payment: LocalPaymentDocument): EditLocalPaymentInsertResponse
     suspend fun deletePayment(paymentId: Long): EditLocalPaymentDeleteResponse
+
+    suspend fun totalPaid(saleId: String): EditLocalPaymentFetchTotalResponse
+    fun streamTotalPaid(saleId: String): EditLocalPaymentStreamTotalResponse
 
     suspend fun paymentsForSale(saleId: String): EditLocalPaymentFetchResponse
     fun streamPaymentsForSale(saleId: String): EditLocalPaymentStreamResponse

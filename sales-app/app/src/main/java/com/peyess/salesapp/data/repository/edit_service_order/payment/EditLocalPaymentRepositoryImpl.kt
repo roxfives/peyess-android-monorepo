@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.payment
 
 import android.net.Uri
 import arrow.core.Either
+import arrow.core.leftIfNull
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.edit_service_order.payment.toEditLocalPaymentEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.payment.toLocalPaymentDocument
@@ -43,6 +44,22 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
             description = "Error while deleting payment $paymentId",
             throwable = it,
         )
+    }
+
+    override suspend fun totalPaid(
+        saleId: String,
+    ): EditLocalPaymentFetchTotalResponse = Either.catch {
+        editLocalPaymentDao.totalPaid(saleId) ?: 0.0
+    }.mapLeft {
+        ReadLocalPaymentError.Unexpected(
+            description = "Error while fetching total paid for sale $saleId",
+            throwable = it,
+        )
+    }
+
+    override fun streamTotalPaid(saleId: String): EditLocalPaymentStreamTotalResponse {
+        return editLocalPaymentDao.streamTotalPaid(saleId)
+            .map { (it ?: 0.0).right() }
     }
 
     override suspend fun paymentsForSale(

@@ -20,6 +20,18 @@ interface EditLocalPaymentDao {
     """)
     suspend fun deletePayment(paymentId: Long)
 
+    @Query("""
+        SELECT SUM(value) FROM ${EditLocalPaymentEntity.tableName}
+        WHERE sale_id = :saleId
+    """)
+    suspend fun totalPaid(saleId: String): Double?
+
+    @Query("""
+        SELECT SUM(value) FROM ${EditLocalPaymentEntity.tableName}
+        WHERE sale_id = :saleId
+    """)
+    fun streamTotalPaid(saleId: String): Flow<Double?>
+
     @Transaction
     @Query("""
         SELECT * FROM ${EditLocalPaymentEntity.tableName}

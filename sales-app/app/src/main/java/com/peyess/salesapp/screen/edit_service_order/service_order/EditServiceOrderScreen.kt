@@ -19,6 +19,12 @@ fun EditServiceOrderScreen(
     onChangeUser: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onChangeResponsible: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onChangeWitness: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onEditPayment: (
+        paymentId: Long,
+        clientId: String,
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _, _ -> },
     onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
     onAddDiscount: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
 ) {
@@ -84,6 +90,10 @@ fun EditServiceOrderScreen(
 
         onAddPaymentFee = { onAddPaymentFee(saleId, priceWithDiscount) },
         onAddDiscount = { onAddDiscount(saleId, fullPrice) },
+
+        onEditPayment = { payment ->
+            onEditPayment(payment.id, payment.clientId, saleId, serviceOrderId)
+        },
         onDeletePayment = { viewModel.deletePayment(it.id) },
     )
 }

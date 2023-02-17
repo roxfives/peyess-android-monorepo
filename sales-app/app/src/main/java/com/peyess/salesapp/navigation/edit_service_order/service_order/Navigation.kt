@@ -12,6 +12,7 @@ import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderEnterTransition
 import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderExitTransition
+import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
 import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOrderScreen
@@ -117,23 +118,23 @@ fun buildEditServiceOrderNavGraph(
 //                navHostController
 //                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario?$paymentIdParam=$paymentId")
 //            },
-//
-//            onEditPayment = { paymentId, clientId, saleId, serviceOrderId ->
-//                val client = clientId.ifBlank { "-" }
-//                val route = buildPaymentNavRoute(
-//                    paymentId = paymentId,
-//                    clientId = client,
-//                    saleId = saleId,
-//                    serviceOrderId = serviceOrderId,
-//                )
-//
-//                navHostController.navigate(route)
-//            },
-//
+
+            onEditPayment = { paymentId, clientId, saleId, serviceOrderId ->
+                val client = clientId.ifBlank { "-" }
+                val route = buildEditPaymentNavRoute(
+                    paymentId = paymentId,
+                    clientId = client,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                )
+
+                navHostController.navigate(route)
+            },
+
             onAddDiscount = { saleId, fullPrice ->
                 navHostController.navigate(buildEditPaymentDiscountRoute(saleId, fullPrice))
             },
-//
+
             onAddPaymentFee = { saleId, fullPrice ->
                 navHostController.navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
             },

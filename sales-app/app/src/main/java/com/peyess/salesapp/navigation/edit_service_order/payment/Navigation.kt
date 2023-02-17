@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.screen.sale.payment.PaymentScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.screen.edit_service_order.payment.EditPaymentScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val paymentIdParam = "paymentId"
@@ -53,11 +54,9 @@ fun buildEditPaymentNavGraph(
         enterTransition = editPaymentEnterTransition(),
         exitTransition = editPaymentExitTransition()
     ) {
-        PaymentScreen(
+        EditPaymentScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,
-        ) {
-            navHostController.popBackStack()
-        }
+        )
     }
 }

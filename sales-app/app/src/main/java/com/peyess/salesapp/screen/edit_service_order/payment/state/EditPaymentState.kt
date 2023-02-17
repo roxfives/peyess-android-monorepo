@@ -30,8 +30,8 @@ import com.peyess.salesapp.feature.payment.model.Treatment
 data class EditPaymentState(
     val paymentId: Long = 0L,
     val clientId: String = "",
-    val saleId: String,
-    val serviceOrderId: String,
+    val saleId: String = "",
+    val serviceOrderId: String = "",
 
     val discountAsync: Async<EditPaymentDiscountFetchResponse> = Uninitialized,
     val discount: OverallDiscount = OverallDiscount(),

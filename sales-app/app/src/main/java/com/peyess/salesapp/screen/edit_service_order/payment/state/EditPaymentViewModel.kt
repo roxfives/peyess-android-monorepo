@@ -27,6 +27,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.feature.payment.model.Client
 import com.peyess.salesapp.feature.payment.model.Coloring
 import com.peyess.salesapp.feature.payment.model.Frames
 import com.peyess.salesapp.feature.payment.model.Lens
@@ -85,6 +86,10 @@ class EditPaymentViewModel @AssistedInject constructor(
         ) { clientId, paymentId ->
             loadClient(clientId)
             streamLoadPayment(paymentId, clientId)
+
+            if (clientId.isNotBlank()) {
+                updateClient(paymentId, clientId)
+            }
         }
 
         onEach(EditPaymentState::saleId) {
@@ -180,6 +185,12 @@ class EditPaymentViewModel @AssistedInject constructor(
 
             ifRight = { copy(client = it.toClient()) },
         )
+    }
+
+    private fun updateClient(paymentId: Long, clientId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateClientId(paymentId, clientId)
+        }
     }
 
     private fun loadPaymentMethods() {

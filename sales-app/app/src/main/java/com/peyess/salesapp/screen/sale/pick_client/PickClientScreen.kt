@@ -40,7 +40,7 @@ fun PickClientScreen(
 
     onClientPicked: (
         paymentId: Long,
-        pickedId: String,
+        clientId: String,
         pickScenario: PickScenario,
         saleId: String,
         serviceOrderId: String,

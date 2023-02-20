@@ -69,13 +69,13 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         editLocalPaymentDao.paymentsForSale(saleId).map {
             val client = localClientDao.clientById(it.clientId)
             if (client == null) {
-                error("Client ${it.clientId} not found for payment $it")
+                Timber.w("Client ${it.clientId} not found for payment $it")
             }
 
             it.toLocalPaymentDocument(
-                clientDocument = client.document,
-                clientName = client.name,
-                clientAddress = "${client.city}, ${client.state}",
+                clientDocument = client?.document ?: "",
+                clientName = client?.name ?: "",
+                clientAddress = "${client?.city}, ${client?.state}",
             )
         }
     }.mapLeft {
@@ -93,20 +93,15 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
                 it.map { payment ->
                     val client = localClientDao.clientById(payment.clientId)
                     if (client == null) {
-                        error("Client ${payment.clientId} not found for payment $payment")
+                        Timber.e("Client ${payment.clientId} not found for payment $payment")
                     }
 
                     payment.toLocalPaymentDocument(
-                        clientDocument = client.document,
-                        clientName = client.name,
-                        clientAddress = "${client.city}, ${client.state}",
+                        clientDocument = client?.document ?: "",
+                        clientName = client?.name ?: "",
+                        clientAddress = "${client?.city}, ${client?.state}",
                     )
                 }.right()
-            }.retryWhen { cause, attempt ->
-                Timber.e(cause, "Error while fetching payments for sale " +
-                        "$saleId (attmept $attempt")
-
-                attempt < attemptThreshold
             }
     }
 
@@ -116,13 +111,13 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     ): EditLocalPaymentFetchSingleResponse = Either.catch {
         val client = localClientDao.clientById(clientId)
         if (client == null) {
-            error("Client $clientId not found for payment $paymentId")
+            Timber.w("Client $clientId not found for payment $paymentId")
         }
 
         editLocalPaymentDao.paymentById(paymentId)?.toLocalPaymentDocument(
-            clientDocument = client.document,
-            clientName = client.name,
-            clientAddress = "${client.city}, ${client.state}",
+            clientDocument = client?.document ?: "",
+            clientName = client?.name ?: "",
+            clientAddress = "${client?.city}, ${client?.state}",
         )
     }.mapLeft {
         ReadLocalPaymentError.Unexpected(
@@ -142,15 +137,15 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         return editLocalPaymentDao.streamPaymentById(paymentId).map {
             val client = localClientDao.clientById(clientId)
 
-            if (client == null) {
-                ReadLocalPaymentError.Unexpected(
-                    description = "Client $clientId not found for payment $it",
-                ).left()
-            } else if (it != null) {
+            if (it != null) {
+                if (client == null) {
+                    Timber.w("Client $clientId not found for payment $it")
+                }
+
                 it.toLocalPaymentDocument(
-                    clientDocument = client.document,
-                    clientName = client.name,
-                    clientAddress = "${client.city}, ${client.state}",
+                    clientDocument = client?.document ?: "",
+                    clientName = client?.name ?: "",
+                    clientAddress = "${client?.city}, ${client?.state}",
                 ).right()
             } else {
                 ReadLocalPaymentError.NotFound(

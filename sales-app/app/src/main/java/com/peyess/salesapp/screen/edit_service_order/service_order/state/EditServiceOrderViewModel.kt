@@ -28,6 +28,7 @@ import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
+import com.peyess.salesapp.feature.service_order.model.Payment
 import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toClient
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toFrames
@@ -36,6 +37,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toPre
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLens
+import com.peyess.salesapp.screen.sale.service_order.adapter.toLocalPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.typing.sale.ClientRole
 import dagger.assisted.Assisted
@@ -43,6 +45,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private typealias EditServiceOrderFactory =
         AssistedViewModelFactory<EditServiceOrderViewModel, EditServiceOrderState>
@@ -56,8 +59,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val editPrescriptionRepository: EditPrescriptionRepository,
     private val editProductPickedRepository: EditProductPickedRepository,
     private val editFramesDataRepository: EditFramesDataRepository,
-    private val editLocalPaymentRepository: EditLocalPaymentRepository,
     private val editClientPickedRepository: EditClientPickedRepository,
+    private val editLocalPaymentRepository: EditLocalPaymentRepository,
     private val editPaymentDiscountRepository: EditPaymentDiscountRepository,
     private val editPaymentFeeRepository: EditPaymentFeeRepository,
     private val editPositioningRepository: EditPositioningRepository,
@@ -467,6 +470,18 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
     fun onServiceOrderIdChanged(serviceOrderId: String) = setState {
         copy(serviceOrderId = serviceOrderId)
+    }
+
+    fun createPayment(onAdded: (id: Long) -> Unit) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            val payment = Payment(
+                saleId = it.saleId,
+            )
+
+            editLocalPaymentRepository
+                .addPayment(payment.toLocalPaymentDocument())
+                .tap { withContext(Dispatchers.Main) { onAdded(it) } }
+        }
     }
 
     fun deletePayment(paymentId: Long) {

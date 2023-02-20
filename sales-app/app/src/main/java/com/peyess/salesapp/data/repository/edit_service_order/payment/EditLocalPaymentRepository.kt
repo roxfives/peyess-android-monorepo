@@ -9,7 +9,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.error.Read
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
 import kotlinx.coroutines.flow.Flow
 
-typealias EditLocalPaymentInsertResponse = Either<InsertLocalPaymentError, Unit>
+typealias EditLocalPaymentInsertResponse = Either<InsertLocalPaymentError, Long>
 typealias EditLocalPaymentDeleteResponse = Either<DeleteLocalPaymentError, Unit>
 
 typealias EditLocalPaymentFetchResponse = Either<ReadLocalPaymentError, List<LocalPaymentDocument>>

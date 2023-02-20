@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EditLocalPaymentDao {
     @Insert(onConflict = REPLACE)
-    suspend fun addPayment(payment: EditLocalPaymentEntity)
+    suspend fun addPayment(payment: EditLocalPaymentEntity): Long
 
     @Query("""
         DELETE FROM ${EditLocalPaymentEntity.tableName}

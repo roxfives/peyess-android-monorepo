@@ -110,15 +110,19 @@ fun buildEditServiceOrderNavGraph(
 //                    .navigate(route)
 //            },
 //
-//            onAddPayment = {
-//                val isPicking = true
-//                val pickScenario = PickScenario.Payment.toName()
-//                val paymentId = it
-//
-//                navHostController
-//                    .navigate("${SalesAppScreens.PickClient.name}/$isPicking/$pickScenario?$paymentIdParam=$paymentId")
-//            },
+            onAddPayment = { saleId, serviceOrderId, paymentId ->
+                val isPicking = true
+                val pickScenario = PickScenario.EditPayment.toName()
+                val route = buildClientListRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    isPicking = isPicking,
+                    pickScenario = pickScenario,
+                    paymentId = paymentId,
+                )
 
+                navHostController.navigate(route)
+            },
             onEditPayment = { paymentId, clientId, saleId, serviceOrderId ->
                 val client = clientId.ifBlank { "-" }
                 val route = buildEditPaymentNavRoute(

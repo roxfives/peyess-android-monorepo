@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
+import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
@@ -145,7 +146,20 @@ fun buildPickClientListNavGraph(
                         }
                     }
 
-                    PickScenario.EditPayment -> {}
+                    PickScenario.EditPayment -> {
+                        val paymentRoute = buildEditPaymentNavRoute(
+                            paymentId = paymentId,
+                            clientId = clientId,
+                            saleId = saleId,
+                            serviceOrderId = serviceOrderId,
+                        )
+
+                        navHostController.navigate(paymentRoute) {
+                            popUpTo(clientListRoute) {
+                                inclusive = true
+                            }
+                        }
+                    }
 
                     PickScenario.EditResponsible,
                     PickScenario.EditUser,

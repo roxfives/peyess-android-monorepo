@@ -130,7 +130,7 @@ class EditPaymentViewModel @AssistedInject constructor(
         onAsync(EditPaymentState::paymentFeeAsync) { processPaymentFeeResponse(it) }
 
         onAsync(EditPaymentState::paymentResponseAsync) { processPaymentResponse(it) }
-        
+
         onAsync(EditPaymentState::paymentMethodsResponseAsync) { processPaymentMethodsResponse(it) }
         onAsync(EditPaymentState::totalPaymentResponseAsync) { processTotalPaymentResponse(it) }
 
@@ -378,11 +378,11 @@ class EditPaymentViewModel @AssistedInject constructor(
     }
 
     private fun loadTotalPaid(saleId: String) = withState {
-        localPaymentRepository
-            .streamTotalPaid(saleId)
-            .execute(Dispatchers.IO) {
-                copy(totalPaymentResponseAsync = it)
-            }
+        suspend {
+            localPaymentRepository.totalPaid(saleId)
+        }.execute(Dispatchers.IO) {
+            copy(totalPaymentResponseAsync = it)
+        }
     }
 
     private fun processTotalPaymentResponse(
@@ -455,12 +455,16 @@ class EditPaymentViewModel @AssistedInject constructor(
             .coerceAtLeast(0.0)
         val update = paymentInput.copy(value = paid)
 
+        viewModelScope.launch(Dispatchers.IO) { localPaymentRepository.updateValue(paymentId, paid) }
         copy(paymentInput = update)
     }
 
     fun onMethodPaymentChanged(document: String) = setState {
         val update = paymentInput.copy(document = document)
 
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateDocument(paymentId, document)
+        }
         copy(paymentInput = update)
     }
 
@@ -470,6 +474,10 @@ class EditPaymentViewModel @AssistedInject constructor(
             cardFlagName = cardFlagName,
         )
 
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateCardFlagIcon(paymentId, cardFlagIcon)
+            localPaymentRepository.updateCardFlagName(paymentId, cardFlagName)
+        }
         copy(paymentInput = update)
     }
 
@@ -478,6 +486,9 @@ class EditPaymentViewModel @AssistedInject constructor(
         val newValue = (value + 1).coerceAtMost(maxInstallments)
         val update = paymentInput.copy(installments = newValue)
 
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateInstallments(paymentId, newValue)
+        }
         copy(paymentInput = update)
     }
 
@@ -486,6 +497,9 @@ class EditPaymentViewModel @AssistedInject constructor(
         val newValue = (value - 1).coerceAtLeast(minInstallments)
         val payment = paymentInput.copy(installments = newValue)
 
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateInstallments(paymentId, newValue)
+        }
         copy(paymentInput = payment)
     }
 
@@ -500,6 +514,12 @@ class EditPaymentViewModel @AssistedInject constructor(
             installments = maxInstallments,
         )
 
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateMethodId(paymentId, update.methodId)
+            localPaymentRepository.updateMethodType(paymentId, update.methodType)
+            localPaymentRepository.updateMethodName(paymentId, update.methodName)
+            localPaymentRepository.updateInstallments(paymentId, update.installments)
+        }
         copy(paymentInput = update)
     }
 

@@ -64,7 +64,6 @@ fun EditPaymentScreen(
 
         methodDocument = payment.document,
 
-        onCancel = viewModel::cancelPayment,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
         onMethodDocumentUpdate = viewModel::onMethodPaymentChanged,
         onCardFlagChanged = viewModel::onCardFlagChanged,
@@ -72,5 +71,9 @@ fun EditPaymentScreen(
         onDecreaseInstallments = viewModel::onDecreaseInstallments,
         onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
         onDone = { navHostController.popBackStack() },
+        onCancel = {
+            viewModel.cancelPayment()
+            navHostController.popBackStack()
+        },
     )
 }

@@ -60,65 +60,64 @@ interface EditLocalPaymentDao {
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET client_id = :clientId
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateClientId(saleId: String, clientId: String)
+    suspend fun updateClientId(paymentId: Long, clientId: String)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET method_id = :methodId
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateMethodId(saleId: String, methodId: String)
+    suspend fun updateMethodId(paymentId: Long, methodId: String)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET method_name = :methodName
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateMethodName(saleId: String, methodName: String)
+    suspend fun updateMethodName(paymentId: Long, methodName: String)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET method_type = :methodType
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateMethodType(saleId: String, methodType: String)
+    suspend fun updateMethodType(paymentId: Long, methodType: String)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET value = :value
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateValue(saleId: String, value: Double)
+    suspend fun updateValue(paymentId: Long, value: Double)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET installments = :installments
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateInstallments(saleId: String, installments: Int)
+    suspend fun updateInstallments(paymentId: Long, installments: Int)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET document = :document
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateDocument(saleId: String, document: String)
+    suspend fun updateDocument(paymentId: Long, document: String)
 
     @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET card_flag_name = :cardFlagName
-        WHERE sale_id = :saleId
+        WHERE id = :paymentId
     """)
-    suspend fun updateCardFlagName(saleId: String, cardFlagName: String)
+    suspend fun updateCardFlagName(paymentId: Long, cardFlagName: String)
 
     @Query(
         """
             UPDATE ${EditLocalPaymentEntity.tableName}
             SET card_flag_icon = :cardFlagIcon
-            WHERE sale_id = :saleId
-        """
-    )
-    suspend fun updateCardFlagIcon(saleId: String, cardFlagIcon: Uri)
+            WHERE id = :paymentId
+        """)
+    suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri)
 }

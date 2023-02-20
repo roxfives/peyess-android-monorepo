@@ -36,13 +36,13 @@ interface EditLocalPaymentRepository {
     suspend fun paymentById(paymentId: Long, clientId: String,): EditLocalPaymentFetchSingleResponse
     fun streamPaymentById(paymentId: Long, clientId: String,): EditLocalPaymentStreamSingleResponse
 
-    suspend fun updateClientId(saleId: String, clientId: String): EditLocalPaymentUpdateResponse
-    suspend fun updateMethodId(saleId: String, methodId: String): EditLocalPaymentUpdateResponse
-    suspend fun updateMethodName(saleId: String, methodName: String): EditLocalPaymentUpdateResponse
-    suspend fun updateMethodType(saleId: String, methodType: String): EditLocalPaymentUpdateResponse
-    suspend fun updateValue(saleId: String, value: Double): EditLocalPaymentUpdateResponse
-    suspend fun updateInstallments(saleId: String, installments: Int): EditLocalPaymentUpdateResponse
-    suspend fun updateDocument(saleId: String, document: String): EditLocalPaymentUpdateResponse
-    suspend fun updateCardFlagName(saleId: String, cardFlagName: String): EditLocalPaymentUpdateResponse
-    suspend fun updateCardFlagIcon(saleId: String, cardFlagIcon: Uri): EditLocalPaymentUpdateResponse
+    suspend fun updateClientId(paymentId: Long, clientId: String): EditLocalPaymentUpdateResponse
+    suspend fun updateMethodId(paymentId: Long, methodId: String): EditLocalPaymentUpdateResponse
+    suspend fun updateMethodName(paymentId: Long, methodName: String): EditLocalPaymentUpdateResponse
+    suspend fun updateMethodType(paymentId: Long, methodType: String): EditLocalPaymentUpdateResponse
+    suspend fun updateValue(paymentId: Long, value: Double): EditLocalPaymentUpdateResponse
+    suspend fun updateInstallments(paymentId: Long, installments: Int): EditLocalPaymentUpdateResponse
+    suspend fun updateDocument(paymentId: Long, document: String): EditLocalPaymentUpdateResponse
+    suspend fun updateCardFlagName(paymentId: Long, cardFlagName: String): EditLocalPaymentUpdateResponse
+    suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri): EditLocalPaymentUpdateResponse
 }

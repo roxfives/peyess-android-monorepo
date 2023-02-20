@@ -161,109 +161,109 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateClientId(
-        saleId: String,
+        paymentId: Long,
         clientId: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateClientId(saleId, clientId)
+        editLocalPaymentDao.updateClientId(paymentId, clientId)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment clientId for sale $saleId",
+            description = "Error while updating payment clientId for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateMethodId(
-        saleId: String,
+        paymentId: Long,
         methodId: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateMethodId(saleId, methodId)
+        editLocalPaymentDao.updateMethodId(paymentId, methodId)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment methodId for sale $saleId",
+            description = "Error while updating payment methodId for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateMethodName(
-        saleId: String,
+        paymentId: Long,
         methodName: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateMethodName(saleId, methodName)
+        editLocalPaymentDao.updateMethodName(paymentId, methodName)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment methodName for sale $saleId",
+            description = "Error while updating payment methodName for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateMethodType(
-        saleId: String,
+        paymentId: Long,
         methodType: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateMethodType(saleId, methodType)
+        editLocalPaymentDao.updateMethodType(paymentId, methodType)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment methodType for sale $saleId",
+            description = "Error while updating payment methodType for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateValue(
-        saleId: String,
+        paymentId: Long,
         value: Double,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateValue(saleId, value)
+        editLocalPaymentDao.updateValue(paymentId, value)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment value for sale $saleId",
+            description = "Error while updating payment value for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateInstallments(
-        saleId: String,
+        paymentId: Long,
         installments: Int,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateInstallments(saleId, installments)
+        editLocalPaymentDao.updateInstallments(paymentId, installments)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment installments for sale $saleId",
+            description = "Error while updating payment installments for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateDocument(
-        saleId: String,
+        paymentId: Long,
         document: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateDocument(saleId, document)
+        editLocalPaymentDao.updateDocument(paymentId, document)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment document for sale $saleId",
+            description = "Error while updating payment document for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateCardFlagName(
-        saleId: String,
+        paymentId: Long,
         cardFlagName: String,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateCardFlagName(saleId, cardFlagName)
+        editLocalPaymentDao.updateCardFlagName(paymentId, cardFlagName)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment cardFlagName for sale $saleId",
+            description = "Error while updating payment cardFlagName for sale $paymentId",
             throwable = it,
         )
     }
 
     override suspend fun updateCardFlagIcon(
-        saleId: String,
+        paymentId: Long,
         cardFlagIcon: Uri,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateCardFlagIcon(saleId, cardFlagIcon)
+        editLocalPaymentDao.updateCardFlagIcon(paymentId, cardFlagIcon)
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
-            description = "Error while updating payment cardFlagIcon for sale $saleId",
+            description = "Error while updating payment cardFlagIcon for sale $paymentId",
             throwable = it,
         )
     }

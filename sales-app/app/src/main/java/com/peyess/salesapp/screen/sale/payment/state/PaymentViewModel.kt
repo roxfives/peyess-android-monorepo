@@ -176,11 +176,10 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private fun loadTotalPaid(saleId: String) = withState {
-        suspend {
-            localPaymentRepository.totalPaymentForSale(saleId)
-        }.execute(Dispatchers.IO) {
-            copy(totalPaymentResponseAsync = it)
-        }
+        localPaymentRepository.watchTotalPayment(saleId)
+            .execute(Dispatchers.IO) {
+                copy(totalPaymentResponseAsync = it)
+            }
     }
 
     private fun loadCardFlagsRepository() = withState {
@@ -537,7 +536,7 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     fun onTotalPaidChange(value: Double) = setState {
-        val paid = value.coerceAtMost(totalLeftToPay)
+        val paid = value.coerceAtMost(paymentInput.value + totalLeftToPay)
             .coerceAtLeast(0.0)
         val update = paymentInput.copy(value = paid)
 

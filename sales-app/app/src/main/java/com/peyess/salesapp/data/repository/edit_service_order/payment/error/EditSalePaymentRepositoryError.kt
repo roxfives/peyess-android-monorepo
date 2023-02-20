@@ -32,6 +32,13 @@ sealed class UpdateLocalPaymentError: EditLocalPaymentDataRepositoryError {
 }
 
 sealed class ReadLocalPaymentError: EditLocalPaymentDataRepositoryError {
+    data class NotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ReadLocalPaymentError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
     data class Unexpected(
         override val description: String,
         val throwable: Throwable? = null,

@@ -344,11 +344,9 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private fun loadProducts(productsPicked: ProductPickedDocument){
-        viewModelScope.launch(Dispatchers.IO) {
-            loadLensPicked(productsPicked.lensId)
-            loadColoringPicked(productsPicked.coloringId)
-            loadTreatmentPicked(productsPicked.treatmentId)
-        }
+        loadLensPicked(productsPicked.lensId)
+        loadColoringPicked(productsPicked.coloringId)
+        loadTreatmentPicked(productsPicked.treatmentId)
     }
 
     private fun processPaymentResponse(response: SinglePaymentResponse) = setState {

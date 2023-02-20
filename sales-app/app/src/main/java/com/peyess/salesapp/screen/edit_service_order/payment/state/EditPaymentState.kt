@@ -7,6 +7,7 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
+import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchSingleResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchTotalResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.EditPaymentDiscountFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.EditPaymentFeeFetchResponse
@@ -60,10 +61,12 @@ data class EditPaymentState(
     val clientResponseAsync: Async<LocalClientReadSingleResponse> = Uninitialized,
     val client: Client = Client(),
 
-    val paymentResponseAsync: Async<EditLocalPaymentFetchResponse> = Uninitialized,
+    val paymentsResponseAsync: Async<EditLocalPaymentFetchResponse> = Uninitialized,
+    val paymentResponseAsync: Async<EditLocalPaymentFetchSingleResponse> = Uninitialized,
     val paymentInput: Payment = Payment(),
 
     val cardFlagsAsync: Async<List<CardFlagDocument>> = Uninitialized,
+    val cardFlags: List<CardFlagDocument> = emptyList(),
 
     val totalPaymentResponseAsync: Async<EditLocalPaymentFetchTotalResponse> = Uninitialized,
     val totalToPay: Double = 0.0,
@@ -71,4 +74,10 @@ data class EditPaymentState(
     val totalLeftToPay: Double = 0.0,
 ): MavericksState {
     val isClientLoading = clientResponseAsync is Loading
+    val areCardFlagsLoading = cardFlagsAsync is Loading
+    val arePaymentMethodsLoading = paymentMethodsResponseAsync is Loading
+
+    val activePaymentMethod = paymentMethods
+        .firstOrNull { it.id == paymentInput.methodId }
+        ?: PaymentMethod()
 }

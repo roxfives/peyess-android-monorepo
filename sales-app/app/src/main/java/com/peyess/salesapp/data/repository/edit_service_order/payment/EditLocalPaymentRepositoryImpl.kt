@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.payment
 
 import android.net.Uri
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.leftIfNull
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.edit_service_order.payment.toEditLocalPaymentEntity
@@ -107,6 +108,56 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
                 attempt < attemptThreshold
             }
+    }
+
+    override suspend fun paymentById(
+        paymentId: Long,
+        clientId: String,
+    ): EditLocalPaymentFetchSingleResponse = Either.catch {
+        val client = localClientDao.clientById(clientId)
+        if (client == null) {
+            error("Client $clientId not found for payment $paymentId")
+        }
+
+        editLocalPaymentDao.paymentById(paymentId)?.toLocalPaymentDocument(
+            clientDocument = client.document,
+            clientName = client.name,
+            clientAddress = "${client.city}, ${client.state}",
+        )
+    }.mapLeft {
+        ReadLocalPaymentError.Unexpected(
+            description = "Error while fetching payment $paymentId",
+            throwable = it,
+        )
+    }.leftIfNull {
+        ReadLocalPaymentError.NotFound(
+            description = "Payment $paymentId not found",
+        )
+    }
+
+    override fun streamPaymentById(
+        paymentId: Long,
+        clientId: String,
+    ): EditLocalPaymentStreamSingleResponse {
+        return editLocalPaymentDao.streamPaymentById(paymentId).map {
+            val client = localClientDao.clientById(clientId)
+
+            if (client == null) {
+                ReadLocalPaymentError.Unexpected(
+                    description = "Client $clientId not found for payment $it",
+                ).left()
+            } else if (it != null) {
+                it.toLocalPaymentDocument(
+                    clientDocument = client.document,
+                    clientName = client.name,
+                    clientAddress = "${client.city}, ${client.state}",
+                ).right()
+            } else {
+                ReadLocalPaymentError.NotFound(
+                    description = "Payment $paymentId not found",
+                ).left()
+            }
+        }
     }
 
     override suspend fun updateClientId(

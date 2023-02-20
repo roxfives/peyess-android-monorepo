@@ -22,6 +22,17 @@ fun EditPaymentScreen(
     val isClientLoading by viewModel.collectAsState(EditPaymentState::isClientLoading)
     val client by viewModel.collectAsState(EditPaymentState::client)
 
+    val payment by viewModel.collectAsState(EditPaymentState::paymentInput)
+    val totalLeftToPay by viewModel.collectAsState(EditPaymentState::totalLeftToPay)
+
+    val arePaymentMethodsLoading by
+        viewModel.collectAsState(EditPaymentState::arePaymentMethodsLoading)
+    val paymentMethods by viewModel.collectAsState(EditPaymentState::paymentMethods)
+    val activePaymentMethod by viewModel.collectAsState(EditPaymentState::activePaymentMethod)
+
+    val areCardFlagsLoading by viewModel.collectAsState(EditPaymentState::areCardFlagsLoading)
+    val cardFlags by viewModel.collectAsState(EditPaymentState::cardFlags)
+
     ParseParameters(
         navController = navHostController,
         onUpdatePaymentId = viewModel::onUpdatePaymentId,
@@ -36,5 +47,30 @@ fun EditPaymentScreen(
         client = client,
         isClientLoading = isClientLoading,
         pictureForClient = viewModel::pictureForClient,
+
+        payment = payment,
+        toBePaid = totalLeftToPay,
+
+        installments = payment.installments,
+
+        arePaymentMethodsLoading = arePaymentMethodsLoading,
+        paymentMethods = paymentMethods,
+        activePaymentMethod = activePaymentMethod,
+
+        areCardFlagsLoading = areCardFlagsLoading,
+        cardFlags = cardFlags,
+        cardFlagIcon = payment.cardFlagIcon,
+        cardFlagName = payment.cardFlagName,
+
+        methodDocument = payment.document,
+
+        onCancel = viewModel::cancelPayment,
+        onTotalPaidChanged = viewModel::onTotalPaidChange,
+        onMethodDocumentUpdate = viewModel::onMethodPaymentChanged,
+        onCardFlagChanged = viewModel::onCardFlagChanged,
+        onIncreaseInstallments = viewModel::onIncreaseInstallments,
+        onDecreaseInstallments = viewModel::onDecreaseInstallments,
+        onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
+        onDone = { navHostController.popBackStack() },
     )
 }

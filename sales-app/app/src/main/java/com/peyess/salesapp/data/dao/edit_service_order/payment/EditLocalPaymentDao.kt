@@ -46,6 +46,18 @@ interface EditLocalPaymentDao {
     fun streamPaymentsForSale(saleId: String): Flow<List<EditLocalPaymentEntity>>
 
     @Query("""
+        SELECT * FROM ${EditLocalPaymentEntity.tableName}
+        WHERE id = :paymentId
+    """)
+    suspend fun paymentById(paymentId: Long): EditLocalPaymentEntity?
+
+    @Query("""
+        SELECT * FROM ${EditLocalPaymentEntity.tableName}
+        WHERE id = :paymentId
+    """)
+    fun streamPaymentById(paymentId: Long): Flow<EditLocalPaymentEntity?>
+
+    @Query("""
         UPDATE ${EditLocalPaymentEntity.tableName}
         SET client_id = :clientId
         WHERE sale_id = :saleId

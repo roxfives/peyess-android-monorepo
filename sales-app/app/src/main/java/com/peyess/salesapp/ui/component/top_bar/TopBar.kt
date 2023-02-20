@@ -97,5 +97,6 @@ fun showNavigateBack(
                 || screen == SalesAppScreens.SetFramesData
                 || screen == SalesAppScreens.Discount
                 || screen == SalesAppScreens.PaymentFee
+                || screen == SalesAppScreens.EditSalePayment
     )
 }

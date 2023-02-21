@@ -67,7 +67,7 @@ fun buildEditServiceOrderNavGraph(
 
             onChangeResponsible = { saleId, serviceOrderId ->
                 val isPicking = true
-                val pickScenario = PickScenario.Responsible.toName()
+                val pickScenario = PickScenario.EditResponsible.toName()
                 val route = buildClientListRoute(
                     saleId = saleId,
                     serviceOrderId = serviceOrderId,
@@ -80,7 +80,7 @@ fun buildEditServiceOrderNavGraph(
 
             onChangeWitness = { saleId, serviceOrderId ->
                 val isPicking = true
-                val pickScenario = PickScenario.Witness.toName()
+                val pickScenario = PickScenario.EditWitness.toName()
                 val route = buildClientListRoute(
                     saleId = saleId,
                     serviceOrderId = serviceOrderId,

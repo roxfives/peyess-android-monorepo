@@ -7,6 +7,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.lens_comparison.toEdi
 import com.peyess.salesapp.data.adapter.edit_service_order.lens_comparison.toLensComparisonDocument
 import com.peyess.salesapp.data.dao.edit_service_order.lens_comparison.EditLensComparisonDao
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonDocument
+import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.error.DeleteLensComparisonError
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.error.InsertLensComparisonError
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.error.ReadLensComparisonError
 import kotlinx.coroutines.flow.catch
@@ -45,5 +46,16 @@ class EditLensComparisonRepositoryImpl @Inject constructor(
                     throwable = it,
                 ).left()
             }
+    }
+
+    override suspend fun deleteComparisonsForServiceOrder(
+        serviceOrderId: String,
+    ): EditLensComparisonDeleteResponse = Either.catch {
+        lensComparisonDao.deleteComparisonsForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeleteLensComparisonError.Unexpected(
+            description = "Error while deleting lens comparisons for service order $serviceOrderId",
+            throwable = it,
+        )
     }
 }

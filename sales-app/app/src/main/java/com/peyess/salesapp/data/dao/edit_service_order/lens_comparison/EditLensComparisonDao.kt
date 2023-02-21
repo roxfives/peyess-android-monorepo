@@ -19,4 +19,10 @@ interface EditLensComparisonDao {
     fun streamLensComparisonsForServiceOrder(
         serviceOrderId: String,
     ): Flow<EditLensComparisonEntity>
+
+    @Query("""
+        DELETE FROM ${EditLensComparisonEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deleteComparisonsForServiceOrder(serviceOrderId: String)
 }

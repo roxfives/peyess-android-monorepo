@@ -224,3 +224,12 @@ sealed class FindSaleError: ServiceOrderErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeleteSaleError: ServiceOrderErrors {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteSaleError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

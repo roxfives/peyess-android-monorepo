@@ -36,8 +36,6 @@ import com.peyess.salesapp.data.repository.edit_service_order.positioning.EditPo
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.EditProductPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.sale.EditSaleRepository
-import com.peyess.salesapp.data.repository.edit_service_order.sale.error.ReadSaleError
-import com.peyess.salesapp.data.repository.edit_service_order.sale.error.SaleExistsError
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepository
 import com.peyess.salesapp.data.repository.lenses.room.LensNotFound
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -59,6 +57,7 @@ import com.peyess.salesapp.features.service_order_fetcher.error.AddPrescriptionE
 import com.peyess.salesapp.features.service_order_fetcher.error.AddProductPickedError
 import com.peyess.salesapp.features.service_order_fetcher.error.AddSaleError
 import com.peyess.salesapp.features.service_order_fetcher.error.AddServiceOrderError
+import com.peyess.salesapp.features.service_order_fetcher.error.DeleteSaleError
 import com.peyess.salesapp.features.service_order_fetcher.error.FindSaleError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadClientError
 import com.peyess.salesapp.features.service_order_fetcher.error.SaleFetcherReadLensError
@@ -105,6 +104,7 @@ private typealias AddPrescriptionResponse = Either<AddPrescriptionError, Unit>
 private typealias AddProductPickedResponse = Either<AddProductPickedError, Unit>
 private typealias AddSaleResponse = Either<AddSaleError, Unit>
 private typealias AddServiceOrderResponse = Either<AddServiceOrderError, Unit>
+private typealias DeleteSaleResponse = Either<DeleteSaleError, Unit>
 
 typealias ServiceOrderFetchResponse = Either<ServiceOrderErrors, Unit>
 
@@ -132,10 +132,10 @@ class ServiceOrderFetcher @Inject constructor(
 ) {
     private suspend fun saleExistsLocally(saleId: String): FindLocalSaleResponse {
         return localSaleRepository.saleExits(saleId).mapLeft {
-                FindSaleError.Unexpected(
-                    description = it.description,
-                    throwable = it.error,
-                )
+            FindSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
         }
     }
 
@@ -609,13 +609,155 @@ class ServiceOrderFetcher @Inject constructor(
             }
     }
 
+    private suspend fun deletePaymentFeeLocally(saleId: String): DeleteSaleResponse {
+        return localPaymentFeeRepository.deletePaymentFeeForSale(saleId).mapLeft {
+            DeleteSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
+    private suspend fun deletePaymentDiscountLocally(saleId: String): DeleteSaleResponse {
+        return localPaymentDiscountRepository.deletePaymentDiscountForSale(saleId).mapLeft {
+            DeleteSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
+    private suspend fun deleteProductPickedLocally(serviceOrderId: String): DeleteSaleResponse {
+        return localProductPickedRepository
+            .deleteProductPickedForServiceOrder(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deletePrescriptionLocally(serviceOrderId: String): DeleteSaleResponse {
+        return localPrescriptionRepository
+            .deletePrescriptionForServiceOrder(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deletePositioningsLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localPositioningRepository
+            .deletePositioningsForServiceOrder(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deletePaymentsLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localPaymentRepository
+            .deletePaymentsForSale(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deleteLensComparisonsLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localLensComparisonRepository
+            .deleteComparisonsForServiceOrder(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deleteFramesLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localFramesRepository.deleteFramesForServiceOrder(serviceOrderId).mapLeft {
+            DeleteSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
+    private suspend fun deleteClientsPickedLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localClientPickedRepository
+            .deleteClientsPickedForServiceOrder(serviceOrderId).mapLeft {
+                DeleteSaleError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }
+    }
+
+    private suspend fun deleteServiceOrderLocally(
+        serviceOrderId: String,
+    ): DeleteSaleResponse {
+        return localServiceOrderRepository.deleteServiceOrderById(serviceOrderId).mapLeft {
+            DeleteSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
+    private suspend fun deletePurchaseIdLocally(
+        saleId: String,
+    ): DeleteSaleResponse {
+        return localSaleRepository.deleteSaleById(saleId).mapLeft {
+            DeleteSaleError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
+    private suspend fun deleteSaleLocally(
+        saleId: String,
+        serviceOrderId: String,
+    ): DeleteSaleResponse = either {
+        deletePaymentFeeLocally(saleId).bind()
+        deletePaymentDiscountLocally(saleId).bind()
+        deleteProductPickedLocally(serviceOrderId).bind()
+        deletePrescriptionLocally(serviceOrderId).bind()
+        deletePositioningsLocally(serviceOrderId).bind()
+        deletePaymentsLocally(serviceOrderId).bind()
+        deleteLensComparisonsLocally(serviceOrderId).bind()
+        deleteFramesLocally(serviceOrderId).bind()
+        deleteClientsPickedLocally(serviceOrderId).bind()
+        deleteServiceOrderLocally(serviceOrderId).bind()
+        deletePurchaseIdLocally(saleId).bind()
+    }
+
     suspend fun fetchFullSale(
         serviceOrderId: String,
         purchaseId: String,
+        forceReload: Boolean = false,
     ): ServiceOrderFetchResponse = either {
         val saleExists = saleExistsLocally(purchaseId).bind()
-        if (saleExists) {
+        if (saleExists && !forceReload) {
             return@either
+        } else if (forceReload) {
+            deleteSaleLocally(
+                saleId = purchaseId,
+                serviceOrderId = serviceOrderId,
+            ).bind()
         }
 
         val serviceOrder = fetchServiceOrder(serviceOrderId).bind()

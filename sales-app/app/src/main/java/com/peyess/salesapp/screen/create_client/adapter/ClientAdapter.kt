@@ -4,6 +4,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
@@ -135,5 +136,22 @@ fun Client.toPictureUploadDocument(
         hasBeenUploaded = false,
         hasBeenDeleted = false,
         attemptCount = 0,
+    )
+}
+
+fun Client.toClientPickedDocument(
+    serviceOrderId: String,
+    role: ClientRole,
+): EditClientPickedDocument {
+    return EditClientPickedDocument(
+        id = id,
+        soId = serviceOrderId,
+        clientRole = role,
+        nameDisplay = nameDisplay,
+        name = name,
+        sex = sex,
+        email = email,
+        document = document,
+        shortAddress = "$city, $state",
     )
 }

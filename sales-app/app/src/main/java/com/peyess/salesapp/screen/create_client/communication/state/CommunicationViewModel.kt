@@ -14,6 +14,7 @@ import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDoc
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.screen.create_client.adapter.toCacheCreateClientDocument
@@ -27,6 +28,7 @@ import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.screen.create_client.adapter.toClientPickedDocument
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -49,6 +51,7 @@ class CommunicationViewModel @AssistedInject constructor(
     private val localClientRepository: LocalClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val saleRepository: SaleRepository,
+    private val editClientPickedRepository: EditClientPickedRepository,
 ): MavericksViewModel<CommunicationState>(initialState) {
 
     init {
@@ -116,6 +119,17 @@ class CommunicationViewModel @AssistedInject constructor(
             .collect { so ->
                 saleRepository.pickClient(client.toClientPickedEntity(so.id, role))
             }
+    }
+
+    private suspend fun addOnlyOneForEdit(client: Client, role: ClientRole) = withState {
+        viewModelScope.launch(Dispatchers.IO) {
+            editClientPickedRepository.insertClientPicked(
+                clientPicked = client.toClientPickedDocument(
+                    serviceOrderId = it.serviceOrderId,
+                     role = role,
+                )
+            )
+        }
     }
 
     fun onSaleIdChanged(saleId: String) = setState {
@@ -271,6 +285,11 @@ class CommunicationViewModel @AssistedInject constructor(
             CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible)
             CreateScenario.User -> addOnlyOne(client, ClientRole.User)
             CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness)
+
+            CreateScenario.EditResponsible -> addOnlyOneForEdit(client, ClientRole.Responsible)
+            CreateScenario.EditUser -> addOnlyOneForEdit(client, ClientRole.User)
+            CreateScenario.EditWitness -> addOnlyOneForEdit(client, ClientRole.Witness)
+            
             else -> {
                 Timber.w(
                     "Function addClientToSale should not " +

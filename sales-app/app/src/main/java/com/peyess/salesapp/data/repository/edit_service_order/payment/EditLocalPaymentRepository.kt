@@ -45,4 +45,6 @@ interface EditLocalPaymentRepository {
     suspend fun updateDocument(paymentId: Long, document: String): EditLocalPaymentUpdateResponse
     suspend fun updateCardFlagName(paymentId: Long, cardFlagName: String): EditLocalPaymentUpdateResponse
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri): EditLocalPaymentUpdateResponse
+
+    suspend fun deletePaymentsForSale(saleId: String): EditLocalPaymentDeleteResponse
 }

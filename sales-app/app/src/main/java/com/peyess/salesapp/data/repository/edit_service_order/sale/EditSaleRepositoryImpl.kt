@@ -13,6 +13,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.sale.error.InsertS
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.ReadSaleError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.SaleExistsError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.UpdateSaleError
+import com.peyess.salesapp.features.service_order_fetcher.error.DeleteSaleError
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -73,6 +74,17 @@ class EditSaleRepositoryImpl @Inject constructor(
     }.mapLeft {
         UpdateSaleError.Unexpected(
             description = "Error while updating isUploading for sale with id $id",
+            throwable = it,
+        )
+    }
+
+    override suspend fun deleteSaleById(
+        saleId: String,
+    ): EditSaleDeleteResponse = Either.catch {
+        saleDao.deleteSaleById(saleId)
+    }.mapLeft {
+        DeleteSaleError.Unexpected(
+            description = "Error while deleting sale with id $saleId",
             throwable = it,
         )
     }

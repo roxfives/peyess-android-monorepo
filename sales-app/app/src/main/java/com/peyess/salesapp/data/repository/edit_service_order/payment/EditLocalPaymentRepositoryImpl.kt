@@ -14,6 +14,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.error.Dele
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.InsertLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
+import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import timber.log.Timber
@@ -259,6 +260,17 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
             description = "Error while updating payment cardFlagIcon for sale $paymentId",
+            throwable = it,
+        )
+    }
+
+    override suspend fun deletePaymentsForSale(
+        saleId: String,
+    ): EditLocalPaymentDeleteResponse = Either.catch {
+        editLocalPaymentDao.deletePaymentsForSale(saleId)
+    }.mapLeft {
+        DeleteLocalPaymentError.Unexpected(
+            description = "Error while deleting payments for sale $saleId",
             throwable = it,
         )
     }

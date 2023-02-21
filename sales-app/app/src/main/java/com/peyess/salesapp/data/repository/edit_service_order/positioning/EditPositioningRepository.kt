@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.positioning
 import android.net.Uri
 import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.DeletePositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.UpdatePositioningError
@@ -19,6 +20,8 @@ typealias EditPositioningFetchBothResponse = Either<ReadPositioningError, Positi
 typealias EditPositioningStreamBothResponse = Flow<EditPositioningFetchBothResponse>
 
 typealias EditPositioningUpdateResponse = Either<UpdatePositioningError, Unit>
+
+typealias EditPositioningDeleteResponse = Either<DeletePositioningError, Unit>
 
 interface EditPositioningRepository {
     suspend fun addPositioning(positioning: LocalPositioningDocument): EditPositioningInsertResponse
@@ -209,4 +212,8 @@ interface EditPositioningRepository {
         eye: Eye,
         eulerAngleZ: Double,
     ): EditPositioningUpdateResponse
+
+    suspend fun deletePositioningsForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningDeleteResponse
 }

@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.frames.toEditFramesDa
 import com.peyess.salesapp.data.adapter.edit_service_order.frames.toLocalFramesDocument
 import com.peyess.salesapp.data.dao.edit_service_order.frames.EditFramesDataDao
 import com.peyess.salesapp.data.model.local_sale.frames.LocalFramesDocument
+import com.peyess.salesapp.data.repository.edit_service_order.frames.error.DeleteFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.InsertFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.ReadFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.UpdateFramesError
@@ -136,6 +137,17 @@ class EditFramesDataRepositoryImpl @Inject constructor(
     }.mapLeft {
         UpdateFramesError.Unexpected(
             description = "Error while updating frames for service order $soId with $info"
+        )
+    }
+
+    override suspend fun deleteFramesForServiceOrder(
+        serviceOrderId: String,
+    ): EditFramesDeleteResponse = Either.catch {
+        editFramesDataDao.deleteFramesForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeleteFramesError.Unexpected(
+            description = "Error while deleting frames for service order $serviceOrderId",
+            throwable = it,
         )
     }
 }

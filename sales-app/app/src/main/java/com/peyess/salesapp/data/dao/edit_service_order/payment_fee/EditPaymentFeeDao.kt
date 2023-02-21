@@ -39,4 +39,10 @@ interface EditPaymentFeeDao {
         WHERE sale_id = :saleId
     """)
     suspend fun updateValue(saleId: String, value: Double)
+
+    @Query("""
+        DELETE FROM ${EditPaymentFeeEntity.tableName}
+        WHERE sale_id = :saleId
+    """)
+    suspend fun deletePaymentFeeForSale(saleId: String)
 }

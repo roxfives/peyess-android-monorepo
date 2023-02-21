@@ -11,6 +11,7 @@ import com.peyess.salesapp.data.dao.edit_service_order.prescription.EditPrescrip
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
+import com.peyess.salesapp.data.repository.edit_service_order.prescription.error.DeletePrescriptionError
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.error.UpdatePrescriptionError
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import kotlinx.coroutines.flow.map
@@ -339,6 +340,17 @@ class EditPrescriptionRepositoryImpl @Inject constructor(
         UpdatePrescriptionError.Unexpected(
             description = "Error while updating prescription $id " +
                     "with prismPositionRight = $prismPositionRight",
+            throwable = it,
+        )
+    }
+
+    override suspend fun deletePrescriptionForServiceOrder(
+        serviceOrderId: String,
+    ): EditPrescriptionDeleteResponse = Either.catch {
+        prescriptionDao.deletePrescriptionForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeletePrescriptionError.Unexpected(
+            description = "Error while deleting prescription for service order $serviceOrderId",
             throwable = it,
         )
     }

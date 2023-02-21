@@ -38,3 +38,12 @@ sealed class ReadProductPickedError: EditProductPickedRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeleteProductPickedError: EditProductPickedRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteProductPickedError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

@@ -39,3 +39,11 @@ sealed class ReadServiceOrderError: EditServiceOrderRepositoryError {
     }
 }
 
+sealed class DeleteServiceOrderError: EditServiceOrderRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteServiceOrderError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

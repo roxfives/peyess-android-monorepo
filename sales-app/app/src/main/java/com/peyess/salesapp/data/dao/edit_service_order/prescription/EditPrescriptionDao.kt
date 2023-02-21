@@ -185,4 +185,10 @@ interface EditPrescriptionDao {
         WHERE id = :id
     """)
     suspend fun updatePrismPositionRight(id: String, prismPositionRight: PrismPosition)
+
+    @Query("""
+        DELETE FROM ${EditPrescriptionEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deletePrescriptionForServiceOrder(serviceOrderId: String)
 }

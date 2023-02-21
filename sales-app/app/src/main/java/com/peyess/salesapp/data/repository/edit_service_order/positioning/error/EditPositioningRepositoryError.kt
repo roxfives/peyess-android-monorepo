@@ -37,3 +37,12 @@ sealed class ReadPositioningError: EditPositioningRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeletePositioningError: EditPositioningRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeletePositioningError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

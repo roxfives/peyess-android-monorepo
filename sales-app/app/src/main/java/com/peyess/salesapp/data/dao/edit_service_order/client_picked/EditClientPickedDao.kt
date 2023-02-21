@@ -80,4 +80,10 @@ interface EditClientPickedDao {
         WHERE so_id = :serviceOrderId
     """)
     suspend fun updateShortAddress(serviceOrderId: String, shortAddress: String)
+
+    @Query("""
+        DELETE FROM ${EditClientPickedEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deleteClientsPickedForServiceOrder(serviceOrderId: String)
 }

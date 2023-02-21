@@ -44,4 +44,10 @@ interface EditProductPickedDao {
         WHERE so_id = :serviceOrderId
     """)
     suspend fun updateTreatmentId(serviceOrderId: String, treatmentId: String)
+
+    @Query("""
+        DELETE FROM ${EditProductPickedEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deleteProductPickedForServiceOrder(serviceOrderId: String)
 }

@@ -5,6 +5,7 @@ import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
+import com.peyess.salesapp.data.repository.edit_service_order.prescription.error.DeletePrescriptionError
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.error.UpdatePrescriptionError
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import kotlinx.coroutines.flow.Flow
@@ -16,6 +17,8 @@ typealias EditPrescriptionFetchResponse = Either<ReadPositioningError, LocalPres
 typealias EditPrescriptionStreamResponse = Flow<EditPrescriptionFetchResponse>
 
 typealias EditPrescriptionUpdateResponse = Either<UpdatePrescriptionError, Unit>
+
+typealias EditPrescriptionDeleteResponse = Either<DeletePrescriptionError, Unit>
 
 interface EditPrescriptionRepository {
     suspend fun addPrescription(
@@ -111,4 +114,8 @@ interface EditPrescriptionRepository {
         id: String,
         prismPositionRight: PrismPosition,
     ): EditPrescriptionUpdateResponse
+
+    suspend fun deletePrescriptionForServiceOrder(
+        serviceOrderId: String,
+    ): EditPrescriptionDeleteResponse
 }

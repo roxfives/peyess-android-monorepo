@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.repository.edit_service_order.product_picked
 
 import arrow.core.Either
+import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.DeleteProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.InsertProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.ReadProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.UpdateProductPickedError
@@ -13,6 +14,8 @@ typealias EditProductPickedFetchResponse = Either<ReadProductPickedError, Produc
 typealias EditProductPickedStreamResponse = Flow<EditProductPickedFetchResponse>
 
 typealias EditProductPickedUpdateResponse = Either<UpdateProductPickedError, Unit>
+
+typealias EditProductPickedDeleteResponse = Either<DeleteProductPickedError, Unit>
 
 interface EditProductPickedRepository {
     suspend fun addProductPicked(
@@ -38,4 +41,8 @@ interface EditProductPickedRepository {
         serviceOrderId: String,
         treatmentId: String,
     ): EditProductPickedUpdateResponse
+
+    suspend fun deleteProductPickedForServiceOrder(
+        serviceOrderId: String,
+    ): EditProductPickedDeleteResponse
 }

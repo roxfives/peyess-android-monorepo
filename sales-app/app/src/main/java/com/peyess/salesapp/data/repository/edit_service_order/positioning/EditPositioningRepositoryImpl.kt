@@ -11,6 +11,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.positioning.toEditPos
 import com.peyess.salesapp.data.adapter.edit_service_order.positioning.toLocalPositioningDocument
 import com.peyess.salesapp.data.dao.edit_service_order.positioning.EditPositioningDao
 import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
+import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.DeletePositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.InsertPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.ReadPositioningError
 import com.peyess.salesapp.data.repository.edit_service_order.positioning.error.UpdatePositioningError
@@ -531,6 +532,17 @@ class EditPositioningRepositoryImpl @Inject constructor(
         UpdatePositioningError.Unexpected(
             description = "Failed to update eulerAngleZ for positioning with service order " +
                     "$serviceOrderId and eye $eye using value $eulerAngleZ"
+        )
+    }
+
+    override suspend fun deletePositioningsForServiceOrder(
+        serviceOrderId: String,
+    ): EditPositioningDeleteResponse = Either.catch {
+        positioningDao.deletePositioningsForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeletePositioningError.Unexpected(
+            description = "Failed to delete positioning for service order $serviceOrderId",
+            throwable = it,
         )
     }
 }

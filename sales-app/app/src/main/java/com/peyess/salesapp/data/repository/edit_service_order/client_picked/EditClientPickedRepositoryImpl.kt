@@ -9,6 +9,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.client_picked.toEditC
 import com.peyess.salesapp.data.dao.edit_service_order.client_picked.EditClientPickedDao
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedEntity
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.DeleteClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.InsertClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.UpdateClientPickedError
@@ -155,4 +156,14 @@ class EditClientPickedRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun deleteClientsPickedForServiceOrder(
+        serviceOrderId: String,
+    ): EditClientPickedDeleteResponse = Either.catch {
+        clientPickedDao.deleteClientsPickedForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeleteClientPickedError.Unexpected(
+            description = "Error while deleting client for so $serviceOrderId",
+            throwable = it,
+        )
+    }
 }

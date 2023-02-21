@@ -7,6 +7,7 @@ import arrow.core.right
 import com.peyess.salesapp.data.adapter.edit_service_order.product_picked.toEditProductPicked
 import com.peyess.salesapp.data.adapter.edit_service_order.product_picked.toProductPickedDocument
 import com.peyess.salesapp.data.dao.edit_service_order.product_picked.EditProductPickedDao
+import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.DeleteProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.InsertProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.ReadProductPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.product_picked.error.UpdateProductPickedError
@@ -90,6 +91,17 @@ class EditProductPickedRepositoryImpl @Inject constructor(
         UpdateProductPickedError.Unexpected(
             description = "Error while updating product picked for " +
                     "service order $serviceOrderId with treatmentId = $treatmentId"
+        )
+    }
+
+    override suspend fun deleteProductPickedForServiceOrder(
+        serviceOrderId: String,
+    ): EditProductPickedDeleteResponse = Either.catch {
+        productPickedDao.deleteProductPickedForServiceOrder(serviceOrderId)
+    }.mapLeft {
+        DeleteProductPickedError.Unexpected(
+            description = "Error while deleting product picked for service order $serviceOrderId",
+            throwable = it,
         )
     }
 }

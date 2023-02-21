@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.frames
 
 import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.frames.LocalFramesDocument
+import com.peyess.salesapp.data.repository.edit_service_order.frames.error.DeleteFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.InsertFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.ReadFramesError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.error.UpdateFramesError
@@ -12,6 +13,8 @@ typealias EditFramesAddResponse = Either<InsertFramesError, Unit>
 typealias EditFramesFetchResponse = Either<ReadFramesError, LocalFramesDocument>
 typealias EditFramesStreamResponse = Flow<Either<ReadFramesError, LocalFramesDocument>>
 typealias EditFramesUpdateResponse = Either<UpdateFramesError, Unit>
+
+typealias EditFramesDeleteResponse = Either<DeleteFramesError, Unit>
 
 interface EditFramesDataRepository {
     suspend fun addFrame(frames: LocalFramesDocument): EditFramesAddResponse
@@ -26,4 +29,6 @@ interface EditFramesDataRepository {
     suspend fun updateTagCode(soId: String, tagCode: String): EditFramesUpdateResponse
     suspend fun updateType(soId: String, type: FramesType): EditFramesUpdateResponse
     suspend fun updateInfo(soId: String, info: String): EditFramesUpdateResponse
+
+    suspend fun deleteFramesForServiceOrder(serviceOrderId: String): EditFramesDeleteResponse
 }

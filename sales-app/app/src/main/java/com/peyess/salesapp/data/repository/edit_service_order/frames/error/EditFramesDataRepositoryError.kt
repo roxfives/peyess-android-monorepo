@@ -37,3 +37,12 @@ sealed class ReadFramesError: EditFramesDataRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeleteFramesError: EditFramesDataRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteFramesError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

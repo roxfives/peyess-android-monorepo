@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.edit_service_order.sale.EditSaleEntity
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.InsertSaleError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.ReadSaleError
 import com.peyess.salesapp.data.repository.edit_service_order.sale.error.UpdateSaleError
+import com.peyess.salesapp.features.service_order_fetcher.error.DeleteSaleError
 import kotlinx.coroutines.flow.Flow
 
 typealias SaleExistsResponse = Either<ReadSaleError, Boolean>
@@ -16,6 +17,8 @@ typealias EditSaleStreamResponse = Flow<EditSaleFetchResponse>
 
 typealias EditSaleUpdateResponse = Either<UpdateSaleError, Unit>
 
+typealias EditSaleDeleteResponse = Either<DeleteSaleError, Unit>
+
 interface EditSaleRepository {
     suspend fun addSale(sale: LocalSaleDocument): EditSaleInsertResponse
 
@@ -24,4 +27,6 @@ interface EditSaleRepository {
     fun streamSaleById(id: String): EditSaleStreamResponse
 
     suspend fun updateIsUploading(id: String, isUploading: Boolean): EditSaleUpdateResponse
+
+    suspend fun deleteSaleById(saleId: String): EditSaleDeleteResponse
 }

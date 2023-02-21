@@ -37,3 +37,12 @@ sealed class ReadPrescriptionError: EditPrescriptionRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeletePrescriptionError: EditPrescriptionRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeletePrescriptionError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

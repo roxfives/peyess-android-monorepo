@@ -72,4 +72,10 @@ interface EditFramesDataDao {
         WHERE so_id = :soId
     """)
     suspend fun updateInfo(soId: String, info: String)
+
+    @Query("""
+        DELETE FROM ${EditFramesDataEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deleteFramesForServiceOrder(serviceOrderId: String)
 }

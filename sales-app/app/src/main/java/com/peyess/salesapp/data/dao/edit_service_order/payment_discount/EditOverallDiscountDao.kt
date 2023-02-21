@@ -38,4 +38,10 @@ interface EditOverallDiscountDao {
         WHERE sale_id = :saleId
     """)
     suspend fun updateValue(saleId: String, value: Double)
+
+    @Query("""
+        DELETE FROM ${EditOverallDiscountEntity.tableName}
+        WHERE sale_id = :saleId
+    """)
+    suspend fun deletePaymentDiscountForSale(saleId: String)
 }

@@ -120,4 +120,10 @@ interface EditLocalPaymentDao {
             WHERE id = :paymentId
         """)
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri)
+
+    @Query("""
+        DELETE FROM ${EditLocalPaymentEntity.tableName}
+        WHERE sale_id = :saleId
+    """)
+    suspend fun deletePaymentsForSale(saleId: String)
 }

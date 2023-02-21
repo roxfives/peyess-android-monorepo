@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.payment_discount
 
 import arrow.core.Either
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.DeletePaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.InsertPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.ReadPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.UpdatePaymentDiscountError
@@ -15,6 +16,8 @@ typealias EditPaymentDiscountStreamResponse = Flow<EditPaymentDiscountFetchRespo
 
 typealias EditPaymentDiscountUpdateResponse = Either<UpdatePaymentDiscountError, Unit>
 
+typealias EditPaymentDiscountDeleteResponse = Either<DeletePaymentDiscountError, Unit>
+
 interface EditPaymentDiscountRepository {
     suspend fun addPaymentDiscount(
         paymentDiscount: OverallDiscountDocument,
@@ -25,4 +28,6 @@ interface EditPaymentDiscountRepository {
 
     suspend fun updateMethod(saleId: String, method: DiscountCalcMethod): EditPaymentDiscountUpdateResponse
     suspend fun updateValue(saleId: String, value: Double): EditPaymentDiscountUpdateResponse
+
+    suspend fun deletePaymentDiscountForSale(saleId: String): EditPaymentDiscountDeleteResponse
 }

@@ -8,6 +8,7 @@ import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.adapter.edit_service_order.service_order.toEditServiceOrderEntity
 import com.peyess.salesapp.data.adapter.edit_service_order.service_order.toServiceOrderDocument
 import com.peyess.salesapp.data.dao.edit_service_order.service_order.EditServiceOrderDao
+import com.peyess.salesapp.data.repository.edit_service_order.service_order.error.DeleteServiceOrderError
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.error.InsertServiceOrderError
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.error.ReadServiceOrderError
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.error.UpdateServiceOrderError
@@ -111,6 +112,17 @@ class EditServiceOrderRepositoryImpl @Inject constructor(
         UpdateServiceOrderError.Unexpected(
             description = "Error while updating service order $id with " +
                     "isLensTypeMono = $isLensTypeMono",
+            throwable = it,
+        )
+    }
+
+    override suspend fun deleteServiceOrderById(
+        serviceOrderId: String,
+    ): EditServiceOrderDeleteResponse = Either.catch {
+        serviceOrderDao.deleteServiceOrderById(serviceOrderId)
+    }.mapLeft {
+        DeleteServiceOrderError.Unexpected(
+            description = "Error while deleting service order $serviceOrderId",
             throwable = it,
         )
     }

@@ -266,4 +266,10 @@ interface EditPositioningDao {
         WHERE so_id = :serviceOrderId AND eye = :eye
     """)
     suspend fun updateEulerAngleZ(serviceOrderId: String, eye: Eye, eulerAngleZ: Double)
+
+    @Query("""
+        DELETE FROM ${EditPositioningEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun deletePositioningsForServiceOrder(serviceOrderId: String)
 }

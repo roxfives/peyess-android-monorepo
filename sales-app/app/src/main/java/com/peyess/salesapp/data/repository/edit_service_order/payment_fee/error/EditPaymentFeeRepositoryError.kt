@@ -37,3 +37,12 @@ sealed class ReadPaymentFeeError: EditPaymentFeeDataRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeletePaymentFeeError: EditPaymentFeeDataRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeletePaymentFeeError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

@@ -37,3 +37,12 @@ sealed class ReadClientPickedError: EditClientPickedRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeleteClientPickedError: EditClientPickedRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteClientPickedError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

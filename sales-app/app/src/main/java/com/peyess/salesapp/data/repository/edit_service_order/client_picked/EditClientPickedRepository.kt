@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.client_picked
 
 import arrow.core.Either
 import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClientPickedDocument
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.DeleteClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.InsertClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.UpdateClientPickedError
@@ -13,6 +14,8 @@ typealias EditClientPickedAddResponse = Either<InsertClientPickedError, Unit>
 typealias EditClientPickedFetchResponse = Either<ReadClientPickedError, EditClientPickedDocument>
 typealias EditClientPickedStreamResponse = Flow<Either<ReadClientPickedError, EditClientPickedDocument>>
 typealias EditClientPickedUpdateResponse = Either<UpdateClientPickedError, Unit>
+
+typealias EditClientPickedDeleteResponse = Either<DeleteClientPickedError, Unit>
 
 interface EditClientPickedRepository {
     suspend fun insertClientPicked(
@@ -56,4 +59,8 @@ interface EditClientPickedRepository {
         serviceOrderId: String,
         shortAddress: String,
     ): EditClientPickedUpdateResponse
+
+    suspend fun deleteClientsPickedForServiceOrder(
+        serviceOrderId: String,
+    ): EditClientPickedDeleteResponse
 }

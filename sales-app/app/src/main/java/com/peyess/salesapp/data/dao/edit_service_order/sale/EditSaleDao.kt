@@ -30,4 +30,10 @@ interface EditSaleDao {
         WHERE id = :id
     """)
     suspend fun saleExists(id: String): Int
+
+    @Query("""
+        DELETE FROM ${EditSaleEntity.tableName}
+        WHERE id = :saleId
+    """)
+    suspend fun deleteSaleById(saleId: String)
 }

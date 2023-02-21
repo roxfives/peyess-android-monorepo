@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.edit_service_order.payment_fee
 
 import arrow.core.Either
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.DeletePaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.InsertPaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.ReadPaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.UpdatePaymentFeeError
@@ -15,6 +16,8 @@ typealias EditPaymentFeeStreamResponse = Flow<EditPaymentFeeFetchResponse>
 
 typealias EditPaymentFeeUpdateResponse = Either<UpdatePaymentFeeError, Unit>
 
+typealias EditPaymentFeeDeleteResponse = Either<DeletePaymentFeeError, Unit>
+
 interface EditPaymentFeeRepository {
     suspend fun addPaymentFee(paymentFee: PaymentFeeDocument): EditPaymentFeeInsertResponse
 
@@ -26,4 +29,6 @@ interface EditPaymentFeeRepository {
         method: PaymentFeeCalcMethod,
     ): EditPaymentFeeUpdateResponse
     suspend fun updateValue(saleId: String, value: Double): EditPaymentFeeUpdateResponse
+
+    suspend fun deletePaymentFeeForSale(saleId: String): EditPaymentFeeDeleteResponse
 }

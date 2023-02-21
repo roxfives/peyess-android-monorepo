@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toEd
 import com.peyess.salesapp.data.adapter.edit_service_order.payment_discount.toOverallDiscountDocument
 import com.peyess.salesapp.data.dao.edit_service_order.payment_discount.EditOverallDiscountDao
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.DeletePaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.InsertPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.ReadPaymentDiscountError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.UpdatePaymentDiscountError
@@ -79,5 +80,18 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
             description = "Error while updating discount value for sale $saleId",
             throwable = it,
         )
+    }
+
+    override suspend fun deletePaymentDiscountForSale(
+        saleId: String,
+    ): EditPaymentDiscountDeleteResponse {
+        return Either.catch {
+            paymentDiscountDao.deletePaymentDiscountForSale(saleId)
+        }.mapLeft {
+            DeletePaymentDiscountError.Unexpected(
+                description = "Error while deleting discount for sale $saleId",
+                throwable = it,
+            )
+        }
     }
 }

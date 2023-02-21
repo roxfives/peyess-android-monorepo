@@ -37,3 +37,12 @@ sealed class ReadLensComparisonError: EditLensComparisonDataRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class DeleteLensComparisonError: EditLensComparisonDataRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): DeleteLensComparisonError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.edit_service_order.payment_fee.toEditPay
 import com.peyess.salesapp.data.adapter.edit_service_order.payment_fee.toPaymentFeeDocument
 import com.peyess.salesapp.data.dao.edit_service_order.payment_fee.EditPaymentFeeDao
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.DeletePaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.InsertPaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.ReadPaymentFeeError
 import com.peyess.salesapp.data.repository.edit_service_order.payment_fee.error.UpdatePaymentFeeError
@@ -79,5 +80,18 @@ class EditPaymentFeeRepositoryImpl @Inject constructor(
             description = "Error while updating fee value for sale $saleId",
             throwable = it,
         )
+    }
+
+    override suspend fun deletePaymentFeeForSale(
+        saleId: String,
+    ): EditPaymentFeeDeleteResponse {
+        return Either.catch {
+            paymentFeeDao.deletePaymentFeeForSale(saleId)
+        }.mapLeft {
+            DeletePaymentFeeError.Unexpected(
+                description = "Error while deleting payment fee for sale $saleId",
+                throwable = it,
+            )
+        }
     }
 }

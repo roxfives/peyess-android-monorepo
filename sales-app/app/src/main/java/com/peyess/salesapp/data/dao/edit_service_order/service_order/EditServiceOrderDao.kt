@@ -76,4 +76,10 @@ interface EditServiceOrderDao {
         id: String,
         isLensTypeMono: Int,
     )
+
+    @Query("""
+        DELETE FROM ${EditServiceOrderEntity.tableName}
+        WHERE id = :serviceOrderId
+    """)
+    suspend fun deleteServiceOrderById(serviceOrderId: String)
 }

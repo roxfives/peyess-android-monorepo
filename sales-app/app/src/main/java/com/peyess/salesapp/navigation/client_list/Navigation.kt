@@ -81,7 +81,7 @@ fun buildPickClientListNavGraph(
         PickClientScreen(
             modifier = modifier,
             navHostController = navHostController,
-            onCreateNewClient = { clientId, paymentId, pickScenario ->
+            onCreateNewClient = { clientId, paymentId, pickScenario, saleId, serviceOrderId ->
                 val createScenario = when (pickScenario) {
                     PickScenario.ServiceOrder -> CreateScenario.ServiceOrder
                     PickScenario.Payment -> CreateScenario.Payment
@@ -98,6 +98,8 @@ fun buildPickClientListNavGraph(
                     clientId = clientId,
                     createScenario = createScenario,
                     paymentId = paymentId,
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
                 )
 
                 navHostController.navigate(basicInfoRoute)

@@ -19,6 +19,9 @@ import com.peyess.salesapp.screen.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 
 data class ClientAddressState(
+    val saleId: String = "",
+    val serviceOrderId: String = "",
+
     val clientId: String = "",
     val paymentId: Long = 0L,
     val createScenario: CreateScenario = CreateScenario.Home,

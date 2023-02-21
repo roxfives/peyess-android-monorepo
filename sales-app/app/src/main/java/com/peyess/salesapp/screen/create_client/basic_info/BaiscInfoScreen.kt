@@ -72,7 +72,7 @@ import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewMo
 import com.peyess.salesapp.screen.create_client.basic_info.utils.createClientFile
 import com.peyess.salesapp.screen.create_client.basic_info.utils.fromReadableSexName
 import com.peyess.salesapp.screen.create_client.basic_info.utils.readableSexName
-import com.peyess.salesapp.screen.create_client.utils.parseParameters
+import com.peyess.salesapp.screen.create_client.utils.ParseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.ui.component.date.PeyessDialogDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
@@ -107,16 +107,23 @@ fun BasicInfoScreen(
         clientId: String,
         createScenario: CreateScenario,
         paymentId: Long,
-    ) -> Unit = { _, _, _ -> },
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: BasicInfoViewModel = mavericksViewModel()
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
         onUpdateClientId = viewModel::onClientIdChanged,
         onUpdatePaymentId = viewModel::onPaymentIdChanged,
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+        onUpdateSaleId = viewModel::onSaleIdChanged,
+        onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
     )
+
+    val saleId by viewModel.collectAsState(BasicInfoState::saleId)
+    val serviceOrderId by viewModel.collectAsState(BasicInfoState::serviceOrderId)
 
     val clientId by viewModel.collectAsState(BasicInfoState::clientId)
     val scenario by viewModel.collectAsState(BasicInfoState::createScenario)
@@ -148,7 +155,7 @@ fun BasicInfoScreen(
     if (hasFinishedSettingBasicInfo) {
         LaunchedEffect(Unit) {
             viewModel.onNavigate()
-            onDone(clientId, scenario, paymentId)
+            onDone(clientId, scenario, paymentId, saleId, serviceOrderId)
         }
     }
 

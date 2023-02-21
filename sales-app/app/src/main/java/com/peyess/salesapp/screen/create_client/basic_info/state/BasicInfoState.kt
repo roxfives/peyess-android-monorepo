@@ -19,6 +19,9 @@ import com.peyess.salesapp.typing.client.Sex
 import java.time.ZonedDateTime
 
 data class BasicInfoState(
+    val saleId: String = "",
+    val serviceOrderId: String = "",
+
     val clientId: String = "",
     val paymentId: Long = 0L,
     val createScenario: CreateScenario = CreateScenario.Home,

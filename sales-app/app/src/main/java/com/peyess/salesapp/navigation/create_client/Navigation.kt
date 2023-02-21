@@ -29,28 +29,39 @@ import com.peyess.salesapp.navigation.sale.service_order.serviceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val clientIdParam = "clientId"
-const val paymentIdParam = "paymentId"
 const val createScenarioParam = "createScenario"
 const val pickScenarioParam = "pickScenario"
 const val isPickingParam = "isPicking"
 
+const val saleIdParam = "saleId"
+const val serviceOrderIdParam = "serviceOrderId"
+const val paymentIdParam = "paymentId"
+
 private val basicInfoRoute = SalesAppScreens.CreateNewClientBasicInfo.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "?$paymentIdParam={$paymentIdParam}"
+        "?$paymentIdParam={$paymentIdParam}" +
+        "?$saleIdParam={$saleIdParam}" +
+        "?$serviceOrderIdParam={$serviceOrderIdParam}"
 private val addressRoute = SalesAppScreens.CreateNewClientAddress.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "?$paymentIdParam={$paymentIdParam}"
+        "?$paymentIdParam={$paymentIdParam}" +
+        "?$saleIdParam={$saleIdParam}" +
+        "?$serviceOrderIdParam={$serviceOrderIdParam}"
 private val communicationRoute = SalesAppScreens.CreateNewClientContact.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "?$paymentIdParam={$paymentIdParam}"
+        "?$paymentIdParam={$paymentIdParam}" +
+        "?$saleIdParam={$saleIdParam}" +
+        "?$serviceOrderIdParam={$serviceOrderIdParam}"
 
 fun buildBasicInfoRoute(
     clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
+    saleId: String = "",
+    serviceOrderId: String = "",
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
@@ -61,7 +72,9 @@ fun buildBasicInfoRoute(
             SalesAppScreens.CreateNewClientBasicInfo.name +
                     "/$clientId" +
                     "/${createScenario.toName()}" +
-                    "?$paymentIdParam=$paymentId"
+                    "?$paymentIdParam=$paymentId" +
+                    "?$saleIdParam=$saleId" +
+                    "?$serviceOrderIdParam=$serviceOrderId"
     }
 }
 
@@ -69,6 +82,8 @@ fun buildAddressRoute(
     clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
+    saleId: String = "",
+    serviceOrderId: String = "",
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
@@ -79,7 +94,9 @@ fun buildAddressRoute(
             SalesAppScreens.CreateNewClientAddress.name +
                     "/${clientId}" +
                     "/${createScenario.toName()}" +
-                    "?$paymentIdParam=$paymentId"
+                    "?$paymentIdParam=$paymentId" +
+                    "?$saleIdParam=$saleId" +
+                    "?$serviceOrderIdParam=$serviceOrderId"
     }
 }
 
@@ -87,6 +104,8 @@ fun buildCommunicationRoute(
     clientId: String,
     createScenario: CreateScenario,
     paymentId: Long = 0L,
+    saleId: String = "",
+    serviceOrderId: String = "",
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
@@ -97,7 +116,9 @@ fun buildCommunicationRoute(
             SalesAppScreens.CreateNewClientContact.name +
                     "/${clientId}" +
                     "/${createScenario.toName()}" +
-                    "?$paymentIdParam=$paymentId"
+                    "?$paymentIdParam=$paymentId" +
+                    "?$saleIdParam=$saleId" +
+                    "?$serviceOrderIdParam=$serviceOrderId"
     }
 }
 
@@ -115,6 +136,14 @@ fun buildCreateClientNavGraph(
                 type = NavType.LongType
                 defaultValue = 0L
             },
+            navArgument(saleIdParam) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
+            navArgument(serviceOrderIdParam) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
         ),
         enterTransition = createClientEnterTransition(),
         exitTransition = createClientExitTransition()
@@ -124,7 +153,7 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { clientId, createScenario, paymentId ->
+            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId ->
                 when(createScenario) {
                     CreateScenario.Home ->
                         navHostController.navigate(
@@ -139,6 +168,8 @@ fun buildCreateClientNavGraph(
                                 clientId = clientId,
                                 createScenario = createScenario,
                                 paymentId = paymentId,
+                                saleId = saleId,
+                                serviceOrderId = serviceOrderId,
                             )
                         )
                 }
@@ -154,6 +185,14 @@ fun buildCreateClientNavGraph(
                 type = NavType.LongType
                 defaultValue = 0L
             },
+            navArgument(saleIdParam) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
+            navArgument(serviceOrderIdParam) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
         ),
         enterTransition = clientAddressEnterTransition(),
         exitTransition = clientAddressExitTransition()
@@ -163,7 +202,7 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { clientId, createScenario, paymentId ->
+            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId ->
                 when(createScenario) {
                     CreateScenario.Home ->
                         navHostController.navigate(
@@ -179,6 +218,8 @@ fun buildCreateClientNavGraph(
                                 clientId = clientId,
                                 createScenario = createScenario,
                                 paymentId = paymentId,
+                                saleId = saleId,
+                                serviceOrderId = serviceOrderId,
                             )
                         )
                 }

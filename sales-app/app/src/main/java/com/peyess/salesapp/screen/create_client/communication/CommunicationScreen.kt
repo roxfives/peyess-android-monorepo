@@ -48,7 +48,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationState
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationViewModel
-import com.peyess.salesapp.screen.create_client.utils.parseParameters
+import com.peyess.salesapp.screen.create_client.utils.ParseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -75,11 +75,13 @@ fun CreateClientCommunicationScreen(
 ) {
     val viewModel: CommunicationViewModel = mavericksViewModel()
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
         onUpdateClientId = viewModel::onClientIdChanged,
         onUpdatePaymentId = viewModel::onPaymentIdChanged,
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+        onUpdateSaleId = viewModel::onSaleIdChanged,
+        onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
     )
 
     val saleId by viewModel.collectAsState(CommunicationState::saleId)

@@ -84,6 +84,14 @@ class BasicInfoViewModel @AssistedInject constructor(
         )
     }
 
+    fun onSaleIdChanged(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
+    fun onServiceOrderIdChanged(serviceOrderId: String) = setState {
+        copy(serviceOrderId = serviceOrderId)
+    }
+
     fun onClientIdChanged(clientId: String) = setState {
         copy(clientId = clientId)
     }

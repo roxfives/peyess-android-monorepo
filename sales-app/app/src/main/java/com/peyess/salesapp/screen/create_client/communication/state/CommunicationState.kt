@@ -18,12 +18,12 @@ import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 
 data class CommunicationState(
+    val saleId: String = "",
+    val serviceOrderId: String = "",
+
     val clientId: String = "",
     val paymentId: Long = 0L,
     val createScenario: CreateScenario = CreateScenario.Home,
-
-    val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
-    val activeServiceOrderResponse: ActiveSOEntity = ActiveSOEntity(),
 
     val clientResponseAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val client: Client = Client(),
@@ -52,9 +52,6 @@ data class CommunicationState(
     @PersistState
     val detectPhoneError: Boolean = false,
 ): MavericksState {
-    val saleId: String = activeServiceOrderResponse.saleId
-    val serviceOrderId: String = activeServiceOrderResponse.id
-
     private val _detectWhatsappError: Boolean = detectWhatsappError && phoneHasWhatsApp
     private val _detectPhoneError: Boolean = detectPhoneError && hasPhoneContact
 

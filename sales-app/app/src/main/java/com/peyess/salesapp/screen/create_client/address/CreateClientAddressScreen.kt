@@ -49,7 +49,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
 import com.peyess.salesapp.screen.create_client.address.state.ClientAddressState
 import com.peyess.salesapp.screen.create_client.address.state.ClientAddressViewModel
-import com.peyess.salesapp.screen.create_client.utils.parseParameters
+import com.peyess.salesapp.screen.create_client.utils.ParseParameters
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -76,16 +76,23 @@ fun CreateClientAddressScreen(
         clientId: String,
         createScenario: CreateScenario,
         paymentId: Long,
-    ) -> Unit = { _, _, _-> },
+        saleId: String,
+        serviceOrder: String,
+    ) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: ClientAddressViewModel = mavericksViewModel()
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
         onUpdateClientId = viewModel::onClientIdChanged,
         onUpdatePaymentId = viewModel::onPaymentIdChanged,
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
+        onUpdateSaleId = viewModel::onSaleIdChanged,
+        onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
     )
+
+    val saleId by viewModel.collectAsState(ClientAddressState::saleId)
+    val serviceOrderId by viewModel.collectAsState(ClientAddressState::serviceOrderId)
 
     val clientId by viewModel.collectAsState(ClientAddressState::clientId)
     val paymentId by viewModel.collectAsState(ClientAddressState::paymentId)
@@ -129,7 +136,7 @@ fun CreateClientAddressScreen(
     if (hasFinishedSettingAddress) {
         LaunchedEffect(Unit) {
             viewModel.onNavigate()
-            onDone(clientId, scenario, paymentId)
+            onDone(clientId, scenario, paymentId, saleId, serviceOrderId)
         }
     }
 

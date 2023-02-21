@@ -34,7 +34,9 @@ fun PickClientScreen(
         clientId: String,
         paymentId: Long,
         pickScenario: PickScenario,
-    ) -> Unit = { _, _, _ -> },
+        saleId: String,
+        serviceOrderId: String,
+    ) -> Unit = { _, _, _, _, _ -> },
 
     onSearchClient: () -> Unit = {},
 
@@ -118,7 +120,7 @@ fun PickClientScreen(
         LaunchedEffect(Unit) {
             viewModel.startedCreatingClient()
             Timber.i("Creating client with id: $createClientId")
-            onCreateNewClient(createClientId, paymentId, pickScenario)
+            onCreateNewClient(createClientId, paymentId, pickScenario, saleId, serviceOrderId)
         }
     }
 

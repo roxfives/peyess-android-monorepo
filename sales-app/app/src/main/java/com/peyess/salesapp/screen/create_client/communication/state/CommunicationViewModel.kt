@@ -52,14 +52,9 @@ class CommunicationViewModel @AssistedInject constructor(
 ): MavericksViewModel<CommunicationState>(initialState) {
 
     init {
-        loadServiceOrderData()
-
         onEach(CommunicationState::clientId) { loadClient(it) }
 
         onAsync(CommunicationState::clientResponseAsync) { processLoadClientResponse(it) }
-        onAsync(CommunicationState::activeServiceOrderResponseAsync) {
-            processServiceOrderDataResponse(it)
-        }
     }
 
     private fun updateClient(client: Client) {
@@ -104,28 +99,6 @@ class CommunicationViewModel @AssistedInject constructor(
         )
     }
 
-    private fun processServiceOrderDataResponse(response: ActiveServiceOrderResponse) = setState {
-        response.fold(
-            ifLeft = {
-                copy(
-                    activeServiceOrderResponseAsync = Fail(
-                        it.error ?: Throwable(it.description)
-                    ),
-                )
-            },
-
-            ifRight = { copy(activeServiceOrderResponse = it) }
-        )
-    }
-
-    private fun loadServiceOrderData() {
-        suspend {
-            saleRepository.currentServiceOrder()
-        }.execute {
-            copy(activeServiceOrderResponseAsync = it)
-        }
-    }
-
     private suspend fun addAllForServiceOrder(client: Client) {
         saleRepository.activeSO()
             .filterNotNull()
@@ -143,6 +116,14 @@ class CommunicationViewModel @AssistedInject constructor(
             .collect { so ->
                 saleRepository.pickClient(client.toClientPickedEntity(so.id, role))
             }
+    }
+
+    fun onSaleIdChanged(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
+    fun onServiceOrderIdChanged(serviceOrderId: String) = setState {
+        copy(serviceOrderId = serviceOrderId)
     }
 
     fun onClientIdChanged(clientId: String) = setState {

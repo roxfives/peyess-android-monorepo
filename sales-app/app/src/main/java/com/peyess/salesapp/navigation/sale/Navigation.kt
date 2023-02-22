@@ -8,6 +8,7 @@ import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEdit
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeNavGraph
 import com.peyess.salesapp.navigation.client_list.buildPickClientListNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavGraph
+import com.peyess.salesapp.navigation.edit_service_order.prescription.buildEditPrescriptionNavGraph
 import com.peyess.salesapp.navigation.sale.anamnesis.buildAnamnesisNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
@@ -36,4 +37,5 @@ fun buildSaleNavGraph(
     buildEditPaymentFeeNavGraph(modifier, navHostController, builder)
     buildEditPaymentDiscountNavGraph(modifier, navHostController, builder)
     buildEditPaymentNavGraph(modifier, navHostController, builder)
+    buildEditPrescriptionNavGraph(modifier, navHostController, builder)
 }

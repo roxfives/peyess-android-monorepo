@@ -10,11 +10,10 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
-import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderEnterTransition
-import com.peyess.salesapp.navigation.edit_service_order.editServiceOrderExitTransition
 import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
+import com.peyess.salesapp.navigation.edit_service_order.prescription.buildEditPrescriptionDataRoute
 import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOrderScreen
 
 const val serviceOrderIdParam = "serviceOrderId"
@@ -91,13 +90,12 @@ fun buildEditServiceOrderNavGraph(
                 navHostController.navigate(route)
             },
 
-//            onEditPrescription = {
-//                val isUpdating = true
-//
-//                navHostController
-//                    .navigate("${SalesAppScreens.SalePrescriptionPicture}/$isUpdating")
-//            },
-//
+            onEditPrescription = { serviceOrderId, prescriptionId ->
+                val route = buildEditPrescriptionDataRoute(serviceOrderId, prescriptionId)
+
+                navHostController.navigate(route)
+            },
+
 //            onEditProducts = { saleId, serviceOrderId ->
 //                val route = buildLensSuggestionNavRoute(
 //                    isEditing = true,
@@ -109,7 +107,7 @@ fun buildEditServiceOrderNavGraph(
 //                navHostController
 //                    .navigate(route)
 //            },
-//
+
             onAddPayment = { saleId, serviceOrderId, paymentId ->
                 val isPicking = true
                 val pickScenario = PickScenario.EditPayment.toName()
@@ -142,7 +140,7 @@ fun buildEditServiceOrderNavGraph(
             onAddPaymentFee = { saleId, fullPrice ->
                 navHostController.navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
             },
-//
+
 //            onFinishSale = {
 //                navHostController.navigate(SalesAppScreens.Home.name) {
 //                    popUpTo(SalesAppScreens.Home.name) { inclusive = true }

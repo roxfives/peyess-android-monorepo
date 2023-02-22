@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.edit_service_order.service_order
+package com.peyess.salesapp.navigation.edit_service_order.prescription
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun editServiceOrderEnterTransition(transitionDuration: Int = 500):
+fun editPrescriptionEnterTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition?)? = {
     when (SalesAppScreens.fromRoute(initialState.destination.route)) {
         SalesAppScreens.ClientList,

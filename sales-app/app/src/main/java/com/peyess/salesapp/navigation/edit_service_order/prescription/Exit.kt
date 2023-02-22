@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.edit_service_order.service_order
+package com.peyess.salesapp.navigation.edit_service_order.prescription
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition
@@ -10,7 +10,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun editServiceOrderExitTransition(transitionDuration: Int = 500):
+fun editPrescriptionExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
     when (SalesAppScreens.fromRoute(targetState.destination.route)) {
         SalesAppScreens.ClientList -> slideOutHorizontally(

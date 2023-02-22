@@ -40,6 +40,9 @@ enum class SalesAppScreens {
     EditPaymentFee,
     EditPaymentDiscount,
     EditSalePayment,
+    EditPrescriptionPicture,
+    EditPrescriptionData,
+    EditPrescriptionSymptoms,
     SalePayment,
     Discount,
     PaymentFee,
@@ -98,6 +101,9 @@ enum class SalesAppScreens {
                 EditPaymentFee.name -> EditPaymentFee
                 EditPaymentDiscount.name -> EditPaymentDiscount
                 EditSalePayment.name -> EditSalePayment
+                EditPrescriptionPicture.name -> EditPrescriptionPicture
+                EditPrescriptionData.name -> EditPrescriptionData
+                EditPrescriptionSymptoms.name -> EditPrescriptionSymptoms
                 SalePayment.name -> SalePayment
                 Discount.name -> Discount
                 PaymentFee.name -> PaymentFee
@@ -163,6 +169,9 @@ enum class SalesAppScreens {
                 EditPaymentFee.name -> "Editando o desconto"
                 EditPaymentDiscount.name -> "Editando a taxa de pagamento"
                 EditSalePayment.name -> "Pagamento"
+                EditPrescriptionPicture.name -> "Editando a receita"
+                EditPrescriptionData.name -> "Editando a receita"
+                EditPrescriptionSymptoms.name -> "Sintomas e Curiosidades"
                 SalePayment.name -> "Pagamento"
                 Discount.name -> "Aplicar Desconto"
                 PaymentFee.name -> "Aplicar Taxa"

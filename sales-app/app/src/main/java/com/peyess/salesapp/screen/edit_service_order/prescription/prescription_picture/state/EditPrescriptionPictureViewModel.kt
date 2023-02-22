@@ -58,6 +58,10 @@ class EditPrescriptionPictureViewModel @AssistedInject constructor(
         )
     }
 
+    fun onSetSaleId(saleId: String) = setState {
+        copy(saleId = saleId)
+    }
+
     fun onSetServiceOrderId(serviceOrderId: String) = setState {
         copy(serviceOrderId = serviceOrderId)
     }

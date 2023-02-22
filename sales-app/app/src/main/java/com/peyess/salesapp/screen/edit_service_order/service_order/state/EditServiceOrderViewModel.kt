@@ -90,7 +90,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                 loadResponsiblePicked(it.id)
                 loadWitnessPicked(it.id)
 
-                loadPrescription(it.id)
+                streamPrescription(it.id)
                 streamPositionings(it.id)
                 loadLensProducts(it.id)
                 loadFrames(it.id)
@@ -245,12 +245,12 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadPrescription(serviceOrderId: String) {
-        suspend {
-            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId)
-        }.execute(Dispatchers.IO) {
-            copy(prescriptionResponseAsync = it)
-        }
+    private fun streamPrescription(serviceOrderId: String) {
+        editPrescriptionRepository
+            .streamPrescriptionByServiceOrder(serviceOrderId)
+            .execute(Dispatchers.IO) {
+                copy(prescriptionResponseAsync = it)
+            }
     }
 
     private fun processPrescriptionResponse(

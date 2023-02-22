@@ -81,7 +81,7 @@ class EditPrescriptionRepositoryImpl @Inject constructor(
     override fun streamPrescriptionByServiceOrder(
         serviceOrderId: String,
     ): EditPrescriptionStreamResponse {
-        return prescriptionDao.streamPrescriptionById(serviceOrderId).map {
+        return prescriptionDao.streamPrescriptionByServiceOrder(serviceOrderId).map {
             if (it == null) {
                 ReadPositioningError.PositioningNotFound(
                     description = "Prescripton with service order id $serviceOrderId not found",
@@ -261,9 +261,12 @@ class EditPrescriptionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateHasPrism(
-        id: String, hasPrism: Int
+        id: String,
+        hasPrism: Boolean,
     ): EditPrescriptionUpdateResponse = Either.catch {
-        prescriptionDao.updateHasPrism(id, hasPrism)
+        val asInt = if (hasPrism) 1 else 0
+
+        prescriptionDao.updateHasPrism(id, asInt)
     }.mapLeft {
         UpdatePrescriptionError.Unexpected(
             description = "Error while updating prescription $id " +

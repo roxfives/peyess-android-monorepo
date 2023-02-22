@@ -14,6 +14,7 @@ import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymen
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
 import com.peyess.salesapp.navigation.edit_service_order.prescription.buildEditPrescriptionDataRoute
+import com.peyess.salesapp.navigation.edit_service_order.prescription.buildEditPrescriptionPictureRoute
 import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOrderScreen
 
 const val serviceOrderIdParam = "serviceOrderId"
@@ -90,8 +91,12 @@ fun buildEditServiceOrderNavGraph(
                 navHostController.navigate(route)
             },
 
-            onEditPrescription = { serviceOrderId, prescriptionId ->
-                val route = buildEditPrescriptionDataRoute(serviceOrderId, prescriptionId)
+            onEditPrescription = { saleId, serviceOrderId, prescriptionId ->
+                val route = buildEditPrescriptionPictureRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
+                    prescriptionId = prescriptionId
+                )
 
                 navHostController.navigate(route)
             },

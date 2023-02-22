@@ -12,8 +12,9 @@ import java.time.LocalDate
 import java.time.ZonedDateTime
 
 data class EditPrescriptionPictureState(
-    val prescriptionId: String = "",
+    val saleId: String = "",
     val serviceOrderId: String = "",
+    val prescriptionId: String = "",
 
     val currentPrescription: Async<PrescriptionEntity> = Uninitialized,
 

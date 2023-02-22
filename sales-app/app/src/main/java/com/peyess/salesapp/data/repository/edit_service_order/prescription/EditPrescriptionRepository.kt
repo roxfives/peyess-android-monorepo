@@ -88,7 +88,7 @@ interface EditPrescriptionRepository {
     ): EditPrescriptionUpdateResponse
     suspend fun updateHasPrism(
         id: String,
-        hasPrism: Int,
+        hasPrism: Boolean,
     ): EditPrescriptionUpdateResponse
     suspend fun updatePrismDegreeLeft(
         id: String,

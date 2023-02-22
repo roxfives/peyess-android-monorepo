@@ -29,7 +29,7 @@ fun EditPrescriptionPictureScreen(
     modifier: Modifier,
     navHostController: NavHostController = rememberNavController(),
 
-    onNext: (prescriptionId: String) -> Unit = {},
+    onNext: (saleId: String, serviceOrderId: String, prescriptionId: String) -> Unit = { _, _, _ -> },
 ) {
     val context = LocalContext.current
 
@@ -37,10 +37,13 @@ fun EditPrescriptionPictureScreen(
 
     ParseParameters(
         navController = navHostController,
+        onUpdateSaleId = viewModel::onSetSaleId,
         onUpdateServiceOrderId = viewModel::onSetServiceOrderId,
         onUpdatePrescriptionId = viewModel::onSetPrescriptionId,
     )
 
+    val saleId by viewModel.collectAsState(EditPrescriptionPictureState::saleId)
+    val serviceOrderId by viewModel.collectAsState(EditPrescriptionPictureState::serviceOrderId)
     val prescriptionId by viewModel.collectAsState(EditPrescriptionPictureState::prescriptionId)
 
     val picture by viewModel.collectAsState(EditPrescriptionPictureState::pictureUri)
@@ -119,6 +122,6 @@ fun EditPrescriptionPictureScreen(
             }
         },
 
-        onNext = { onNext(prescriptionId) },
+        onNext = { onNext(saleId, serviceOrderId, prescriptionId) },
     )
 }

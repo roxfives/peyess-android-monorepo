@@ -17,6 +17,7 @@ import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.Edit
 import com.peyess.salesapp.screen.edit_service_order.payment_fee.state.EditPaymentFeeViewModel
 import com.peyess.salesapp.screen.edit_service_order.prescription.prescription_data.state.EditPrescriptionDataViewModel
 import com.peyess.salesapp.screen.edit_service_order.prescription.prescription_picture.state.EditPrescriptionPictureViewModel
+import com.peyess.salesapp.screen.edit_service_order.prescription.prescription_symptoms.state.EditPrescriptionSymptomsViewModel
 import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -297,5 +298,12 @@ interface ViewModelsModule {
     @ViewModelKey(EditPrescriptionDataViewModel::class)
     fun bindEditPrescriptionDataViewModel(
         factory: EditPrescriptionDataViewModel.Factory,
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditPrescriptionSymptomsViewModel::class)
+    fun bindEditPrescriptionSymptomsViewModel(
+        factory: EditPrescriptionSymptomsViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 }

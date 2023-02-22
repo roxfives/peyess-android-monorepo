@@ -67,8 +67,6 @@ data class EditPrescriptionDataState(
     val isPrismAxisLeftEnabled = hasPrism && prismPositionLeft == PrismPosition.Axis
     val isPrismAxisRightEnabled = hasPrism && prismPositionRight == PrismPosition.Axis
 
-    private val hasPrescriptionLoaded = prescriptionResponseAsync is Success
-            && prescriptionResponseAsync.invoke().isRight()
     val hasHypermetropiaLeft =  sphericalLeft > 0
     val hasMyopiaLeft = sphericalLeft < 0
     val hasAstigmatismLeft = cylindricalLeft < 0

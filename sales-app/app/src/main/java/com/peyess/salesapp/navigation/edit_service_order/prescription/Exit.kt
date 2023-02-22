@@ -10,7 +10,45 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens
 
 @OptIn(ExperimentalAnimationApi::class)
-fun editPrescriptionExitTransition(transitionDuration: Int = 500):
+fun editPrescriptionPictureExitTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
+    when (SalesAppScreens.fromRoute(targetState.destination.route)) {
+        SalesAppScreens.ClientList -> slideOutHorizontally(
+            targetOffsetX = { -it },
+            animationSpec = tween(transitionDuration),
+        )
+        SalesAppScreens.Home -> slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(transitionDuration),
+        )
+        else -> slideOutHorizontally(
+            targetOffsetX = { it },
+            animationSpec = tween(transitionDuration),
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun editPrescriptionDataExitTransition(transitionDuration: Int = 500):
+        (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
+    when (SalesAppScreens.fromRoute(targetState.destination.route)) {
+        SalesAppScreens.ClientList -> slideOutHorizontally(
+            targetOffsetX = { -it },
+            animationSpec = tween(transitionDuration),
+        )
+        SalesAppScreens.Home -> slideOutVertically(
+            targetOffsetY = { it },
+            animationSpec = tween(transitionDuration),
+        )
+        else -> slideOutHorizontally(
+            targetOffsetX = { it },
+            animationSpec = tween(transitionDuration),
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun editPrescriptionSymptomsExitTransition(transitionDuration: Int = 500):
         (AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition?)? = {
     when (SalesAppScreens.fromRoute(targetState.destination.route)) {
         SalesAppScreens.ClientList -> slideOutHorizontally(

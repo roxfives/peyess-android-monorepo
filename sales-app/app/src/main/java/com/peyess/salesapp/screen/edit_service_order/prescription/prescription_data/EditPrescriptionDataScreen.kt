@@ -16,6 +16,7 @@ import com.peyess.salesapp.screen.edit_service_order.prescription.utils.ParsePar
 fun EditPrescriptionDataScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    onShowSymptoms: (saleId: String, serviceOrderId: String, prescriptionId: String) -> Unit = { _, _, _ -> },
     onNext: () -> Unit = {},
 ) {
 
@@ -30,6 +31,7 @@ fun EditPrescriptionDataScreen(
 
     val saleId by viewModel.collectAsState(EditPrescriptionDataState::saleId)
     val serviceOrderId by viewModel.collectAsState(EditPrescriptionDataState::serviceOrderId)
+    val prescriptionId by viewModel.collectAsState(EditPrescriptionDataState::prescriptionId)
 
     val sphericalLeft by viewModel.collectAsState(EditPrescriptionDataState::sphericalLeft)
     val sphericalRight by viewModel.collectAsState(EditPrescriptionDataState::sphericalRight)
@@ -113,6 +115,6 @@ fun EditPrescriptionDataScreen(
         onPrismAxisRightPicked = viewModel::setPrismPositionRight,
 
         onNext = onNext,
-        onShowSymptoms = {},
+        onShowSymptoms = { onShowSymptoms(saleId, serviceOrderId, prescriptionId) },
     )
 }

@@ -3,7 +3,6 @@ package com.peyess.salesapp.screen.sale.prescription_data.state
 
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
@@ -35,6 +34,8 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.error.Prescri
 import com.peyess.salesapp.screen.sale.prescription_data.adapter.toLocalPrescriptionDocument
 import com.peyess.salesapp.screen.sale.prescription_data.adapter.toPrescriptionData
 import com.peyess.salesapp.feature.prescription.model.PrescriptionData
+import com.peyess.salesapp.feature.prescription.utils.animationFor
+import com.peyess.salesapp.feature.prescription.utils.messageFor
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.typing.prescription.PrismPosition
@@ -109,21 +110,10 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     private fun loadMessage() = withState {
         saleRepository.activeSO()
             .filterNotNull()
-            .map {
-                messageFor(it.lensTypeCategoryName)
-            }
+            .map { messageFor(it.lensTypeCategoryName, salesApplication) }
             .execute(Dispatchers.IO) {
                 copy(generalMessage = it)
             }
-    }
-
-    private fun messageFor(categoryName: LensTypeCategoryName?): String {
-        return when (categoryName) {
-            LensTypeCategoryName.Far -> salesApplication.stringResource(R.string.mike_message_far)
-            LensTypeCategoryName.Multi -> salesApplication.stringResource(R.string.mike_message_multi)
-            LensTypeCategoryName.Near -> salesApplication.stringResource(R.string.mike_message_near)
-            else -> salesApplication.stringResource(R.string.mike_message_default)
-        }
     }
 
     private fun loadHasAddition() = withState {
@@ -154,22 +144,6 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             .execute(Dispatchers.IO) {
                 copy(animationId = it)
             }
-    }
-//
-//    private fun loadClientName() = withState {
-//        saleRepository.activeSO()
-//            .filterNotNull()
-//            .map { it.clientName }
-//            .execute { copy(clientName = it) }
-//    }
-
-    private fun animationFor(categoryName: LensTypeCategoryName?): Int {
-        return when (categoryName) {
-            LensTypeCategoryName.Far -> R.raw.lottie_lens_far
-            LensTypeCategoryName.Multi -> R.raw.lottie_lens_multi
-            LensTypeCategoryName.Near -> R.raw.lottie_lens_near
-            else -> R.raw.lottie_lens_far
-        }
     }
 
     private fun mikeMessageAmetropie() = withState {

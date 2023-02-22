@@ -49,6 +49,8 @@ fun PrescriptionPictureScreen(
     val professionalId by viewModel.collectAsState(PrescriptionPictureState::professionalIdInput)
     val professionalName by viewModel.collectAsState(PrescriptionPictureState::professionalNameInput)
 
+    val isCopy by viewModel.collectAsState(PrescriptionPictureState::isCopy)
+
     val pictureFile = remember { createPrescriptionFile(context) }
     val pictureFileUri = remember {
         FileProvider.getUriForFile(
@@ -57,8 +59,6 @@ fun PrescriptionPictureScreen(
             pictureFile,
         )
     }
-
-    val isCopy by viewModel.collectAsState(PrescriptionPictureState::isCopy)
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     val cameraLauncher = rememberLauncherForActivityResult(

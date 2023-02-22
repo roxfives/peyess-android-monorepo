@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.prescription_data.model
+package com.peyess.salesapp.feature.prescription.model
 
 import android.net.Uri
 import com.peyess.salesapp.constants.maxAxis
@@ -12,7 +12,7 @@ import com.peyess.salesapp.utils.math.middle
 import java.time.ZonedDateTime
 import kotlin.math.floor
 
-data class PrescriptionData(
+data class PrescriptionPicture(
     val id: String = "",
 
     val soId: String = "",

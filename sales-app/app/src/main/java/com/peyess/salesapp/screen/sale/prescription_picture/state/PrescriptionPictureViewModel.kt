@@ -12,7 +12,7 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.PrescriptionNotFound
 import com.peyess.salesapp.screen.sale.prescription_picture.adapter.toLocalPrescriptionDocument
 import com.peyess.salesapp.screen.sale.prescription_picture.adapter.toPrescriptionPicture
-import com.peyess.salesapp.screen.sale.prescription_picture.model.PrescriptionPicture
+import com.peyess.salesapp.feature.prescription.model.PrescriptionPicture
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.utils.time.toZonedDateTime

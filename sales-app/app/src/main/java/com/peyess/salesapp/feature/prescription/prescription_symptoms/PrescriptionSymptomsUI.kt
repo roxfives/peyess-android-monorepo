@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.prescription_data
+package com.peyess.salesapp.feature.prescription.prescription_symptoms
 
 import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedVisibility
@@ -36,57 +36,15 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.R
-import com.peyess.salesapp.screen.sale.prescription_data.state.PrescriptionDataState
-import com.peyess.salesapp.screen.sale.prescription_data.state.PrescriptionDataViewModel
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
-import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 private val mikeHeight = 300.dp
 
-@Composable
-fun PrescriptionDataSymptomsScreen(
-    modifier: Modifier = Modifier,
-    onNext: () -> Unit = {},
-) {
-    val viewModel: PrescriptionDataViewModel = mavericksViewModel()
-
-    val isLoading by viewModel.collectAsState(PrescriptionDataState::isLoading)
-
-    val mikeMessageAmetropies by viewModel.collectAsState(PrescriptionDataState::mikeMessageAmetropies)
-
-    val hasHypermetropiaLeft by viewModel.collectAsState(PrescriptionDataState::hasHypermetropiaLeft)
-    val hasMyopiaLeft by viewModel.collectAsState(PrescriptionDataState::hasMyopiaLeft)
-    val hasAstigmatismLeft by viewModel.collectAsState(PrescriptionDataState::hasAstigmatismLeft)
-    val hasPresbyopiaLeft by viewModel.collectAsState(PrescriptionDataState::hasPresbyopiaLeft)
-    val hasHypermetropiaRight by viewModel.collectAsState(PrescriptionDataState::hasHypermetropiaRight)
-    val hasMyopiaRight by viewModel.collectAsState(PrescriptionDataState::hasMyopiaRight)
-    val hasAstigmatismRight by viewModel.collectAsState(PrescriptionDataState::hasAstigmatismRight)
-    val hasPresbyopiaRight by viewModel.collectAsState(PrescriptionDataState::hasPresbyopiaRight)
-
-    if (isLoading) {
-        PeyessProgressIndicatorInfinite()
-    } else {
-        PrescriptionDataSymptomsScreenImpl(
-            modifier = modifier,
-            onDone = onNext,
-            mikeMessageAmetropies = mikeMessageAmetropies,
-            hasHypermetropia = hasHypermetropiaLeft || hasHypermetropiaRight,
-            hasMyopia = hasMyopiaLeft || hasMyopiaRight,
-            hasAstigmatism = hasAstigmatismLeft || hasAstigmatismRight,
-            hasPresbyopia = hasPresbyopiaLeft || hasPresbyopiaRight,
-        )
-    }
-}
-
-
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-private fun PrescriptionDataSymptomsScreenImpl(
+fun PrescriptionSymptomsUI(
     modifier: Modifier = Modifier,
     onDone: () -> Unit = {},
 
@@ -100,7 +58,7 @@ private fun PrescriptionDataSymptomsScreenImpl(
     val showingAnimations = remember {
         mutableStateOf(false)
     }
-    
+
     val showingCuriosities = remember {
         mutableStateOf(false)
     }
@@ -256,7 +214,7 @@ private fun SymptomsAndCuriositiesAnimation(
                     title = stringResource(id = R.string.myopia),
                     animationId = R.raw.lottie_prescription_myopia
                 )
-                
+
                 Text(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -446,9 +404,9 @@ private fun SymptomsAndCuriositiesAnimation(
     @RawRes animationId: Int = 0,
 ) {
     val composition by rememberLottieComposition(
-        spec = LottieCompositionSpec.RawRes(animationId) 
+        spec = LottieCompositionSpec.RawRes(animationId)
     )
-    
+
     Column(
         modifier = modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -495,7 +453,3 @@ private fun SymptomsAndCuriositiesContentPreview() {
         )
     }
 }
-
-
-
-

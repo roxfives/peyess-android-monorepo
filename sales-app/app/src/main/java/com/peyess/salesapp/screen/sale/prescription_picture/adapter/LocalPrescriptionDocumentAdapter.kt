@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.prescription_picture.adapter
 
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
-import com.peyess.salesapp.screen.sale.prescription_picture.model.PrescriptionPicture
+import com.peyess.salesapp.feature.prescription.model.PrescriptionPicture
 
 fun LocalPrescriptionDocument.toPrescriptionPicture(): PrescriptionPicture {
     return PrescriptionPicture(

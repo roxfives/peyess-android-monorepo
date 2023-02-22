@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.prescription_data.adapter
 
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
-import com.peyess.salesapp.screen.sale.prescription_data.model.PrescriptionData
+import com.peyess.salesapp.feature.prescription.model.PrescriptionData
 
 fun LocalPrescriptionDocument.toPrescriptionData(): PrescriptionData {
     return PrescriptionData(

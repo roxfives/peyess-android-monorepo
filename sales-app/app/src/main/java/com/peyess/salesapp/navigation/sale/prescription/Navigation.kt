@@ -11,7 +11,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionDataScreen
-import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionDataSymptomsScreen
+import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionSymptomsScreen
 import com.peyess.salesapp.screen.sale.prescription_lens_type.PrescriptionLensTypeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.prescription_picture.PrescriptionPictureScreen
@@ -110,7 +110,7 @@ fun buildPrescriptionScreenNavGraph(
     ) {
         val scrollState = rememberScrollState()
 
-        PrescriptionDataSymptomsScreen(
+        PrescriptionSymptomsScreen(
             modifier = modifier
                 .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset)

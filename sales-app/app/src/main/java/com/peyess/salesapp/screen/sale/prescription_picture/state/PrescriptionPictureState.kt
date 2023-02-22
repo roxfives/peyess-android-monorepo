@@ -8,7 +8,7 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionInsertResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
-import com.peyess.salesapp.screen.sale.prescription_picture.model.PrescriptionPicture
+import com.peyess.salesapp.feature.prescription.model.PrescriptionPicture
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import java.time.ZonedDateTime
 

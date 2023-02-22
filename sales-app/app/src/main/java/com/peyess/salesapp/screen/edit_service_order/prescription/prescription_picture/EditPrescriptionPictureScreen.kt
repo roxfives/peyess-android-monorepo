@@ -52,7 +52,7 @@ fun EditPrescriptionPictureScreen(
     val professionalId by viewModel.collectAsState(EditPrescriptionPictureState::professionalIdInput)
     val professionalName by viewModel.collectAsState(EditPrescriptionPictureState::professionalNameInput)
 
-    val canGoNext by viewModel.collectAsState(EditPrescriptionPictureState::isCopy)
+    val canGoNext by viewModel.collectAsState(EditPrescriptionPictureState::canGoNext)
 
     val pictureFile = remember { createPrescriptionFile(context) }
     val pictureFileUri = remember {

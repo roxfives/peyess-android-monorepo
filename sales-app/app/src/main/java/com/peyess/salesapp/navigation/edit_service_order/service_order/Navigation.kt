@@ -10,6 +10,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
+import com.peyess.salesapp.navigation.edit_service_order.lenses.buildEditLensSuggestionNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildEditPaymentDiscountRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeRoute
@@ -86,6 +87,15 @@ fun buildEditServiceOrderNavGraph(
                     serviceOrderId = serviceOrderId,
                     isPicking = isPicking,
                     pickScenario = pickScenario,
+                )
+
+                navHostController.navigate(route)
+            },
+
+            onEditProducts = { saleId, serviceOrderId ->
+                val route = buildEditLensSuggestionNavRoute(
+                    saleId = saleId,
+                    serviceOrderId = serviceOrderId,
                 )
 
                 navHostController.navigate(route)

@@ -12,6 +12,7 @@ import com.peyess.salesapp.screen.create_client.address.state.ClientAddressViewM
 import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.screen.demonstration.state.DemonstrationViewModel
+import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.state.EditLensSuggestionViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment.state.EditPaymentViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.EditPaymentDiscountViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment_fee.state.EditPaymentFeeViewModel
@@ -31,7 +32,7 @@ import com.peyess.salesapp.screen.sale.frames.data.state.FramesDataViewModel
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewModel
 import com.peyess.salesapp.screen.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.screen.sale.lens_comparison.state.LensComparisonViewModel
-import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensPickViewModel
+import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensSuggestionViewModel
 import com.peyess.salesapp.screen.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.screen.sale.prescription_data.state.PrescriptionDataViewModel
@@ -127,9 +128,9 @@ interface ViewModelsModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(LensPickViewModel::class)
+    @ViewModelKey(LensSuggestionViewModel::class)
     fun bindLensPickViewModelFactory(
-        factory: LensPickViewModel.Factory,
+        factory: LensSuggestionViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 
     @Binds
@@ -305,5 +306,12 @@ interface ViewModelsModule {
     @ViewModelKey(EditPrescriptionSymptomsViewModel::class)
     fun bindEditPrescriptionSymptomsViewModel(
         factory: EditPrescriptionSymptomsViewModel.Factory,
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditLensSuggestionViewModel::class)
+    fun bindEditLensSuggestionViewModel(
+        factory: EditLensSuggestionViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 }

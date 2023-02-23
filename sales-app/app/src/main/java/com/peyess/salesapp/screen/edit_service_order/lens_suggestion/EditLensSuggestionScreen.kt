@@ -30,7 +30,6 @@ fun EditLensSuggestionScreen(
         onUpdateServiceOrderId = viewModel::setServiceOrderId
     )
 
-    val isEditingParameter by viewModel.collectAsState(EditLensSuggestionState::isEditingParameter)
     val saleId by viewModel.collectAsState(EditLensSuggestionState::saleId)
     val serviceOrderId by viewModel.collectAsState(EditLensSuggestionState::serviceOrderId)
 
@@ -122,62 +121,62 @@ fun EditLensSuggestionScreen(
         isMaterialLensFilterEnabled = isMaterialLensFilterEnabled,
 
         hasFilterUv = hasFilterUv,
-//        onFilterUvChanged = viewModel::onFilterUvChanged,
+        onFilterUvChanged = viewModel::onFilterUvChanged,
         hasFilterBlue = hasFilterBlue,
-//        onFilterBlueChanged = viewModel::onFilterBlueChanged,
+        onFilterBlueChanged = viewModel::onFilterBlueChanged,
 
         selectedLensType = lensTypesFilter,
         lensFilterTypes = lensTypes,
         isFilterTypesLoading = isFilterTypesLoading,
         hasFilterTypesFailed = hasFilterTypesFailed,
-//        onLoadFilterTypes = viewModel::loadLensTypes,
-//        onFilterType = viewModel::onPickType,
+        onLoadFilterTypes = viewModel::loadLensTypes,
+        onFilterType = viewModel::onPickType,
 
         selectedLensSupplier = lensSuppliersFilter,
         lensFilterSuppliers = lensSuppliers,
         isFilterSuppliersLoading = isFilterSuppliersLoading,
         hasFilterSuppliersFailed = hasFilterSuppliersFailed,
-//        onLoadFilterSuppliers = viewModel::loadLensSuppliers,
-//        onFilterSupplier = viewModel::onPickSupplier,
+        onLoadFilterSuppliers = viewModel::loadLensSuppliers,
+        onFilterSupplier = viewModel::onPickSupplier,
 
         selectedLensFamily = lensFamiliesFilter,
         lensFilterFamilies = lensFamilies,
         isFilterFamiliesLoading = isFilterFamiliesLoading,
         hasFilterFamiliesFailed = hasFilterFamiliesFailed,
-//        onLoadFilterFamilies = viewModel::loadLensFamilies,
-//        onFilterFamily = viewModel::onPickFamily,
+        onLoadFilterFamilies = viewModel::loadLensFamilies,
+        onFilterFamily = viewModel::onPickFamily,
 
         selectedLensDescription = lensDescriptionsFilter,
         lensFilterDescriptions = lensDescriptions,
         isFilterDescriptionsLoading = isFilterDescriptionsLoading,
         hasFilterDescriptionsFailed = hasFilterDescriptionsFailed,
-//        onLoadFilterDescriptions = viewModel::loadLensDescriptions,
-//        onFilterDescription = viewModel::onPickDescription,
+        onLoadFilterDescriptions = viewModel::loadLensDescriptions,
+        onFilterDescription = viewModel::onPickDescription,
 
         selectedLensMaterial = lensMaterialsFilter,
         lensFilterMaterials = lensMaterials,
         isFilterMaterialsLoading = isFilterMaterialsLoading,
         hasFilterMaterialsFailed = hasFilterMaterialsFailed,
-//        onLoadFilterMaterials = viewModel::loadLensMaterials,
-//        onFilterMaterial = viewModel::onPickMaterial,
+        onLoadFilterMaterials = viewModel::loadLensMaterials,
+        onFilterMaterial = viewModel::onPickMaterial,
 
         selectedLensSpecialty = lensSpecialtiesFilter,
         lensFilterSpecialties = lensSpecialties,
         isFilterSpecialtiesLoading = isFilterSpecialtiesLoading,
         hasFilterSpecialtiesFailed = hasFilterSpecialtiesFailed,
-//        onLoadFilterSpecialties = viewModel::loadLensSpecialties,
-//        onFilterSpecialty = viewModel::onPickSpecialty,
+        onLoadFilterSpecialties = viewModel::loadLensSpecialties,
+        onFilterSpecialty = viewModel::onPickSpecialty,
 
         selectedLensGroup = lensGroupsFilter,
         lensFilterGroups = lensGroups,
         isFilterGroupsLoading = isFilterGroupsLoading,
         hasFilterGroupsFailed = hasFilterGroupsFailed,
-//        onLoadFilterGroups = viewModel::loadLensGroups,
-//        onFilterGroup = viewModel::onPickGroup,
+        onLoadFilterGroups = viewModel::loadLensGroups,
+        onFilterGroup = viewModel::onPickGroup,
 
         onPickLens = {
-//            viewModel.onPickLens(it)
-//            canNavigate.value = true
+            viewModel.onPickLens(serviceOrderId, it)
+            onLensPicked(saleId, serviceOrderId)
         },
 //        isAddingSuggestion = isAddingSuggestion,
     )

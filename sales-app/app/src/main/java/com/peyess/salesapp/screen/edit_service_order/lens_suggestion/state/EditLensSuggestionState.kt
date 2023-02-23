@@ -46,7 +46,6 @@ typealias LensesGroupsCompleteResponse = Either<LocalLensRepositoryException, Li
 typealias LensesSuggestionsResponse = List<Either<LocalLensRepositoryException, LensPickModel?>>
 
 data class EditLensSuggestionState(
-    val isEditingParameter: Boolean = false,
     val serviceOrderId: String = "",
     val saleId: String = "",
 

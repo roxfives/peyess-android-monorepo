@@ -623,6 +623,49 @@ class LensSuggestionViewModel @AssistedInject constructor(
         )
     }
 
+    private suspend fun addLensComparisonFor(lensId: String): LensComparisonResult = either {
+        val activeServiceOrder = saleRepository
+            .currentServiceOrder()
+            .mapLeft {
+                Unexpected(
+                    description = "Error while getting current sale while picking lens for comparison",
+                    error = it.error,
+                )
+            }.bind()
+
+        val lens = lensesRepository.getLensById(lensId).bind()
+        val colorings = lensesRepository
+            .getColoringsForLens(lensId)
+            .bind()
+
+        val index = colorings.indexOfFirst { it.brand == "Incolor" || it.design == "Incolor" }
+        val coloringId = if (index > 0) {
+            colorings[index].id
+        } else if (colorings.isNotEmpty()) {
+            colorings[0].id
+        } else {
+            Timber.e("No coloring found for lens $lensId")
+            ""
+        }
+
+        val treatmentId = lens.defaultTreatmentId
+
+        val lensComparison = LensComparisonDocument(
+            soId = activeServiceOrder.id,
+
+            originalLensId = lensId,
+            originalColoringId = coloringId,
+            originalTreatmentId = treatmentId,
+
+            comparisonLensId = lensId,
+            comparisonColoringId = coloringId,
+            comparisonTreatmentId = treatmentId,
+        )
+
+        lensComparisonRepository.add(lensComparison)
+        lensComparison
+    }
+
     fun loadLensTypes() = withState {
         suspend {
             lensesRepository
@@ -810,49 +853,6 @@ class LensSuggestionViewModel @AssistedInject constructor(
 
     fun updateSaleId(saleId: String) = setState {
         copy(saleId = saleId)
-    }
-
-    private suspend fun addLensComparisonFor(lensId: String): LensComparisonResult = either {
-        val activeServiceOrder = saleRepository
-            .currentServiceOrder()
-            .mapLeft {
-                Unexpected(
-                    description = "Error while getting current sale while picking lens for comparison",
-                    error = it.error,
-                )
-            }.bind()
-
-        val lens = lensesRepository.getLensById(lensId).bind()
-        val colorings = lensesRepository
-            .getColoringsForLens(lensId)
-            .bind()
-
-        val index = colorings.indexOfFirst { it.brand == "Incolor" || it.design == "Incolor" }
-        val coloringId = if (index > 0) {
-            colorings[index].id
-        } else if (colorings.isNotEmpty()) {
-            colorings[0].id
-        } else {
-            Timber.e("No coloring found for lens $lensId")
-            ""
-        }
-
-        val treatmentId = lens.defaultTreatmentId
-
-        val lensComparison = LensComparisonDocument(
-            soId = activeServiceOrder.id,
-
-            originalLensId = lensId,
-            originalColoringId = coloringId,
-            originalTreatmentId = treatmentId,
-
-            comparisonLensId = lensId,
-            comparisonColoringId = coloringId,
-            comparisonTreatmentId = treatmentId,
-        )
-
-        lensComparisonRepository.add(lensComparison)
-        lensComparison
     }
 
     fun onPickLens(lensId: String) {

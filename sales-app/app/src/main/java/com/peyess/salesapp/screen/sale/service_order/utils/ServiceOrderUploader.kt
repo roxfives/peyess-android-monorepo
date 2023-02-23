@@ -38,7 +38,7 @@ import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.typing.general.Eye
-import com.peyess.salesapp.screen.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.feature.lens_suggestion.model.toMeasuring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddClientError
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddProductError

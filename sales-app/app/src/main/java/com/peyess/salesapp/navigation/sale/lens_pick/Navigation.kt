@@ -10,7 +10,7 @@ import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.screen.sale.lens_comparison.LensComparisonScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.screen.sale.lens_pick.ui.LensSuggestionScreen
+import com.peyess.salesapp.screen.sale.lens_suggestion.LensSuggestionScreen
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition

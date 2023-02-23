@@ -31,7 +31,7 @@ import com.peyess.salesapp.screen.sale.frames.data.state.FramesDataViewModel
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewModel
 import com.peyess.salesapp.screen.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.screen.sale.lens_comparison.state.LensComparisonViewModel
-import com.peyess.salesapp.screen.sale.lens_pick.state.LensPickViewModel
+import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensPickViewModel
 import com.peyess.salesapp.screen.sale.payment.state.PaymentViewModel
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientViewModel
 import com.peyess.salesapp.screen.sale.prescription_data.state.PrescriptionDataViewModel

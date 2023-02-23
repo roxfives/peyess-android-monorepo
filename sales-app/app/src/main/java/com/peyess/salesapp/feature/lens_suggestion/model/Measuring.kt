@@ -1,16 +1,56 @@
-package com.peyess.salesapp.screen.edit_service_order.service_order.adapter
+package com.peyess.salesapp.feature.lens_suggestion.model
 
-import com.peyess.salesapp.data.adapter.raw_measuring.toMeasuring
-import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
+import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.raw_measuring.RawMeasuring
-import com.peyess.salesapp.feature.lens_suggestion.model.Measuring
+import com.peyess.salesapp.data.adapter.raw_measuring.toMeasuring
 import com.peyess.salesapp.typing.general.Eye
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
-fun LocalPositioningDocument.toMeasuring(): Measuring {
+data class Measuring(
+    val eye: Eye = Eye.None,
+
+    val baseSize: Double = 0.0,
+    val baseHeight: Double = 0.0,
+
+    val topAngle: Double = 0.0,
+    val topPoint: Double = 0.0,
+    val bottomAngle: Double = 0.0,
+    val bottomPoint: Double = 0.0,
+    val bridge: Double = 0.0,
+    val diameter: Double = 0.0,
+    val virtualBridge: Double = 0.0,
+
+    val verticalCheck: Double = 0.0,
+    val verticalHoop: Double = 0.0,
+    val horizontalBridgeHoop: Double = 0.0,
+    val horizontalCheck: Double = 0.0,
+    val horizontalHoop: Double = 0.0,
+    val middleCheck: Double = 0.0,
+
+    val ipd: Double = 0.0, // dnp
+    val he: Double = 0.0,
+    val ho: Double = 0.0,
+    val ve: Double = 0.0,
+    val vu: Double = 0.0,
+
+    val fixedHorizontalBridgeHoop: Double = 0.0,
+    val fixedBridge: Double = 0.0,
+    val fixedIpd: Double = 0.0,
+    val fixedHHoop: Double = 0.0,
+    val fixedHe: Double = 0.0,
+    val fixedVHoop: Double = 0.0,
+
+    val fixedDiameter: Double = 0.0,
+
+    val eulerAngleX: Double = 0.0,
+    val eulerAngleY: Double = 0.0,
+    val eulerAngleZ: Double = 0.0,
+)
+
+fun PositioningEntity.toMeasuring(): Measuring {
     val bottomPointBase = abs(bottomPointLength) * cos(abs(bottomPointRotation)) *
             proportionToPictureHorizontal
     val bottomPointHeight = abs(bottomPointLength) * sin(abs(bottomPointRotation)) *

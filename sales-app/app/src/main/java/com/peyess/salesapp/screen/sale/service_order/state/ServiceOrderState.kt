@@ -26,8 +26,8 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureAddResponse
 import com.peyess.salesapp.data.repository.payment_fee.PaymentFeeRepositoryResponse
 import com.peyess.salesapp.feature.service_order.model.Client
-import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
-import com.peyess.salesapp.screen.sale.lens_pick.model.toMeasuring
+import com.peyess.salesapp.feature.lens_suggestion.model.Measuring
+import com.peyess.salesapp.feature.lens_suggestion.model.toMeasuring
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
 import com.peyess.salesapp.feature.service_order.model.Lens

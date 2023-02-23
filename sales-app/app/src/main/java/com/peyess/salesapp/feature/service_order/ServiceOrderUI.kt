@@ -70,7 +70,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.feature.service_order.model.Client
-import com.peyess.salesapp.screen.sale.lens_pick.model.Measuring
+import com.peyess.salesapp.feature.lens_suggestion.model.Measuring
 import com.peyess.salesapp.feature.service_order.model.Coloring
 import com.peyess.salesapp.feature.service_order.model.Frames
 import com.peyess.salesapp.feature.service_order.model.Lens

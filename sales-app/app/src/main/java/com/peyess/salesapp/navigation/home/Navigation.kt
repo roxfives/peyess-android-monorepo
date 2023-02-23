@@ -13,7 +13,7 @@ import com.peyess.salesapp.screen.home.SalesScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderRoute
-import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
+import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)

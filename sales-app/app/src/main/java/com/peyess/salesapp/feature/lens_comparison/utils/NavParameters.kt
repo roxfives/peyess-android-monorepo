@@ -3,12 +3,12 @@ package com.peyess.salesapp.feature.lens_comparison.utils
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
-import com.peyess.salesapp.navigation.sale.lens_pick.isEditingParam
-import com.peyess.salesapp.navigation.sale.lens_pick.saleIdArgumentName
-import com.peyess.salesapp.navigation.sale.lens_pick.soIdArgumentName
+import com.peyess.salesapp.navigation.sale.lenses.isEditingParam
+import com.peyess.salesapp.navigation.sale.lenses.saleIdArgumentName
+import com.peyess.salesapp.navigation.sale.lenses.soIdArgumentName
 
 @Composable
-private fun parseParameterIsEditing(
+private fun ParseParameterIsEditing(
     backStackEntry: NavBackStackEntry? = null,
     defaultValue: Boolean = false,
     onUpdate: (value: Boolean) -> Unit = {}
@@ -22,7 +22,7 @@ private fun parseParameterIsEditing(
 }
 
 @Composable
-private fun parseParameterServiceOrderId(
+private fun ParseParameterServiceOrderId(
     backStackEntry: NavBackStackEntry? = null,
     defaultValue: String = "",
     onUpdate: (value: String) -> Unit = {}
@@ -36,7 +36,7 @@ private fun parseParameterServiceOrderId(
 }
 
 @Composable
-private fun parseParameterSaleId(
+private fun ParseParameterSaleId(
     backStackEntry: NavBackStackEntry? = null,
     defaultValue: String = "",
     onUpdate: (value: String) -> Unit = {}
@@ -53,23 +53,23 @@ private fun parseParameterSaleId(
 
 
 @Composable
-fun parseParameters(
+fun ParseParameters(
     navController: NavHostController,
     onUpdateIsEditing: (Boolean) -> Unit,
     onUpdateSaleId: (String) -> Unit,
     onUpdateServiceOrderId: (String) -> Unit
 ) {
-    parseParameterIsEditing(
+    ParseParameterIsEditing(
         backStackEntry = navController.currentBackStackEntry,
         onUpdate = onUpdateIsEditing,
     )
 
-    parseParameterSaleId(
+    ParseParameterSaleId(
         backStackEntry = navController.currentBackStackEntry,
         onUpdate = onUpdateSaleId,
     )
 
-    parseParameterServiceOrderId(
+    ParseParameterServiceOrderId(
         backStackEntry = navController.currentBackStackEntry,
         onUpdate = onUpdateServiceOrderId,
     )

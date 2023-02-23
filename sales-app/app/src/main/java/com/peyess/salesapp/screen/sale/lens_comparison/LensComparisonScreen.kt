@@ -13,7 +13,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.feature.lens_comparison.LensComparisonScreenUI
 import com.peyess.salesapp.screen.sale.lens_comparison.state.LensComparisonState
 import com.peyess.salesapp.screen.sale.lens_comparison.state.LensComparisonViewModel
-import com.peyess.salesapp.feature.lens_comparison.utils.parseParameters
+import com.peyess.salesapp.feature.lens_comparison.utils.ParseParameters
 
 @Composable
 fun LensComparisonScreen(
@@ -28,7 +28,7 @@ fun LensComparisonScreen(
 ) {
     val viewModel: LensComparisonViewModel = mavericksViewModel()
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
         onUpdateIsEditing = viewModel::onUpdateIsEditing,
         onUpdateSaleId = viewModel::onUpdateSaleId,

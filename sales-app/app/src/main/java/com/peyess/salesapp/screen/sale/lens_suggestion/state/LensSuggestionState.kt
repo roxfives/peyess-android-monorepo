@@ -57,7 +57,7 @@ typealias LensesSuggestionsResponse =
 typealias LensComparisonResult =
         Either<LocalLensRepositoryException, LensComparisonDocument>
 
-data class LensPickState(
+data class LensSuggestionState(
     val isEditingParameter: Boolean = false,
     val serviceOrderId: String = "",
     val saleId: String = "",

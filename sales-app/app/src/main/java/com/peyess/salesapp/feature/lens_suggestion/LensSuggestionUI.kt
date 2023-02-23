@@ -98,7 +98,7 @@ fun LensSuggestionUI(
     showSuggestions: Boolean = true,
 
     lensSuggestion: List<LensPickModel?> = listOf(),
-    lensesTableStream: Flow<PagingData<LensPickModel>>,
+    lensesTableStream: Flow<PagingData<LensPickModel>> = emptyFlow(),
 
     isFamilyLensFilterEnabled: Boolean = false,
     isDescriptionLensFilterEnabled: Boolean = false,

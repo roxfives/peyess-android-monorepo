@@ -7,12 +7,13 @@ import com.peyess.salesapp.navigation.edit_service_order.payment_discount.buildE
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.payment_fee.buildEditPaymentFeeNavGraph
 import com.peyess.salesapp.navigation.client_list.buildPickClientListNavGraph
+import com.peyess.salesapp.navigation.edit_service_order.lenses.buildEditLensesNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavGraph
 import com.peyess.salesapp.navigation.edit_service_order.prescription.buildEditPrescriptionNavGraph
 import com.peyess.salesapp.navigation.sale.anamnesis.buildAnamnesisNavGraph
 import com.peyess.salesapp.navigation.sale.frames.buildFramesNavGraph
 import com.peyess.salesapp.navigation.sale.frames_measure.buildFramesMeasureNavGraph
-import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavGraph
+import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavGraph
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavGraph
 import com.peyess.salesapp.navigation.sale.prescription.buildPrescriptionScreenNavGraph
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderNavGraph
@@ -38,4 +39,5 @@ fun buildSaleNavGraph(
     buildEditPaymentDiscountNavGraph(modifier, navHostController, builder)
     buildEditPaymentNavGraph(modifier, navHostController, builder)
     buildEditPrescriptionNavGraph(modifier, navHostController, builder)
+    buildEditLensesNavGraph(modifier, navHostController, builder)
 }

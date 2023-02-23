@@ -10,10 +10,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.peyess.salesapp.screen.sale.lens_suggestion.utils.ParseParameters
 import com.peyess.salesapp.feature.lens_suggestion.LensSuggestionUI
-import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensPickState
-import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensPickViewModel
-import com.peyess.salesapp.screen.sale.lens_suggestion.utils.parseParameters
+import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensSuggestionState
+import com.peyess.salesapp.screen.sale.lens_suggestion.state.LensSuggestionViewModel
 import timber.log.Timber
 
 @Composable
@@ -27,70 +27,70 @@ fun LensSuggestionScreen(
         serviceOrderId: String,
     ) -> Unit = { _, _, _ -> },
 ) {
-    val viewModel: LensPickViewModel = mavericksViewModel()
+    val viewModel: LensSuggestionViewModel = mavericksViewModel()
 
-    parseParameters(
+    ParseParameters(
         navController = navHostController,
         onUpdateIsEditing = viewModel::updateIsEditing,
         onUpdateSaleId = viewModel::updateSaleId,
         onUpdateServiceOrderId = viewModel::updateServiceOrderId,
     )
 
-    val isEditingParameter by viewModel.collectAsState(LensPickState::isEditingParameter)
-    val saleId by viewModel.collectAsState(LensPickState::saleId)
-    val serviceOrderId by viewModel.collectAsState(LensPickState::serviceOrderId)
+    val isEditingParameter by viewModel.collectAsState(LensSuggestionState::isEditingParameter)
+    val saleId by viewModel.collectAsState(LensSuggestionState::saleId)
+    val serviceOrderId by viewModel.collectAsState(LensSuggestionState::serviceOrderId)
 
-    val lensesTableStream by viewModel.collectAsState(LensPickState::lensesTableStream)
+    val lensesTableStream by viewModel.collectAsState(LensSuggestionState::lensesTableStream)
 
     val isFamilyLensFilterEnabled by
-        viewModel.collectAsState(LensPickState::isFamilyLensFilterEnabled)
+        viewModel.collectAsState(LensSuggestionState::isFamilyLensFilterEnabled)
     val isDescriptionLensFilterEnabled by
-        viewModel.collectAsState(LensPickState::isDescriptionLensFilterEnabled)
+        viewModel.collectAsState(LensSuggestionState::isDescriptionLensFilterEnabled)
     val isMaterialLensFilterEnabled by
-        viewModel.collectAsState(LensPickState::isMaterialLensFilterEnabled)
+        viewModel.collectAsState(LensSuggestionState::isMaterialLensFilterEnabled)
 
-    val lensTypes by viewModel.collectAsState(LensPickState::lensesTypesResponse)
-    val isFilterTypesLoading by viewModel.collectAsState(LensPickState::areTypesLoading)
-    val hasFilterTypesFailed by viewModel.collectAsState(LensPickState::hasTypesLoadingFailed)
-    val lensTypesFilter by viewModel.collectAsState(LensPickState::typeLensFilter)
+    val lensTypes by viewModel.collectAsState(LensSuggestionState::lensesTypesResponse)
+    val isFilterTypesLoading by viewModel.collectAsState(LensSuggestionState::areTypesLoading)
+    val hasFilterTypesFailed by viewModel.collectAsState(LensSuggestionState::hasTypesLoadingFailed)
+    val lensTypesFilter by viewModel.collectAsState(LensSuggestionState::typeLensFilter)
 
-    val lensSuppliers by viewModel.collectAsState(LensPickState::lensesSuppliersResponse)
-    val isFilterSuppliersLoading by viewModel.collectAsState(LensPickState::areSuppliersLoading)
-    val hasFilterSuppliersFailed by viewModel.collectAsState(LensPickState::hasSuppliersLoadingFailed)
-    val lensSuppliersFilter by viewModel.collectAsState(LensPickState::supplierLensFilter)
+    val lensSuppliers by viewModel.collectAsState(LensSuggestionState::lensesSuppliersResponse)
+    val isFilterSuppliersLoading by viewModel.collectAsState(LensSuggestionState::areSuppliersLoading)
+    val hasFilterSuppliersFailed by viewModel.collectAsState(LensSuggestionState::hasSuppliersLoadingFailed)
+    val lensSuppliersFilter by viewModel.collectAsState(LensSuggestionState::supplierLensFilter)
 
-    val lensFamilies by viewModel.collectAsState(LensPickState::lensesFamiliesResponse)
-    val isFilterFamiliesLoading by viewModel.collectAsState(LensPickState::areFamiliesLoading)
-    val hasFilterFamiliesFailed by viewModel.collectAsState(LensPickState::hasFamiliesLoadingFailed)
-    val lensFamiliesFilter by viewModel.collectAsState(LensPickState::familyLensFilter)
+    val lensFamilies by viewModel.collectAsState(LensSuggestionState::lensesFamiliesResponse)
+    val isFilterFamiliesLoading by viewModel.collectAsState(LensSuggestionState::areFamiliesLoading)
+    val hasFilterFamiliesFailed by viewModel.collectAsState(LensSuggestionState::hasFamiliesLoadingFailed)
+    val lensFamiliesFilter by viewModel.collectAsState(LensSuggestionState::familyLensFilter)
 
-    val lensDescriptions by viewModel.collectAsState(LensPickState::lensesDescriptionsResponse)
-    val isFilterDescriptionsLoading by viewModel.collectAsState(LensPickState::areDescriptionsLoading)
-    val hasFilterDescriptionsFailed by viewModel.collectAsState(LensPickState::hasDescriptionsLoadingFailed)
-    val lensDescriptionsFilter by viewModel.collectAsState(LensPickState::descriptionLensFilter)
+    val lensDescriptions by viewModel.collectAsState(LensSuggestionState::lensesDescriptionsResponse)
+    val isFilterDescriptionsLoading by viewModel.collectAsState(LensSuggestionState::areDescriptionsLoading)
+    val hasFilterDescriptionsFailed by viewModel.collectAsState(LensSuggestionState::hasDescriptionsLoadingFailed)
+    val lensDescriptionsFilter by viewModel.collectAsState(LensSuggestionState::descriptionLensFilter)
 
-    val lensMaterials by viewModel.collectAsState(LensPickState::lensesMaterialsResponse)
-    val isFilterMaterialsLoading by viewModel.collectAsState(LensPickState::areMaterialsLoading)
-    val hasFilterMaterialsFailed by viewModel.collectAsState(LensPickState::hasMaterialsLoadingFailed)
-    val lensMaterialsFilter by viewModel.collectAsState(LensPickState::materialLensFilter)
+    val lensMaterials by viewModel.collectAsState(LensSuggestionState::lensesMaterialsResponse)
+    val isFilterMaterialsLoading by viewModel.collectAsState(LensSuggestionState::areMaterialsLoading)
+    val hasFilterMaterialsFailed by viewModel.collectAsState(LensSuggestionState::hasMaterialsLoadingFailed)
+    val lensMaterialsFilter by viewModel.collectAsState(LensSuggestionState::materialLensFilter)
 
-    val lensSpecialties by viewModel.collectAsState(LensPickState::lensesSpecialtiesResponse)
-    val isFilterSpecialtiesLoading by viewModel.collectAsState(LensPickState::areSpecialtiesLoading)
-    val hasFilterSpecialtiesFailed by viewModel.collectAsState(LensPickState::hasSpecialtiesLoadingFailed)
-    val lensSpecialtiesFilter by viewModel.collectAsState(LensPickState::specialtyLensFilter)
+    val lensSpecialties by viewModel.collectAsState(LensSuggestionState::lensesSpecialtiesResponse)
+    val isFilterSpecialtiesLoading by viewModel.collectAsState(LensSuggestionState::areSpecialtiesLoading)
+    val hasFilterSpecialtiesFailed by viewModel.collectAsState(LensSuggestionState::hasSpecialtiesLoadingFailed)
+    val lensSpecialtiesFilter by viewModel.collectAsState(LensSuggestionState::specialtyLensFilter)
 
-    val lensGroups by viewModel.collectAsState(LensPickState::lensesGroupsResponse)
-    val isFilterGroupsLoading by viewModel.collectAsState(LensPickState::areGroupsLoading)
-    val hasFilterGroupsFailed by viewModel.collectAsState(LensPickState::hasGroupsLoadingFailed)
-    val lensGroupsFilter by viewModel.collectAsState(LensPickState::groupLensFilter)
+    val lensGroups by viewModel.collectAsState(LensSuggestionState::lensesGroupsResponse)
+    val isFilterGroupsLoading by viewModel.collectAsState(LensSuggestionState::areGroupsLoading)
+    val hasFilterGroupsFailed by viewModel.collectAsState(LensSuggestionState::hasGroupsLoadingFailed)
+    val lensGroupsFilter by viewModel.collectAsState(LensSuggestionState::groupLensFilter)
 
-    val hasFilterUv by viewModel.collectAsState(LensPickState::hasFilterUv)
-    val hasFilterBlue by viewModel.collectAsState(LensPickState::hasFilterBlue)
+    val hasFilterUv by viewModel.collectAsState(LensSuggestionState::hasFilterUv)
+    val hasFilterBlue by viewModel.collectAsState(LensSuggestionState::hasFilterBlue)
 
-    val lensSuggestions by viewModel.collectAsState(LensPickState::lensSuggestionsResponse)
+    val lensSuggestions by viewModel.collectAsState(LensSuggestionState::lensSuggestionsResponse)
 
-    val isAddingSuggestion by viewModel.collectAsState(LensPickState::isAddingToSuggestion)
-    val hasAddedSuggestion by viewModel.collectAsState(LensPickState::hasAddedToSuggestion)
+    val isAddingSuggestion by viewModel.collectAsState(LensSuggestionState::isAddingToSuggestion)
+    val hasAddedSuggestion by viewModel.collectAsState(LensSuggestionState::hasAddedToSuggestion)
 
     val hasNavigated = remember { mutableStateOf(false) }
     val canNavigate = remember { mutableStateOf(false) }

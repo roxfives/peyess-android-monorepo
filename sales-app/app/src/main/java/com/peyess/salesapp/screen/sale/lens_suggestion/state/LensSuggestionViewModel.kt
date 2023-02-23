@@ -69,46 +69,46 @@ private const val lensesTablePrefetchDistance = 5
 
 private typealias BestLensResponse = Either<LocalLensRepositoryException, LensPickModel?>
 
-class LensPickViewModel @AssistedInject constructor(
-    @Assisted initialState: LensPickState,
+class LensSuggestionViewModel @AssistedInject constructor(
+    @Assisted initialState: LensSuggestionState,
     private val salesApplication: SalesApplication,
     private val saleRepository: SaleRepository,
     private val lensesRepository: LocalLensesRepository,
     private val localPrescriptionRepository: LocalPrescriptionRepository,
     private val localMeasuringRepository: LocalMeasuringRepository,
     private val lensComparisonRepository: LensComparisonRepository
-): MavericksViewModel<LensPickState>(initialState) {
+): MavericksViewModel<LensSuggestionState>(initialState) {
 
     init {
-        onEach(LensPickState::typeLensFilterId) { updateFilterForType(it) }
-        onEach(LensPickState::supplierLensFilterId) { updateFilterForSupplier(it) }
-        onEach(LensPickState::familyLensFilterId) { updateFilterForFamily(it) }
-        onEach(LensPickState::descriptionLensFilterId) { updateFilterForDescription(it) }
-        onEach(LensPickState::materialLensFilterId) { updateFilterForMaterial(it) }
-        onEach(LensPickState::specialtyLensFilterId) { updateFilterForSpecialty(it) }
-        onEach(LensPickState::groupLensFilterId) { updateFilterForGroup(it) }
-        onEach(LensPickState::hasFilterUv) { updateFilterForUvLight(it) }
-        onEach(LensPickState::hasFilterBlue) { updateFilterForBlueLight(it) }
+        onEach(LensSuggestionState::typeLensFilterId) { updateFilterForType(it) }
+        onEach(LensSuggestionState::supplierLensFilterId) { updateFilterForSupplier(it) }
+        onEach(LensSuggestionState::familyLensFilterId) { updateFilterForFamily(it) }
+        onEach(LensSuggestionState::descriptionLensFilterId) { updateFilterForDescription(it) }
+        onEach(LensSuggestionState::materialLensFilterId) { updateFilterForMaterial(it) }
+        onEach(LensSuggestionState::specialtyLensFilterId) { updateFilterForSpecialty(it) }
+        onEach(LensSuggestionState::groupLensFilterId) { updateFilterForGroup(it) }
+        onEach(LensSuggestionState::hasFilterUv) { updateFilterForUvLight(it) }
+        onEach(LensSuggestionState::hasFilterBlue) { updateFilterForBlueLight(it) }
 
-        onAsync(LensPickState::lensesTypesResponseAsync) { processLensTypes(it) }
-        onAsync(LensPickState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
-        onAsync(LensPickState::lensesFamiliesResponseAsync) { processLensFamilies(it) }
-        onAsync(LensPickState::lensesDescriptionsResponseAsync) { processLensDescriptions(it) }
-        onAsync(LensPickState::lensesMaterialsResponseAsync) { processLensMaterials(it) }
-        onAsync(LensPickState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
-        onAsync(LensPickState::lensesGroupsResponseAsync) { processLensGroups(it) }
+        onAsync(LensSuggestionState::lensesTypesResponseAsync) { processLensTypes(it) }
+        onAsync(LensSuggestionState::lensesSuppliersResponseAsync) { processLensSuppliers(it) }
+        onAsync(LensSuggestionState::lensesFamiliesResponseAsync) { processLensFamilies(it) }
+        onAsync(LensSuggestionState::lensesDescriptionsResponseAsync) { processLensDescriptions(it) }
+        onAsync(LensSuggestionState::lensesMaterialsResponseAsync) { processLensMaterials(it) }
+        onAsync(LensSuggestionState::lensesSpecialtiesResponseAsync) { processLensSpecialties(it) }
+        onAsync(LensSuggestionState::lensesGroupsResponseAsync) { processLensGroups(it) }
 
-        onEach(LensPickState::isSale, LensPickState::filter) { isSale, filter ->
+        onEach(LensSuggestionState::isSale, LensSuggestionState::filter) { isSale, filter ->
             updateLensTablePaging(isSale, filter)
         }
-        onAsync(LensPickState::lensesTableResponse) { processLensTableResponse(it) }
+        onAsync(LensSuggestionState::lensesTableResponse) { processLensTableResponse(it) }
 
-        onAsync(LensPickState::groupsListAsync) { processLensGroupListResponse(it) }
-        onEach(LensPickState::groupsList) { updateLensSuggestionsWith(it) }
+        onAsync(LensSuggestionState::groupsListAsync) { processLensGroupListResponse(it) }
+        onEach(LensSuggestionState::groupsList) { updateLensSuggestionsWith(it) }
 
-        onAsync(LensPickState::lensSuggestionsResponseAsync) { processLensSuggestionResponse(it) }
+        onAsync(LensSuggestionState::lensSuggestionsResponseAsync) { processLensSuggestionResponse(it) }
 
-        onAsync(LensPickState::lensComparisonResultAsync) { processPickLensResult(it) }
+        onAsync(LensSuggestionState::lensComparisonResultAsync) { processPickLensResult(it) }
 
         viewModelScope.launch(Dispatchers.IO) {
             withState { updateLensTablePaging(it.isSale) }
@@ -864,10 +864,10 @@ class LensPickViewModel @AssistedInject constructor(
     }
 
     @AssistedFactory
-    interface Factory: AssistedViewModelFactory<LensPickViewModel, LensPickState> {
-        override fun create(state: LensPickState): LensPickViewModel
+    interface Factory: AssistedViewModelFactory<LensSuggestionViewModel, LensSuggestionState> {
+        override fun create(state: LensSuggestionState): LensSuggestionViewModel
     }
 
-    companion object: MavericksViewModelFactory<LensPickViewModel, LensPickState>
+    companion object: MavericksViewModelFactory<LensSuggestionViewModel, LensSuggestionState>
     by hiltMavericksViewModelFactory()
 }

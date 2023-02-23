@@ -11,10 +11,9 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.service_order.CreateServiceOrderScreen
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
-import com.peyess.salesapp.navigation.client_list.paymentIdParam
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
-import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
+import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 
 const val serviceOrderIdParam = "serviceOrderId"

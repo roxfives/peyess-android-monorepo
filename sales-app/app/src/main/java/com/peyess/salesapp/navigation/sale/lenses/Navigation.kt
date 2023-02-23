@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.sale.lens_pick
+package com.peyess.salesapp.navigation.sale.lenses
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
@@ -13,10 +13,10 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.lens_suggestion.LensSuggestionScreen
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
-import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonEnterTransition
-import com.peyess.salesapp.navigation.sale.lens_pick.comparison.lensComparisonExitTransition
-import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionEnterTransition
-import com.peyess.salesapp.navigation.sale.lens_pick.suggestion.lensSuggestionExitTransition
+import com.peyess.salesapp.navigation.sale.lenses.comparison.lensComparisonEnterTransition
+import com.peyess.salesapp.navigation.sale.lenses.comparison.lensComparisonExitTransition
+import com.peyess.salesapp.navigation.sale.lenses.suggestion.lensSuggestionEnterTransition
+import com.peyess.salesapp.navigation.sale.lenses.suggestion.lensSuggestionExitTransition
 import com.peyess.salesapp.navigation.sale.service_order.buildServiceOrderRoute
 import com.peyess.salesapp.navigation.sale.service_order.serviceOrderRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme

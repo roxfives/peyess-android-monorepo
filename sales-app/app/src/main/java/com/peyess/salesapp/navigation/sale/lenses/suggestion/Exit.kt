@@ -1,10 +1,9 @@
-package com.peyess.salesapp.navigation.sale.lens_pick.suggestion
+package com.peyess.salesapp.navigation.sale.lenses.suggestion
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.SalesAppScreens

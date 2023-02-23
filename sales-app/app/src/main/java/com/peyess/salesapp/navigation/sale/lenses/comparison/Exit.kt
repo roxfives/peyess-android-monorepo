@@ -1,4 +1,4 @@
-package com.peyess.salesapp.navigation.sale.lens_pick.comparison
+package com.peyess.salesapp.navigation.sale.lenses.comparison
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExitTransition

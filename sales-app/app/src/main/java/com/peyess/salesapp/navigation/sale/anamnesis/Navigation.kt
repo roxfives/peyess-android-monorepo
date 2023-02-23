@@ -31,7 +31,7 @@ import com.peyess.salesapp.navigation.sale.anamnesis.sixth_step_time.sixthStepEn
 import com.peyess.salesapp.navigation.sale.anamnesis.sixth_step_time.sixthStepExitTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepEnterTransition
 import com.peyess.salesapp.navigation.sale.anamnesis.third_step_sun_light.thirdStepExitTransition
-import com.peyess.salesapp.navigation.sale.lens_pick.buildLensSuggestionNavRoute
+import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 @OptIn(ExperimentalAnimationApi::class)

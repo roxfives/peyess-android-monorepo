@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.lens_comparison.model
+package com.peyess.salesapp.feature.lens_comparison.model
 
 import android.net.Uri
 import com.peyess.salesapp.constants.maxAxis

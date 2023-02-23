@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.lens_comparison.adapter
 
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Lens
+import com.peyess.salesapp.feature.lens_comparison.model.Lens
 
 fun StoreLensWithDetailsDocument.toLens(): Lens {
     return Lens(

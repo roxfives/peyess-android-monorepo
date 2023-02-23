@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.lens_comparison.adapter
 
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Coloring
+import com.peyess.salesapp.feature.lens_comparison.model.Coloring
 
 fun LocalLensColoringDocument.toColoring(): Coloring {
     return Coloring(

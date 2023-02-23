@@ -11,7 +11,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Lens
+import com.peyess.salesapp.feature.lens_comparison.model.Lens
 
 private fun buildQueryFieldsForLensSupplier(lensSupplierId: String): List<PeyessQueryField> {
     return listOf(

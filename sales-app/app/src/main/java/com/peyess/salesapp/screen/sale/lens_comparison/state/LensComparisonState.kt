@@ -18,18 +18,18 @@ import com.peyess.salesapp.data.repository.lenses.room.TreatmentsResponse
 import com.peyess.salesapp.data.repository.local_sale.lens_comparison.LocalComparisonReadError
 import com.peyess.salesapp.data.repository.local_sale.measuring.LocalMeasuringResponse
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Coloring
-import com.peyess.salesapp.screen.sale.lens_comparison.model.ColoringPickResponse
-import com.peyess.salesapp.screen.sale.lens_comparison.model.IndividualComparison
-import com.peyess.salesapp.screen.sale.lens_comparison.model.LensMaterial
-import com.peyess.salesapp.screen.sale.lens_comparison.model.LensPickResponse
-import com.peyess.salesapp.screen.sale.lens_comparison.model.LensTech
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Treatment
-import com.peyess.salesapp.screen.sale.lens_comparison.model.TreatmentPickResponse
+import com.peyess.salesapp.feature.lens_comparison.model.Coloring
+import com.peyess.salesapp.feature.lens_comparison.model.ColoringPickResponse
+import com.peyess.salesapp.feature.lens_comparison.model.IndividualComparison
+import com.peyess.salesapp.feature.lens_comparison.model.LensMaterial
+import com.peyess.salesapp.feature.lens_comparison.model.LensPickResponse
+import com.peyess.salesapp.feature.lens_comparison.model.LensTech
+import com.peyess.salesapp.feature.lens_comparison.model.Treatment
+import com.peyess.salesapp.feature.lens_comparison.model.TreatmentPickResponse
 
 typealias LensComparisonResponse = Either<LocalComparisonReadError, List<LensComparisonDocument>>
 
-typealias LensPickingResponse = Either<LocalLensRepositoryException,  LensPickResponse>
+typealias LensPickingResponse = Either<LocalLensRepositoryException, LensPickResponse>
 typealias ColoringPickingResponse = Either<LocalLensRepositoryException, ColoringPickResponse>
 typealias TreatmentPickingResponse = Either<LocalLensRepositoryException, TreatmentPickResponse>
 

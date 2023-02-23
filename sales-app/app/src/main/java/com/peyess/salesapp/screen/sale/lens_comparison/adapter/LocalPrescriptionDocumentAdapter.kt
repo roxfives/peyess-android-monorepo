@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.lens_comparison.adapter
 
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Prescription
+import com.peyess.salesapp.feature.lens_comparison.model.Prescription
 
 fun LocalPrescriptionDocument.toPrescription(): Prescription {
     return Prescription(

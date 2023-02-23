@@ -1,7 +1,7 @@
-package com.peyess.salesapp.screen.sale.lens_comparison.utils
+package com.peyess.salesapp.feature.lens_comparison.utils
 
 import com.peyess.salesapp.R
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Prescription
+import com.peyess.salesapp.feature.lens_comparison.model.Prescription
 
 fun animationFromCategory(categoryName: String, prescription: Prescription): Int {
     val name = categoryName.lowercase()

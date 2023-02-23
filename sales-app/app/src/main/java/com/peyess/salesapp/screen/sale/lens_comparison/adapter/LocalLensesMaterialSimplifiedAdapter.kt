@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.lens_comparison.adapter
 
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesMaterialSimplified
-import com.peyess.salesapp.screen.sale.lens_comparison.model.LensMaterial
+import com.peyess.salesapp.feature.lens_comparison.model.LensMaterial
 
 fun LocalLensesMaterialSimplified.toLensMaterial(): LensMaterial {
     return LensMaterial(

@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.sale.lens_comparison.adapter
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.screen.sale.lens_comparison.model.Treatment
+import com.peyess.salesapp.feature.lens_comparison.model.Treatment
 
 fun LocalLensTreatmentDocument.toTreatment(): Treatment {
     return Treatment(

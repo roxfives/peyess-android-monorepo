@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.lens_comparison.utils
+package com.peyess.salesapp.feature.lens_comparison.utils
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry

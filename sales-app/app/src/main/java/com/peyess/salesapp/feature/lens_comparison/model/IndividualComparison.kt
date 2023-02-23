@@ -1,9 +1,9 @@
-package com.peyess.salesapp.screen.sale.lens_comparison.model
+package com.peyess.salesapp.feature.lens_comparison.model
 
 import androidx.annotation.RawRes
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
-import com.peyess.salesapp.screen.sale.lens_comparison.utils.animationFromCategory
-import com.peyess.salesapp.screen.sale.lens_comparison.utils.bigAnimationFromCategory
+import com.peyess.salesapp.feature.lens_comparison.utils.animationFromCategory
+import com.peyess.salesapp.feature.lens_comparison.utils.bigAnimationFromCategory
 
 data class IndividualComparison(
     val id: Int = 0,

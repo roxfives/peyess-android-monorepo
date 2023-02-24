@@ -27,7 +27,7 @@ import com.peyess.salesapp.feature.service_order.model.Lens
 import com.peyess.salesapp.feature.service_order.model.Payment
 import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
-import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetchResponse
+import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.features.service_order_fetcher.error
+package com.peyess.salesapp.features.edit_service_order.fetcher.error
 
 sealed interface ServiceOrderErrors {
     val description: String

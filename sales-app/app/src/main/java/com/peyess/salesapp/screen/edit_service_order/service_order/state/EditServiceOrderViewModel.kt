@@ -29,7 +29,7 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.feature.service_order.model.Payment
-import com.peyess.salesapp.features.service_order_fetcher.ServiceOrderFetcher
+import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetcher
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toClient
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toFrames
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toPayment

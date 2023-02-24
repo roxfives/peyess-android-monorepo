@@ -12,6 +12,7 @@ import com.peyess.salesapp.screen.create_client.address.state.ClientAddressViewM
 import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.screen.create_client.communication.state.CommunicationViewModel
 import com.peyess.salesapp.screen.demonstration.state.DemonstrationViewModel
+import com.peyess.salesapp.screen.edit_service_order.lens_comparison.state.EditLensComparisonViewModel
 import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.state.EditLensSuggestionViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment.state.EditPaymentViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.EditPaymentDiscountViewModel
@@ -313,5 +314,12 @@ interface ViewModelsModule {
     @ViewModelKey(EditLensSuggestionViewModel::class)
     fun bindEditLensSuggestionViewModel(
         factory: EditLensSuggestionViewModel.Factory,
+    ): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(EditLensComparisonViewModel::class)
+    fun bindEditLensComparisonViewModel(
+        factory: EditLensComparisonViewModel.Factory,
     ): AssistedViewModelFactory<*, *>
 }

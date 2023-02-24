@@ -1,10 +1,7 @@
 package com.peyess.salesapp.screen.edit_service_order.lens_suggestion
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -13,8 +10,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.feature.lens_suggestion.LensSuggestionUI
 import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.state.EditLensSuggestionState
 import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.state.EditLensSuggestionViewModel
-import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.utils.ParseParameters
-import timber.log.Timber
+import com.peyess.salesapp.screen.edit_service_order.lens_comparison.utils.ParseParameters
 
 @Composable
 fun EditLensSuggestionScreen(

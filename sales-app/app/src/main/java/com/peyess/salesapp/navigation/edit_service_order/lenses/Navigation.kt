@@ -1,6 +1,7 @@
 package com.peyess.salesapp.navigation.edit_service_order.lenses
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,9 +11,12 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.navigation.edit_service_order.lenses.lens_suggestion.editLensSuggestionEnterTransition
 import com.peyess.salesapp.navigation.edit_service_order.lenses.lens_suggestion.editLensSuggestionExitTransition
+import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
 import com.peyess.salesapp.navigation.sale.lenses.comparison.lensComparisonEnterTransition
 import com.peyess.salesapp.navigation.sale.lenses.comparison.lensComparisonExitTransition
+import com.peyess.salesapp.screen.edit_service_order.lens_comparison.EditLensComparisonScreen
 import com.peyess.salesapp.screen.edit_service_order.lens_suggestion.EditLensSuggestionScreen
+import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val saleIdArgumentName = "saleId"
 const val soIdArgumentName = "soId"
@@ -81,35 +85,13 @@ fun buildEditLensesNavGraph(
         enterTransition = lensComparisonEnterTransition(),
         exitTransition = lensComparisonExitTransition()
     ) {
-//        LensComparisonScreen(
-//            modifier = modifier
-//                .padding(SalesAppTheme.dimensions.screen_offset),
-//            navHostController = navHostController,
-//            onAddComparison = { navHostController.popBackStack() },
-//            onLensPicked = { isEditing, saleId, serviceOrderId ->
-//                if (isEditing) {
-//                    val route = buildServiceOrderRoute(
-//                        isCreating = true,
-//                        saleId = saleId,
-//                        serviceOrderId = serviceOrderId,
-//                    )
-//
-//                    navHostController.navigate(route) {
-//                        popUpTo(serviceOrderRoute) { inclusive = true }
-//                    }
-//                } else {
-//                    val isPicking = true
-//                    val pickScenario = PickScenario.ServiceOrder.toName()
-//                    val route = buildClientListRoute(
-//                        saleId = saleId,
-//                        serviceOrderId = serviceOrderId,
-//                        isPicking = isPicking,
-//                        pickScenario = pickScenario,
-//                    )
-//
-//                    navHostController.navigate(route)
-//                }
-//            }
-//        )
+        EditLensComparisonScreen(
+            modifier = modifier.padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
+            onAddComparison = { navHostController.popBackStack() },
+            onLensPicked = {
+                navHostController.popBackStack(editServiceOrderRoute, false)
+            },
+        )
     }
 }

@@ -290,11 +290,11 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     }
 
     private fun loadLensProducts(serviceOrderId: String) {
-        suspend {
-            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId)
-        }.execute(Dispatchers.IO) {
-            copy(productPickedResponseAsync = it)
-        }
+        editProductPickedRepository
+            .streamProductPickedForServiceOrder(serviceOrderId)
+            .execute(Dispatchers.IO) {
+                copy(productPickedResponseAsync = it)
+            }
     }
 
     private fun processProductPickedResponse(

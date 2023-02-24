@@ -12,6 +12,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryPredicateOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.feature.lens_comparison.model.Lens
+import com.peyess.salesapp.feature.lens_suggestion.model.Measuring
 
 private fun buildQueryFieldsForLensSupplier(lensSupplierId: String): List<PeyessQueryField> {
     return listOf(
@@ -144,9 +145,46 @@ private fun buildQueryFieldsForHeight(
     )
 }
 
+private fun buildQueryFieldsForHeight(
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
+): List<PeyessQueryField> {
+    return listOf(
+        buildQueryField(
+            field = LocalLensesUnionQueryFields.Height.name(),
+            op = PeyessQueryOperation.LessThanOrEqual,
+            value = measuringLeft.fixedHe,
+        ),
+
+        buildQueryField(
+            field = LocalLensesUnionQueryFields.Height.name(),
+            op = PeyessQueryOperation.LessThanOrEqual,
+            value = measuringRight.fixedHe,
+        ),
+    )
+}
+
 private fun buildQueryFieldsForDiameter(
     measuringLeft: LocalMeasuringDocument,
     measuringRight: LocalMeasuringDocument,
+): List<PeyessQueryField> {
+    return listOf(
+        buildQueryField(
+            field = LocalLensesUnionQueryFields.Diameter.name(),
+            op = PeyessQueryOperation.GreaterThanOrEqual,
+            value = measuringLeft.diameter,
+        ),
+        buildQueryField(
+            field = LocalLensesUnionQueryFields.Diameter.name(),
+            op = PeyessQueryOperation.GreaterThanOrEqual,
+            value = measuringRight.diameter,
+        ),
+    )
+}
+
+private fun buildQueryFieldsForDiameter(
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
 ): List<PeyessQueryField> {
     return listOf(
         buildQueryField(
@@ -278,7 +316,43 @@ private fun buildCommonQuery(
             buildQueryFieldsForSumRule(prescription)
 }
 
+private fun buildCommonQuery(
+    lens: Lens,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForLensSupplier(lens.supplierId) +
+            buildQueryFieldsForLensFamily(lens.brandId) +
+            buildQueryFieldsForLensDescription(lens.designId) +
+            buildQueryFieldsForSpherical(prescription) +
+            buildQueryFieldsForCylindrical(prescription) +
+            buildQueryFieldsForAddition(prescription) +
+            buildQueryFieldsForPrism(prescription) +
+            buildQueryFieldsForHeight(measuringLeft, measuringRight) +
+            buildQueryFieldsForDiameter(measuringLeft, measuringRight) +
+            buildQueryFieldsForSumRule(prescription)
+}
+
 fun buildQueryFieldsForTechs(
+    lens: Lens,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: LocalMeasuringDocument,
+    measuringRight: LocalMeasuringDocument,
+): List<PeyessQueryField> {
+    return buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
+fun buildQueryFieldsForTechs(
+    lens: Lens,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
+): List<PeyessQueryField> {
+    return buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
+fun buildQueryFieldsForMaterials(
     lens: Lens,
     prescription: LocalPrescriptionDocument,
     measuringLeft: LocalMeasuringDocument,
@@ -290,8 +364,8 @@ fun buildQueryFieldsForTechs(
 fun buildQueryFieldsForMaterials(
     lens: Lens,
     prescription: LocalPrescriptionDocument,
-    measuringLeft: LocalMeasuringDocument,
-    measuringRight: LocalMeasuringDocument,
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
 ): List<PeyessQueryField> {
     return buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
 }
@@ -307,12 +381,34 @@ fun buildQueryFieldsForLensWithTech(
             buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
 }
 
+fun buildQueryFieldsForLensWithTech(
+    lens: Lens,
+    techId: String,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForLensTech(techId) +
+            buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
 fun buildQueryFieldsForLensWithMaterial(
     lens: Lens,
     materialId: String,
     prescription: LocalPrescriptionDocument,
     measuringLeft: LocalMeasuringDocument,
     measuringRight: LocalMeasuringDocument,
+): List<PeyessQueryField> {
+    return buildQueryFieldsForLensMaterial(materialId) +
+            buildCommonQuery(lens, prescription, measuringLeft, measuringRight)
+}
+
+fun buildQueryFieldsForLensWithMaterial(
+    lens: Lens,
+    materialId: String,
+    prescription: LocalPrescriptionDocument,
+    measuringLeft: Measuring,
+    measuringRight: Measuring,
 ): List<PeyessQueryField> {
     return buildQueryFieldsForLensMaterial(materialId) +
             buildCommonQuery(lens, prescription, measuringLeft, measuringRight)

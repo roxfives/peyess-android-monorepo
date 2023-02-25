@@ -1,11 +1,13 @@
 package com.peyess.salesapp.data.dao.service_order
 
+import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoFetchError
+import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoUpdateError
 import com.peyess.salesapp.data.dao.service_order.utils.ServiceOrderPagingSource
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.firebase.FirebaseManager
@@ -114,11 +116,56 @@ class ServiceOrderDaoImpl @Inject constructor(
                 if (!it.isSuccessful) {
                     Timber.e(
                         it.exception,
-                        "Error while uploading document with id ${id} at $soPath",
+                        "Error while uploading document with id $id at $soPath",
                     )
                 }
             }
             .await()
+    }
+
+    override suspend fun updateServiceOrder(
+        serviceOrderId: String,
+        updateAsDotNotation: Map<String, Any>,
+    ): UpdateServiceOrderResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            ServiceOrderDaoUpdateError.Unexpected(
+                description = "Firestore instance is null",
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            ServiceOrderDaoUpdateError.Unexpected(
+                description = "Store not authenticated",
+            )
+        }
+
+        val serviceOrderPath = salesApplication
+            .stringResource(id = R.string.fs_col_so)
+            .format(storeId)
+
+        Either.catch {
+            firestore
+                .collection(serviceOrderPath)
+                .document(serviceOrderId)
+                .update(updateAsDotNotation)
+                .addOnCompleteListener {
+                    Timber.i("Completed with $it (${it.isSuccessful})")
+
+                    if (!it.isSuccessful) {
+                        Timber.e(
+                            it.exception,
+                            "Error while uploading document with id " +
+                                    "$serviceOrderId at $serviceOrderPath",
+                        )
+                    }
+                }.await()
+        }.mapLeft {
+            ServiceOrderDaoUpdateError.Unexpected(
+                description = it.message ?: "Unknown error",
+            )
+        }.bind()
     }
 
     override suspend fun serviceOrderById(

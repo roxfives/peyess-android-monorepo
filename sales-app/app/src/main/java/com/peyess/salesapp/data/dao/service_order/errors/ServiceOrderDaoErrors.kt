@@ -36,3 +36,19 @@ sealed class ServiceOrderDaoFetchError: ServiceOrderDaoErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class ServiceOrderDaoUpdateError: ServiceOrderDaoErrors {
+    data class ServiceOrderNotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderDaoUpdateError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderDaoUpdateError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

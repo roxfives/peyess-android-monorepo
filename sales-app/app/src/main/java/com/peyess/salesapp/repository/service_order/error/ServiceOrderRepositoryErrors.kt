@@ -36,3 +36,19 @@ sealed class ServiceOrderRepositoryFetchError: ServiceOrderRepositoryErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class ServiceOrderRepositoryUpdateError: ServiceOrderRepositoryErrors {
+    data class ServiceOrderNotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderRepositoryUpdateError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ServiceOrderRepositoryUpdateError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

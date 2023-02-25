@@ -59,6 +59,8 @@ import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
+import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
+import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
@@ -770,7 +772,12 @@ class ServiceOrderUploader constructor(
             payerDocuments = purchase.payerDocuments,
         )
 
-        val legalText = buildHtml(context, collaboratorName, serviceOrder, purchase)
+        val legalText = buildHtml(
+            context = context,
+            collaboratorName = collaboratorName,
+            serviceOrder = serviceOrder.toServiceOrder(),
+            purchase = purchase.toPurchase(),
+        )
         purchase = purchase.copy(legalText = legalText)
 
         Pair(serviceOrder, purchase)

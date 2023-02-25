@@ -1,16 +1,23 @@
 package com.peyess.salesapp.screen.edit_service_order.service_order
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import arrow.core.Either
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.feature.service_order.ServiceOrderUI
 import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderState
 import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditServiceOrderViewModel
 import com.peyess.salesapp.screen.edit_service_order.service_order.utils.ParseParameters
+import timber.log.Timber
 
 @Composable
 fun EditServiceOrderScreen(
@@ -31,6 +38,8 @@ fun EditServiceOrderScreen(
     onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
     onAddDiscount: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
+
     val viewModel: EditServiceOrderViewModel = mavericksViewModel()
     
     ParseParameters(
@@ -63,6 +72,8 @@ fun EditServiceOrderScreen(
     val fullPrice by viewModel.collectAsState(EditServiceOrderState::fullPrice)
     val priceWithDiscount by viewModel.collectAsState(EditServiceOrderState::priceWithDiscountOnly)
     val finalPrice by viewModel.collectAsState(EditServiceOrderState::finalPrice)
+
+    val isGeneratingPdf by viewModel.collectAsState(EditServiceOrderState::isGeneratingPdf)
 
     ServiceOrderUI(
         modifier = modifier,
@@ -107,5 +118,31 @@ fun EditServiceOrderScreen(
             onEditPayment(payment.id, payment.clientId, saleId, serviceOrderId)
         },
         onDeletePayment = { viewModel.deletePayment(it.id) },
+
+        isGeneratingPdfDocument = isGeneratingPdf,
+        onGenerateServiceOrderPdf = {
+            viewModel.generateServiceOrderPdf(
+                context = context,
+                onPdfGenerated = {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    val uri = FileProvider.getUriForFile(
+                        /* context = */ context,
+                        /* authority = */ BuildConfig.APPLICATION_ID + ".provider",
+                        /* file = */ it,
+                    )
+
+                    Timber.i("New uri: $uri")
+                    intent.setDataAndType(uri, "application/pdf")
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+                    Either.catch {
+                        ContextCompat.startActivity(context, intent, null)
+                    }.tapLeft { err ->
+                        Timber.e("Failed to open pdf handler: ${err.message}", err)
+                    }
+                },
+            )
+        },
     )
 }

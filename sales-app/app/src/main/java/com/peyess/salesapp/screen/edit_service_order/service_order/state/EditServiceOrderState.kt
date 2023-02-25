@@ -1,12 +1,16 @@
 package com.peyess.salesapp.screen.edit_service_order.service_order.state
 
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.data.model.discount.OverallDiscountDocument
 import com.peyess.salesapp.data.model.payment_fee.PaymentFeeDocument
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentFetchResponse
@@ -28,6 +32,9 @@ import com.peyess.salesapp.feature.service_order.model.Payment
 import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetchResponse
+import com.peyess.salesapp.features.edit_service_order.updater.SaleDataResponse
+import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder
@@ -39,6 +46,11 @@ data class EditServiceOrderState(
     val saleId: String = "",
 
     val serviceOrderFetchResponseAsync: Async<ServiceOrderFetchResponse> = Uninitialized,
+    val currentPurchase: PurchaseDocument = PurchaseDocument(),
+    val currentServiceOrder: ServiceOrderDocument = ServiceOrderDocument(),
+
+    val sellerResponseAsync: Async<CollaboratorDocument?> = Uninitialized,
+    val seller: CollaboratorDocument = CollaboratorDocument(),
 
     val serviceOrderResponseAsync: Async<EditServiceOrderFetchResponse> = Uninitialized,
     val serviceOrder: ServiceOrder = ServiceOrder(),
@@ -83,7 +95,13 @@ data class EditServiceOrderState(
 
     val feeResponseAsync: Async<EditPaymentFeeFetchResponse> = Uninitialized,
     val fee: PaymentFeeDocument = PaymentFeeDocument(),
+
+    val pdfGenerationAsync: Async<Either<GenerateSaleDataError, Unit>> = Uninitialized,
 ): MavericksState {
+    val isGeneratingPdf = pdfGenerationAsync is Loading
+    val hasPdfGenerationFailed = pdfGenerationAsync is Fail
+            || (pdfGenerationAsync is Success && pdfGenerationAsync.invoke().isLeft())
+
     val measuringLeft = positioningPair.left.toMeasuring()
     val measuringRight = positioningPair.right.toMeasuring()
 

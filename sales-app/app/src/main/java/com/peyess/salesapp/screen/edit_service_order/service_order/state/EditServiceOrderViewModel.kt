@@ -1,10 +1,12 @@
 package com.peyess.salesapp.screen.edit_service_order.service_order.state
 
+import android.content.Context
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
@@ -29,7 +31,13 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleColoringResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.feature.service_order.model.Payment
+import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetcher
+import com.peyess.salesapp.features.edit_service_order.updater.ServiceOrderUpdater
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPurchase
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toServiceOrder
+import com.peyess.salesapp.features.pdf.service_order.buildHtml
+import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toClient
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toFrames
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toPayment
@@ -38,14 +46,20 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toSer
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLens
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLocalPaymentDocument
+import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
+import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.utils.file.createPrintFile
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.nvest.html_to_pdf.HtmlToPdfConvertor
+import timber.log.Timber
+import java.io.File
 
 private typealias EditServiceOrderFactory =
         AssistedViewModelFactory<EditServiceOrderViewModel, EditServiceOrderState>
@@ -54,7 +68,12 @@ private typealias EditServiceOrderViewModelFactory =
 
 class EditServiceOrderViewModel @AssistedInject constructor(
     @Assisted initialState: EditServiceOrderState,
+
     private val serviceOrderFetcher: ServiceOrderFetcher,
+    private val serviceOrderUpdater: ServiceOrderUpdater,
+
+    private val collaboratorsRepository: CollaboratorsRepository,
+
     private val editServiceOrderRepository: EditServiceOrderRepository,
     private val editPrescriptionRepository: EditPrescriptionRepository,
     private val editProductPickedRepository: EditProductPickedRepository,
@@ -75,6 +94,12 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         ) { purchaseId, serviceOrderId ->
             if (purchaseId.isNotBlank() && serviceOrderId.isNotBlank()) {
                 fetchServiceOrder(serviceOrderId, purchaseId)
+            }
+        }
+
+        onEach(EditServiceOrderState::currentPurchase) {
+            if (it.createdBy.isNotBlank()) {
+                loadSeller(it.createdBy)
             }
         }
 
@@ -106,6 +131,12 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             loadColoring(it.coloringId)
             loadTreatment(it.treatmentId)
         }
+
+        onAsync(EditServiceOrderState::serviceOrderFetchResponseAsync) {
+            processServiceOrderFetchResponse(it)
+        }
+
+        onAsync(EditServiceOrderState::sellerResponseAsync) { processSellerResponse(it) }
 
         onAsync(EditServiceOrderState::serviceOrderResponseAsync) {
             processServiceOrderResponse(it)
@@ -149,6 +180,39 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             serviceOrderFetcher.fetchFullSale(serviceOrderId, purchaseId)
         }.execute(Dispatchers.IO) {
             copy(serviceOrderFetchResponseAsync = it)
+        }
+    }
+
+    private fun processServiceOrderFetchResponse(
+        response: ServiceOrderFetchResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(serviceOrderFetchResponseAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(
+                    currentPurchase = it.first,
+                    currentServiceOrder = it.second,
+                )
+            },
+        )
+    }
+
+    private fun loadSeller(uid: String) {
+        suspend {
+            collaboratorsRepository.getById(uid)
+        }.execute(Dispatchers.IO) {
+            copy(sellerResponseAsync = it)
+        }
+    }
+
+    private fun processSellerResponse(response: CollaboratorDocument?) = setState {
+        if (response == null) {
+            copy(sellerResponseAsync = Fail(Exception("Seller not found")))
+        } else {
+            copy(seller = response)
         }
     }
 
@@ -464,6 +528,32 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
+    private fun convertHtmlToPdf(
+        context: Context,
+        html: String,
+        onPdfGenerationFailed: (t: Throwable) -> Unit,
+        onPdfGenerated: (file: File) -> Unit,
+    ) {
+        viewModelScope.launch(Dispatchers.Main) {
+            val htmlToPdfConverter = HtmlToPdfConvertor(context)
+
+            val file = createPrintFile(context)
+            if (file.exists()) {
+                file.delete()
+            }
+
+            htmlToPdfConverter.convert(
+                file,
+                html,
+                {
+                    Timber.e("Failed to generate service order pdf: ${it.message}", it)
+                    onPdfGenerationFailed(it)
+                },
+                { onPdfGenerated(it) },
+            )
+        }
+    }
+
     fun onSaleIdChanged(saleId: String) = setState {
         copy(saleId = saleId)
     }
@@ -487,6 +577,38 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     fun deletePayment(paymentId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             editLocalPaymentRepository.deletePayment(paymentId)
+        }
+    }
+
+    fun generateServiceOrderPdf(
+        context: Context,
+        onPdfGenerated: (File) -> Unit,
+    ) = withState {
+        suspend {
+            serviceOrderUpdater
+                .generateSaleData(context, it.serviceOrderId)
+                .map { (purchase, serviceOrder) ->
+                    val html = buildHtml(
+                        context = context,
+                        collaboratorName = it.seller.name,
+                        serviceOrder = serviceOrder.toServiceOrder(
+                            hid = it.currentServiceOrder.hid,
+                            created = it.currentServiceOrder.created,
+                        ),
+                        purchase = purchase.toPurchase(
+                            hid = it.currentPurchase.hid,
+                        ),
+                    )
+
+                    convertHtmlToPdf(
+                        context = context,
+                        html = html,
+                        onPdfGenerationFailed = { Timber.e(it) },
+                        onPdfGenerated = onPdfGenerated,
+                    )
+                }
+        }.execute(Dispatchers.IO) {
+            copy(pdfGenerationAsync = it)
         }
     }
 

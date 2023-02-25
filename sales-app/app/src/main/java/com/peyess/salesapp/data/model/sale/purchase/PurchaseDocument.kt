@@ -1,15 +1,11 @@
 package com.peyess.salesapp.data.model.sale.purchase
 
-import androidx.annotation.Keep
-import com.google.firebase.firestore.IgnoreExtraProperties
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
 import java.time.ZonedDateTime
 
-@Keep
-@IgnoreExtraProperties
 data class PurchaseDocument(
     val id: String = "",
     val hid: String = "",

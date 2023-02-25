@@ -4,6 +4,7 @@ import android.net.Uri
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.leftIfNull
+import arrow.core.right
 import com.peyess.salesapp.dao.sale.active_sale.LocalSaleDocument
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
@@ -106,7 +107,8 @@ private typealias AddSaleResponse = Either<AddSaleError, Unit>
 private typealias AddServiceOrderResponse = Either<AddServiceOrderError, Unit>
 private typealias DeleteSaleResponse = Either<DeleteSaleError, Unit>
 
-typealias ServiceOrderFetchResponse = Either<ServiceOrderErrors, Unit>
+typealias ServiceOrderFetchResponse =
+        Either<ServiceOrderErrors, Pair<PurchaseDocument, ServiceOrderDocument>>
 
 class ServiceOrderFetcher @Inject constructor(
     private val serviceOrderRepository: ServiceOrderRepository,
@@ -751,8 +753,12 @@ class ServiceOrderFetcher @Inject constructor(
         forceReload: Boolean = false,
     ): ServiceOrderFetchResponse = either {
         val saleExists = saleExistsLocally(purchaseId).bind()
+
+        val serviceOrder = fetchServiceOrder(serviceOrderId).bind()
+        val purchase = fetchPurchase(purchaseId).bind()
+
         if (saleExists && !forceReload) {
-            return@either
+            return@either Pair(purchase, serviceOrder)
         } else if (forceReload) {
             deleteSaleLocally(
                 saleId = purchaseId,
@@ -760,8 +766,7 @@ class ServiceOrderFetcher @Inject constructor(
             ).bind()
         }
 
-        val serviceOrder = fetchServiceOrder(serviceOrderId).bind()
-        val purchase = fetchPurchase(purchaseId).bind()
+
 
         val client = fetchClient(serviceOrder.clientUid).bind()
         val responsible = if (serviceOrder.clientUid == serviceOrder.responsibleUid) {
@@ -839,5 +844,7 @@ class ServiceOrderFetcher @Inject constructor(
         addPrescription(localPrescription).bind()
         addPositioning(localLeftPositioning).bind()
         addPositioning(localRightPositioning).bind()
+
+        Pair(purchase, serviceOrder)
     }
 }

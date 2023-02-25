@@ -3,15 +3,14 @@ package com.peyess.salesapp.features.pdf.service_order.html
 import android.content.Context
 import androidx.core.os.ConfigurationCompat
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
-import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.features.pdf.service_order.model.Purchase
+import com.peyess.salesapp.features.pdf.service_order.model.ServiceOrder
 import com.peyess.salesapp.features.pdf.utils.printDocument
 import com.peyess.salesapp.features.pdf.utils.printPaymentMethodValue
 import com.peyess.salesapp.features.pdf.utils.printValue
 import com.peyess.salesapp.typing.sale.PaymentMethodType
 import com.peyess.salesapp.utils.time.nextBusinessDay
 import java.text.NumberFormat
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 //<!-- payment_text -->
@@ -152,7 +151,7 @@ private fun buildPaymentForCredit(context: Context, payment: PaymentDocument): S
 
 private fun buildPaymentForCrediario(
     context: Context,
-    serviceOrder: ServiceOrderDocument,
+    serviceOrder: ServiceOrder,
     payment: PaymentDocument,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
@@ -237,7 +236,7 @@ private fun buildPaymentForBankCheck(context: Context, payment: PaymentDocument)
 
 private fun buildPaymentMethod(
     context: Context,
-    serviceOrder: ServiceOrderDocument,
+    serviceOrder: ServiceOrder,
     payment: PaymentDocument,
 ): String {
     return when (payment.methodName) {
@@ -255,8 +254,8 @@ private fun buildPaymentMethod(
 
 private fun legalTextForFullPayment(
     context: Context,
-    purchaseDocument: PurchaseDocument,
-    serviceOrderDocument: ServiceOrderDocument,
+    purchaseDocument: Purchase,
+    serviceOrderDocument: ServiceOrder,
 ): String {
     val hasMultiplePayers = purchaseDocument.payerUids.size > 1
 
@@ -279,8 +278,8 @@ private fun legalTextForFullPayment(
 
 private fun legalTextWithoutFullPayment(
     context: Context,
-    purchaseDocument: PurchaseDocument,
-    serviceOrderDocument: ServiceOrderDocument,
+    purchaseDocument: Purchase,
+    serviceOrderDocument: ServiceOrder,
 ): String {
     val hasMultiplePayers = purchaseDocument.payerUids.size > 1
 
@@ -302,10 +301,10 @@ private fun legalTextWithoutFullPayment(
 
 private fun legalText(
     context: Context,
-    purchaseDocument: PurchaseDocument,
-    serviceOrderDocument: ServiceOrderDocument,
+    purchaseDocument: Purchase,
+    serviceOrderDocument: ServiceOrder,
 ): String {
-    val isPaymentFull = serviceOrderDocument.isPaymentFull
+    val isPaymentFull = purchaseDocument.isPaymentFull
 
     return if (isPaymentFull) {
         legalTextForFullPayment(context, purchaseDocument, serviceOrderDocument)
@@ -316,8 +315,8 @@ private fun legalText(
 
 private fun buildHeader(
     context: Context,
-    purchaseDocument: PurchaseDocument,
-    serviceOrderDocument: ServiceOrderDocument,
+    purchaseDocument: Purchase,
+    serviceOrderDocument: ServiceOrder,
 ): String {
     val legal = legalText(context, purchaseDocument, serviceOrderDocument)
     val header = "<tr class=\"row23\"> <td class=\"column0 style92 style58 s style60\" colspan=\"11\">PAGAMENTOS</td></tr><tr class=\"row24\"> <td class=\"column0 s style55 style58\" colspan=\"11\">$legal</td></tr>"
@@ -327,7 +326,7 @@ private fun buildHeader(
 
 private fun buildPaymentList(
     context: Context,
-    serviceOrder: ServiceOrderDocument,
+    serviceOrder: ServiceOrder,
     payments: List<PaymentDocument>,
 ): String {
     var paymentStr = ""
@@ -340,8 +339,8 @@ private fun buildPaymentList(
 
 private fun buildPaymentIncomplete(
     context: Context,
-    purchaseDocument: PurchaseDocument,
-    serviceOrder: ServiceOrderDocument,
+    purchaseDocument: Purchase,
+    serviceOrder: ServiceOrder,
 ): String {
     val currentLocale = ConfigurationCompat.getLocales(context.resources.configuration)[0]!!
 
@@ -382,12 +381,12 @@ private fun buildPaymentIncomplete(
 
 fun buildPaymentSection(
     context: Context,
-    purchase: PurchaseDocument,
-    serviceOrder: ServiceOrderDocument,
+    purchase: Purchase,
+    serviceOrder: ServiceOrder,
 ): String {
     val header = buildHeader(context, purchase, serviceOrder)
     val paymentList = buildPaymentList(context, serviceOrder, purchase.payments)
-    val paymentIncomplete = if (!serviceOrder.isPaymentFull) {
+    val paymentIncomplete = if (!purchase.isPaymentFull) {
         buildPaymentIncomplete(context, purchase, serviceOrder)
     } else {
         ""

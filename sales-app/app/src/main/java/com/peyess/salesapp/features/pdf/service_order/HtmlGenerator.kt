@@ -16,6 +16,8 @@ import com.peyess.salesapp.features.pdf.service_order.html.generateProductData
 import com.peyess.salesapp.features.pdf.service_order.html.generateSaleData
 import com.peyess.salesapp.features.pdf.service_order.html.generateServiceOrder
 import com.peyess.salesapp.features.pdf.service_order.html.style
+import com.peyess.salesapp.features.pdf.service_order.model.Purchase
+import com.peyess.salesapp.features.pdf.service_order.model.ServiceOrder
 import com.peyess.salesapp.features.pdf.utils.printValue
 import timber.log.Timber
 import java.time.format.DateTimeFormatter
@@ -68,8 +70,8 @@ private fun printAxisData(value: String, hasAxis: Boolean = false): String {
 fun buildHtml(
     context: Context,
     collaboratorName: String,
-    serviceOrder: ServiceOrderDocument,
-    purchase: PurchaseDocument,
+    serviceOrder: ServiceOrder,
+    purchase: Purchase,
 ): String {
     val dayFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 

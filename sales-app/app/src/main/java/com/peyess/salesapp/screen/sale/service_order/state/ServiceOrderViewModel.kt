@@ -69,6 +69,8 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.sale.service_order.adapter.toClient
+import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
+import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
@@ -795,7 +797,12 @@ class ServiceOrderViewModel @AssistedInject constructor(
                 )
 
             val html = if (salePair != null) {
-                buildHtml(context, collaboratorName, salePair.first, salePair.second)
+                buildHtml(
+                    context = context,
+                    collaboratorName = collaboratorName,
+                    serviceOrder = salePair.first.toServiceOrder(),
+                    purchase = salePair.second.toPurchase(),
+                )
             } else {
                 null
             }

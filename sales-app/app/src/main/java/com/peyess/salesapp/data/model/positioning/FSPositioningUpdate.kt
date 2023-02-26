@@ -1,8 +1,8 @@
 package com.peyess.salesapp.data.model.positioning
 
-import java.time.ZonedDateTime
+import com.google.firebase.Timestamp
 
-data class PositioningUpdateDocument(
+data class FSPositioningUpdate(
     val takenByUid: String = "",
 
     val patientUid: String = "",
@@ -39,7 +39,7 @@ data class PositioningUpdateDocument(
 
     val device: String = "",
 
-    val updated: ZonedDateTime = ZonedDateTime.now(),
+    val updated: Timestamp = Timestamp.now(),
     val updatedBy: String = "",
     val updateAllowedBy: String = "",
 )

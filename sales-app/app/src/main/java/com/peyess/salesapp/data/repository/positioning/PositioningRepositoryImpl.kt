@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.positioning
 
 import arrow.core.continuations.either
 import com.peyess.salesapp.data.adapter.positioning.toFSPositioning
+import com.peyess.salesapp.data.adapter.positioning.toFSPositioningUpdate
 import com.peyess.salesapp.data.adapter.positioning.toMappingUpdate
 import com.peyess.salesapp.data.dao.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.positioning.error.ReadPositioningDaoError
@@ -48,7 +49,7 @@ class PositioningRepositoryImpl @Inject constructor(
         positioningUpdate: PositioningUpdateDocument
     ): UpdatePositioningResponse = either {
         positioningDao
-            .updatePositioning(positioningId, positioningUpdate.toMappingUpdate())
+            .updatePositioning(positioningId, positioningUpdate.toFSPositioningUpdate())
             .mapLeft {
                 UpdatePositioningRepositoryError.Unexpected(
                     description = it.description,

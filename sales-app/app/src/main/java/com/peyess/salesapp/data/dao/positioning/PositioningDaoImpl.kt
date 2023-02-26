@@ -5,9 +5,11 @@ import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.adapter.positioning.toMappingUpdate
 import com.peyess.salesapp.data.dao.positioning.error.ReadPositioningDaoError
 import com.peyess.salesapp.data.dao.positioning.error.UpdatePositioningDaoError
 import com.peyess.salesapp.data.model.positioning.FSPositioning
+import com.peyess.salesapp.data.model.positioning.FSPositioningUpdate
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -90,7 +92,7 @@ class PositioningDaoImpl @Inject constructor(
 
     override suspend fun updatePositioning(
         positioningId: String,
-        positioningUpdate: Map<String, Any>
+        positioningUpdate: FSPositioningUpdate,
     ): UpdatePositioningResponse = either {
         val firestore = firebaseManager.storeFirestore
         ensureNotNull(firestore) {
@@ -113,7 +115,7 @@ class PositioningDaoImpl @Inject constructor(
         Either.catch {
             firestore.collection(positioningCollectionPath)
                 .document(positioningId)
-                .update(positioningUpdate)
+                .update(positioningUpdate.toMappingUpdate())
                 .await()
         }.mapLeft {
             UpdatePositioningDaoError.Unexpected(

@@ -44,6 +44,24 @@ sealed class GeneratePrescriptionDataError: ServiceOrderUpdaterErrors {
     }
 }
 
+sealed class GeneratePositioningDataError: ServiceOrderUpdaterErrors {
+    data class Unexpected(
+        override val description: String = "Unexpected error",
+        val throwable: Throwable? = null,
+    ): GeneratePositioningDataError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}
+
+sealed class GenerateMeasuringDataError: ServiceOrderUpdaterErrors {
+    data class Unexpected(
+        override val description: String = "Unexpected error",
+        val throwable: Throwable? = null,
+    ): GenerateMeasuringDataError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}
+
 sealed class UpdateServiceOrderError: ServiceOrderUpdaterErrors {
     data class Error(
         override val description: String = "Error updating service order",

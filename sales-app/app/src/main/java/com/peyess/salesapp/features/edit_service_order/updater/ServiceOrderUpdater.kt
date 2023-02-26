@@ -8,6 +8,9 @@ import arrow.core.left
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
+import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
+import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
+import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
@@ -32,9 +35,12 @@ import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPositioningUpdateDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPreview
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPurchase
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toServiceOrder
+import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateMeasuringDataError
+import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePositioningDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePrescriptionDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.UpdateServiceOrderError
@@ -67,6 +73,12 @@ private typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, U
 
 typealias GeneratePrescriptionDataResponse =
         Either<GeneratePrescriptionDataError, PrescriptionUpdateDocument>
+
+typealias GeneratePositioningDataResponse =
+        Either<GeneratePositioningDataError, Pair<PositioningUpdateDocument, PositioningUpdateDocument>>
+
+typealias GenerateMeasuringDataResponse =
+        Either<GenerateMeasuringDataError, Pair<MeasuringUpdateDocument, MeasuringUpdateDocument>>
 
 typealias SaleDataResponse =
         Either<GenerateSaleDataError, Pair<PurchaseUpdateDocument, ServiceOrderUpdateDocument>>
@@ -625,6 +637,7 @@ class ServiceOrderUpdater @Inject constructor(
                 }
             }.bind()
 
+        // TODO: use an adapter for this
         PrescriptionUpdateDocument(
             isCopy = localPrescription.isCopy,
             emitted = localPrescription.prescriptionDate,
@@ -663,7 +676,61 @@ class ServiceOrderUpdater @Inject constructor(
             updateAllowedBy = collaboratorUid,
         )
     }
+
+    private suspend fun generatePositioningData(
+        serviceOrderId: String,
+    ): GeneratePositioningDataResponse = either {
+        val collaboratorUid = authenticationRepository.fetchCurrentUserId()
+
+        val user = editClientPickedRepository.findClientPickedForServiceOrder(
+            serviceOrderId,
+            ClientRole.User
+        ).mapLeft { err ->
+            GeneratePositioningDataError.Unexpected(
+                description = err.description,
+                throwable = err.error,
+            )
+        }.flatMap {
+            localClientRepository.clientById(it.id).mapLeft { err ->
+                GeneratePositioningDataError.Unexpected(
+                    description = err.description,
+                    throwable = err.error,
+                )
+            }
+        }.bind()
+
+        val (localLeft, localRight) = editPositioningRepository
+            .bothPositioningForServiceOrder(serviceOrderId)
+            .mapLeft {
+                GeneratePositioningDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+
+        val now = ZonedDateTime.now()
+        Pair(
+            localLeft.toPositioningUpdateDocument(
+                collaboratorUid = collaboratorUid,
+                patientUid = user.id,
+                patientDocument = user.document,
+                patientName = user.name,
+                updated = now,
+            ),
+            localRight.toPositioningUpdateDocument(
+                collaboratorUid = collaboratorUid,
+                patientUid = user.id,
+                patientDocument = user.document,
+                patientName = user.name,
+                updated = now,
+            ),
+        )
+    }
 }
+
+// TODO: update prescription generation to use an adapter
+// TODO: generate measuring data
+// TODO: update all the data to the server
 
 //    suspend fun updateServiceOrder(
 //        context: Context,

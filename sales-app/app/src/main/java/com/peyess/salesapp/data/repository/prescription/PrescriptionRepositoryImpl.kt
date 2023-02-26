@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.prescription
 
 import arrow.core.continuations.either
 import com.peyess.salesapp.data.adapter.prescription.toFSPrescription
+import com.peyess.salesapp.data.adapter.prescription.toFSPrescriptionUpdate
 import com.peyess.salesapp.data.adapter.prescription.toUpdateMap
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.prescription.error.ReadPrescriptionDaoError
@@ -48,7 +49,7 @@ class PrescriptionRepositoryImpl @Inject constructor(
         prescriptionId: String,
         prescription: PrescriptionUpdateDocument,
     ): UpdatePrescriptionResponse = either {
-        prescriptionDao.updatePrescription(prescriptionId, prescription.toUpdateMap())
+        prescriptionDao.updatePrescription(prescriptionId, prescription.toFSPrescriptionUpdate())
             .mapLeft {
                 UpdatePrescriptionRepositoryError.Unexpected(
                     description = it.description,

@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.peyess.salesapp.data.dao.prescription.error.ReadPrescriptionDaoError
 import com.peyess.salesapp.data.dao.prescription.error.UpdatePrescriptionDaoError
 import com.peyess.salesapp.data.model.prescription.FSPrescription
+import com.peyess.salesapp.data.model.prescription.FSPrescriptionUpdate
 
 typealias ReadPrescriptionDaoResponse = Either<ReadPrescriptionDaoError, FSPrescription>
 
@@ -16,6 +17,6 @@ interface PrescriptionDao {
 
     suspend fun updatePrescription(
         prescriptionId: String,
-        prescriptionUpdate: Map<String, Any>,
+        prescriptionUpdate: FSPrescriptionUpdate,
     ): UpdatePrescriptionDaoResponse
 }

@@ -6,9 +6,11 @@ import arrow.core.continuations.ensureNotNull
 import arrow.core.leftIfNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.adapter.prescription.toUpdateMap
 import com.peyess.salesapp.data.dao.prescription.error.ReadPrescriptionDaoError
 import com.peyess.salesapp.data.dao.prescription.error.UpdatePrescriptionDaoError
 import com.peyess.salesapp.data.model.prescription.FSPrescription
+import com.peyess.salesapp.data.model.prescription.FSPrescriptionUpdate
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -89,7 +91,7 @@ class PrescriptionDaoImpl @Inject constructor(
 
     override suspend fun updatePrescription(
         prescriptionId: String,
-        prescriptionUpdate: Map<String, Any>,
+        prescriptionUpdate: FSPrescriptionUpdate,
     ): UpdatePrescriptionDaoResponse = either {
         val firestore = firebaseManager.storeFirestore
         ensureNotNull(firestore) {
@@ -112,7 +114,7 @@ class PrescriptionDaoImpl @Inject constructor(
         Either.catch {
             firestore.collection(prescriptionCollectionPath)
                 .document(prescriptionId)
-                .update(prescriptionUpdate)
+                .update(prescriptionUpdate.toUpdateMap())
                 .await()
         }.mapLeft {
             UpdatePrescriptionDaoError.Unexpected(

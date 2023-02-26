@@ -40,6 +40,9 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMea
 import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.abs
 
 data class EditServiceOrderState(
     val serviceOrderId: String = "",
@@ -102,6 +105,12 @@ data class EditServiceOrderState(
 
     val hasSaleUpdateFailed: Boolean = false,
 ): MavericksState {
+    val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
+            && serviceOrderFetchResponseAsync.invoke().isRight()
+    val errorWhileFetchingServiceOrder = serviceOrderFetchResponseAsync is Fail ||
+            (serviceOrderFetchResponseAsync is Success
+                    && serviceOrderFetchResponseAsync.invoke().isLeft())
+
     val isLoadingSaleData = serviceOrderFetchResponseAsync is Loading
             || sellerResponseAsync is Loading
             || serviceOrderResponseAsync is Loading
@@ -177,12 +186,26 @@ data class EditServiceOrderState(
     val priceWithDiscountOnly = calculatePriceWithDiscount(fullPrice, discount)
     val canAddNewPayment = totalPaid < finalPrice
 
+    val confirmationMessage = if (finalPrice <= totalPaid) {
+        val locale = Locale.getDefault()
+        val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
+        currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumIntegerDigits = 1
 
-    val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
-            && serviceOrderFetchResponseAsync.invoke().isRight()
-    val errorWhileFetchingServiceOrder = serviceOrderFetchResponseAsync is Fail ||
-            (serviceOrderFetchResponseAsync is Success
-                    && serviceOrderFetchResponseAsync.invoke().isLeft())
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(finalPrice)}"
+    } else {
+        val locale = Locale.getDefault()
+        val currencyFormatter = NumberFormat.getCurrencyInstance(locale)
+        currencyFormatter.minimumFractionDigits = 2
+        currencyFormatter.maximumFractionDigits = 2
+        currencyFormatter.minimumIntegerDigits = 1
+
+        val missing = abs(finalPrice - totalPaid)
+
+        "Deseja finalizar a compra no valor de ${currencyFormatter.format(finalPrice)}" +
+                " com o saldo à receber de ${currencyFormatter.format(missing)}"
+    }
 
     private fun calculatePriceWithDiscount(
         fullPrice: Double,

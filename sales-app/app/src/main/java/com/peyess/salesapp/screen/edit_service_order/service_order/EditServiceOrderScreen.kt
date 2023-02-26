@@ -105,6 +105,8 @@ fun EditServiceOrderScreen(
     val hasSaleUpdateFailed by viewModel.collectAsState(EditServiceOrderState::hasSaleUpdateFailed)
     val isSaleDone by viewModel.collectAsState(EditServiceOrderState::isSaleDone)
 
+    val confirmationMessage by viewModel.collectAsState(EditServiceOrderState::confirmationMessage)
+
     if (isSaleDone) {
         LaunchedEffect(Unit) {
             onDone()
@@ -165,6 +167,8 @@ fun EditServiceOrderScreen(
             payments = payments,
             totalPaid = totalPaid,
             finalPrice = finalPrice,
+
+            confirmationMessage = confirmationMessage,
 
             onChangeUser = { onChangeUser(saleId, serviceOrderId) },
             onChangeResponsible = { onChangeResponsible(saleId, serviceOrderId) },

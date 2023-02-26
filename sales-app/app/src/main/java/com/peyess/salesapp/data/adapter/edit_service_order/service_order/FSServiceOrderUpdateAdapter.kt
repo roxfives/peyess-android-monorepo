@@ -1,8 +1,8 @@
 package com.peyess.salesapp.data.adapter.edit_service_order.service_order
 
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
+import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrderUpdate
 
-fun ServiceOrderUpdateDocument.toDotNotation(): Map<String, Any> {
+fun FSServiceOrderUpdate.toMappingUpdate(): Map<String, Any> {
     return mapOf(
         "client_uid" to clientUid,
         "client_document" to clientDocument,

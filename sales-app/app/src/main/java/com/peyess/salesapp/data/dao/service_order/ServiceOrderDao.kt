@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoFetchErr
 import com.peyess.salesapp.data.dao.service_order.errors.ServiceOrderDaoUpdateError
 import com.peyess.salesapp.data.dao.service_order.utils.ServiceOrderPagingSource
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
+import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrderUpdate
 import kotlinx.coroutines.flow.Flow
 
 typealias ServiceOrderFetchResponse = Either<ServiceOrderDaoFetchError, FSServiceOrder>
@@ -21,7 +22,7 @@ interface ServiceOrderDao {
 
     suspend fun updateServiceOrder(
         serviceOrderId: String,
-        updateAsDotNotation: Map<String, Any>,
+        serviceOrderUpdate: FSServiceOrderUpdate,
     ): UpdateServiceOrderResponse
 
     suspend fun serviceOrderById(serviceOrderId: String): ServiceOrderFetchResponse

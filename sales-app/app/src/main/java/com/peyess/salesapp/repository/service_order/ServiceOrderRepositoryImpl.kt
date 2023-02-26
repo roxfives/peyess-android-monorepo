@@ -4,7 +4,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.data.adapter.edit_service_order.service_order.toDotNotation
 import com.peyess.salesapp.data.adapter.service_order.toFSServiceOrder
 import com.peyess.salesapp.data.adapter.service_order.toFSServiceOrderUpdate
 import com.peyess.salesapp.data.adapter.service_order.toServiceOrderDocument
@@ -19,7 +18,6 @@ import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryFetchError
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryUpdateError
-import com.peyess.salesapp.screen.sale.service_order.utils.error.ServiceOrderUnexpected
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -84,7 +82,7 @@ class ServiceOrderRepositoryImpl @Inject constructor(
         serviceOrderDocument: ServiceOrderUpdateDocument,
     ): ServiceOrderRepositoryUpdateResponse = either {
         serviceOrderDao
-            .updateServiceOrder(serviceOrderId, serviceOrderDocument.toDotNotation())
+            .updateServiceOrder(serviceOrderId, serviceOrderDocument.toFSServiceOrderUpdate())
             .mapLeft {
                 when(it) {
                     is ServiceOrderDaoUpdateError.ServiceOrderNotFound ->

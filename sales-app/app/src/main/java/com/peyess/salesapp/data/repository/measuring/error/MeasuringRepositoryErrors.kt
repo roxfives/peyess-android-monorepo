@@ -20,3 +20,12 @@ sealed class ReadMeasuringRepositoryError: MeasuringRepositoryErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdateMeasuringRepositoryError: MeasuringRepositoryErrors {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdateMeasuringRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

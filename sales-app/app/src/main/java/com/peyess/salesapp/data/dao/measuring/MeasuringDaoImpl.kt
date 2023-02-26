@@ -5,9 +5,12 @@ import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.adapter.measuring.toUpdateMap
 import com.peyess.salesapp.data.dao.measuring.error.MeasuringDaoErrors
 import com.peyess.salesapp.data.dao.measuring.error.ReadMeasuringDaoError
+import com.peyess.salesapp.data.dao.measuring.error.UpdateMeasuringDaoError
 import com.peyess.salesapp.data.model.measuring.FSMeasuring
+import com.peyess.salesapp.data.model.measuring.FSMeasuringUpdate
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -85,5 +88,40 @@ class MeasuringDaoImpl @Inject constructor(
         }
 
         response
+    }
+
+    override suspend fun updateMeasuring(
+        measuringId: String,
+        measuringUpdate: FSMeasuringUpdate
+    ): UpdateMeasuringDaoResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdateMeasuringDaoError.Unexpected(
+                description = "Firestore instance is uninitialized"
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            UpdateMeasuringDaoError.Unexpected(
+                description = "Current store is null"
+            )
+        }
+
+        val measuringCollectionPath = salesApplication
+            .stringResource(R.string.fs_col_measuring)
+            .format(storeId)
+
+        Either.catch {
+            firestore.collection(measuringCollectionPath)
+                .document(measuringId)
+                .update(measuringUpdate.toUpdateMap())
+                .await()
+        }.mapLeft {
+            UpdateMeasuringDaoError.Unexpected(
+                description = it.message ?: "Unknown error",
+                throwable = it,
+            )
+        }.bind()
     }
 }

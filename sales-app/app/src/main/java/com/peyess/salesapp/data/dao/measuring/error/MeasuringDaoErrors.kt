@@ -20,3 +20,12 @@ sealed class ReadMeasuringDaoError: MeasuringDaoErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdateMeasuringDaoError: MeasuringDaoErrors {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdateMeasuringDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

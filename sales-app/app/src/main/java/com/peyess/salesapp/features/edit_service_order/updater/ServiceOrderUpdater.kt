@@ -44,7 +44,7 @@ import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateMea
 import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePositioningDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePrescriptionDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
-import com.peyess.salesapp.features.edit_service_order.updater.error.UpdateServiceOrderError
+import com.peyess.salesapp.features.edit_service_order.updater.error.UpdateSaleError
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
@@ -69,7 +69,7 @@ private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, Purchas
 
 private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
 
-typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, Unit>
+typealias UpdateSaleResponse = Either<UpdateSaleError, Unit>
 
 typealias GeneratePrescriptionDataResponse =
         Either<GeneratePrescriptionDataError, PrescriptionUpdateDocument>
@@ -748,9 +748,9 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun updatePurchase(
         purchaseId: String,
         purchaseUpdate: PurchaseUpdateDocument,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         purchaseRepository.updatePurchase(purchaseId, purchaseUpdate).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -760,9 +760,9 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun updateServiceOrder(
         serviceOrderId: String,
         serviceOrderUpdate: ServiceOrderUpdateDocument,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         serviceOrderRepository.update(serviceOrderId, serviceOrderUpdate).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -772,9 +772,9 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun updatePrescription(
         prescriptionId: String,
         prescriptionUpdate: PrescriptionUpdateDocument,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         prescriptionRepository.updatePrescription(prescriptionId, prescriptionUpdate).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -784,9 +784,9 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun updatePositioning(
         positioningId: String,
         positioningUpdate: PositioningUpdateDocument,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         positioningRepository.updatePositioning(positioningId, positioningUpdate).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -796,9 +796,9 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun updateMeasuring(
         measuringId: String,
         measuringUpdate: MeasuringUpdateDocument,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         measuringRepository.updateMeasuring(measuringId, measuringUpdate).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -808,11 +808,11 @@ class ServiceOrderUpdater @Inject constructor(
     suspend fun updateServiceOrder(
         context: Context,
         serviceOrderId: String,
-    ): UpdateServiceOrderResponse = either {
+    ): UpdateSaleResponse = either {
         val currentServiceOrder = serviceOrderRepository
             .serviceOrderById(serviceOrderId)
             .mapLeft {
-                UpdateServiceOrderError.Unexpected(
+                UpdateSaleError.Unexpected(
                     description = it.description,
                     it.error,
                 )
@@ -822,14 +822,14 @@ class ServiceOrderUpdater @Inject constructor(
             context = context,
             serviceOrderId = serviceOrderId,
         ).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
         }.bind()
 
         val prescriptionUpdate = generatePrescriptionData(serviceOrderId).mapLeft {
-            UpdateServiceOrderError.Unexpected(
+            UpdateSaleError.Unexpected(
                 description = it.description,
                 it.error,
             )
@@ -837,7 +837,7 @@ class ServiceOrderUpdater @Inject constructor(
 
         val (positioningLeftUpdate, positioningRightUpdate) = generatePositioningData(serviceOrderId)
             .mapLeft {
-                UpdateServiceOrderError.Unexpected(
+                UpdateSaleError.Unexpected(
                     description = it.description,
                     it.error,
                 )
@@ -845,7 +845,7 @@ class ServiceOrderUpdater @Inject constructor(
 
         val (measuringLeftUpdate, measuringRightUpdate) = generateMeasuringData(serviceOrderId)
             .mapLeft {
-                UpdateServiceOrderError.Unexpected(
+                UpdateSaleError.Unexpected(
                     description = it.description,
                     it.error,
                 )

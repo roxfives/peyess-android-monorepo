@@ -6,6 +6,7 @@ import arrow.core.continuations.ensureNotNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.positioning.error.ReadPositioningDaoError
+import com.peyess.salesapp.data.dao.positioning.error.UpdatePositioningDaoError
 import com.peyess.salesapp.data.model.positioning.FSPositioning
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
@@ -85,5 +86,40 @@ class PositioningDaoImpl @Inject constructor(
         }
 
         positioning
+    }
+
+    override suspend fun updatePositioning(
+        positioningId: String,
+        positioningUpdate: Map<String, Any>
+    ): UpdatePositioningResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdatePositioningDaoError.Unexpected(
+                description = "Firestore instance is uninitialized",
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            UpdatePositioningDaoError.Unexpected(
+                description = "Current store is null",
+            )
+        }
+
+        val positioningCollectionPath = salesApplication
+            .stringResource(R.string.fs_col_positioning)
+            .format(storeId)
+
+        Either.catch {
+            firestore.collection(positioningCollectionPath)
+                .document(positioningId)
+                .update(positioningUpdate)
+                .await()
+        }.mapLeft {
+            UpdatePositioningDaoError.Unexpected(
+                description = "Unexpected error while reading positioning",
+                throwable = it,
+            )
+        }.bind()
     }
 }

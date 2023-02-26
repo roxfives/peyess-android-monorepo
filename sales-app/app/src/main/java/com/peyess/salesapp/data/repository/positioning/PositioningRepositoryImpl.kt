@@ -2,11 +2,14 @@ package com.peyess.salesapp.data.repository.positioning
 
 import arrow.core.continuations.either
 import com.peyess.salesapp.data.adapter.positioning.toFSPositioning
+import com.peyess.salesapp.data.adapter.positioning.toMappingUpdate
 import com.peyess.salesapp.data.dao.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.positioning.error.ReadPositioningDaoError
 import com.peyess.salesapp.data.model.positioning.PositioningDocument
+import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
 import com.peyess.salesapp.data.repository.positioning.adapter.toPositioningDocument
 import com.peyess.salesapp.data.repository.positioning.error.ReadPositioningRepositoryError
+import com.peyess.salesapp.data.repository.positioning.error.UpdatePositioningRepositoryError
 import javax.inject.Inject
 
 class PositioningRepositoryImpl @Inject constructor(
@@ -38,5 +41,19 @@ class PositioningRepositoryImpl @Inject constructor(
                 }
             }.bind()
             .toPositioningDocument()
+    }
+
+    override suspend fun updatePositioning(
+        positioningId: String,
+        positioningUpdate: PositioningUpdateDocument
+    ): UpdatePositioningResponse = either {
+        positioningDao
+            .updatePositioning(positioningId, positioningUpdate.toMappingUpdate())
+            .mapLeft {
+                UpdatePositioningRepositoryError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
     }
 }

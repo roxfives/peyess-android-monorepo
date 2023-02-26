@@ -20,3 +20,12 @@ sealed class ReadPositioningDaoError: PositioningDaoErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdatePositioningDaoError: PositioningDaoErrors {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdatePositioningDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

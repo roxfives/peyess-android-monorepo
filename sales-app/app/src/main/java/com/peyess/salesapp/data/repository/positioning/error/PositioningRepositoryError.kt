@@ -20,3 +20,12 @@ sealed class ReadPositioningRepositoryError: PositioningRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdatePositioningRepositoryError: PositioningRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdatePositioningRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

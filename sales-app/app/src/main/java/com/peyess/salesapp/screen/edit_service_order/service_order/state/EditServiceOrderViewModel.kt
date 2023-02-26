@@ -46,8 +46,6 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toSer
 import com.peyess.salesapp.screen.sale.service_order.adapter.toColoring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLens
 import com.peyess.salesapp.screen.sale.service_order.adapter.toLocalPaymentDocument
-import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
-import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.screen.sale.service_order.adapter.toTreatment
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.utils.file.createPrintFile
@@ -131,6 +129,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             loadColoring(it.coloringId)
             loadTreatment(it.treatmentId)
         }
+
+        onEach(EditServiceOrderState::hasSaleDataUpdateFailed) { updateSaleFailureStatus(it) }
 
         onAsync(EditServiceOrderState::serviceOrderFetchResponseAsync) {
             processServiceOrderFetchResponse(it)
@@ -552,6 +552,14 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                 { onPdfGenerated(it) },
             )
         }
+    }
+
+    private fun updateSaleFailureStatus(hasFailed: Boolean) = setState {
+        copy(hasSaleUpdateFailed = hasFailed)
+    }
+
+    fun onFailureAnimationFinished() = setState {
+        copy(hasSaleUpdateFailed = false)
     }
 
     fun onSaleIdChanged(saleId: String) = setState {

@@ -111,18 +111,6 @@ fun buildEditServiceOrderNavGraph(
                 navHostController.navigate(route)
             },
 
-//            onEditProducts = { saleId, serviceOrderId ->
-//                val route = buildLensSuggestionNavRoute(
-//                    isEditing = true,
-//                    showSuggestions = true,
-//                    saleId = saleId,
-//                    serviceOrderId = serviceOrderId,
-//                )
-//
-//                navHostController
-//                    .navigate(route)
-//            },
-
             onAddPayment = { saleId, serviceOrderId, paymentId ->
                 val isPicking = true
                 val pickScenario = PickScenario.EditPayment.toName()
@@ -156,11 +144,9 @@ fun buildEditServiceOrderNavGraph(
                 navHostController.navigate(buildEditPaymentFeeRoute(saleId, fullPrice))
             },
 
-//            onFinishSale = {
-//                navHostController.navigate(SalesAppScreens.Home.name) {
-//                    popUpTo(SalesAppScreens.Home.name) { inclusive = true }
-//                }
-//            },
+            onDone = {
+                navHostController.popBackStack()
+            },
         )
     }
 }

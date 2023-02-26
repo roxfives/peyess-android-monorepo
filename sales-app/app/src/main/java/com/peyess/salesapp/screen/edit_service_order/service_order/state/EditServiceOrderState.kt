@@ -99,7 +99,47 @@ data class EditServiceOrderState(
     val pdfGenerationAsync: Async<Either<GenerateSaleDataError, Unit>> = Uninitialized,
 
     val saleGenerationAsync: Async<UpdateSaleResponse> = Uninitialized,
+
+    val hasSaleUpdateFailed: Boolean = false,
 ): MavericksState {
+    val isLoadingSaleData = serviceOrderFetchResponseAsync is Loading
+            || sellerResponseAsync is Loading
+            || serviceOrderResponseAsync is Loading
+            || userPickedResponseAsync is Loading
+            || responsiblePickedResponseAsync is Loading
+            || witnessPickedResponseAsync is Loading
+            || prescriptionResponseAsync is Loading
+            || positioningsResponseAsync is Loading
+            || productPickedResponseAsync is Loading
+            || lensResponseAsync is Loading
+            || coloringResponseAsync is Loading
+            || treatmentResponseAsync is Loading
+            || framesResponseAsync is Loading
+            || paymentsResponseAsync is Loading
+            || discountResponseAsync is Loading
+            || feeResponseAsync is Loading
+            || serviceOrderFetchResponseAsync is Uninitialized
+            || sellerResponseAsync is Uninitialized
+            || serviceOrderResponseAsync is Uninitialized
+            || userPickedResponseAsync is Uninitialized
+            || responsiblePickedResponseAsync is Uninitialized
+            || witnessPickedResponseAsync is Uninitialized
+            || prescriptionResponseAsync is Uninitialized
+            || positioningsResponseAsync is Uninitialized
+            || productPickedResponseAsync is Uninitialized
+            || lensResponseAsync is Uninitialized
+            || coloringResponseAsync is Uninitialized
+            || treatmentResponseAsync is Uninitialized
+            || framesResponseAsync is Uninitialized
+            || paymentsResponseAsync is Uninitialized
+            || discountResponseAsync is Uninitialized
+            || feeResponseAsync is Uninitialized
+
+    val isUpdatingSaleData = saleGenerationAsync is Loading
+    val hasSaleDataUpdateFailed = saleGenerationAsync is Fail
+            || (saleGenerationAsync is Success && saleGenerationAsync.invoke().isLeft())
+    val isSaleDone = saleGenerationAsync is Success && saleGenerationAsync.invoke().isRight()
+
     val isGeneratingPdf = pdfGenerationAsync is Loading
     val hasPdfGenerationFailed = pdfGenerationAsync is Fail
             || (pdfGenerationAsync is Success && pdfGenerationAsync.invoke().isLeft())

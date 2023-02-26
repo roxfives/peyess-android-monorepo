@@ -20,3 +20,12 @@ sealed class ReadPrescriptionDaoError: PrescriptionDaoError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdatePrescriptionDaoError: PrescriptionDaoError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdatePrescriptionDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

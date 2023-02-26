@@ -2,11 +2,14 @@ package com.peyess.salesapp.data.repository.prescription
 
 import arrow.core.continuations.either
 import com.peyess.salesapp.data.adapter.prescription.toFSPrescription
+import com.peyess.salesapp.data.adapter.prescription.toUpdateMap
 import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.prescription.error.ReadPrescriptionDaoError
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
+import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.repository.prescription.adapter.toPrescriptionDocument
 import com.peyess.salesapp.data.repository.prescription.error.ReadPrescriptionRepositoryError
+import com.peyess.salesapp.data.repository.prescription.error.UpdatePrescriptionRepositoryError
 import javax.inject.Inject
 
 class PrescriptionRepositoryImpl @Inject constructor(
@@ -39,5 +42,18 @@ class PrescriptionRepositoryImpl @Inject constructor(
             }.bind()
 
         response.toPrescriptionDocument()
+    }
+
+    override suspend fun updatePrescription(
+        prescriptionId: String,
+        prescription: PrescriptionUpdateDocument,
+    ): UpdatePrescriptionResponse = either {
+        prescriptionDao.updatePrescription(prescriptionId, prescription.toUpdateMap())
+            .mapLeft {
+                UpdatePrescriptionRepositoryError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
     }
 }

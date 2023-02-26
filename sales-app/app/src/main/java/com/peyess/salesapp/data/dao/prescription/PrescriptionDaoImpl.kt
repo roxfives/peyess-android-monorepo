@@ -7,6 +7,7 @@ import arrow.core.leftIfNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.prescription.error.ReadPrescriptionDaoError
+import com.peyess.salesapp.data.dao.prescription.error.UpdatePrescriptionDaoError
 import com.peyess.salesapp.data.model.prescription.FSPrescription
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
@@ -84,5 +85,40 @@ class PrescriptionDaoImpl @Inject constructor(
         }
 
         response
+    }
+
+    override suspend fun updatePrescription(
+        prescriptionId: String,
+        prescriptionUpdate: Map<String, Any>,
+    ): UpdatePrescriptionDaoResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdatePrescriptionDaoError.Unexpected(
+                description = "Firestore instance is uninitialized"
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            UpdatePrescriptionDaoError.Unexpected(
+                description = "Store is not authenticated"
+            )
+        }
+
+        val prescriptionCollectionPath = salesApplication
+            .stringResource(R.string.fs_col_prescription)
+            .format(storeId)
+
+        Either.catch {
+            firestore.collection(prescriptionCollectionPath)
+                .document(prescriptionId)
+                .update(prescriptionUpdate)
+                .await()
+        }.mapLeft {
+            UpdatePrescriptionDaoError.Unexpected(
+                description = it.message ?: "Unknown error",
+                throwable = it,
+            )
+        }
     }
 }

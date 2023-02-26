@@ -20,3 +20,12 @@ sealed class ReadPrescriptionRepositoryError: PrescriptionRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdatePrescriptionRepositoryError: PrescriptionRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdatePrescriptionRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

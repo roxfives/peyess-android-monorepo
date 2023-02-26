@@ -8,7 +8,6 @@ import arrow.core.left
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
-import com.peyess.salesapp.data.model.local_sale.positioning.LocalPositioningDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
 import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
@@ -35,7 +34,9 @@ import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toMeasuringUpdateDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPositioningUpdateDocument
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPrescriptionUpdateDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPreview
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPurchase
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toServiceOrder
@@ -45,7 +46,6 @@ import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePre
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.UpdateServiceOrderError
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
-import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
@@ -69,7 +69,7 @@ private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, Purchas
 
 private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
 
-private typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, Unit>
+typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, Unit>
 
 typealias GeneratePrescriptionDataResponse =
         Either<GeneratePrescriptionDataError, PrescriptionUpdateDocument>
@@ -607,7 +607,7 @@ class ServiceOrderUpdater @Inject constructor(
         Pair(purchaseUpdate, serviceOrderUpdate)
     }
 
-    suspend fun generatePrescriptionData(
+    private suspend fun generatePrescriptionData(
         serviceOrderId: String,
     ): GeneratePrescriptionDataResponse = either {
         val collaboratorUid = authenticationRepository.fetchCurrentUserId()
@@ -637,43 +637,10 @@ class ServiceOrderUpdater @Inject constructor(
                 }
             }.bind()
 
-        // TODO: use an adapter for this
-        PrescriptionUpdateDocument(
-            isCopy = localPrescription.isCopy,
-            emitted = localPrescription.prescriptionDate,
-
-            typeId = "",
-            typeDesc = "",
-
-            patientUid = user.id,
-            patientDocument = user.document,
-            patientName = user.name,
-
-            professionalDocument = localPrescription.professionalId,
-            professionalName = localPrescription.professionalName,
-
-            hasPrism = localPrescription.hasPrism,
-            hasAddition = localPrescription.hasAddition,
-
-            lCylinder = localPrescription.cylindricalLeft,
-            lSpherical = localPrescription.sphericalLeft,
-            lAxisDegree = localPrescription.axisLeft,
-            lAddition = localPrescription.additionLeft,
-            lPrismAxis = localPrescription.prismAxisLeft,
-            lPrismDegree = localPrescription.prismDegreeLeft,
-            lPrismPos = localPrescription.prismPositionLeft.toName(),
-
-            rCylinder = localPrescription.cylindricalRight,
-            rSpherical = localPrescription.sphericalRight,
-            rAxisDegree = localPrescription.axisRight,
-            rAddition = localPrescription.additionRight,
-            rPrismAxis = localPrescription.prismAxisRight,
-            rPrismDegree = localPrescription.prismDegreeRight,
-            rPrismPos = localPrescription.prismPositionRight.toName(),
-
+        localPrescription.toPrescriptionUpdateDocument(
+            client = user,
+            collaboratorUid = collaboratorUid,
             updated = ZonedDateTime.now(),
-            updatedBy = collaboratorUid,
-            updateAllowedBy = collaboratorUid,
         )
     }
 
@@ -726,22 +693,195 @@ class ServiceOrderUpdater @Inject constructor(
             ),
         )
     }
+
+    private suspend fun generateMeasuringData(
+        serviceOrderId: String,
+    ): GenerateMeasuringDataResponse = either {
+        val collaboratorUid = authenticationRepository.fetchCurrentUserId()
+
+        val user = editClientPickedRepository.findClientPickedForServiceOrder(
+            serviceOrderId,
+            ClientRole.User
+        ).mapLeft { err ->
+            GenerateMeasuringDataError.Unexpected(
+                description = err.description,
+                throwable = err.error,
+            )
+        }.flatMap {
+            localClientRepository.clientById(it.id).mapLeft { err ->
+                GenerateMeasuringDataError.Unexpected(
+                    description = err.description,
+                    throwable = err.error,
+                )
+            }
+        }.bind()
+
+        val (localLeft, localRight) = editPositioningRepository
+            .bothPositioningForServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateMeasuringDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+
+        val now = ZonedDateTime.now()
+
+        val measuringLeft = localLeft
+            .toMeasuring()
+            .toMeasuringUpdateDocument(
+                client = user,
+                collaboratorUid = collaboratorUid,
+                updated = now,
+            )
+        val measuringRight = localRight
+            .toMeasuring()
+            .toMeasuringUpdateDocument(
+                client = user,
+                collaboratorUid = collaboratorUid,
+                updated = now,
+            )
+
+        Pair(measuringLeft, measuringRight)
+    }
+
+    private suspend fun updatePurchase(
+        purchaseId: String,
+        purchaseUpdate: PurchaseUpdateDocument,
+    ): UpdateServiceOrderResponse = either {
+        purchaseRepository.updatePurchase(purchaseId, purchaseUpdate).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+    }
+
+    private suspend fun updateServiceOrder(
+        serviceOrderId: String,
+        serviceOrderUpdate: ServiceOrderUpdateDocument,
+    ): UpdateServiceOrderResponse = either {
+        serviceOrderRepository.update(serviceOrderId, serviceOrderUpdate).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+    }
+
+    private suspend fun updatePrescription(
+        prescriptionId: String,
+        prescriptionUpdate: PrescriptionUpdateDocument,
+    ): UpdateServiceOrderResponse = either {
+        prescriptionRepository.updatePrescription(prescriptionId, prescriptionUpdate).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+    }
+
+    private suspend fun updatePositioning(
+        positioningId: String,
+        positioningUpdate: PositioningUpdateDocument,
+    ): UpdateServiceOrderResponse = either {
+        positioningRepository.updatePositioning(positioningId, positioningUpdate).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+    }
+
+    private suspend fun updateMeasuring(
+        measuringId: String,
+        measuringUpdate: MeasuringUpdateDocument,
+    ): UpdateServiceOrderResponse = either {
+        measuringRepository.updateMeasuring(measuringId, measuringUpdate).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+    }
+
+    suspend fun updateServiceOrder(
+        context: Context,
+        serviceOrderId: String,
+    ): UpdateServiceOrderResponse = either {
+        val currentServiceOrder = serviceOrderRepository
+            .serviceOrderById(serviceOrderId)
+            .mapLeft {
+                UpdateServiceOrderError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+        val (purchaseUpdate, serviceOrderUpdate) = generateSaleData(
+            context = context,
+            serviceOrderId = serviceOrderId,
+        ).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+
+        val prescriptionUpdate = generatePrescriptionData(serviceOrderId).mapLeft {
+            UpdateServiceOrderError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+
+        val (positioningLeftUpdate, positioningRightUpdate) = generatePositioningData(serviceOrderId)
+            .mapLeft {
+                UpdateServiceOrderError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+        val (measuringLeftUpdate, measuringRightUpdate) = generateMeasuringData(serviceOrderId)
+            .mapLeft {
+                UpdateServiceOrderError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+        updatePurchase(
+            purchaseId = currentServiceOrder.purchaseId,
+            purchaseUpdate = purchaseUpdate,
+        ).bind()
+
+        updateServiceOrder(
+            serviceOrderId = serviceOrderId,
+            serviceOrderUpdate = serviceOrderUpdate,
+        ).bind()
+
+        updatePrescription(
+            prescriptionId = currentServiceOrder.prescriptionId,
+            prescriptionUpdate = prescriptionUpdate,
+        ).bind()
+
+        updatePositioning(
+            positioningId = currentServiceOrder.lPositioningId,
+            positioningUpdate = positioningLeftUpdate,
+        ).bind()
+        updatePositioning(
+            positioningId = currentServiceOrder.rPositioningId,
+            positioningUpdate = positioningRightUpdate,
+        ).bind()
+
+        updateMeasuring(
+            measuringId = currentServiceOrder.lMeasuringId,
+            measuringUpdate = measuringLeftUpdate,
+        ).bind()
+        updateMeasuring(
+            measuringId = currentServiceOrder.rMeasuringId,
+            measuringUpdate = measuringRightUpdate,
+        ).bind()
+    }
 }
-
-// TODO: update prescription generation to use an adapter
-// TODO: generate measuring data
-// TODO: update all the data to the server
-
-//    suspend fun updateServiceOrder(
-//        context: Context,
-//        serviceOrderId: String,
-//    ): UpdateServiceOrderResponse {
-//        val (purchaseUpdate, serviceOrderUpdate) = generateSaleData(
-//            context = context,
-//            serviceOrderId = serviceOrderId,
-//        ).bind()
-
-//        prescriptionData =
-//        measuringsData =
-//        positioningsData =
-//    }

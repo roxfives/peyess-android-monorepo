@@ -33,6 +33,7 @@ import com.peyess.salesapp.feature.service_order.model.Prescription
 import com.peyess.salesapp.feature.service_order.model.Treatment
 import com.peyess.salesapp.features.edit_service_order.fetcher.ServiceOrderFetchResponse
 import com.peyess.salesapp.features.edit_service_order.updater.SaleDataResponse
+import com.peyess.salesapp.features.edit_service_order.updater.UpdateServiceOrderResponse
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.model.users.CollaboratorDocument
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
@@ -97,6 +98,8 @@ data class EditServiceOrderState(
     val fee: PaymentFeeDocument = PaymentFeeDocument(),
 
     val pdfGenerationAsync: Async<Either<GenerateSaleDataError, Unit>> = Uninitialized,
+
+    val saleGenerationAsync: Async<UpdateServiceOrderResponse> = Uninitialized,
 ): MavericksState {
     val isGeneratingPdf = pdfGenerationAsync is Loading
     val hasPdfGenerationFailed = pdfGenerationAsync is Fail

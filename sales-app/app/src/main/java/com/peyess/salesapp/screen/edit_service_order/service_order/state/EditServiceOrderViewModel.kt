@@ -613,6 +613,14 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         }
     }
 
+    fun generateSale(context: Context) = withState {
+        suspend {
+            serviceOrderUpdater.updateServiceOrder(context, it.serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(saleGenerationAsync = it)
+        }
+    }
+
     @AssistedFactory
     interface Factory: EditServiceOrderFactory {
         override fun create(state: EditServiceOrderState): EditServiceOrderViewModel

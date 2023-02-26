@@ -5,11 +5,9 @@ import com.peyess.salesapp.data.model.measuring.FSMeasuringUpdate
 fun FSMeasuringUpdate.toUpdateMap(): Map<String, Any> {
     return mapOf(
         "taken_by_uid" to takenByUid,
-        "correction_model_version" to correctionModelVersion,
         "patient_uid" to patientUid,
         "patient_document" to patientDocument,
         "patient_name" to patientName,
-        "eye" to eye,
         "base_size" to baseSize,
         "base_height" to baseHeight,
         "top_angle" to topAngle,

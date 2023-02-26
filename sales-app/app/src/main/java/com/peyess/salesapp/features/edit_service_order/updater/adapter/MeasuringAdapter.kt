@@ -1,15 +1,20 @@
-package com.peyess.salesapp.data.adapter.measuring
+package com.peyess.salesapp.features.edit_service_order.updater.adapter
 
-import com.peyess.salesapp.data.model.measuring.FSMeasuringUpdate
+import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
-import com.peyess.salesapp.utils.time.toTimestamp
+import com.peyess.salesapp.feature.lens_suggestion.model.Measuring
+import java.time.ZonedDateTime
 
-fun MeasuringUpdateDocument.toFSMeasuringUpdate(): FSMeasuringUpdate {
-    return FSMeasuringUpdate(
-        takenByUid = takenByUid,
-        patientUid = patientUid,
-        patientDocument = patientDocument,
-        patientName = patientName,
+fun Measuring.toMeasuringUpdateDocument(
+    client: LocalClientDocument,
+    collaboratorUid: String,
+    updated: ZonedDateTime,
+): MeasuringUpdateDocument {
+    return MeasuringUpdateDocument(
+        takenByUid = collaboratorUid,
+        patientUid = client.id,
+        patientDocument = client.document,
+        patientName = client.name,
         baseSize = baseSize,
         baseHeight = baseHeight,
         topAngle = topAngle,
@@ -39,8 +44,8 @@ fun MeasuringUpdateDocument.toFSMeasuringUpdate(): FSMeasuringUpdate {
         fixedHe = fixedHe,
         fixedVHoop = fixedVHoop,
         fixedDiameter = fixedDiameter,
-        updated = updated.toTimestamp(),
-        updatedBy = updatedBy,
-        updateAllowedBy = updateAllowedBy,
+        updated = updated,
+        updatedBy = collaboratorUid,
+        updateAllowedBy = collaboratorUid,
     )
 }

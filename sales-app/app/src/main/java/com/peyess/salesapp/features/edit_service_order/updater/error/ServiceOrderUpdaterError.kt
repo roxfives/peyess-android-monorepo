@@ -63,7 +63,7 @@ sealed class GenerateMeasuringDataError: ServiceOrderUpdaterErrors {
 }
 
 sealed class UpdateServiceOrderError: ServiceOrderUpdaterErrors {
-    data class Error(
+    data class Unexpected(
         override val description: String = "Error updating service order",
         val throwable: Throwable? = null,
     ): UpdateServiceOrderError() {

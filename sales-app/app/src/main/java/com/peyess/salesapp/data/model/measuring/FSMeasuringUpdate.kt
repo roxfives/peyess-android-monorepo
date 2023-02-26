@@ -5,13 +5,9 @@ import com.google.firebase.Timestamp
 data class FSMeasuringUpdate(
     val takenByUid: String = "",
 
-    val correctionModelVersion: String = "",
-
     val patientUid: String = "",
     val patientDocument: String = "",
     val patientName: String = "",
-
-    val eye: String = "",
 
     val baseSize: Double = 0.0,
     val baseHeight: Double = 0.0,

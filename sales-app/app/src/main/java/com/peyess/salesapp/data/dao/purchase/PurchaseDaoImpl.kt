@@ -1,10 +1,16 @@
 package com.peyess.salesapp.data.dao.purchase
 
+import arrow.core.Either
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.google.firebase.firestore.Query
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.adapter.purchase.toMappingUpdate
+import com.peyess.salesapp.data.dao.purchase.error.UpdatePurchaseDaoError
 import com.peyess.salesapp.data.dao.purchase.utils.PurchasePagingSource
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
+import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseUpdate
 import com.peyess.salesapp.firebase.FirebaseManager
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
@@ -56,5 +62,38 @@ class PurchaseDaoImpl @Inject constructor(
 
     override fun paginatePurchases(query: Query): PurchasePagingSource {
         return PurchasePagingSource(query)
+    }
+
+    override suspend fun updatePurchase(
+        purchaseId: String,
+        purchaseUpdate: FSPurchaseUpdate,
+    ): UpdatePurchaseResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdatePurchaseDaoError.Unexpected(
+                description = "Firestore instance is uninitialized",
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            UpdatePurchaseDaoError.Unexpected(
+                description = "Store user is not authenticated",
+            )
+        }
+
+        val purchasePath = salesApplication
+            .stringResource(R.string.fs_doc_purchase)
+            .format(storeId, purchaseId)
+
+        Either.catch {
+            firestore.document(purchasePath)
+                .update(purchaseUpdate.toMappingUpdate())
+                .await()
+        }.mapLeft {
+            UpdatePurchaseDaoError.Unexpected(
+                description = it.message ?: "Unknown error",
+            )
+        }
     }
 }

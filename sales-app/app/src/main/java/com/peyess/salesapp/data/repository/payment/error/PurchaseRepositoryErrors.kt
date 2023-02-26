@@ -13,3 +13,12 @@ sealed class PurchaseRepositoryPaginationError: PurchaseRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class UpdatePurchaseRepositoryError: PurchaseRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): UpdatePurchaseRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

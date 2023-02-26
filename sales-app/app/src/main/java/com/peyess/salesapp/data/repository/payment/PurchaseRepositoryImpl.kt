@@ -1,19 +1,21 @@
 package com.peyess.salesapp.data.repository.payment
 
 import arrow.core.Either
+import arrow.core.continuations.either
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.adapter.purchase.toFSPurchase
+import com.peyess.salesapp.data.adapter.purchase.toFSPurchaseUpdate
+import com.peyess.salesapp.data.adapter.purchase.toMappingUpdate
 import com.peyess.salesapp.data.adapter.purchase.toPurchaseDocument
-import com.peyess.salesapp.data.adapter.service_order.toServiceOrderDocument
-import com.peyess.salesapp.data.dao.prescription.PrescriptionDao
 import com.peyess.salesapp.data.dao.purchase.PurchaseDao
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
+import com.peyess.salesapp.data.repository.payment.error.UpdatePurchaseRepositoryError
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.firebase.FirebaseManager
-import com.peyess.salesapp.repository.service_order.error.ServiceOrderRepositoryPaginationError
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import javax.inject.Inject
 
@@ -67,5 +69,18 @@ class PurchaseRepositoryImpl @Inject constructor(
             description = it.message ?: "Unknown error",
             throwable = it,
         )
+    }
+
+    override suspend fun updatePurchase(
+        purchaseId: String,
+        purchaseUpdate: PurchaseUpdateDocument
+    ): UpdatePurchaseResponse = either {
+        purchaseDao.updatePurchase(purchaseId, purchaseUpdate.toFSPurchaseUpdate())
+            .mapLeft {
+                UpdatePurchaseRepositoryError.Unexpected(
+                    description = "Purchase with id $purchaseId not found",
+                    throwable = null,
+                )
+            }.bind()
     }
 }

@@ -54,10 +54,8 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
         payerUids = payerUids,
         payerDocuments = payerDocuments,
         payments = payments.map { it.toFSPayment() },
-        soIds = soIds,
-        soPreviews = soPreviews.mapValues {
-            it.value.toFSDenormalizedServiceOrderDesc()
-        },
+        soPreviews = soPreviews.mapValues { it.value.toFSDenormalizedServiceOrderDesc() },
+        isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
         updated = updated.toTimestamp(),

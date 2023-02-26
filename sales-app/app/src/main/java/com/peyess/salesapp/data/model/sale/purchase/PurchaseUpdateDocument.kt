@@ -37,10 +37,8 @@ data class PurchaseUpdateDocument(
 
     val isDiscountOverall: Boolean = true,
     val overallDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
-
     val paymentFee: FeeDescriptionDocument = FeeDescriptionDocument(),
     val discountServiceOrder: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
-
     val fullPrice: Double = 0.0,
     val finalPrice: Double = 0.0,
     val leftToPay: Double = 0.0,
@@ -52,9 +50,9 @@ data class PurchaseUpdateDocument(
     val payerDocuments: List<String> = emptyList(),
     val payments: List<PaymentDocument> = emptyList(),
 
-    val soIds: List<String> = emptyList(),
     val soPreviews: Map<String, DenormalizedServiceOrderDescDocument> = emptyMap(),
 
+    val isLegalCustom: Boolean = false,
     val legalText: String = "",
     val legalVersion: String = "",
 

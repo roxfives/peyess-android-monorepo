@@ -597,6 +597,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
                         ),
                         purchase = purchase.toPurchase(
                             hid = it.currentPurchase.hid,
+                            soIds = it.currentPurchase.soIds,
                         ),
                     )
 

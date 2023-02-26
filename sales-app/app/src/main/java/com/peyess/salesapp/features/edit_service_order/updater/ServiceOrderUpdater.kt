@@ -508,7 +508,6 @@ class ServiceOrderUpdater @Inject constructor(
             payerDocuments = payments.map { it.clientDocument }.distinct(),
             payments = payments.map { it.toPaymentDocument() },
 
-            soIds = listOf(serviceOrderId),
             soPreviews = mapOf(
                 serviceOrderId to serviceOrder.toPreview()
             ),
@@ -588,6 +587,7 @@ class ServiceOrderUpdater @Inject constructor(
             ),
             purchase = purchaseUpdate.toPurchase(
                 hid = existingPurchase?.hid ?: "",
+                soIds = existingPurchase?.soIds ?: listOf(existingServiceOrder.id),
             ),
         )
         purchaseUpdate = purchaseUpdate.copy(legalText = legalText)
@@ -677,5 +677,4 @@ class ServiceOrderUpdater @Inject constructor(
 //        prescriptionData =
 //        measuringsData =
 //        positioningsData =
-//        serviceOrderAndPurchaseData =
 //    }

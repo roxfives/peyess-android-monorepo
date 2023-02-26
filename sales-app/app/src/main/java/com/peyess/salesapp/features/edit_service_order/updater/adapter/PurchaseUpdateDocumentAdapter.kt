@@ -1,12 +1,12 @@
 package com.peyess.salesapp.features.edit_service_order.updater.adapter
 
-import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
-import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.features.pdf.service_order.model.Purchase
 
-fun PurchaseUpdateDocument.toPurchase(hid: String): Purchase {
+fun PurchaseUpdateDocument.toPurchase(
+    hid: String,
+    soIds: List<String>,
+): Purchase {
     return Purchase(
         hid = hid,
         clientUids = clientUids,

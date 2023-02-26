@@ -8,6 +8,7 @@ import arrow.core.left
 import arrow.core.right
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
+import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
@@ -34,6 +35,7 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPreview
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPurchase
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toServiceOrder
+import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePrescriptionDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.UpdateServiceOrderError
 import com.peyess.salesapp.features.pdf.service_order.buildHtml
@@ -61,10 +63,14 @@ private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, Purchas
 
 private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
 
+private typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, Unit>
+
+typealias GeneratePrescriptionDataResponse =
+        Either<GeneratePrescriptionDataError, PrescriptionUpdateDocument>
+
 typealias SaleDataResponse =
         Either<GenerateSaleDataError, Pair<PurchaseUpdateDocument, ServiceOrderUpdateDocument>>
 
-private typealias UpdateServiceOrderResponse = Either<UpdateServiceOrderError, Unit>
 
 class ServiceOrderUpdater @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
@@ -151,20 +157,17 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         role: ClientRole,
     ): FetchClientDataResponse {
-        return editClientPickedRepository
-            .findClientPickedForServiceOrder(serviceOrderId, role)
+        return editClientPickedRepository.findClientPickedForServiceOrder(serviceOrderId, role)
             .mapLeft { error ->
                 when (error) {
-                    is ReadClientPickedError.ClientPickedNotFound ->
-                        GenerateSaleDataError.ClientNotFound(
-                            description = error.description,
-                            throwable = error.error,
-                        )
-                    is ReadClientPickedError.Unexpected ->
-                        GenerateSaleDataError.Unexpected(
-                            description = error.description,
-                            throwable = error.error,
-                        )
+                    is ReadClientPickedError.ClientPickedNotFound -> GenerateSaleDataError.ClientNotFound(
+                        description = error.description,
+                        throwable = error.error,
+                    )
+                    is ReadClientPickedError.Unexpected -> GenerateSaleDataError.Unexpected(
+                        description = error.description,
+                        throwable = error.error,
+                    )
                 }
             }.flatMap {
                 localClientRepository.clientById(it.id).mapLeft { error ->
@@ -180,14 +183,13 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val prescription = editPrescriptionRepository
-            .prescriptionByServiceOrder(serviceOrderId)
-            .mapLeft {
-                GenerateSaleDataError.Unexpected(
-                    description = it.description,
-                    throwable = it.error,
-                )
-            }.bind()
+        val prescription =
+            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId).mapLeft {
+                    GenerateSaleDataError.Unexpected(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                }.bind()
 
         update.copy(
             isCopy = prescription.isCopy,
@@ -218,14 +220,13 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val positionings = editPositioningRepository
-            .bothPositioningForServiceOrder(serviceOrderId)
-            .mapLeft {
-                GenerateSaleDataError.Unexpected(
-                    description = it.description,
-                    throwable = it.error,
-                )
-            }.bind()
+        val positionings =
+            editPositioningRepository.bothPositioningForServiceOrder(serviceOrderId).mapLeft {
+                    GenerateSaleDataError.Unexpected(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                }.bind()
 
         val measurings = Pair(
             positionings.left.toMeasuring(),
@@ -255,45 +256,36 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val productPicked = editProductPickedRepository
-            .productPickedForServiceOrder(serviceOrderId)
-            .mapLeft {
+        val productPicked =
+            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId).mapLeft {
+                    GenerateSaleDataError.Unexpected(
+                        description = it.description,
+                        it.error,
+                    )
+                }.bind()
+
+        val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
 
-        val lens = localLensesRepository
-            .getLensById(productPicked.lensId)
-            .mapLeft {
+        val coloring = localLensesRepository.getColoringById(productPicked.coloringId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
 
-        val coloring = localLensesRepository
-            .getColoringById(productPicked.coloringId)
-            .mapLeft {
+        val treatment = localLensesRepository.getTreatmentById(productPicked.treatmentId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
 
-        val treatment = localLensesRepository
-            .getTreatmentById(productPicked.treatmentId)
-            .mapLeft {
-                GenerateSaleDataError.Unexpected(
-                    description = it.description,
-                    it.error,
-                )
-            }.bind()
-
-        val frames = editFramesRepository
-            .findFramesForServiceOrder(serviceOrderId)
-            .mapLeft {
+        val frames = editFramesRepository.findFramesForServiceOrder(serviceOrderId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
@@ -410,7 +402,7 @@ class ServiceOrderUpdater @Inject constructor(
 
         when (fee.method) {
             PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Whole -> fee.value / priceWithDiscount
             PaymentFeeCalcMethod.None -> 0.0
         }
     }
@@ -440,9 +432,7 @@ class ServiceOrderUpdater @Inject constructor(
         val fullPrice = serviceOrder.fullPrice
         val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
 
-        val payments = editPaymentRepository
-            .paymentsForSale(saleId)
-            .mapLeft {
+        val payments = editPaymentRepository.paymentsForSale(saleId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = "Payments for sale $saleId not found",
                     throwable = it.error,
@@ -454,9 +444,8 @@ class ServiceOrderUpdater @Inject constructor(
         } else {
             payments.map { it.value }.reduce { acc, payment -> acc + payment }
         }
-        val totalLeft = BigDecimal(abs((finalPrice - totalPaid)))
-            .setScale(2, RoundingMode.HALF_EVEN)
-            .toDouble()
+        val totalLeft =
+            BigDecimal(abs((finalPrice - totalPaid))).setScale(2, RoundingMode.HALF_EVEN).toDouble()
 
         PurchaseUpdateDocument(
             clientUids = listOf(serviceOrderId),
@@ -534,9 +523,7 @@ class ServiceOrderUpdater @Inject constructor(
         context: Context,
         serviceOrderId: String,
     ): SaleDataResponse = either {
-        val existingServiceOrder = serviceOrderRepository
-            .serviceOrderById(serviceOrderId)
-            .mapLeft {
+        val existingServiceOrder = serviceOrderRepository.serviceOrderById(serviceOrderId).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
@@ -549,14 +536,13 @@ class ServiceOrderUpdater @Inject constructor(
         val collaboratorUid = authenticationRepository.fetchCurrentUserId()
         val now = ZonedDateTime.now()
 
-        val localServiceOrder = editServiceOrderRepository
-            .serviceOrderById(serviceOrderId)
-            .mapLeft {
-                GenerateSaleDataError.FetchLocalServiceOrderError(
-                    description = it.description,
-                    throwable = it.error,
-                )
-            }.bind()
+        val localServiceOrder =
+            editServiceOrderRepository.serviceOrderById(serviceOrderId).mapLeft {
+                    GenerateSaleDataError.FetchLocalServiceOrderError(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                }.bind()
 
         var serviceOrderUpdate = ServiceOrderUpdateDocument(
             measureConfirmedBy = collaboratorUid,
@@ -609,6 +595,76 @@ class ServiceOrderUpdater @Inject constructor(
         Pair(purchaseUpdate, serviceOrderUpdate)
     }
 
+    suspend fun generatePrescriptionData(
+        serviceOrderId: String,
+    ): GeneratePrescriptionDataResponse = either {
+        val collaboratorUid = authenticationRepository.fetchCurrentUserId()
+
+        val localPrescription =
+            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId).mapLeft {
+                    GeneratePrescriptionDataError.Unexpected(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                }.bind()
+
+        val user = editClientPickedRepository.findClientPickedForServiceOrder(
+                serviceOrderId,
+                ClientRole.User
+            ).mapLeft { err ->
+                GeneratePrescriptionDataError.Unexpected(
+                    description = err.description,
+                    throwable = err.error,
+                )
+            }.flatMap {
+                localClientRepository.clientById(it.id).mapLeft { err ->
+                    GeneratePrescriptionDataError.Unexpected(
+                        description = err.description,
+                        throwable = err.error,
+                    )
+                }
+            }.bind()
+
+        PrescriptionUpdateDocument(
+            isCopy = localPrescription.isCopy,
+            emitted = localPrescription.prescriptionDate,
+
+            typeId = "",
+            typeDesc = "",
+
+            patientUid = user.id,
+            patientDocument = user.document,
+            patientName = user.name,
+
+            professionalDocument = localPrescription.professionalId,
+            professionalName = localPrescription.professionalName,
+
+            hasPrism = localPrescription.hasPrism,
+            hasAddition = localPrescription.hasAddition,
+
+            lCylinder = localPrescription.cylindricalLeft,
+            lSpherical = localPrescription.sphericalLeft,
+            lAxisDegree = localPrescription.axisLeft,
+            lAddition = localPrescription.additionLeft,
+            lPrismAxis = localPrescription.prismAxisLeft,
+            lPrismDegree = localPrescription.prismDegreeLeft,
+            lPrismPos = localPrescription.prismPositionLeft.toName(),
+
+            rCylinder = localPrescription.cylindricalRight,
+            rSpherical = localPrescription.sphericalRight,
+            rAxisDegree = localPrescription.axisRight,
+            rAddition = localPrescription.additionRight,
+            rPrismAxis = localPrescription.prismAxisRight,
+            rPrismDegree = localPrescription.prismDegreeRight,
+            rPrismPos = localPrescription.prismPositionRight.toName(),
+
+            updated = ZonedDateTime.now(),
+            updatedBy = collaboratorUid,
+            updateAllowedBy = collaboratorUid,
+        )
+    }
+}
+
 //    suspend fun updateServiceOrder(
 //        context: Context,
 //        serviceOrderId: String,
@@ -623,4 +679,3 @@ class ServiceOrderUpdater @Inject constructor(
 //        positioningsData =
 //        serviceOrderAndPurchaseData =
 //    }
-}

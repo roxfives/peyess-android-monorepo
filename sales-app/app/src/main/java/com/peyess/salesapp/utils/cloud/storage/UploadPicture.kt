@@ -8,12 +8,6 @@ import com.peyess.salesapp.utils.cloud.storage.error.StorageUploadError
 import com.peyess.salesapp.utils.cloud.storage.error.uploadErrorAdapter
 import kotlinx.coroutines.tasks.await
 
-private const val storagePathDelimiter = "/"
-
-private fun appendStoragePaths(paths: List<String>): String {
-    return paths.joinToString(separator = storagePathDelimiter)
-}
-
 suspend fun uploadPicture(
     storage: FirebaseStorage,
     storagePath: String,

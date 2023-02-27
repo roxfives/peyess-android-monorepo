@@ -233,9 +233,15 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePrescriptionRepository(
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
         prescriptionDao: PrescriptionDao,
     ): PrescriptionRepository {
-        return PrescriptionRepositoryImpl(prescriptionDao)
+        return PrescriptionRepositoryImpl(
+            salesApplication = salesApplication,
+            firebaseManager = firebaseManager,
+            prescriptionDao = prescriptionDao,
+        )
     }
 
     @Provides

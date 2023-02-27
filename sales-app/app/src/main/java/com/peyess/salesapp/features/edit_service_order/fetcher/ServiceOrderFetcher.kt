@@ -1,10 +1,12 @@
 package com.peyess.salesapp.features.edit_service_order.fetcher
 
+import android.content.Context
 import android.net.Uri
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.leftIfNull
 import arrow.core.right
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.sale.active_sale.LocalSaleDocument
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
@@ -75,6 +77,9 @@ import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.workmanager.edit_service_order.fetch_positioning_picture.enqueuePositioningPictureDownloadWorker
+import com.peyess.salesapp.workmanager.edit_service_order.fetch_prescription_picture.enqueuePrescriptionPictureDownloadWorker
+import timber.log.Timber
 import javax.inject.Inject
 
 private typealias FindLocalSaleResponse = Either<FindSaleError, Boolean>
@@ -111,6 +116,8 @@ typealias ServiceOrderFetchResponse =
         Either<ServiceOrderErrors, Pair<PurchaseDocument, ServiceOrderDocument>>
 
 class ServiceOrderFetcher @Inject constructor(
+    private val salesApplication: SalesApplication,
+
     private val serviceOrderRepository: ServiceOrderRepository,
     private val purchaseRepository: PurchaseRepository,
     private val prescriptionRepository: PrescriptionRepository,
@@ -332,13 +339,12 @@ class ServiceOrderFetcher @Inject constructor(
         serviceOrderDocument: ServiceOrderDocument,
         positioningDocument: PositioningDocument,
         measuringDocument: MeasuringDocument,
-        picture: Uri,
     ): LocalPositioningDocument {
         return LocalPositioningDocument(
             id = positioningDocument.id,
             soId = serviceOrderDocument.id,
             eye = Eye.toEye(positioningDocument.eye),
-            picture = picture,
+            picture = Uri.EMPTY,
 //            device = measuringDocument.,
             baseLeft = positioningDocument.baseLeft,
             baseLeftRotation = positioningDocument.baseLeftRotation,
@@ -376,12 +382,11 @@ class ServiceOrderFetcher @Inject constructor(
     private fun buildLocalPrescription(
         serviceOrderDocument: ServiceOrderDocument,
         prescriptionDocument: PrescriptionDocument,
-        prescriptionPicture: Uri,
     ): LocalPrescriptionDocument {
         return LocalPrescriptionDocument(
             id = prescriptionDocument.id,
             soId = serviceOrderDocument.id,
-            pictureUri = prescriptionPicture,
+            pictureUri = Uri.EMPTY,
             professionalName = prescriptionDocument.professionalName,
             professionalId = prescriptionDocument.professionalDocument,
             isCopy = prescriptionDocument.isCopy,
@@ -795,9 +800,22 @@ class ServiceOrderFetcher @Inject constructor(
 
         val localProductPicked = buildLocalProductPicked(serviceOrder)
 
-        val localPrescription = buildLocalPrescription(serviceOrder, prescription, Uri.EMPTY)
-        val localLeftPositioning = buildLocalPositioning(serviceOrder, leftPositioning, leftMeasuring, Uri.EMPTY)
-        val localRightPositioning = buildLocalPositioning(serviceOrder, rightPositioning, rightMeasuring, Uri.EMPTY)
+        enqueuePrescriptionPictureDownloadWorker(
+            context = salesApplication as Context,
+            prescriptionId = prescription.id,
+        )
+        enqueuePositioningPictureDownloadWorker(
+            context = salesApplication as Context,
+            positioningId = leftPositioning.id,
+        )
+        enqueuePositioningPictureDownloadWorker(
+            context = salesApplication as Context,
+            positioningId = rightPositioning.id,
+        )
+
+        val localPrescription = buildLocalPrescription(serviceOrder, prescription)
+        val localLeftPositioning = buildLocalPositioning(serviceOrder, leftPositioning, leftMeasuring)
+        val localRightPositioning = buildLocalPositioning(serviceOrder, rightPositioning, rightMeasuring)
 
         val localServiceOrder = buildLocalServiceOrder(serviceOrder, lens)
         val localSale = buildLocalSale(purchase)

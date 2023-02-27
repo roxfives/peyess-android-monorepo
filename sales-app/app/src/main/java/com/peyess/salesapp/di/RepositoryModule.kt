@@ -225,9 +225,15 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun providePositioningRepository(
+        salesApplication: SalesApplication,
+        firebaseManager: FirebaseManager,
         positioningDao: com.peyess.salesapp.data.dao.positioning.PositioningDao,
     ): PositioningRepository {
-        return PositioningRepositoryImpl(positioningDao)
+        return PositioningRepositoryImpl(
+            salesApplication = salesApplication,
+            firebaseManager = firebaseManager,
+            positioningDao = positioningDao,
+        )
     }
 
     @Provides

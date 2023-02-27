@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.repository.prescription
 
-import android.net.Uri
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.leftIfNull

@@ -29,3 +29,19 @@ sealed class UpdatePositioningRepositoryError: PositioningRepositoryError {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class GetPictureUriPositioningRepositoryError: PositioningRepositoryError {
+    data class NotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): GetPictureUriPositioningRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class Unexpected(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): GetPictureUriPositioningRepositoryError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

@@ -22,12 +22,25 @@ interface EditPositioningDao {
 
     @Query("""
         SELECT * FROM ${EditPositioningEntity.tableName}
+        WHERE id = :positioningId
+    """)
+    suspend fun positioningById(positioningId: String): EditPositioningEntity?
+
+    @Query("""
+        SELECT * FROM ${EditPositioningEntity.tableName}
         WHERE so_id = :serviceOrderId AND eye = :eye
     """)
     fun streamPositioningForServiceOrder(
         serviceOrderId: String,
         eye: Eye,
     ): Flow<EditPositioningEntity?>
+
+    @Query("""
+        UPDATE ${EditPositioningEntity.tableName}
+        SET picture = :picture
+        WHERE id = :prescriptionId
+    """)
+    suspend fun updatePictureById(prescriptionId: String, picture: Uri)
 
     @Query("""
         UPDATE ${EditPositioningEntity.tableName}

@@ -26,6 +26,10 @@ typealias EditPositioningDeleteResponse = Either<DeletePositioningError, Unit>
 interface EditPositioningRepository {
     suspend fun addPositioning(positioning: LocalPositioningDocument): EditPositioningInsertResponse
 
+    suspend fun positioningById(
+        positioningId: String,
+    ): EditPositioningFetchResponse
+
     suspend fun positioningForServiceOrder(
         serviceOrderId: String,
         eye: Eye,
@@ -42,6 +46,10 @@ interface EditPositioningRepository {
         serviceOrderId: String,
     ): EditPositioningStreamBothResponse
 
+    suspend fun updatePictureById(
+        positioningId: String,
+        picture: Uri,
+    ): EditPositioningUpdateResponse
     suspend fun updatePicture(
         serviceOrderId: String,
         eye: Eye,

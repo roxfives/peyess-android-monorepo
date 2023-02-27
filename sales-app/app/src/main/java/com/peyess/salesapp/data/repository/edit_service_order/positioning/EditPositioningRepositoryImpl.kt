@@ -34,6 +34,21 @@ class EditPositioningRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun positioningById(
+        positioningId: String,
+    ): EditPositioningFetchResponse = Either.catch {
+        positioningDao.positioningById(positioningId)?.toLocalPositioningDocument()
+    }.mapLeft {
+        ReadPositioningError.Unexpected(
+            description = "Error while fetching positioning with id $positioningId",
+            throwable = it,
+        )
+    }.leftIfNull {
+        ReadPositioningError.PositioningNotFound(
+            description = "No positioning found with id $positioningId",
+        )
+    }
+
     override suspend fun positioningForServiceOrder(
         serviceOrderId: String, eye: Eye
     ): EditPositioningFetchResponse = Either.catch {
@@ -91,6 +106,18 @@ class EditPositioningRepositoryImpl @Inject constructor(
                 )
             }
         }
+    }
+
+    override suspend fun updatePictureById(
+        positioningId: String,
+        picture: Uri
+    ): EditPositioningUpdateResponse = Either.catch {
+        positioningDao.updatePictureById(positioningId, picture)
+    }.mapLeft {
+        UpdatePositioningError.Unexpected(
+            description = "Failed to update picture for positioning $positioningId " +
+                    "using value $picture"
+        )
     }
 
     override suspend fun updatePicture(

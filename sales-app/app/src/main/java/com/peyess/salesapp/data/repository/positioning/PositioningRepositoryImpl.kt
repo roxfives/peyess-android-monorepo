@@ -82,7 +82,7 @@ class PositioningRepositoryImpl @Inject constructor(
                 positioning.patientUid,
                 positioning.id,
             )
-        val filename = salesApplication.stringResource(R.string.storage_client_positioning)
+        val filename = salesApplication.stringResource(R.string.storage_client_positioning_filename)
 
         val storagePath = appendStoragePaths(listOf(storagePicturePath, filename))
 

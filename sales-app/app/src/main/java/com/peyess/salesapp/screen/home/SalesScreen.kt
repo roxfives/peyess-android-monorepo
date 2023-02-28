@@ -383,19 +383,17 @@ private fun ServiceOrderCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (BuildConfig.DEBUG) {
-                Button(
-                    onClick = {
-                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+            Button(
+                onClick = {
+                    val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
 
-                        onEditServiceOrder(purchase.id, serviceOrderId)
-                    },
-                ) {
-                    Text(text = purchase.state.actionButtonTitle())
-                }
-
-                Spacer(modifier = Modifier.width(8.dp))
+                    onEditServiceOrder(purchase.id, serviceOrderId)
+                },
+            ) {
+                Text(text = purchase.state.actionButtonTitle())
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             AnimatedVisibility(
                 visible = isGeneratingPdf,

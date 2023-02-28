@@ -34,7 +34,6 @@ const val tooManyAttemptsThreshold = 20
 class PictureUploadManagerWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val salesApplication: SalesApplication,
     private val pictureUploadRepository: PictureUploadRepository,
     private val firebaseManager: FirebaseManager,
 ): CoroutineWorker(context, workerParams) {
@@ -67,12 +66,9 @@ class PictureUploadManagerWorker @AssistedInject constructor(
         ensureNotNull(storageRef) {
             StorageNotInitialized(description = "Reference to storage is null")
         }
-
-        val context = salesApplication as Context
-        val contentResolver = context.contentResolver
-        val mime = MimeTypeMap.getSingleton()
-        val type = mime.getExtensionFromMimeType(
-            contentResolver.getType(pictureUpload.picture)
+        
+        val type = MimeTypeMap.getFileExtensionFromUrl(
+            pictureUpload.picture.toString()
         ).let {
             if (it == "jpg") { "jpeg" } else { it }
         }

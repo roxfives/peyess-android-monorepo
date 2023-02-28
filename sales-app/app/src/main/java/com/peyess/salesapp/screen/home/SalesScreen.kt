@@ -200,7 +200,7 @@ fun SaleList(
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
+        contentPadding = PaddingValues(vertical = 8.dp),
     ) {
         item {
             OutlinedButton(
@@ -363,7 +363,7 @@ private fun ServiceOrderCard(
 
                     Text(
                         text = purchase.state.displayName(),
-                        style = MaterialTheme.typography.body1
+                        style = MaterialTheme.typography.body1,
                     )
                 }
 
@@ -371,7 +371,10 @@ private fun ServiceOrderCard(
             }
         }
 
-        Text(modifier = Modifier.padding(16.dp), text = message)
+        Text(
+            modifier = Modifier.padding(16.dp),
+            text = message,
+        )
 
         Row(
             modifier = Modifier

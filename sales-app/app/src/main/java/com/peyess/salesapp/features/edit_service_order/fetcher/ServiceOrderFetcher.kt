@@ -771,8 +771,6 @@ class ServiceOrderFetcher @Inject constructor(
             ).bind()
         }
 
-
-
         val client = fetchClient(serviceOrder.clientUid).bind()
         val responsible = if (serviceOrder.clientUid == serviceOrder.responsibleUid) {
             null

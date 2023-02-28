@@ -1,5 +1,6 @@
 package com.peyess.salesapp.di
 
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.payment.EditLocalPaymentRepository
@@ -11,6 +12,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.product_picked.Edi
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
@@ -28,6 +30,8 @@ import dagger.hilt.components.SingletonComponent
 object ServicesModule {
     @Provides
     fun provideServiceOrderUpdater(
+        salesApplication: SalesApplication,
+        pictureUploadRepository: PictureUploadRepository,
         authenticationRepository: AuthenticationRepository,
         purchaseRepository: PurchaseRepository,
         serviceOrderRepository: ServiceOrderRepository,
@@ -47,6 +51,8 @@ object ServicesModule {
         editServiceOrderRepository: EditServiceOrderRepository,
     ): ServiceOrderUpdater {
         return ServiceOrderUpdater(
+            salesApplication = salesApplication,
+            pictureUploadRepository = pictureUploadRepository,
             authenticationRepository = authenticationRepository,
             purchaseRepository = purchaseRepository,
             serviceOrderRepository = serviceOrderRepository,

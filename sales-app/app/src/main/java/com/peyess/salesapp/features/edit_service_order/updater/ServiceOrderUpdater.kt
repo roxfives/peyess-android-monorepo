@@ -1,13 +1,18 @@
 package com.peyess.salesapp.features.edit_service_order.updater
 
 import android.content.Context
+import android.net.Uri
+import android.webkit.URLUtil
+import androidx.core.net.toFile
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
+import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
 import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
@@ -30,16 +35,19 @@ import com.peyess.salesapp.data.repository.edit_service_order.product_picked.Edi
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
 import com.peyess.salesapp.data.repository.measuring.MeasuringRepository
 import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.positioning.PositioningRepository
 import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toMeasuringUpdateDocument
+import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPictureUploadDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPositioningUpdateDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPrescriptionUpdateDocument
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPreview
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toPurchase
 import com.peyess.salesapp.features.edit_service_order.updater.adapter.toServiceOrder
+import com.peyess.salesapp.features.edit_service_order.updater.error.AddPictureToUploadError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateMeasuringDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePositioningDataError
 import com.peyess.salesapp.features.edit_service_order.updater.error.GeneratePrescriptionDataError
@@ -54,6 +62,7 @@ import com.peyess.salesapp.screen.sale.service_order.utils.adapter.toDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.ZonedDateTime
@@ -69,13 +78,15 @@ private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, Purchas
 
 private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
 
+private typealias AddPictureToUploadResponse = Either<AddPictureToUploadError, Long>
+
 typealias UpdateSaleResponse = Either<UpdateSaleError, Unit>
 
 typealias GeneratePrescriptionDataResponse =
-        Either<GeneratePrescriptionDataError, PrescriptionUpdateDocument>
+        Either<GeneratePrescriptionDataError, Pair<Uri, PrescriptionUpdateDocument>>
 
 typealias GeneratePositioningDataResponse =
-        Either<GeneratePositioningDataError, Pair<PositioningUpdateDocument, PositioningUpdateDocument>>
+        Either<GeneratePositioningDataError, Pair<Pair<Uri, PositioningUpdateDocument>, Pair<Uri, PositioningUpdateDocument>>>
 
 typealias GenerateMeasuringDataResponse =
         Either<GenerateMeasuringDataError, Pair<MeasuringUpdateDocument, MeasuringUpdateDocument>>
@@ -85,6 +96,7 @@ typealias SaleDataResponse =
 
 
 class ServiceOrderUpdater @Inject constructor(
+    private val salesApplication: SalesApplication,
     private val authenticationRepository: AuthenticationRepository,
     private val purchaseRepository: PurchaseRepository,
     private val serviceOrderRepository: ServiceOrderRepository,
@@ -102,6 +114,7 @@ class ServiceOrderUpdater @Inject constructor(
     private val discountRepository: EditPaymentDiscountRepository,
     private val paymentFeeRepository: EditPaymentFeeRepository,
     private val editServiceOrderRepository: EditServiceOrderRepository,
+    private val pictureUploadRepository: PictureUploadRepository,
 ) {
     private suspend fun addClientData(
         serviceOrderId: String,
@@ -637,10 +650,13 @@ class ServiceOrderUpdater @Inject constructor(
                 }
             }.bind()
 
-        localPrescription.toPrescriptionUpdateDocument(
-            client = user,
-            collaboratorUid = collaboratorUid,
-            updated = ZonedDateTime.now(),
+        Pair(
+            localPrescription.pictureUri,
+            localPrescription.toPrescriptionUpdateDocument(
+                client = user,
+                collaboratorUid = collaboratorUid,
+                updated = ZonedDateTime.now(),
+            ),
         )
     }
 
@@ -677,19 +693,25 @@ class ServiceOrderUpdater @Inject constructor(
 
         val now = ZonedDateTime.now()
         Pair(
-            localLeft.toPositioningUpdateDocument(
-                collaboratorUid = collaboratorUid,
-                patientUid = user.id,
-                patientDocument = user.document,
-                patientName = user.name,
-                updated = now,
+            Pair(
+                localLeft.picture,
+                localLeft.toPositioningUpdateDocument(
+                    collaboratorUid = collaboratorUid,
+                    patientUid = user.id,
+                    patientDocument = user.document,
+                    patientName = user.name,
+                    updated = now,
+                ),
             ),
-            localRight.toPositioningUpdateDocument(
-                collaboratorUid = collaboratorUid,
-                patientUid = user.id,
-                patientDocument = user.document,
-                patientName = user.name,
-                updated = now,
+            Pair(
+                localRight.picture,
+                localRight.toPositioningUpdateDocument(
+                    collaboratorUid = collaboratorUid,
+                    patientUid = user.id,
+                    patientDocument = user.document,
+                    patientName = user.name,
+                    updated = now,
+                )
             ),
         )
     }
@@ -805,6 +827,17 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
     }
 
+    private suspend fun addPictureToUpload(
+        pictureUploadDocument: PictureUploadDocument,
+    ): AddPictureToUploadResponse {
+        return pictureUploadRepository.addPicture(pictureUploadDocument).mapLeft {
+            AddPictureToUploadError.Unexpected(
+                description = it.description,
+                throwable = it.error,
+            )
+        }
+    }
+
     suspend fun updateServiceOrder(
         context: Context,
         serviceOrderId: String,
@@ -828,20 +861,23 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }.bind()
 
-        val prescriptionUpdate = generatePrescriptionData(serviceOrderId).mapLeft {
-            UpdateSaleError.Unexpected(
-                description = it.description,
-                it.error,
-            )
-        }.bind()
-
-        val (positioningLeftUpdate, positioningRightUpdate) = generatePositioningData(serviceOrderId)
+        val (prescriptionPicture, prescriptionUpdate) = generatePrescriptionData(serviceOrderId)
             .mapLeft {
                 UpdateSaleError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
+
+        val (positioningLeftResponse, positioningRightResponse) = generatePositioningData(serviceOrderId)
+            .mapLeft {
+                UpdateSaleError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+        val (positioningPictureLeft, positioningLeftUpdate) = positioningLeftResponse
+        val (positioningPictureRight, positioningRightUpdate) = positioningRightResponse
 
         val (measuringLeftUpdate, measuringRightUpdate) = generateMeasuringData(serviceOrderId)
             .mapLeft {
@@ -883,5 +919,79 @@ class ServiceOrderUpdater @Inject constructor(
             measuringId = currentServiceOrder.rMeasuringId,
             measuringUpdate = measuringRightUpdate,
         ).bind()
+
+        if (prescriptionPicture.isLocalFile()) {
+            val prescriptionPictureEntryId = addPictureToUpload(
+                pictureUploadDocument = prescriptionUpdate.toPictureUploadDocument(
+                    storeId = currentServiceOrder.storeId,
+                    prescriptionId = currentServiceOrder.prescriptionId,
+                    pictureUri = prescriptionPicture,
+                    salesApplication = salesApplication,
+                )
+            ).mapLeft {
+                UpdateSaleError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+            enqueuePictureUploadManagerWorker(
+                context = salesApplication as Context,
+                uploadEntryId = prescriptionPictureEntryId,
+            )
+        }
+
+        if (positioningPictureLeft.isLocalFile()) {
+            val positioningPictureEntryId = addPictureToUpload(
+                pictureUploadDocument = positioningLeftUpdate.toPictureUploadDocument(
+                    storeId = currentServiceOrder.storeId,
+                    positioningId = currentServiceOrder.lPositioningId,
+                    pictureUri = positioningPictureLeft,
+                    salesApplication = salesApplication,
+                )
+            ).mapLeft {
+                UpdateSaleError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+            enqueuePictureUploadManagerWorker(
+                context = salesApplication as Context,
+                uploadEntryId = positioningPictureEntryId,
+            )
+        }
+
+        if (positioningPictureRight.isLocalFile()) {
+            val positioningPictureEntryId = addPictureToUpload(
+                pictureUploadDocument = positioningRightUpdate.toPictureUploadDocument(
+                    storeId = currentServiceOrder.storeId,
+                    positioningId = currentServiceOrder.rPositioningId,
+                    pictureUri = positioningPictureRight,
+                    salesApplication = salesApplication,
+                )
+            ).mapLeft {
+                UpdateSaleError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+            enqueuePictureUploadManagerWorker(
+                context = salesApplication as Context,
+                uploadEntryId = positioningPictureEntryId,
+            )
+        }
     }
+}
+
+fun Uri.isLocalFile(): Boolean {
+    val asString = this.toString()
+
+    return URLUtil.isValidUrl(asString)
+            && (URLUtil.isFileUrl(asString) || URLUtil.isContentUrl(asString))
+}
+
+fun Uri.isNotLocalFile(): Boolean {
+    return !isLocalFile()
 }

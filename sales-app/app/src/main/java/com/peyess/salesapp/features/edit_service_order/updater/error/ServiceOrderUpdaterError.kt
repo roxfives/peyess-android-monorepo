@@ -70,3 +70,12 @@ sealed class UpdateSaleError: ServiceOrderUpdaterErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class AddPictureToUploadError: ServiceOrderUpdaterErrors {
+    data class Unexpected(
+        override val description: String = "Error adding picture to upload",
+        val throwable: Throwable? = null,
+    ): AddPictureToUploadError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

@@ -123,6 +123,16 @@
     <string name="go_next_default">Próximo</string>
     <string name="purchase_card_message">Venda no valor de %1$s feita no dia %2$s com responsável %3$s</string>
 
+    <string name="purchase_action_button_edit">Editar</string>
+    <string name="purchase_action_button_view">Ver</string>
+
+    <string name="purchase_state_display_name_pending">Em andamento</string>
+    <string name="purchase_state_display_name_confirmed">Confirmada</string>
+    <string name="purchase_state_display_name_failed">Venda com falhas</string>
+    <string name="purchase_state_display_name_cancelled">Venda cancelada</string>
+    <string name="purchase_state_display_name_unknown">Venda com problemas</string>
+    <string name="purchase_state_display_name_finished">Venda finalizada</string>
+
     <string name="btn_open_pdf">Abrir PDF</string>
     <string name="btn_edit_service_order">Editar Ordem de Serviço</string>
 

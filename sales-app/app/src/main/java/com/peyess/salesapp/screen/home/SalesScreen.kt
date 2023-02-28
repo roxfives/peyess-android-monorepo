@@ -42,7 +42,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -65,6 +64,9 @@ import com.peyess.salesapp.app.state.PurchaseStream
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.screen.home.utils.PurchaseBadge
+import com.peyess.salesapp.screen.home.utils.actionButtonTitle
+import com.peyess.salesapp.screen.home.utils.displayName
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.fourth_step_pain.state.FourthStepViewModel
@@ -304,13 +306,12 @@ private fun ServiceOrderCard(
     Column(
         modifier = modifier
             .border(
+                shape = RoundedCornerShape(6.dp),
                 border = BorderStroke(
                     width = 2.dp,
                     MaterialTheme.colors.primary.copy(alpha = 0.5f),
                 ),
-                shape = RoundedCornerShape(6.dp),
-            )
-            .clickable { },
+            ),
     ) {
         Row(
             horizontalArrangement = Arrangement.Start,
@@ -325,8 +326,7 @@ private fun ServiceOrderCard(
                         width = 2.dp,
                         color = MaterialTheme.colors.primary,
                         shape = CircleShape,
-                    )
-                    .clip(CircleShape),
+                    ).clip(CircleShape),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(pictureUri.value)
                     .crossfade(true)
@@ -357,25 +357,12 @@ private fun ServiceOrderCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .border(
-                                border = BorderStroke(
-                                    width = 1.dp,
-                                    color = Color.Green,
-                                ),
-                                shape = RoundedCornerShape(100),
-                            )
-                            .background(color = Color.Green)
-                    )
+                    purchase.state.PurchaseBadge()
 
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        // TODO: update using Util function
-                        // TODO: use string resource
-                        text = "Em andamento",
+                        text = purchase.state.displayName(),
                         style = MaterialTheme.typography.body1
                     )
                 }
@@ -401,7 +388,7 @@ private fun ServiceOrderCard(
                         onEditServiceOrder(purchase.id, serviceOrderId)
                     },
                 ) {
-                    Text(text = "Editar")
+                    Text(text = purchase.state.actionButtonTitle())
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))

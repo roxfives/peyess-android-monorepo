@@ -3,6 +3,7 @@ package com.peyess.salesapp.typing.sale
 sealed class PurchaseState {
     object PendingConfirmation: PurchaseState()
     object Confirmed: PurchaseState()
+    object FinishedSuccessfully: PurchaseState()
     object Failed: PurchaseState()
     object Cancelled: PurchaseState()
     object Unknown: PurchaseState()
@@ -14,6 +15,7 @@ sealed class PurchaseState {
             return when (state) {
                 is PendingConfirmation -> "pending-confirmation"
                 is Confirmed -> "confirmed"
+                is FinishedSuccessfully -> "finished-successfully"
                 is Failed -> "failed"
                 is Cancelled -> "cancelled"
                 is Unknown -> "unknown"
@@ -24,6 +26,7 @@ sealed class PurchaseState {
             return when (state) {
                 "pending-confirmation" -> PendingConfirmation
                 "confirmed" -> Confirmed
+                "finished-successfully" -> FinishedSuccessfully
                 "failed" -> Failed
                 "cancelled" -> Cancelled
                 else -> Unknown

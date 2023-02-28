@@ -106,6 +106,8 @@ fun EditServiceOrderScreen(
     val isSaleDone by viewModel.collectAsState(EditServiceOrderState::isSaleDone)
 
     val confirmationMessage by viewModel.collectAsState(EditServiceOrderState::confirmationMessage)
+    
+    val canUpdate by viewModel.collectAsState(EditServiceOrderState::canUpdate)
 
     if (isSaleDone) {
         LaunchedEffect(Unit) {
@@ -147,6 +149,9 @@ fun EditServiceOrderScreen(
     ) {
         ServiceOrderUI(
             modifier = modifier,
+            
+            canUpdate = canUpdate,
+            isUpdating = true,
 
             prescription = prescription,
 

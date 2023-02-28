@@ -3,6 +3,8 @@ package com.peyess.salesapp.feature.service_order
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
@@ -120,6 +122,9 @@ private val infoTextPadding = 32.dp
 fun ServiceOrderUI(
     modifier: Modifier = Modifier,
 
+    canUpdate: Boolean = false,
+    isUpdating: Boolean = false,
+
     onFinishSale: () -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
@@ -183,6 +188,7 @@ fun ServiceOrderUI(
         ) {
             ClientSection(
                 isLoading = areUsersLoading,
+                canUpdate = canUpdate,
 
                 onChangeResponsible = onChangeResponsible,
                 onChangeUser = onChangeUser,
@@ -200,6 +206,7 @@ fun ServiceOrderUI(
 
             PrescriptionSection(
                 isLoading = isPrescriptionLoading,
+                canUpdate = canUpdate,
                 prescription = prescription,
 
                 onEdit = onEditPrescription,
@@ -209,6 +216,7 @@ fun ServiceOrderUI(
 
             MeasuresSection(
                 isLoading = isMeasureLoading,
+                canUpdate = canUpdate,
                 measureLeft = measureLeft,
                 measureRight = measureRight,
             )
@@ -217,6 +225,7 @@ fun ServiceOrderUI(
 
             ProductsSection(
                 isLoading = isProductLoading,
+                canUpdate = canUpdate,
 
                 onAddDiscount = onAddDiscount,
                 onEditProducts = onEditProducts,
@@ -231,6 +240,7 @@ fun ServiceOrderUI(
 
             PaymentSection(
                 isLoading = isPaymentLoading,
+                canUpdate = canUpdate,
 
                 canAddNewPayment = canAddNewPayment,
                 totalPaid = totalPaid,
@@ -255,8 +265,19 @@ fun ServiceOrderUI(
                     )
                 },
 
-                nextTitle = stringResource(id = R.string.btn_finish_sale),
-                onNext = { confirmationDialogState.show() },
+                canGoNext = canUpdate,
+                nextTitle = stringResource(
+                    id = if (isUpdating) {
+                        R.string.btn_update_sale
+                    } else {
+                        R.string.btn_finish_sale
+                    }
+                ),
+                onNext = {
+                     if (canUpdate) {
+                         confirmationDialogState.show()
+                     }
+                },
             )
 
 
@@ -333,6 +354,7 @@ private fun ActionButtons(
 @Composable
 private fun ClientSection(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
 
     isLoading: Boolean = false,
 
@@ -382,6 +404,7 @@ private fun ClientSection(
 
             ClientCard(
                 pictureForClient = pictureForClient,
+                canUpdate = canUpdate,
                 client = user,
                 isLoading = isLoading,
                 onEditClient = onChangeUser,
@@ -395,6 +418,7 @@ private fun ClientSection(
 
             ClientCard(
                 pictureForClient = pictureForClient,
+                canUpdate = canUpdate,
                 client = responsible,
                 isLoading = isLoading,
                 onEditClient = onChangeResponsible,
@@ -461,6 +485,7 @@ fun SubSectionTitlePreview() {
 @Composable
 private fun ClientCard(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
     isLoading: Boolean = false,
     client: Client = Client(),
     onEditClient: () -> Unit = {},
@@ -548,15 +573,21 @@ private fun ClientCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            OutlinedButton(
-                modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
-                enabled = !isLoading,
-                onClick = onEditClient,
+            AnimatedVisibility(
+                visible = canUpdate,
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    text = stringResource(id = R.string.btn_change_client),
-                )
+                OutlinedButton(
+                    modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+                    enabled = !isLoading,
+                    onClick = onEditClient,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        text = stringResource(id = R.string.btn_change_client),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(endingSpacerWidth))
@@ -567,6 +598,7 @@ private fun ClientCard(
 @Composable
 private fun PrescriptionSection(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
     isLoading: Boolean = false,
 
     onEdit: () -> Unit = {},
@@ -588,11 +620,17 @@ private fun PrescriptionSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = onEdit,
-                enabled = !isLoading,
+            AnimatedVisibility(
+                visible = canUpdate,
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                IconButton(
+                    onClick = onEdit,
+                    enabled = !isLoading,
+                ) {
+                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                }
             }
         }
 
@@ -1093,6 +1131,7 @@ private fun PrescriptionSection(
 @Composable
 private fun MeasuresSection(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
     isLoading: Boolean = false,
 
     measureLeft: Measuring = Measuring(),
@@ -1119,11 +1158,7 @@ private fun MeasuresSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = {
-                    infoDialogState.show()
-                },
-            ) {
+            IconButton(onClick = { infoDialogState.show() }) {
                 Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
 
@@ -1336,6 +1371,7 @@ private fun MeasuresSection(
 @Composable
 private fun ProductsSection(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
     isLoading: Boolean = false,
 
     onEditProducts: () -> Unit = {},
@@ -1379,18 +1415,29 @@ private fun ProductsSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(
-                onClick = onAddDiscount,
-                enabled = !isLoading,
+            AnimatedVisibility(
+                visible = canUpdate,
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                Icon(imageVector = Icons.Filled.Discount, contentDescription = "")
-            }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(
+                        onClick = onAddDiscount,
+                        enabled = !isLoading,
+                    ) {
+                        Icon(imageVector = Icons.Filled.Discount, contentDescription = "")
+                    }
 
-            IconButton(
-                onClick = onEditProducts,
-                enabled = !isLoading,
-            ) {
-                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                    IconButton(
+                        onClick = onEditProducts,
+                        enabled = !isLoading,
+                    ) {
+                        Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                    }
+                }
             }
         }
 
@@ -1695,6 +1742,7 @@ private fun MiscCard(
 @Composable
 private fun PaymentSection(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
 
     canAddNewPayment: Boolean = false,
     totalPaid: Double = 0.0,
@@ -1722,15 +1770,26 @@ private fun PaymentSection(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            IconButton(onClick = onAddPaymentFee) {
-                Icon(imageVector = Icons.Filled.Paid, contentDescription = "")
-            }
-
-            IconButton(
-                onClick = onAddPayment,
-                enabled = !isLoading && canAddNewPayment,
+            AnimatedVisibility(
+                visible = canUpdate,
+                enter = fadeIn(),
+                exit = fadeOut(),
             ) {
-                Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "")
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(onClick = onAddPaymentFee) {
+                        Icon(imageVector = Icons.Filled.Paid, contentDescription = "")
+                    }
+
+                    IconButton(
+                        onClick = onAddPayment,
+                        enabled = !isLoading && canAddNewPayment,
+                    ) {
+                        Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "")
+                    }
+                }
             }
         }
 
@@ -1783,6 +1842,7 @@ private fun PaymentSection(
                 for (payment in payments) {
                     PaymentCard(
                         modifier = Modifier.fillMaxWidth(),
+                        canUpdate = canUpdate,
 
                         pictureForClient = pictureForClient,
 
@@ -1799,6 +1859,7 @@ private fun PaymentSection(
 @Composable
 private fun PaymentCard(
     modifier: Modifier = Modifier,
+    canUpdate: Boolean = false,
     payment: Payment = Payment(),
     onEditPayment: (payment: Payment) -> Unit = {},
     onDeletePayment: (payment: Payment) -> Unit = {},
@@ -1893,16 +1954,27 @@ private fun PaymentCard(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        IconButton(onClick = { onEditPayment(payment) }) {
-            Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
-        }
-        Spacer(modifier = Modifier.width(4.dp))
-        IconButton(onClick = { onDeletePayment(payment) }) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                tint = MaterialTheme.colors.error,
-                contentDescription = "",
-            )
+        AnimatedVisibility(
+            visible = canUpdate,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(onClick = { onEditPayment(payment) }) {
+                    Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                IconButton(onClick = { onDeletePayment(payment) }) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        tint = MaterialTheme.colors.error,
+                        contentDescription = "",
+                    )
+                }
+            }
         }
     }
 }

@@ -137,6 +137,9 @@ fun CreateServiceOrderScreen(
         ServiceOrderUI(
             modifier = modifier,
 
+            canUpdate = true,
+            isUpdating = false,
+
             onFinishSale = { viewModel.generateSale(context) },
 
             pictureForClient = viewModel::pictureForClient,

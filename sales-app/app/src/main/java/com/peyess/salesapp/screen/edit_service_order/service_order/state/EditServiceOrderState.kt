@@ -40,6 +40,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMea
 import com.peyess.salesapp.screen.edit_service_order.service_order.model.ServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PurchaseState
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -143,6 +144,8 @@ data class EditServiceOrderState(
             || paymentsResponseAsync is Uninitialized
             || discountResponseAsync is Uninitialized
             || feeResponseAsync is Uninitialized
+
+    val canUpdate = currentPurchase.state == PurchaseState.PendingConfirmation
 
     val isUpdatingSaleData = saleGenerationAsync is Loading
     val hasSaleDataUpdateFailed = saleGenerationAsync is Fail

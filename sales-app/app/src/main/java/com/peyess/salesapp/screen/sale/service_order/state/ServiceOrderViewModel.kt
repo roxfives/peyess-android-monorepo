@@ -577,14 +577,16 @@ class ServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                addPrescriptionPictureToUpload(
-                    it.toPictureUploadDocument(
-                        salesApplication,
-                        state.activeStoreId,
-                        state.userClient.id,
-                        state.serviceOrderResponse.first.prescriptionId,
+                if (it.pictureUri != Uri.EMPTY) {
+                    addPrescriptionPictureToUpload(
+                        it.toPictureUploadDocument(
+                            salesApplication,
+                            state.activeStoreId,
+                            state.userClient.id,
+                            state.serviceOrderResponse.first.prescriptionId,
+                        )
                     )
-                )
+                }
 
                 setState {
                     copy(prescription = it.toPrescription())
@@ -608,21 +610,25 @@ class ServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                addPositioningLeftPictureToUpload(
-                    it.left.toPictureUploadDocument(
-                        salesApplication = salesApplication,
-                        storeId = state.activeStoreId,
-                        clientId = state.userClient.id,
+                if (it.left.picture != Uri.EMPTY) {
+                    addPositioningLeftPictureToUpload(
+                        it.left.toPictureUploadDocument(
+                            salesApplication = salesApplication,
+                            storeId = state.activeStoreId,
+                            clientId = state.userClient.id,
+                        )
                     )
-                )
+                }
 
-                addPositioningRightPictureToUpload(
-                    it.right.toPictureUploadDocument(
-                        salesApplication = salesApplication,
-                        storeId = state.activeStoreId,
-                        clientId = state.userClient.id,
+                if (it.right.picture != Uri.EMPTY) {
+                    addPositioningRightPictureToUpload(
+                        it.right.toPictureUploadDocument(
+                            salesApplication = salesApplication,
+                            storeId = state.activeStoreId,
+                            clientId = state.userClient.id,
+                        )
                     )
-                )
+                }
             },
         )
     }

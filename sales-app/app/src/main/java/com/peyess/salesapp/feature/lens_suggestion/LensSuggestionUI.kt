@@ -314,15 +314,11 @@ private fun TierSuggestion(
                         LensSuggestionCard(
                             modifier = Modifier
                                 .width(
-                                    screenWidth
-                                        .div(2)
-                                        .minus(cardSeparationPadding).dp
-                                )
-                                .minimumHeightModifier(
+                                    screenWidth.div(2).minus(cardSeparationPadding).dp
+                                ).minimumHeightModifier(
                                     state = minimumHeightState,
                                     density = density,
-                                )
-                                .padding(vertical = 16.dp),
+                                ).padding(vertical = 16.dp),
                             lens = it,
                             onPickLens = onPickLens
                         )
@@ -822,6 +818,7 @@ private fun LensList(
                     items(lensesTable.itemCount) { index ->
                         Timber.i("Displaying $index for ${lensesTable.itemCount}")
 
+                        // TODO: refactor potential nullability
                         lensesTable[index].let {
                             LensCard(
                                 lens = it!!,

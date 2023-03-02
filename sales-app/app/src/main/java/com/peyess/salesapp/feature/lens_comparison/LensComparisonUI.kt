@@ -73,6 +73,8 @@ import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.abs
 
 private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
@@ -517,10 +519,16 @@ private fun LensComparisonCard(
                     .background(color = MaterialTheme.colors.primary.copy(alpha = 0.3f))
                     .clickable { onSelectComparison() },
             ) {
+                val pricePerMonth = BigDecimal("${individualComparison.finalPrice}")
+                    .setScale(3, RoundingMode.HALF_EVEN)
+                    .divide(BigDecimal("10"), RoundingMode.HALF_EVEN)
+                    .setScale(2, RoundingMode.FLOOR)
+
+
                 PriceTag(
                     modifier = Modifier.align(Alignment.Center),
                     pricePerMonth = NumberFormat.getCurrencyInstance()
-                        .format(individualComparison.finalPrice / 10f)
+                        .format(pricePerMonth)
                 )
 
                 Icon(
@@ -603,8 +611,14 @@ private fun PriceDifference(
     } else {
         ""
     }
+
+    val pricePerMonth = BigDecimal("${abs(priceDiff)}")
+        .setScale(3, RoundingMode.HALF_EVEN)
+        .divide(BigDecimal("$installments"), RoundingMode.HALF_EVEN)
+        .setScale(2, RoundingMode.FLOOR)
+
     priceTag += NumberFormat.getCurrencyInstance()
-        .format(abs(priceDiff / installments))
+        .format(pricePerMonth)
 
     PriceTag(
         modifier = modifier,

@@ -42,6 +42,7 @@ import com.peyess.salesapp.ui.component.card.ExpandableCard
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.ui.theme.Shapes
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 private val noFilterColor = Color.hsv(353f, 0.99f, 0.48f)
 private val withFilterColor = Color.hsv(79f, 1f, 0.77f)
@@ -398,16 +399,18 @@ private fun LensPrice(
     price: BigDecimal = BigDecimal(2500.0),
     installments: BigDecimal = BigDecimal(10.0),
 ) {
+    val priceDisplay = price.setScale(3, RoundingMode.HALF_EVEN)
+        .divide(installments, RoundingMode.HALF_EVEN)
+        .setScale(2, RoundingMode.FLOOR)
+
     Box(modifier = modifier) {
         Text(
-            modifier = Modifier
-                .padding(
+            modifier = Modifier.padding(
                     horizontal = 28.dp,
                     vertical = 12.dp,
-                )
-                .align(Alignment.Center),
+                ).align(Alignment.Center),
             // TODO: localize price symbol
-            text = NumberFormat.getCurrencyInstance().format(price / installments),
+            text = NumberFormat.getCurrencyInstance().format(priceDisplay),
             style = MaterialTheme.typography.h6,
             color = color,
         )
@@ -442,5 +445,16 @@ private fun LensCardPreview() {
 private fun LensStatusPreview() {
     SalesAppTheme {
         LensStatus()
+    }
+}
+
+@Preview
+@Composable
+private fun LensPricePreview() {
+    SalesAppTheme {
+        LensPrice(
+            price = BigDecimal("199.99"),
+            installments = BigDecimal("10.0"),
+        )
     }
 }

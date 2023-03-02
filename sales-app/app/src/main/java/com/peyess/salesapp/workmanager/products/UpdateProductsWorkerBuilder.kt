@@ -30,7 +30,7 @@ suspend fun enqueueProductUpdateWorker(
 
         constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
-            .setRequiresBatteryNotLow(true)
+            .setRequiresBatteryNotLow(false)
             .setRequiresCharging(false)
             .setRequiresStorageNotLow(false)
             .build()

@@ -21,7 +21,7 @@ const val isInitiatingKey = "isInitiatingKey"
 private fun buildWorkerConstraints(): Constraints {
     return Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
-        .setRequiresBatteryNotLow(true)
+        .setRequiresBatteryNotLow(false)
         .setRequiresCharging(false)
         .setRequiresStorageNotLow(false)
         .build()

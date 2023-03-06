@@ -128,6 +128,8 @@ data class ServiceOrderState(
             && addPositioningRightResponseAsync.invoke().isRight()
     val isSaleLoading = serviceOrderGenerationResponseAsync is Loading
     val hasSaleFailed = serviceOrderGenerationResponseAsync is Fail
+            || (serviceOrderGenerationResponseAsync is Success
+                && serviceOrderGenerationResponseAsync.invoke().isLeft())
 
     val isUserLoading = userClientAsync is Loading
     val isResponsibleLoading = responsibleClientAsync is Loading

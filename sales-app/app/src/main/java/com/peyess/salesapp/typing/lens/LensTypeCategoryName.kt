@@ -15,7 +15,7 @@ sealed class LensTypeCategoryName {
     companion object {
         fun fromName(name: String?): LensTypeCategoryName {
             return when(name?.lowercase() ?: "") {
-                "perto" -> Near
+                "perto", "monofocal" -> Near
                 "longe" -> Far
                 "multifocal" -> Multi
                 else -> None

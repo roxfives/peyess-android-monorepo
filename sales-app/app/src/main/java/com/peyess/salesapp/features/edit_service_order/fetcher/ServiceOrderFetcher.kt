@@ -5,7 +5,6 @@ import android.net.Uri
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.leftIfNull
-import arrow.core.right
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.dao.sale.active_sale.LocalSaleDocument
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
@@ -79,7 +78,6 @@ import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.workmanager.edit_service_order.fetch_positioning_picture.enqueuePositioningPictureDownloadWorker
 import com.peyess.salesapp.workmanager.edit_service_order.fetch_prescription_picture.enqueuePrescriptionPictureDownloadWorker
-import timber.log.Timber
 import javax.inject.Inject
 
 private typealias FindLocalSaleResponse = Either<FindSaleError, Boolean>
@@ -667,10 +665,10 @@ class ServiceOrderFetcher @Inject constructor(
     }
 
     private suspend fun deletePaymentsLocally(
-        serviceOrderId: String,
+        purchaseId: String,
     ): DeleteSaleResponse {
         return localPaymentRepository
-            .deletePaymentsForSale(serviceOrderId).mapLeft {
+            .deletePaymentsForSale(purchaseId).mapLeft {
                 DeleteSaleError.Unexpected(
                     description = it.description,
                     throwable = it.error,
@@ -724,7 +722,7 @@ class ServiceOrderFetcher @Inject constructor(
         }
     }
 
-    private suspend fun deletePurchaseIdLocally(
+    private suspend fun deletePurchaseLocally(
         saleId: String,
     ): DeleteSaleResponse {
         return localSaleRepository.deleteSaleById(saleId).mapLeft {
@@ -741,15 +739,15 @@ class ServiceOrderFetcher @Inject constructor(
     ): DeleteSaleResponse = either {
         deletePaymentFeeLocally(saleId).bind()
         deletePaymentDiscountLocally(saleId).bind()
+        deletePaymentsLocally(saleId).bind()
         deleteProductPickedLocally(serviceOrderId).bind()
         deletePrescriptionLocally(serviceOrderId).bind()
         deletePositioningsLocally(serviceOrderId).bind()
-        deletePaymentsLocally(serviceOrderId).bind()
         deleteLensComparisonsLocally(serviceOrderId).bind()
         deleteFramesLocally(serviceOrderId).bind()
         deleteClientsPickedLocally(serviceOrderId).bind()
         deleteServiceOrderLocally(serviceOrderId).bind()
-        deletePurchaseIdLocally(saleId).bind()
+        deletePurchaseLocally(saleId).bind()
     }
 
     suspend fun fetchFullSale(

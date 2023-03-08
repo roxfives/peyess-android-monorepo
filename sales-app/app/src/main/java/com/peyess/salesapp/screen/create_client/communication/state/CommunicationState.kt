@@ -36,7 +36,7 @@ data class CommunicationState(
     val hasPhoneContact: Boolean = false,
     val hasAcceptedPromotionalMessages: Boolean = false,
 
-    val uploadClientAsync: Async<Unit> = Uninitialized,
+    val uploadClientAsync: Async<String> = Uninitialized,
 
     val uploadedId: String = "",
     val clientCreated: Boolean = false,

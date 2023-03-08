@@ -26,7 +26,6 @@ import com.peyess.salesapp.screen.create_client.adapter.toPictureUploadDocument
 import com.peyess.salesapp.screen.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.screen.create_client.adapter.toClientPickedDocument
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
@@ -309,8 +308,6 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun createClient() = withState {
-        val createdId = it.clientId
-
         suspend {
             val collaboratorId = authenticationRepository.fetchCurrentUserId()
 
@@ -322,29 +319,39 @@ class CommunicationViewModel @AssistedInject constructor(
                 addClientToSale(it.client, it.createScenario)
             }
 
-            clientRepository.uploadClient(
+            val clientModel = clientRepository.uploadClient(
                 clientModel = it.client.toClientModel(),
                 hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
             )
-            localClientRepository.insertClient(
-                it.client.toLocalClientDocument(collaboratorId)
-            )
+
+            val hasCreated = clientModel.id == it.client.id
+            if (hasCreated) {
+                localClientRepository.insertClient(
+                    it.client.toLocalClientDocument(collaboratorId)
+                )
+            } else {
+                localClientRepository.updateClient(
+                    it.client.toLocalClientDocument(collaboratorId).copy(id = clientModel.id)
+                )
+            }
 
             clientRepository.clearCreateClientCache(it.client.id)
 
             if (it.client.picture != Uri.EMPTY) {
                 val pictureDocument = it.client.toPictureUploadDocument(
                     salesApplication = salesApplication,
-                    clientId = it.client.id,
+                    clientId = clientModel.id,
                 )
 
                 addClientPictureToUpload(pictureDocument)
             }
+
+            clientModel.id
         }.execute(Dispatchers.IO) { uploadState ->
             Timber.i("Upload client: $uploadState")
             copy(
                 uploadClientAsync = uploadState,
-                uploadedId = createdId,
+                uploadedId = if (uploadState is Success) { uploadState.invoke() } else { "" },
                 clientCreated = true,
             )
         }

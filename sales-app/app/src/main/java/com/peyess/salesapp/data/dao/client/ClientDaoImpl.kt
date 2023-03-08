@@ -3,8 +3,13 @@ package com.peyess.salesapp.data.dao.client
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
+import arrow.core.leftIfNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
+import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
+import com.peyess.salesapp.data.adapter.client.toMap
+import com.peyess.salesapp.data.dao.client.error.ReadClientDaoError
+import com.peyess.salesapp.data.dao.client.error.UpdateClientDaoError
 import com.peyess.salesapp.data.dao.client.utils.ClientsCollectionPaginator
 import com.peyess.salesapp.data.dao.internal.firestore.FetchCollectionResponse
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimpleCollectionPaginator
@@ -81,6 +86,47 @@ class ClientDaoImpl @Inject constructor(
             ?.toDocument(snap.id)
     }
 
+    override suspend fun clientByDocument(document: String): ReadClientResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            ReadClientDaoError.UnexpectedError(
+                description = "Firestore instance is null",
+            )
+        }
+
+        val snap = Either.catch {
+            firestore
+                .collection(
+                    salesApplication.stringResource(R.string.fs_col_clients)
+                        .format(firebaseManager.currentStore!!.uid)
+                )
+                .whereEqualTo("document", document)
+                .get()
+                .await()
+        }.mapLeft {
+            ReadClientDaoError.UnexpectedError(
+                description = "Error while fetching client by document",
+                throwable = it,
+            )
+        }.bind()
+
+        ensure(snap.documents.isNotEmpty()) {
+            ReadClientDaoError.ClientNotFound(
+                description = "Client with document $document not found",
+            )
+        }
+
+        val snapDocument = snap.documents.first()
+        val result = snapDocument.toObject(FSClient::class.java)
+        ensureNotNull(result) {
+            ReadClientDaoError.UnexpectedError(
+                description = "Error while converting client document",
+            )
+        }
+
+        Pair(snapDocument.id, result)
+    }
+
     override suspend fun addClient(clientId: String, client: FSClient) {
         val firestore = firebaseManager.storeFirestore
         if (firestore == null) {
@@ -102,9 +148,33 @@ class ClientDaoImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateClient(
+        clientId: String,
+        client: FSClient,
+    ): UpdateClientResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdateClientDaoError.UnexpectedError("Firestore instance is null")
+        }
+
+        Either.catch {
+            firestore
+                .document(
+                    salesApplication
+                        .stringResource(R.string.fs_doc_client)
+                        .format(clientId)
+                ).update(client.toMap())
+                .await()
+        }.mapLeft {
+            UpdateClientDaoError.UnexpectedError(
+                description = "Error while updating client",
+                throwable = it,
+            )
+        }.bind()
+    }
+
     override suspend fun getById(id: String): Either<FirestoreError, FSClient> = either {
         val firestore = firebaseManager.storeFirestore
-
         ensureNotNull(firestore) {
             Unexpected("Firestore instance is null", null)
         }

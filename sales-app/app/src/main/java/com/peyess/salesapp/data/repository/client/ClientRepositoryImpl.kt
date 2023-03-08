@@ -75,7 +75,7 @@ class ClientRepositoryImpl @Inject constructor(
     override suspend fun uploadClient(
         clientModel: ClientModel,
         hasAcceptedPromotionalMessages: Boolean,
-    ) {
+    ): ClientModel {
         val currentStore = firebaseManager.currentStore?.uid ?: ""
         var currentUser = ""
         authenticationRepository
@@ -106,13 +106,35 @@ class ClientRepositoryImpl @Inject constructor(
             updatedBy = currentUser,
         )
 
-        clientDao.addClient(
-            clientId = clientModel.id,
-            client = fsClient,
-        )
-        clientLegalDao.addClientLegalFor(
-            clientId = clientModel.id,
-            clientLegal = fsClientLegal,
+        val clientResponse = clientDao.clientByDocument(clientModel.document)
+        return clientResponse.fold(
+            {
+                Timber.i("Existing client not found")
+
+                clientDao.addClient(
+                    clientId = clientModel.id,
+                    client = fsClient,
+                )
+                clientLegalDao.addClientLegalFor(
+                    clientId = clientModel.id,
+                    clientLegal = fsClientLegal,
+                )
+
+                clientModel.copy()
+            },
+            {
+                clientDao.updateClient(
+                    clientId = it.first,
+                    client = fsClient,
+                )
+
+                clientLegalDao.updateClientLegalFor(
+                    clientId = it.first,
+                    clientLegal = fsClientLegal,
+                )
+
+                clientModel.copy(id = it.first)
+            }
         )
     }
 

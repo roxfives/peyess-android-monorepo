@@ -6,13 +6,14 @@ import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.data.model.client.FSClient
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryError
+import com.peyess.salesapp.data.repository.client.error.UpdateClientError
 import com.peyess.salesapp.data.repository.internal.firestore.ReadOnlyRepository
 import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import kotlinx.coroutines.flow.Flow
 
 typealias ClientRepositoryResponse = Either<ClientRepositoryError, ClientDocument>
-
 typealias ClientPaginationResponse = Either<RepositoryError, List<ClientDocument>>
+typealias UploadClientResponse = Either<UpdateClientError, Boolean>
 
 interface ClientRepository: ReadOnlyRepository<ClientDocument> {
     fun clients(): Flow<List<ClientDocument>>
@@ -21,7 +22,10 @@ interface ClientRepository: ReadOnlyRepository<ClientDocument> {
 
     suspend fun updateLocalClient(clientModel: ClientModel)
 
-    suspend fun uploadClient(clientModel: ClientModel, hasAcceptedPromotionalMessages: Boolean)
+    suspend fun uploadClient(
+        clientModel: ClientModel,
+        hasAcceptedPromotionalMessages: Boolean,
+    ): ClientModel
     suspend fun clearCreateClientCache(clientId: String)
 
     suspend fun pictureForClient(clientId: String): Uri

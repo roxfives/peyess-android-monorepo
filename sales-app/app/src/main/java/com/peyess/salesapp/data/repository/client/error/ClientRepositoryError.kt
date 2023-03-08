@@ -15,3 +15,10 @@ data class ClientRepositoryUnexpectedError(
     override val description: String,
     override val error: Throwable? = null,
 ): ClientRepositoryError, ClientReadError
+
+sealed class UpdateClientError: ClientRepositoryError {
+    data class Unexpected(
+        override val description: String,
+        override val error: Throwable? = null,
+    ): UpdateClientError()
+}

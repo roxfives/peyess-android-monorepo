@@ -9,7 +9,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
-import com.peyess.salesapp.data.adapter.client.toCacheCreateClientEntity
 import com.peyess.salesapp.data.adapter.client.toFSClient
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
@@ -21,8 +20,11 @@ import com.peyess.salesapp.data.model.client.FSClient
 import com.peyess.salesapp.data.model.client.toDocument
 import com.peyess.salesapp.data.model.client_legal.ClientLegalMethod
 import com.peyess.salesapp.data.model.client_legal.FSClientLegal
+import com.peyess.salesapp.data.repository.client.error.ExistsClientRepositoryError
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
+import com.peyess.salesapp.data.repository.client.error.UpdateClientRepositoryError
+import com.peyess.salesapp.data.repository.client.error.UploadClientRepositoryError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.CreatePaginatorError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchDataError
 import com.peyess.salesapp.data.repository.internal.firestore.errors.FetchPageError
@@ -32,9 +34,6 @@ import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
@@ -66,26 +65,25 @@ class ClientRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun updateLocalClient(clientModel: ClientModel) {
-        val cacheClient = clientModel.toCacheCreateClientEntity()
-
-        cacheCreateClientDao.update(cacheClient)
-    }
-
     override suspend fun uploadClient(
         clientModel: ClientModel,
         hasAcceptedPromotionalMessages: Boolean,
-    ): ClientModel {
-        val currentStore = firebaseManager.currentStore?.uid ?: ""
-        var currentUser = ""
-        authenticationRepository
-            .currentUser()
-            .filterNotNull()
-            .map { it.id }
-            .take(1)
-            .collect {
-                currentUser = it
-            }
+    ): UploadClientResponse = either {
+        val currentStore = firebaseManager.currentStore?.uid
+        ensureNotNull(currentStore) {
+            UploadClientRepositoryError.Unexpected(
+                description = "Store not authenticated",
+                error = null,
+            )
+        }
+
+        val currentUser = authenticationRepository.fetchCurrentUserId()
+        ensure(currentUser.isNotBlank()) {
+            UploadClientRepositoryError.Unexpected(
+                description = "Collaborator not authenticated",
+                error = null,
+            )
+        }
 
         val fsClient = clientModel
             .toFSClient(currentStore)
@@ -106,36 +104,77 @@ class ClientRepositoryImpl @Inject constructor(
             updatedBy = currentUser,
         )
 
-        val clientResponse = clientDao.clientByDocument(clientModel.document)
-        return clientResponse.fold(
-            {
-                Timber.i("Existing client not found")
+        Either.catch {
+            clientDao.addClient(
+                clientId = clientModel.id,
+                client = fsClient,
+            )
+            clientLegalDao.addClientLegalFor(
+                clientId = clientModel.id,
+                clientLegal = fsClientLegal,
+            )
+        }.mapLeft {
+            UploadClientRepositoryError.Unexpected(
+                description = "Error adding client ${clientModel.id}",
+                error = it,
+            )
+        }.bind()
+    }
 
-                clientDao.addClient(
-                    clientId = clientModel.id,
-                    client = fsClient,
-                )
-                clientLegalDao.addClientLegalFor(
-                    clientId = clientModel.id,
-                    clientLegal = fsClientLegal,
-                )
+    override suspend fun updateClient(
+        clientModel: ClientModel,
+        hasAcceptedPromotionalMessages: Boolean,
+    ): UpdateClientResponse = either {
+        val currentStore = firebaseManager.currentStore?.uid
+        ensureNotNull(currentStore) {
+            UpdateClientRepositoryError.Unexpected(
+                description = "Store not authenticated",
+                error = null,
+            )
+        }
 
-                clientModel.copy()
-            },
-            {
-                clientDao.updateClient(
-                    clientId = it.first,
-                    client = fsClient,
-                )
+        val currentUser = authenticationRepository.fetchCurrentUserId()
+        ensure(currentUser.isNotBlank()) {
+            UpdateClientRepositoryError.Unexpected(
+                description = "Collaborator not authenticated",
+                error = null,
+            )
+        }
 
-                clientLegalDao.updateClientLegalFor(
-                    clientId = it.first,
-                    clientLegal = fsClientLegal,
-                )
+        val fsClient = clientModel
+            .toFSClient(currentStore)
+            .copy(
+                createdBy = currentUser,
+                createAllowedBy = currentUser,
+                updateAllowedBy = currentUser,
+                updatedBy = currentUser,
+            )
 
-                clientModel.copy(id = it.first)
-            }
+        val fsClientLegal = FSClientLegal(
+            hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
+            methodPromotionalMessages = ClientLegalMethod.SalesAppCreateAccount.toName(),
+
+            createdBy = currentUser,
+            createAllowedBy = currentUser,
+            updateAllowedBy = currentUser,
+            updatedBy = currentUser,
         )
+
+        Either.catch {
+            clientDao.updateClient(
+                clientId = clientModel.id,
+                client = fsClient,
+            )
+            clientLegalDao.updateClientLegalFor(
+                clientId = clientModel.id,
+                clientLegal = fsClientLegal,
+            )
+        }.mapLeft {
+            UpdateClientRepositoryError.Unexpected(
+                description = "Error adding client ${clientModel.id}",
+                error = it,
+            )
+        }.bind()
     }
 
     override suspend fun clearCreateClientCache(clientId: String) {
@@ -143,6 +182,28 @@ class ClientRepositoryImpl @Inject constructor(
 
         if (client != null) {
             cacheCreateClientDao.deleteById(clientId)
+        }
+    }
+
+    override suspend fun clientExistsById(
+        clientId: String,
+    ): ExistsClientIdResponse {
+        return clientDao.clientExistsById(clientId).mapLeft {
+            ExistsClientRepositoryError.Unexpected(
+                description = it.description,
+                error = it.error,
+            )
+        }
+    }
+
+    override suspend fun clientExistsByDocument(
+        clientDocument: String,
+    ): ExistsClientDocumentResponse {
+        return clientDao.clientExistsByDocument(clientDocument).mapLeft {
+            ExistsClientRepositoryError.Unexpected(
+                description = it.description,
+                error = it.error,
+            )
         }
     }
 

@@ -28,7 +28,9 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryUnexpectedError
-import com.peyess.salesapp.data.repository.client.error.UpdateClientError
+import com.peyess.salesapp.data.repository.client.error.ExistsClientRepositoryError
+import com.peyess.salesapp.data.repository.client.error.UpdateClientRepositoryError
+import com.peyess.salesapp.data.repository.client.error.UploadClientRepositoryError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
 import com.peyess.salesapp.data.repository.edit_service_order.lens_comparison.EditLensComparisonRepository
@@ -232,7 +234,11 @@ class ServiceOrderFetcher @Inject constructor(
                         description = it.description,
                         throwable = it.error,
                     )
-                is ClientRepositoryUnexpectedError, is UpdateClientError ->
+
+                is ClientRepositoryUnexpectedError,
+                is UploadClientRepositoryError,
+                is ExistsClientRepositoryError,
+                is UpdateClientRepositoryError ->
                     SaleFetcherReadClientError.Unexpected(
                         description = it.description,
                         throwable = it.error,

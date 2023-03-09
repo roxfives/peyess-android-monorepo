@@ -9,6 +9,7 @@ import com.peyess.salesapp.navigation.create_client.createScenarioParam
 import com.peyess.salesapp.navigation.create_client.paymentIdParam
 import com.peyess.salesapp.navigation.create_client.saleIdParam
 import com.peyess.salesapp.navigation.create_client.serviceOrderIdParam
+import com.peyess.salesapp.navigation.create_client.updateExistingClientParam
 
 @Composable
 private fun ParseParameterSaleId(
@@ -83,6 +84,20 @@ private fun ParseParameterCreateScenario(
 }
 
 @Composable
+private fun ParseParameterIsUpdatingExistingClient(
+    backStackEntry: NavBackStackEntry? = null,
+    defaultValue: Boolean = false,
+    onUpdate: (value: Boolean) -> Unit = {}
+) {
+    val args = backStackEntry?.arguments
+    val isUpdating = args
+        ?.getBoolean(updateExistingClientParam, defaultValue)
+        ?: defaultValue
+
+    onUpdate(isUpdating)
+}
+
+@Composable
 fun ParseParameters(
     navController: NavHostController,
     onUpdateClientId: (String) -> Unit,
@@ -90,16 +105,16 @@ fun ParseParameters(
     onUpdateCreateScenario: (CreateScenario) -> Unit,
     onUpdateSaleId: (String) -> Unit,
     onUpdateServiceOrderId: (String) -> Unit,
+    onUpdateExistingClient: (Boolean) -> Unit,
 ) {
-
     ParseParameterClientId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateClientId
+        onUpdate = onUpdateClientId,
     )
 
     ParseParameterPaymentId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdatePaymentId
+        onUpdate = onUpdatePaymentId,
     )
 
     ParseParameterCreateScenario(
@@ -109,11 +124,16 @@ fun ParseParameters(
 
     ParseParameterSaleId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateSaleId
+        onUpdate = onUpdateSaleId,
     )
 
     ParseParameterServiceOrderId(
         backStackEntry = navController.currentBackStackEntry,
-        onUpdate = onUpdateServiceOrderId
+        onUpdate = onUpdateServiceOrderId,
+    )
+
+    ParseParameterIsUpdatingExistingClient(
+        backStackEntry = navController.currentBackStackEntry,
+        onUpdate = onUpdateExistingClient,
     )
 }

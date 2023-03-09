@@ -6,7 +6,6 @@ import arrow.core.continuations.either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
-import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
@@ -178,27 +177,32 @@ class CommunicationViewModel @AssistedInject constructor(
         client: Client,
         hasAcceptedPromotionalMessages: Boolean,
         createScenario: CreateScenario,
+        isUpdatingExistingClient: Boolean,
     ): CreateOrUpdateClientResponse = either {
         val collaboratorId = authenticationRepository.fetchCurrentUserId()
         val clientModel = client.toClientModel()
         val localClient = client.toLocalClientDocument(collaboratorId)
 
-        val existingClientId = clientRepository
-            .clientExistsByDocument(client.document)
-            .mapLeft {
-                Timber.e("Error while checking if client exists: $it")
-                SearchExistingClientError.Unexpected(
-                    description = it.description,
-                    throwable = it.error,
-                )
-            }.bind()
+        val existingClientId = if (isUpdatingExistingClient) {
+            client.id
+        } else {
+            clientRepository
+                .clientExistsByDocument(client.document)
+                .mapLeft {
+                    Timber.e("Error while checking if client exists: $it")
+                    SearchExistingClientError.Unexpected(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                }.bind()
+        }
 
         val clientExists = existingClientId.isNotBlank()
         val clientId = existingClientId.ifBlank { client.id }
 
         if (clientExists) {
             updateClient(clientModel.copy(id = clientId), hasAcceptedPromotionalMessages).bind()
-            localClientRepository.createClient(localClient.copy(id = clientId)).mapLeft {
+            localClientRepository.updateClient(localClient.copy(id = clientId)).mapLeft {
                 Timber.e("Error while inserting client: $it")
                 CreateClientError.Unexpected(
                     description = it.description,
@@ -314,6 +318,10 @@ class CommunicationViewModel @AssistedInject constructor(
 
     fun onCreateScenarioChanged(createScenario: CreateScenario) = setState {
         copy(createScenario = createScenario)
+    }
+
+    fun onUpdateExistingClientChanged(isUpdatingExistingClient: Boolean) = setState {
+        copy(isUpdatingAnExistingClient = isUpdatingExistingClient)
     }
 
     fun onEmailChanged(email: String) = setState {
@@ -440,12 +448,13 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(detectPhoneError = true)
     }
 
-    fun createClient() = withState {
+    fun uploadClientData() = withState {
         suspend {
             createOrUpdateClient(
                 client = it.client,
                 hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
                 createScenario = it.createScenario,
+                isUpdatingExistingClient = it.isUpdatingAnExistingClient,
             )
         }.execute(Dispatchers.IO) {
             copy(uploadClientResponseAsync = it)

@@ -31,10 +31,6 @@ class BasicInfoViewModel @AssistedInject constructor(
     private val maxDocumentLength = 11
 
     init {
-        onEach {
-            Timber.d("Current client (${it.documentInput}): ${it.client}")
-        }
-
         onEach(BasicInfoState::clientId) { loadClient(it) }
 
         onAsync(BasicInfoState::loadClientResponseAsync) { processLoadClientResponse(it) }
@@ -102,6 +98,10 @@ class BasicInfoViewModel @AssistedInject constructor(
 
     fun onCreateScenarioChanged(createScenario: CreateScenario) = setState {
         copy(createScenario = createScenario)
+    }
+
+    fun onUpdateExistingClientChanged(isUpdatingExistingClient: Boolean) = setState {
+        copy(isUpdatingAnExistingClient = isUpdatingExistingClient)
     }
 
     fun onPictureChanged(picture: Uri) = setState {

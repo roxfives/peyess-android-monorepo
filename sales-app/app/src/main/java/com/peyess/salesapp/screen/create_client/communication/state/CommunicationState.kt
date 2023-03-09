@@ -1,5 +1,6 @@
 package com.peyess.salesapp.screen.create_client.communication.state
 
+import arrow.core.Either
 import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
@@ -7,7 +8,6 @@ import com.airbnb.mvrx.PersistState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.screen.create_client.communication.util.validateCellphone
 import com.peyess.salesapp.screen.create_client.communication.util.validateEmail
@@ -15,7 +15,9 @@ import com.peyess.salesapp.screen.create_client.communication.util.validatePhone
 import com.peyess.salesapp.screen.create_client.communication.util.validateWhatsapp
 import com.peyess.salesapp.screen.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
+import com.peyess.salesapp.screen.create_client.communication.error.ClientCreationError
+
+typealias CreateOrUpdateClientResponse = Either<ClientCreationError, String>
 
 data class CommunicationState(
     val saleId: String = "",
@@ -36,8 +38,7 @@ data class CommunicationState(
     val hasPhoneContact: Boolean = false,
     val hasAcceptedPromotionalMessages: Boolean = false,
 
-    val uploadClientAsync: Async<String> = Uninitialized,
-
+    val uploadClientResponseAsync: Async<CreateOrUpdateClientResponse> = Uninitialized,
     val uploadedId: String = "",
     val clientCreated: Boolean = false,
 
@@ -55,8 +56,7 @@ data class CommunicationState(
     private val _detectWhatsappError: Boolean = detectWhatsappError && phoneHasWhatsApp
     private val _detectPhoneError: Boolean = detectPhoneError && hasPhoneContact
 
-    val isUploadingClient = uploadClientAsync is Loading
-    val uploadSuccessful = uploadClientAsync is Success
+    val isUploadingClient = uploadClientResponseAsync is Loading
 
     private val _emailErrorId = validateEmail(emailInput)
     val emailErrorId = _emailErrorId ?: R.string.empty_string

@@ -632,6 +632,7 @@
     <string name="fs_field_lenses_types_category_priority">priority</string>
     <string name="fs_field_description_families_ids">families_ids</string>
     <string name="fs_field_clients_name">name</string>
+    <string name="fs_field_clients_document">document</string>
     <string name="fs_field_clients_updated">updated</string>
     <string name="fs_field_clients_store_ids">stores_ids</string>
     <string name="fs_field_payments_priority">priority</string>

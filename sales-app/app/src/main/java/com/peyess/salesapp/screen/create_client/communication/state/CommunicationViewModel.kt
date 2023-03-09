@@ -1,19 +1,23 @@
 package com.peyess.salesapp.screen.create_client.communication.state
 
 import android.content.Context
-import android.net.Uri
+import arrow.core.Either
+import arrow.core.continuations.either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.client.ClientModel
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.client.error.UpdateClientRepositoryError
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
 import com.peyess.salesapp.data.repository.management_picture_upload.PictureUploadRepository
@@ -22,12 +26,15 @@ import com.peyess.salesapp.screen.create_client.adapter.toClient
 import com.peyess.salesapp.screen.create_client.adapter.toClientModel
 import com.peyess.salesapp.screen.create_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.screen.create_client.adapter.toLocalClientDocument
-import com.peyess.salesapp.screen.create_client.adapter.toPictureUploadDocument
 import com.peyess.salesapp.screen.create_client.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.screen.create_client.adapter.toClientPickedDocument
+import com.peyess.salesapp.screen.create_client.adapter.toPictureUploadDocument
+import com.peyess.salesapp.screen.create_client.communication.error.CreateClientError
+import com.peyess.salesapp.screen.create_client.communication.error.SearchExistingClientError
+import com.peyess.salesapp.screen.create_client.communication.error.UpdateClientError
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -57,6 +64,10 @@ class CommunicationViewModel @AssistedInject constructor(
         onEach(CommunicationState::clientId) { loadClient(it) }
 
         onAsync(CommunicationState::clientResponseAsync) { processLoadClientResponse(it) }
+
+        onAsync(CommunicationState::uploadClientResponseAsync) {
+            processCreateOrUpdateClientResponse(it)
+        }
     }
 
     private fun updateClient(client: Client) {
@@ -127,6 +138,157 @@ class CommunicationViewModel @AssistedInject constructor(
                     serviceOrderId = it.serviceOrderId,
                      role = role,
                 )
+            )
+        }
+    }
+
+    private suspend fun addClientToSale(
+        client: Client,
+        createScenarioParam: CreateScenario,
+    ) {
+        when (createScenarioParam) {
+            CreateScenario.ServiceOrder -> addAllForServiceOrder(client)
+            CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible)
+            CreateScenario.User -> addOnlyOne(client, ClientRole.User)
+            CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness)
+
+            CreateScenario.EditResponsible -> addOnlyOneForEdit(client, ClientRole.Responsible)
+            CreateScenario.EditUser -> addOnlyOneForEdit(client, ClientRole.User)
+            CreateScenario.EditWitness -> addOnlyOneForEdit(client, ClientRole.Witness)
+
+            else -> {
+                Timber.w(
+                    "Function addClientToSale should not " +
+                            "have been called with parameter $createScenarioParam"
+                )
+            }
+        }
+    }
+
+    private suspend fun addClientPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
+        pictureUploadRepository.addPicture(pictureUploadDocument).tap {
+            enqueuePictureUploadManagerWorker(
+                context = salesApplication as Context,
+                uploadEntryId = it,
+            )
+        }
+    }
+
+    private suspend fun createOrUpdateClient(
+        client: Client,
+        hasAcceptedPromotionalMessages: Boolean,
+        createScenario: CreateScenario,
+    ): CreateOrUpdateClientResponse = either {
+        val collaboratorId = authenticationRepository.fetchCurrentUserId()
+        val clientModel = client.toClientModel()
+        val localClient = client.toLocalClientDocument(collaboratorId)
+
+        val existingClientId = clientRepository
+            .clientExistsByDocument(client.document)
+            .mapLeft {
+                Timber.e("Error while checking if client exists: $it")
+                SearchExistingClientError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+
+        val clientExists = existingClientId.isNotBlank()
+        val clientId = existingClientId.ifBlank { client.id }
+
+        if (clientExists) {
+            updateClient(clientModel.copy(id = clientId), hasAcceptedPromotionalMessages).bind()
+            localClientRepository.createClient(localClient.copy(id = clientId)).mapLeft {
+                Timber.e("Error while inserting client: $it")
+                CreateClientError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+        } else {
+            uploadClient(clientModel, hasAcceptedPromotionalMessages).bind()
+            localClientRepository.insertClient(localClient).mapLeft {
+                Timber.e("Error while inserting client: $it")
+                CreateClientError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+        }
+
+        val clientPicture = client.toPictureUploadDocument(salesApplication, clientId)
+        addClientPictureToUpload(clientPicture)
+
+        checkCreateScenario(client.copy(id = clientId), createScenario)
+        clientId
+    }
+
+    private fun processCreateOrUpdateClientResponse(
+        response: CreateOrUpdateClientResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    clientResponseAsync = Fail(it.error),
+                    uploadedId = "",
+                )
+            },
+
+            ifRight = {
+                copy(
+                    uploadedId = it,
+                    clientCreated = true,
+                )
+            }
+        )
+    }
+
+    private suspend fun checkCreateScenario(
+        client: Client,
+        createScenario: CreateScenario,
+    ) {
+        if (createScenario != CreateScenario.Home && createScenario != CreateScenario.Payment) {
+            addClientToSale(client, createScenario)
+        }
+    }
+
+    private suspend fun updateClient(
+        client: ClientModel,
+        hasAcceptedPromotionalMessages: Boolean,
+    ): Either<UpdateClientError, Unit> {
+        return clientRepository.updateClient(
+            clientModel = client,
+            hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
+        ).mapLeft {
+            Timber.e("Error while updating client: $it")
+
+            when (it) {
+                is UpdateClientRepositoryError.NotFound ->
+                    UpdateClientError.NotFound(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+                is UpdateClientRepositoryError.Unexpected ->
+                    UpdateClientError.Unexpected(
+                        description = it.description,
+                        throwable = it.error,
+                    )
+            }
+        }
+    }
+
+    private suspend fun uploadClient(
+        client: ClientModel,
+        hasAcceptedPromotionalMessages: Boolean,
+    ): Either<CreateClientError, Unit> {
+        return clientRepository.uploadClient(
+            clientModel = client,
+            hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
+        ).mapLeft {
+            Timber.e("Error while creating client: $it")
+            CreateClientError.Unexpected(
+                description = it.description,
+                throwable = it.error,
             )
         }
     }
@@ -275,89 +437,18 @@ class CommunicationViewModel @AssistedInject constructor(
         copy(detectPhoneError = true)
     }
 
-    private suspend fun addClientToSale(
-        client: Client,
-        createScenarioParam: CreateScenario,
-    ) {
-        when (createScenarioParam) {
-            CreateScenario.ServiceOrder -> addAllForServiceOrder(client)
-            CreateScenario.Responsible -> addOnlyOne(client, ClientRole.Responsible)
-            CreateScenario.User -> addOnlyOne(client, ClientRole.User)
-            CreateScenario.Witness -> addOnlyOne(client, ClientRole.Witness)
-
-            CreateScenario.EditResponsible -> addOnlyOneForEdit(client, ClientRole.Responsible)
-            CreateScenario.EditUser -> addOnlyOneForEdit(client, ClientRole.User)
-            CreateScenario.EditWitness -> addOnlyOneForEdit(client, ClientRole.Witness)
-            
-            else -> {
-                Timber.w(
-                    "Function addClientToSale should not " +
-                            "have been called with parameter $createScenarioParam"
-                )
-            }
-        }
-    }
-
-    private suspend fun addClientPictureToUpload(pictureUploadDocument: PictureUploadDocument) {
-        pictureUploadRepository.addPicture(pictureUploadDocument).tap {
-            enqueuePictureUploadManagerWorker(
-                context = salesApplication as Context,
-                uploadEntryId = it,
-            )
-        }
-    }
-
     fun createClient() = withState {
         suspend {
-            val collaboratorId = authenticationRepository.fetchCurrentUserId()
-
-            Timber.i("Creating client ${it.client}")
-            if (
-                it.createScenario != CreateScenario.Home
-                && it.createScenario != CreateScenario.Payment
-            ) {
-                addClientToSale(it.client, it.createScenario)
-            }
-
-            val clientModel = clientRepository.uploadClient(
-                clientModel = it.client.toClientModel(),
+            createOrUpdateClient(
+                client = it.client,
                 hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
+                createScenario = it.createScenario,
             )
-
-            val hasCreated = clientModel.id == it.client.id
-            if (hasCreated) {
-                localClientRepository.insertClient(
-                    it.client.toLocalClientDocument(collaboratorId)
-                )
-            } else {
-                localClientRepository.updateClient(
-                    it.client.toLocalClientDocument(collaboratorId).copy(id = clientModel.id)
-                )
-            }
-
-            clientRepository.clearCreateClientCache(it.client.id)
-
-            if (it.client.picture != Uri.EMPTY) {
-                val pictureDocument = it.client.toPictureUploadDocument(
-                    salesApplication = salesApplication,
-                    clientId = clientModel.id,
-                )
-
-                addClientPictureToUpload(pictureDocument)
-            }
-
-            clientModel.id
-        }.execute(Dispatchers.IO) { uploadState ->
-            Timber.i("Upload client: $uploadState")
-            copy(
-                uploadClientAsync = uploadState,
-                uploadedId = if (uploadState is Success) { uploadState.invoke() } else { "" },
-                clientCreated = true,
-            )
+        }.execute(Dispatchers.IO) {
+            copy(uploadClientResponseAsync = it)
         }
     }
 
-    // hilt
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<CommunicationViewModel, CommunicationState> {
         override fun create(state: CommunicationState): CommunicationViewModel

@@ -8,7 +8,7 @@ import com.peyess.salesapp.data.model.edit_service_order.client_picked.EditClien
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.local_sale.client_picked.ClientPickedEntity
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.typing.sale.ClientRole
 import java.time.Instant
 import java.time.ZoneId

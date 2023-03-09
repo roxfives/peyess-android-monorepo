@@ -12,7 +12,7 @@ import com.peyess.salesapp.screen.create_client.basic_info.utils.validateBirthDa
 import com.peyess.salesapp.screen.create_client.basic_info.utils.validateDocument
 import com.peyess.salesapp.screen.create_client.basic_info.utils.validateName
 import com.peyess.salesapp.screen.create_client.basic_info.utils.validateNameDisplay
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.typing.client.Sex

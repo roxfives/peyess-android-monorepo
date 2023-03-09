@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.create_client.model
+package com.peyess.salesapp.feature.client_data.model
 
 import android.net.Uri
 import com.peyess.salesapp.typing.client.Sex

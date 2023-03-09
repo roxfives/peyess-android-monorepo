@@ -1,7 +1,7 @@
 package com.peyess.salesapp.screen.create_client.adapter
 
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 
 fun CacheCreateClientDocument.toClient(): Client {
     return Client(

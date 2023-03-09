@@ -12,7 +12,7 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleRes
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.screen.create_client.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.screen.create_client.adapter.toClient
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

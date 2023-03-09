@@ -15,7 +15,7 @@ import com.peyess.salesapp.screen.create_client.address.util.validateNeighbourho
 import com.peyess.salesapp.screen.create_client.address.util.validateStateError
 import com.peyess.salesapp.screen.create_client.address.util.validateStreetError
 import com.peyess.salesapp.screen.create_client.address.util.validateZipCodeError
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 
 data class ClientAddressState(

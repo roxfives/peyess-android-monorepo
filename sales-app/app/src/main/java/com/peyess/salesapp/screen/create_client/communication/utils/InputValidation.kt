@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.create_client.communication.util
+package com.peyess.salesapp.screen.create_client.communication.utils
 
 import androidx.annotation.StringRes
 import com.peyess.salesapp.R

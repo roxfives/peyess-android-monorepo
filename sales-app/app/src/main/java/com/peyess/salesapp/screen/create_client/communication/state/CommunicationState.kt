@@ -5,15 +5,14 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.PersistState
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.R
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
-import com.peyess.salesapp.screen.create_client.communication.util.validateCellphone
-import com.peyess.salesapp.screen.create_client.communication.util.validateEmail
-import com.peyess.salesapp.screen.create_client.communication.util.validatePhone
-import com.peyess.salesapp.screen.create_client.communication.util.validateWhatsapp
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.screen.create_client.communication.utils.validateCellphone
+import com.peyess.salesapp.screen.create_client.communication.utils.validateEmail
+import com.peyess.salesapp.screen.create_client.communication.utils.validatePhone
+import com.peyess.salesapp.screen.create_client.communication.utils.validateWhatsapp
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.screen.create_client.communication.error.ClientCreationError
 

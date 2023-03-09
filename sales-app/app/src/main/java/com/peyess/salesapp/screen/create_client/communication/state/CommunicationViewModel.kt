@@ -26,7 +26,7 @@ import com.peyess.salesapp.screen.create_client.adapter.toClient
 import com.peyess.salesapp.screen.create_client.adapter.toClientModel
 import com.peyess.salesapp.screen.create_client.adapter.toClientPickedEntity
 import com.peyess.salesapp.screen.create_client.adapter.toLocalClientDocument
-import com.peyess.salesapp.screen.create_client.model.Client
+import com.peyess.salesapp.feature.client_data.model.Client
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.sale.SaleRepository
@@ -220,6 +220,9 @@ class CommunicationViewModel @AssistedInject constructor(
         addClientPictureToUpload(clientPicture)
 
         checkCreateScenario(client.copy(id = clientId), createScenario)
+
+        clientRepository.clearCreateClientCache(clientId)
+
         clientId
     }
 

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.create_client.basic_info
+package com.peyess.salesapp.feature.client_data.basic_info
 
 import android.Manifest
 import android.net.Uri
@@ -30,7 +30,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,24 +55,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.typing.client.Sex
-import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoState
-import com.peyess.salesapp.screen.create_client.basic_info.state.BasicInfoViewModel
 import com.peyess.salesapp.screen.create_client.basic_info.utils.createClientFile
 import com.peyess.salesapp.screen.create_client.basic_info.utils.fromReadableSexName
 import com.peyess.salesapp.screen.create_client.basic_info.utils.readableSexName
-import com.peyess.salesapp.screen.create_client.utils.ParseParameters
-import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.ui.component.date.PeyessDialogDatePicker
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
@@ -97,112 +88,9 @@ private val defaultSpacerSize = 32.dp
 private val pictureBoxSize = 256.dp
 private val dividerSpacerSize = 32.dp
 
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun BasicInfoScreen(
-    modifier: Modifier = Modifier,
-    navHostController: NavHostController = rememberNavController(),
-    onDone: (
-        clientId: String,
-        createScenario: CreateScenario,
-        paymentId: Long,
-        saleId: String,
-        serviceOrderId: String,
-    ) -> Unit = { _, _, _, _, _ -> },
-) {
-    val viewModel: BasicInfoViewModel = mavericksViewModel()
-
-    ParseParameters(
-        navController = navHostController,
-        onUpdateClientId = viewModel::onClientIdChanged,
-        onUpdatePaymentId = viewModel::onPaymentIdChanged,
-        onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
-        onUpdateSaleId = viewModel::onSaleIdChanged,
-        onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
-    )
-
-    val saleId by viewModel.collectAsState(BasicInfoState::saleId)
-    val serviceOrderId by viewModel.collectAsState(BasicInfoState::serviceOrderId)
-
-    val clientId by viewModel.collectAsState(BasicInfoState::clientId)
-    val scenario by viewModel.collectAsState(BasicInfoState::createScenario)
-    val paymentId by viewModel.collectAsState(BasicInfoState::paymentId)
-
-    val name by viewModel.collectAsState(BasicInfoState::nameInput)
-    val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplayInput)
-    val picture by viewModel.collectAsState(BasicInfoState::pictureInput)
-    val birthday by viewModel.collectAsState(BasicInfoState::birthdayInput)
-    val document by viewModel.collectAsState(BasicInfoState::documentInput)
-    val sex by viewModel.collectAsState(BasicInfoState::sexInput)
-
-    val nameErrorId by viewModel.collectAsState(BasicInfoState::nameErrorId)
-    val nameHasError by viewModel.collectAsState(BasicInfoState::nameHasError)
-
-    val nameDisplayErrorId by viewModel.collectAsState(BasicInfoState::nameDisplayErrorId)
-    val nameDisplayHasError by viewModel.collectAsState(BasicInfoState::nameDisplayHasError)
-
-    val birthdayErrorId by viewModel.collectAsState(BasicInfoState::birthdayErrorId)
-    val birthdayHasError by viewModel.collectAsState(BasicInfoState::birthdayHasError)
-
-    val documentErrorId by viewModel.collectAsState(BasicInfoState::documentErrorId)
-    val documentHasError by viewModel.collectAsState(BasicInfoState::documentHasError)
-
-    val isInputValid by viewModel.collectAsState(BasicInfoState::isInputValid)
-
-    val hasFinishedSettingBasicInfo
-        by viewModel.collectAsState(BasicInfoState::hasFinishedSettingBasicInfo)
-    if (hasFinishedSettingBasicInfo) {
-        LaunchedEffect(Unit) {
-            viewModel.onNavigate()
-            onDone(clientId, scenario, paymentId, saleId, serviceOrderId)
-        }
-    }
-
-    BasicInfoScreenImpl(
-        modifier = modifier,
-
-        picture = picture,
-        onPictureChanged = viewModel::onPictureChanged,
-
-        name = name,
-        onNameChanged = viewModel::onNameChanged,
-        onDetectNameError = viewModel::onDetectNameError,
-
-        nameDisplay = nameDisplay,
-        onNameDisplayChanged = viewModel::onNameDisplayChanged,
-        onDetectNameDisplayError = viewModel::onDetectNameDisplayError,
-
-        birthday = birthday,
-        onBirthdayChanged = viewModel::onBirthdayChanged,
-
-        sex = sex,
-        onSexChanged = viewModel::onSexChanged,
-
-        document = document,
-        onDocumentChanged = viewModel::onDocumentChanged,
-        onDetectDocumentError = viewModel::onDetectDocumentError,
-
-        nameErrorId = nameErrorId,
-        nameHasError = nameHasError,
-
-        nameDisplayErrorId = nameDisplayErrorId,
-        nameDisplayHasError = nameDisplayHasError,
-
-        birthdayErrorId = birthdayErrorId,
-        birthdayHasError = birthdayHasError,
-
-        documentErrorId = documentErrorId,
-        documentHasError = documentHasError,
-        isInputValid = isInputValid,
-
-        onDone = viewModel::onFinishBasicInfo,
-    )
-}
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun BasicInfoScreenImpl(
+fun ClientBasicInfo(
     modifier: Modifier = Modifier,
 
     picture: Uri = Uri.EMPTY,
@@ -569,6 +457,6 @@ private fun SexPicker(
 @Composable
 private fun BasicInfoScreenPreview() {
     SalesAppTheme {
-        BasicInfoScreenImpl(modifier = Modifier.fillMaxSize())
+        ClientBasicInfo(modifier = Modifier.fillMaxSize())
     }
 }

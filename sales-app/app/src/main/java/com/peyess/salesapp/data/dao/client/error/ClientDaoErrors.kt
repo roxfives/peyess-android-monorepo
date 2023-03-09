@@ -29,3 +29,12 @@ sealed class UpdateClientDaoError: ClientDaoErrors {
         override val error = throwable ?: Throwable(description)
     }
 }
+
+sealed class ExistsClientDaoError: ClientDaoErrors {
+    data class UnexpectedError(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): ExistsClientDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}

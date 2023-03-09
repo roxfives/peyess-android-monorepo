@@ -3,11 +3,10 @@ package com.peyess.salesapp.data.dao.client
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
-import arrow.core.leftIfNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
-import com.peyess.salesapp.data.adapter.client.toLocalClientDocument
 import com.peyess.salesapp.data.adapter.client.toMap
+import com.peyess.salesapp.data.dao.client.error.ExistsClientDaoError
 import com.peyess.salesapp.data.dao.client.error.ReadClientDaoError
 import com.peyess.salesapp.data.dao.client.error.UpdateClientDaoError
 import com.peyess.salesapp.data.dao.client.utils.ClientsCollectionPaginator
@@ -125,6 +124,60 @@ class ClientDaoImpl @Inject constructor(
         }
 
         Pair(snapDocument.id, result)
+    }
+
+    override suspend fun clientExistsById(
+        clientId: String,
+    ): ExistsClientIdResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            ExistsClientDaoError.UnexpectedError(
+                description = "Firestore instance is null",
+            )
+        }
+
+        val documentPath = salesApplication.stringResource(R.string.fs_doc_client).format(clientId)
+        val snap = Either.catch {
+            firestore.document(documentPath).get().await()
+        }.mapLeft {
+            ExistsClientDaoError.UnexpectedError(
+                description = "Error while fetching client by id",
+                throwable = it,
+            )
+        }.bind()
+
+        snap.exists()
+    }
+
+    override suspend fun clientExistsByDocument(
+        document: String,
+    ): ExistsClientDocumentResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            ExistsClientDaoError.UnexpectedError(
+                description = "Firestore instance is null",
+            )
+        }
+
+        val collectionPath = salesApplication.stringResource(R.string.fs_col_clients)
+        val documentField = salesApplication.stringResource(R.string.fs_field_clients_document)
+        val querySnap = Either.catch {
+            firestore.collection(collectionPath)
+                .whereEqualTo(documentField, document)
+                .get()
+                .await()
+        }.mapLeft {
+            ExistsClientDaoError.UnexpectedError(
+                description = "Error while fetching client by id",
+                throwable = it,
+            )
+        }.bind()
+
+        if (querySnap.isEmpty) {
+            ""
+        } else {
+            querySnap.documents.first().id
+        }
     }
 
     override suspend fun addClient(clientId: String, client: FSClient) {

@@ -106,7 +106,7 @@ class LocalClientRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun createClient(
+    override suspend fun updateClient(
         clientStatus: LocalClientDocument,
     ): LocalClientUpdateResponse = Either.catch {
         val entity = clientStatus.toLocalClientEntity()

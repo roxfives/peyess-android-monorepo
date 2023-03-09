@@ -41,7 +41,7 @@ interface LocalClientRepository {
     fun streamClientStatus(): LocalClientStatusStreamResponse
 
     suspend fun insertClient(clientStatus: LocalClientDocument): LocalClientCreateResponse
-    suspend fun createClient(clientStatus: LocalClientDocument): LocalClientUpdateResponse
+    suspend fun updateClient(clientStatus: LocalClientDocument): LocalClientUpdateResponse
     suspend fun clientById(clientId: String): LocalClientReadSingleResponse
     suspend fun latestClientUpdated(): LocalClientReadSingleResponse
     fun streamClientById(clientId: String): LocalClientStreamSingleResponse

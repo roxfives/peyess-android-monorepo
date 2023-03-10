@@ -18,8 +18,11 @@ kapt {
     correctErrorTypes = true
 }
 
-dependencies {
+kotlin {
+    kotlinDaemonJvmArgs = listOf("-Xmx4g", "-Xms1024m")
+}
 
+dependencies {
     val composeVersion = rootProject.extra["compose_version"]
     val navVersion = rootProject.extra["compose_nav_version"]
     val accompanistVersion = rootProject.extra["compose_accompanist_version"]
@@ -184,6 +187,7 @@ dependencies {
     testImplementation("net.datafaker:datafaker:1.6.0")
     testImplementation("io.kotest:kotest-assertions-core:5.5.4")
 }
+
 android {
     namespace = "com.peyess.salesapp"
 }

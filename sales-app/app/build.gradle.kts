@@ -49,8 +49,8 @@ dependencies {
 //    val testAnnotationProcessor by configurations.testAnnotationProcessor
 //    val androidTestAnnotationProcessor by configurations.androidTestAnnotationProcessor
 
-    implementation(project(":logging"))
-    implementation(project(":authentication"))
+//    implementation(project(":logging"))
+//    implementation(project(":authentication"))
 
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.paging:paging-common-ktx:3.1.1")

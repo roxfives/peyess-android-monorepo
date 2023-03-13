@@ -26,6 +26,7 @@ data class BasicInfoState(
     val paymentId: Long = 0L,
     val createScenario: CreateScenario = CreateScenario.Home,
 
+    val existingClientPictureAsync: Async<Uri> = Uninitialized,
     val loadClientResponseAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val client: Client = Client(),
 

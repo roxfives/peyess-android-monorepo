@@ -9,6 +9,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.screen.create_client.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.screen.create_client.adapter.toClient
@@ -26,14 +27,22 @@ import java.time.ZonedDateTime
 
 class BasicInfoViewModel @AssistedInject constructor(
     @Assisted initialState: BasicInfoState,
+    private val clientRepository: ClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
 ): MavericksViewModel<BasicInfoState>(initialState) {
     private val maxDocumentLength = 11
 
     init {
-        onEach(BasicInfoState::clientId) { loadClient(it) }
+        onEach(BasicInfoState::clientId) {
+            loadClient(it)
+            findClientPicture(it)
+        }
 
         onAsync(BasicInfoState::loadClientResponseAsync) { processLoadClientResponse(it) }
+
+        onAsync(BasicInfoState::existingClientPictureAsync) {
+            processExistingClientPictureResponse(it)
+        }
     }
 
     private fun updateClient(client: Client) {
@@ -47,6 +56,20 @@ class BasicInfoViewModel @AssistedInject constructor(
             cacheCreateClientRepository.getById(clientId)
         }.execute(Dispatchers.IO) {
             copy(loadClientResponseAsync = it)
+        }
+    }
+
+    private fun findClientPicture(clientId: String) = withState {
+        suspend {
+            clientRepository.pictureForClient(clientId)
+        }.execute(Dispatchers.IO) {
+            copy(existingClientPictureAsync = it)
+        }
+    }
+
+    private fun processExistingClientPictureResponse(response: Uri) = withState {
+        if (it.client.picture == Uri.EMPTY) {
+            onPictureChanged(response)
         }
     }
 

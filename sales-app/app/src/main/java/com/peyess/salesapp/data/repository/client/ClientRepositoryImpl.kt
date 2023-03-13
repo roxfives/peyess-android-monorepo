@@ -10,6 +10,7 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.client.ClientDao
 import com.peyess.salesapp.data.adapter.client.toFSClient
+import com.peyess.salesapp.data.adapter.client_legal.toClientLegalDocument
 import com.peyess.salesapp.data.dao.cache.CacheCreateClientDao
 import com.peyess.salesapp.data.dao.client_legal.ClientLegalDao
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimpleCollectionPaginator
@@ -63,6 +64,34 @@ class ClientRepositoryImpl @Inject constructor(
         ClientNotFound(
             description = "Client $clientId not found",
         )
+    }
+
+    override suspend fun clientAndLegalById(
+        clientId: String,
+    ): ClientAndLegalResponse = either {
+        val client = Either.catch {
+            clientDao.clientById(clientId)
+        }.mapLeft {
+            ClientRepositoryUnexpectedError(
+                description = "Error getting client $clientId",
+                error = it,
+            )
+        }.leftIfNull {
+            ClientNotFound(
+                description = "Client $clientId not found",
+            )
+        }.bind()
+
+        val legal = clientLegalDao.legalForClient(clientId).map {
+            it.toClientLegalDocument()
+        }.mapLeft {
+            ClientRepositoryUnexpectedError(
+                description = "Error getting client $clientId",
+                error = it.error,
+            )
+        }.bind()
+
+        Pair(client, legal)
     }
 
     override suspend fun uploadClient(

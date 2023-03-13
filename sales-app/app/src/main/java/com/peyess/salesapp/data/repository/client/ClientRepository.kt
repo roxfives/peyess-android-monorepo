@@ -4,6 +4,7 @@ import android.net.Uri
 import arrow.core.Either
 import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.client.ClientModel
+import com.peyess.salesapp.data.model.client_legal.ClientLegalDocument
 import com.peyess.salesapp.data.repository.client.error.ExistsClientRepositoryError
 import com.peyess.salesapp.data.repository.client.error.ClientRepositoryError
 import com.peyess.salesapp.data.repository.client.error.UpdateClientRepositoryError
@@ -12,7 +13,9 @@ import com.peyess.salesapp.data.repository.internal.firestore.ReadOnlyRepository
 import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import kotlinx.coroutines.flow.Flow
 
+private typealias ClientAndLegalPair = Pair<ClientDocument, ClientLegalDocument>
 typealias ClientRepositoryResponse = Either<ClientRepositoryError, ClientDocument>
+typealias ClientAndLegalResponse = Either<ClientRepositoryError, ClientAndLegalPair>
 typealias ClientPaginationResponse = Either<RepositoryError, List<ClientDocument>>
 typealias ExistsClientIdResponse = Either<ExistsClientRepositoryError, Boolean>
 typealias ExistsClientDocumentResponse = Either<ExistsClientRepositoryError, String>
@@ -23,6 +26,7 @@ interface ClientRepository: ReadOnlyRepository<ClientDocument> {
     fun clients(): Flow<List<ClientDocument>>
 
     suspend fun clientById(clientId: String): ClientRepositoryResponse
+    suspend fun clientAndLegalById(clientId: String): ClientAndLegalResponse
 
     suspend fun uploadClient(
         clientModel: ClientModel,

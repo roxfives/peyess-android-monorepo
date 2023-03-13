@@ -3,6 +3,9 @@ package com.peyess.salesapp.screen.sale.frames.landing
 import android.Manifest
 import android.net.Uri
 import androidx.annotation.RawRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,9 +19,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,6 +80,9 @@ fun FramesLandingScreen(
     val pictureUriLeftEye by viewModel.collectAsState(FramesLandingState::pictureUriLeftEye)
     val pictureUriRightEye by viewModel.collectAsState(FramesLandingState::pictureUriRightEye)
 
+    val diameterLeft by viewModel.collectAsState(FramesLandingState::diameterLeft)
+    val diameterRight by viewModel.collectAsState(FramesLandingState::diameterRight)
+
     val hasFinishedSettingFramesType
         by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
 
@@ -110,6 +118,9 @@ fun FramesLandingScreen(
         pictureUriLeftEye = pictureUriLeftEye,
         pictureUriRightEye = pictureUriRightEye,
 
+        diameterLeft = diameterLeft,
+        diameterRight = diameterRight,
+
         onNext = onNext,
     )
 }
@@ -131,6 +142,9 @@ private fun FramesLandingScreenImpl(
 
     pictureUriLeftEye: Uri = Uri.EMPTY,
     pictureUriRightEye: Uri = Uri.EMPTY,
+
+    diameterLeft: String = "0.00mm",
+    diameterRight: String = "0.00mm",
 
     onNext: () -> Unit = {},
 ) {
@@ -179,6 +193,9 @@ private fun FramesLandingScreenImpl(
         FramesMeasure(
             hasMeasuredLeft = pictureUriLeftEye != Uri.EMPTY,
             hasMeasuredRight = pictureUriRightEye != Uri.EMPTY,
+
+            diameterLeft = diameterLeft,
+            diameterRight = diameterRight,
 
             onMeasureLeft = { onAddMeasure(Eye.Left) },
             onMeasureRight = { onAddMeasure(Eye.Right) },
@@ -361,6 +378,9 @@ private fun FramesMeasure(
     hasMeasuredLeft: Boolean = false,
     hasMeasuredRight: Boolean = false,
 
+    diameterLeft: String = "0.00mm",
+    diameterRight: String = "0.00mm",
+
     onMeasureLeft: () -> Unit = {},
     onMeasureRight: () -> Unit = {},
 ) {
@@ -376,6 +396,7 @@ private fun FramesMeasure(
                 .clickable { onMeasureRight() },
 
             hasMeasured = hasMeasuredRight,
+            diameter = diameterRight,
 
             title = stringResource(id = R.string.measure_right_eye),
             animationId = R.raw.lottie_frames_landing_right_eye,
@@ -388,6 +409,7 @@ private fun FramesMeasure(
                 .clickable { onMeasureLeft() },
 
             hasMeasured = hasMeasuredLeft,
+            diameter = diameterLeft,
 
             title = stringResource(id = R.string.measure_left_eye),
             animationId = R.raw.lottie_frames_landing_left_eye,
@@ -399,6 +421,7 @@ private fun FramesMeasure(
 private fun FramesMeasureButton(
     modifier: Modifier = Modifier,
     title: String = "",
+    diameter: String = "0.00",
     hasMeasured: Boolean = false,
     @RawRes animationId: Int = 0,
 ) {
@@ -416,18 +439,54 @@ private fun FramesMeasureButton(
         Spacer(modifier = Modifier.height(8.dp))
 
         LottieAnimation(
-//            modifier = Modifier
-//                .height(animationHeight)
-//                .width(animationWidth),
+            modifier = Modifier
+                .height(169.dp)
+                .width(338.dp),
             composition = composition,
             iterations = if (hasMeasured) 1 else LottieConstants.IterateForever,
             clipSpec = LottieClipSpec.Progress(0f, 1f),
         )
-//        Icon(
-//            painter = painterResource(id = animationId),
-//            contentDescription = title,
-//            tint = MaterialTheme.colors.primary,
-//        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AnimatedVisibility(
+            visible = hasMeasured,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Text(
+                text = "Ø = ${diameter}mm",
+                style = MaterialTheme.typography.body1,
+            )
+        }
+
+//        Row(
+//            horizontalArrangement = Arrangement.Center,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            Icon(
+//                imageVector = Icons.Filled.Diameter,
+//                contentDescription = "",
+//            )
+//
+//            Text(
+//                text = diameter,
+//                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
+//            )
+//
+//            Text(
+//                text = stringResource(id = R.string.mm),
+//                style = MaterialTheme.typography.body1
+//            )
+//        }
+    }
+}
+
+@Preview
+@Composable
+private fun FramesMeasureButtonPreview() {
+    SalesAppTheme {
+        FramesMeasureButton()
     }
 }
 

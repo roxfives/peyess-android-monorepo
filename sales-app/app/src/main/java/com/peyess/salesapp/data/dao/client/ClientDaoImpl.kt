@@ -210,13 +210,12 @@ class ClientDaoImpl @Inject constructor(
             UpdateClientDaoError.UnexpectedError("Firestore instance is null")
         }
 
+        val documentPath = salesApplication
+            .stringResource(R.string.fs_doc_client)
+            .format(clientId)
         Either.catch {
-            firestore
-                .document(
-                    salesApplication
-                        .stringResource(R.string.fs_doc_client)
-                        .format(clientId)
-                ).update(client.toMap())
+            firestore.document(documentPath)
+                .update(client.toMap())
                 .await()
         }.mapLeft {
             UpdateClientDaoError.UnexpectedError(

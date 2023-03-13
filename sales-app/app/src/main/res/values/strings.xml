@@ -136,8 +136,9 @@
     <string name="btn_open_pdf">Abrir PDF</string>
     <string name="btn_edit_service_order">Editar Ordem de Serviço</string>
 
-    <!--    UI Component: Sales -->
+    <!--    UI Component: Clients -->
     <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
+    <string name="clients_screen_btn_edit">Editar</string>
 
     <!-- UI Component: Welcome   -->
     <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>

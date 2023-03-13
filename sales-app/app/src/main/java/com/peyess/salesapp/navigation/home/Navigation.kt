@@ -90,7 +90,16 @@ fun buildHomeNavGraph(
             modifier = modifier.padding(SalesAppTheme.dimensions.grid_2),
             onCreateNewClient = {
                 navHostController.navigate(buildBasicInfoRoute(it, scenario))
-            }
+            },
+            onEditClient = {
+                val route = buildBasicInfoRoute(
+                    clientId = it,
+                    createScenario = scenario,
+                    updateExistingClient = true,
+                )
+
+                navHostController.navigate(route)
+            },
         )
     }
 }

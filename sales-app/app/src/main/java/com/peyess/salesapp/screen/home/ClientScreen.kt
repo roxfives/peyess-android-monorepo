@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
@@ -53,12 +55,15 @@ import com.peyess.salesapp.app.state.ClientListStream
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.screen.home.dialog.ExistingClientDialog
+import com.peyess.salesapp.typing.client.Sex
 import com.peyess.salesapp.ui.component.action_bar.ClientActions
+import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.ZonedDateTime
 
 private val lazyColumnHeaderBottomSpacer = 16.dp
 
@@ -73,12 +78,12 @@ private val spacingBetweenCards = 8.dp
 private val profilePicPadding = 8.dp
 
 // TODO: Refactor this component to remove duplicated code (PickClientScreen)
-
 @Composable
 fun ClientScreen(
     modifier: Modifier = Modifier,
 
     onCreateNewClient: (clientId: String) -> Unit = {},
+    onEditClient: (clientId: String) -> Unit = {},
     onSearchClient: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -89,6 +94,9 @@ fun ClientScreen(
     val createClient by viewModel.collectAsState(MainAppState::createClient)
     val creatingClientExists by viewModel.collectAsState(MainAppState::creatingClientExists)
     val hasLookedForExistingClient by viewModel.collectAsState(MainAppState::hasLookedForExistingClient)
+
+    val updateClientId by viewModel.collectAsState(MainAppState::updateClientId)
+    val updateClient by viewModel.collectAsState(MainAppState::updateClient)
 
     val isLoading by viewModel.collectAsState(MainAppState::areClientsLoading)
     val clientList by viewModel.collectAsState(MainAppState::clientListStream)
@@ -121,6 +129,14 @@ fun ClientScreen(
         }
     }
 
+    if (updateClient) {
+        LaunchedEffect(Unit) {
+            viewModel.startedUpdatingClient()
+            Timber.i("Updating client with id: $createClientId")
+            onEditClient(updateClientId)
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -132,6 +148,7 @@ fun ClientScreen(
             clientList = clientList,
 
             onCreateNewClient = viewModel::findActiveCreatingClient,
+            onEditClient = { viewModel.loadEditClientToCache(it.id) },
             onSearchClient = onSearchClient,
             onSyncClients = {
                 viewModel.syncClients(context)
@@ -149,6 +166,7 @@ private fun ClientScreenImpl(
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onCreateNewClient: () -> Unit = {},
+    onEditClient: (Client) -> Unit = {},
     onSearchClient: () -> Unit = {},
 
     onSyncClients: () -> Unit = {},
@@ -190,6 +208,7 @@ private fun ClientScreenImpl(
                         modifier = Modifier.fillMaxWidth(),
                         pictureForClient = pictureForClient,
                         client = it,
+                        onEditClient = onEditClient,
                     )
                 }
             }
@@ -206,6 +225,7 @@ private fun ClientCard(
     modifier: Modifier = Modifier,
     client: Client = Client(),
     onClientPicked: (client: Client) -> Unit = {},
+    onEditClient: (client: Client) -> Unit = {},
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -218,62 +238,84 @@ private fun ClientCard(
         }
     }
 
-    Row(
+    Column(
         modifier = modifier
-            .height(IntrinsicSize.Min),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(cardPadding),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start,
     ) {
-        AsyncImage(
-            modifier = Modifier
-                .padding(profilePicPadding)
-                .size(pictureSize)
-                // Clip image to be shaped as a circle
-                .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
-                .clip(CircleShape),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(pictureUri.value)
-                .crossfade(true)
-                .size(width = pictureSizePx, height = pictureSizePx)
-                .build(),
-            contentScale = ContentScale.FillBounds,
-            contentDescription = "",
-            error = painterResource(id = R.drawable.ic_profile_placeholder),
-            fallback = painterResource(id = R.drawable.ic_profile_placeholder),
-            placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
-        )
-
-        Spacer(modifier = Modifier.width(cardSpacerWidth))
-
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(cardPadding),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start,
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.Start,
         ) {
-            Text(
-                modifier = Modifier.padding(bottom = 4.dp),
-                text = client.name,
-                style = MaterialTheme.typography.body1
-                    .copy(fontWeight = FontWeight.Bold)
+            AsyncImage(
+                modifier = Modifier
+                    .padding(profilePicPadding)
+                    .size(pictureSize)
+                    // Clip image to be shaped as a circle
+                    .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
+                    .clip(CircleShape),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(pictureUri.value)
+                    .crossfade(true)
+                    .size(width = pictureSizePx, height = pictureSizePx)
+                    .build(),
+                contentScale = ContentScale.FillBounds,
+                contentDescription = "",
+                error = painterResource(id = R.drawable.ic_profile_placeholder),
+                fallback = painterResource(id = R.drawable.ic_profile_placeholder),
+                placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
             )
 
-            Row(
-                Modifier.height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
+            Spacer(modifier = Modifier.width(cardSpacerWidth))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(cardPadding),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start,
             ) {
-                Icon(
-                    modifier = Modifier.fillMaxHeight(),
-                    imageVector = Icons.Filled.LocationOn,
-                    contentDescription = "",
+                Text(
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    text = client.name,
+                    style = MaterialTheme.typography.body1
+                        .copy(fontWeight = FontWeight.Bold)
                 )
 
-                Text(
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    text = client.shortAddress,
-                )
+                Row(
+                    Modifier.height(IntrinsicSize.Min),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    Icon(
+                        modifier = Modifier.fillMaxHeight(),
+                        imageVector = Icons.Filled.LocationOn,
+                        contentDescription = "",
+                    )
+
+                    Text(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        text = client.shortAddress,
+                    )
+                }
+            }
+        }
+
+//        Spacer(modifier = Modifier.height(cardSpacerWidth))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Button(onClick = { onEditClient(client) }) {
+                Text(text = stringResource(id = R.string.clients_screen_btn_edit))
             }
         }
     }
@@ -353,5 +395,37 @@ private fun NoClientsYet(
         Button(onClick = syncClients) {
             Text(text = stringResource(id = R.string.clients_screen_btn_sync))
         }
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun ClientCardPreview() {
+    SalesAppTheme {
+        ClientCard(
+            client = Client(
+                id = "",
+                name = "",
+                nameDisplay = "",
+                birthday = ZonedDateTime.now(),
+                document = "",
+                sex = Sex.Unknown,
+                shortAddress = "",
+                zipCode = "",
+                street = "",
+                houseNumber = "",
+                complement = "",
+                neighborhood = "",
+                city = "",
+                state = "",
+                email = "",
+                phone = "",
+                cellphone = "",
+                whatsapp = ""
+            ),
+
+            onClientPicked = {},
+            pictureForClient = { Uri.EMPTY },
+        )
     }
 }

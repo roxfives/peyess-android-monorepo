@@ -12,22 +12,26 @@ import arrow.core.continuations.either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.adapter.toCacheCreateClientDocument
 import com.peyess.salesapp.app.adapter.toClient
 import com.peyess.salesapp.app.adapter.toUnfinishedSale
 import com.peyess.salesapp.auth.StoreAuthState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.client_legal.ClientLegalDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -113,7 +117,12 @@ class MainViewModel @AssistedInject constructor(
         onAsync(MainAppState::clientListResponseAsync) { processClientListResponse(it) }
 
         onAsync(MainAppState::unfinishedSalesStreamAsync) { processActiveSalesStreamResponse(it) }
-        onAsync(MainAppState::unfinishedSalesAsync) { this.updateUnfinishedSales(it) }
+        onAsync(MainAppState::unfinishedSalesAsync) { updateUnfinishedSales(it) }
+
+        onAsync(MainAppState::editClientResponseAsync) { processEditClientResponse(it) }
+        onAsync(MainAppState::cacheCreateClientInsertResponseAsync) {
+            processAddClientToCacheResponse(it)
+        }
 
         loadProductTableStatus()
         loadCurrentCollaborator()
@@ -338,6 +347,55 @@ class MainViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processEditClientResponse(
+        response: ClientAndLegalResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    editClientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = { (client, legal) ->
+                addClientToCache(client, legal)
+                copy(updateClientId = client.id)
+            }
+        )
+    }
+
+    private fun addClientToCache(client: ClientDocument, legal: ClientLegalDocument) {
+        suspend {
+            val cacheClient = client.toCacheCreateClientDocument(
+                hasAcceptedPromotionalMessages = legal.hasAcceptedPromotionalMessages,
+            )
+
+            cacheCreateClientRepository.insertClient(cacheClient)
+        }.execute(Dispatchers.IO) {
+            copy(cacheCreateClientInsertResponseAsync = it)
+        }
+    }
+
+    private fun processAddClientToCacheResponse(
+        response: CacheCreateClientInsertResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    cacheCreateClientInsertResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                copy(updateClient = true)
+            }
+        )
+    }
+
     fun syncClients(context: Context) {
         enqueueOneTimeClientDownloadWorker(
             context = context,
@@ -387,6 +445,23 @@ class MainViewModel @AssistedInject constructor(
             createClient = false,
             createClientId = "",
         )
+    }
+
+    fun startedUpdatingClient() = setState {
+        copy(
+            updateClient = false,
+            updateClientId = "",
+            cacheCreateClientInsertResponseAsync = Uninitialized,
+            editClientResponseAsync = Uninitialized,
+        )
+    }
+
+    fun loadEditClientToCache(clientId: String) {
+        suspend {
+            clientRepository.clientAndLegalById(clientId)
+        }.execute {
+            copy(editClientResponseAsync = it)
+        }
     }
 
     suspend fun pictureForUser(uid: String): Uri {

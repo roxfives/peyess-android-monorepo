@@ -10,10 +10,14 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
+import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
+import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientTotalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
@@ -56,6 +60,9 @@ data class MainAppState(
     val createClientId: String = "",
     val createClient: Boolean = false,
 
+    val updateClientId: String = "",
+    val updateClient: Boolean = false,
+
     val existingCreateClientAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val existingCreateClient: CacheCreateClientDocument = CacheCreateClientDocument(),
     val hasLookedForExistingClient: Boolean = false,
@@ -83,7 +90,13 @@ data class MainAppState(
     val resumeSaleResponseAsync: Async<ResumeSaleResponse> = Uninitialized,
 
     val isGeneratingPdfFor: Pair<Boolean, String> = Pair(false, ""),
+
+    val editClientResponseAsync: Async<ClientAndLegalResponse> = Uninitialized,
+    val cacheCreateClientInsertResponseAsync: Async<CacheCreateClientInsertResponse> = Uninitialized,
 ): MavericksState {
+    val isLoadingClientToEdit = editClientResponseAsync is Loading
+            || cacheCreateClientInsertResponseAsync is Loading
+
     val isCreatingNewSale = createSaleResponseAsync is Loading
 
     val isUpdatingProducts = productsTableStatusAsync.invoke()?.isUpdating ?: false

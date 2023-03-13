@@ -5,6 +5,22 @@ sealed interface ClientLegalDaoErrors {
     val error: Throwable
 }
 
+sealed class FetchClientLegalDaoError: ClientLegalDaoErrors {
+    data class NotFound(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): FetchClientLegalDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+
+    data class UnexpectedError(
+        override val description: String,
+        val throwable: Throwable? = null,
+    ): FetchClientLegalDaoError() {
+        override val error = throwable ?: Throwable(description)
+    }
+}
+
 sealed class UpdateClientLegalDaoError: ClientLegalDaoErrors {
     data class UnexpectedError(
         override val description: String,

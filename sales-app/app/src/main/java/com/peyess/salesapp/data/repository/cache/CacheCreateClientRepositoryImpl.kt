@@ -32,6 +32,17 @@ class CacheCreateClientRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun insertClient(
+        client: CacheCreateClientDocument,
+    ): CacheCreateClientInsertResponse = Either.catch {
+        cacheCreateClientDao.add(client.toCacheCreateClientEntity())
+    }.mapLeft {
+        CacheCreateClientCreateError(
+            description = "Error inserting client",
+            error = it
+        )
+    }
+
     override suspend fun update(
         client: CacheCreateClientDocument,
     ): CacheCreateClientUpdateResponse = Either.catch {

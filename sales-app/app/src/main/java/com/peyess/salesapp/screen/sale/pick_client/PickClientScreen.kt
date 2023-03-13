@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.feature.client_list.ClientListScreenUI
 import com.peyess.salesapp.screen.home.dialog.ExistingClientDialog
 import com.peyess.salesapp.screen.sale.pick_client.state.PickClientState
@@ -30,6 +31,7 @@ fun PickClientScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
 
+    onEditClient: (clientId: String) -> Unit = {},
     onCreateNewClient: (
         clientId: String,
         paymentId: Long,
@@ -63,6 +65,9 @@ fun PickClientScreen(
     val pickScenario by viewModel.collectAsState(PickClientState::pickScenario)
     val pickedId by viewModel.collectAsState(PickClientState::pickedId)
 
+    val updateClientId by viewModel.collectAsState(PickClientState::updateClientId)
+    val updateClient by viewModel.collectAsState(PickClientState::updateClient)
+
     ParseParameters(
         navController = navHostController,
         onUpdateSaleId = viewModel::setSaleId,
@@ -88,6 +93,15 @@ fun PickClientScreen(
                     serviceOrderId,
                 )
             }
+        }
+    }
+
+
+    if (updateClient) {
+        LaunchedEffect(Unit) {
+            viewModel.startedUpdatingClient()
+            Timber.i("Updating client with id: $updateClientId")
+            onEditClient(updateClientId)
         }
     }
 
@@ -138,6 +152,8 @@ fun PickClientScreen(
 
             onSyncClients = { viewModel.syncClients(context) },
             onSearchClient = onSearchClient,
+
+            onEditClient = { viewModel.loadEditClientToCache(it.id) },
             onCreateNewClient = viewModel::findActiveCreatingClient,
             onClientPicked = {
                 viewModel.pickClient(it)

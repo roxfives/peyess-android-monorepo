@@ -11,13 +11,20 @@ import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.adapter.toCacheCreateClientDocument
+import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
+import com.peyess.salesapp.data.model.client.ClientDocument
+import com.peyess.salesapp.data.model.client_legal.ClientLegalDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
+import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -66,6 +73,11 @@ class PickClientViewModel @AssistedInject constructor(
         onAsync(PickClientState::createClientResponseAsync) { processCreateNewClientResponse(it) }
 
         onAsync(PickClientState::clientListResponseAsync) { processClientListResponse(it) }
+
+        onAsync(PickClientState::editClientResponseAsync) { processEditClientResponse(it) }
+        onAsync(PickClientState::cacheCreateClientInsertResponseAsync) {
+            processAddClientToCacheResponse(it)
+        }
     }
 
     private fun pickAllForServiceOrder(client: Client) = withState {
@@ -217,6 +229,55 @@ class PickClientViewModel @AssistedInject constructor(
         )
     }
 
+    private fun processEditClientResponse(
+        response: ClientAndLegalResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    editClientResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = { (client, legal) ->
+                addClientToCache(client, legal)
+                copy(updateClientId = client.id)
+            }
+        )
+    }
+
+    private fun addClientToCache(client: ClientDocument, legal: ClientLegalDocument) {
+        suspend {
+            val cacheClient = client.toCacheCreateClientDocument(
+                hasAcceptedPromotionalMessages = legal.hasAcceptedPromotionalMessages,
+            )
+
+            cacheCreateClientRepository.insertClient(cacheClient)
+        }.execute(Dispatchers.IO) {
+            copy(cacheCreateClientInsertResponseAsync = it)
+        }
+    }
+
+    private fun processAddClientToCacheResponse(
+        response: CacheCreateClientInsertResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(
+                    cacheCreateClientInsertResponseAsync = Fail(
+                        it.error ?: Throwable(it.description)
+                    )
+                )
+            },
+
+            ifRight = {
+                copy(updateClient = true)
+            }
+        )
+    }
+
     fun setSaleId(saleId: String) = setState {
         copy(saleId = saleId)
     }
@@ -315,6 +376,23 @@ class PickClientViewModel @AssistedInject constructor(
 
     fun clientPicked() = setState {
         copy(hasPickedClient = false)
+    }
+
+    fun loadEditClientToCache(clientId: String) {
+        suspend {
+            clientRepository.clientAndLegalById(clientId)
+        }.execute {
+            copy(editClientResponseAsync = it)
+        }
+    }
+
+    fun startedUpdatingClient() = setState {
+        copy(
+            updateClient = false,
+            updateClientId = "",
+            cacheCreateClientInsertResponseAsync = Uninitialized,
+            editClientResponseAsync = Uninitialized,
+        )
     }
 
     // hilt

@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.client_list
 
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,10 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PieChart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,7 +69,8 @@ private val cardSpacerWidth = 2.dp
 private val spacingBetweenCards = 8.dp
 private val profilePicPadding = 8.dp
 
-private val endingSpacerWidth = profilePicPadding
+private val buttonActionSpacerWidth = 8.dp
+private val endingSpacerWidth = 16.dp
 
 private val clientActionPadding = 8.dp
 
@@ -79,6 +86,7 @@ fun ClientListScreenUI(
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onClientPicked: (client: Client) -> Unit = {},
+    onEditClient: (client: Client) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
     onSearchClient: () -> Unit = {},
     onSyncClients: () -> Unit = {},
@@ -119,6 +127,7 @@ fun ClientListScreenUI(
                         modifier = Modifier.fillMaxWidth(),
                         pictureForClient = pictureForClient,
                         client = it,
+                        onEditClient = onEditClient,
                         onClientPicked = onClientPicked,
                     )
                 }
@@ -161,6 +170,7 @@ private fun LoadingClients(
 private fun ClientCard(
     modifier: Modifier = Modifier,
     client: Client = Client(),
+    onEditClient: (client: Client) -> Unit = {},
     onClientPicked: (client: Client) -> Unit = {},
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -232,13 +242,43 @@ private fun ClientCard(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Button(
-            modifier = Modifier.height(SalesAppTheme.dimensions.minimum_touch_target),
+        IconButton(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colors.onPrimary,
+                    shape = CircleShape,
+                ).border(
+                    width = 1.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = CircleShape,
+                ).size(SalesAppTheme.dimensions.minimum_touch_target),
+            onClick = { onEditClient(client) },
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                tint = MaterialTheme.colors.primary,
+                contentDescription = "",
+            )
+        }
+
+        Spacer(modifier = Modifier.width(buttonActionSpacerWidth))
+
+        IconButton(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colors.primary,
+                    shape = CircleShape,
+                ).border(
+                    width = 1.dp,
+                    color = MaterialTheme.colors.primary,
+                    shape = CircleShape,
+                ).size(SalesAppTheme.dimensions.minimum_touch_target),
             onClick = { onClientPicked(client) },
         ) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(id = R.string.btn_select_client),
+            Icon(
+                imageVector = Icons.Filled.Done,
+                tint = MaterialTheme.colors.onPrimary,
+                contentDescription = "",
             )
         }
 

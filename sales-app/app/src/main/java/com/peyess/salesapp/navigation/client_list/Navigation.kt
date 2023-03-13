@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.pick_client.PickClientScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
+import com.peyess.salesapp.navigation.edit_client.buildEditBasicInfoRoute
 import com.peyess.salesapp.navigation.edit_service_order.payment.buildEditPaymentNavRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
@@ -81,6 +82,11 @@ fun buildPickClientListNavGraph(
         PickClientScreen(
             modifier = modifier,
             navHostController = navHostController,
+            onEditClient = {
+                val basicInfoRoute = buildEditBasicInfoRoute(clientId = it)
+
+                navHostController.navigate(basicInfoRoute)
+            },
             onCreateNewClient = { clientId, paymentId, pickScenario, saleId, serviceOrderId ->
                 val createScenario = when (pickScenario) {
                     PickScenario.ServiceOrder -> CreateScenario.ServiceOrder

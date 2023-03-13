@@ -10,6 +10,8 @@ import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
+import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
+import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.feature.client_list.model.Client
 import com.peyess.salesapp.navigation.client_list.PickScenario
@@ -23,6 +25,9 @@ typealias ClientsListResponse = Either<LocalClientRepositoryPagingError, ClientL
 data class PickClientState(
     val saleId: String = "",
     val serviceOrderId: String = "",
+
+    val updateClientId: String = "",
+    val updateClient: Boolean = false,
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
@@ -40,6 +45,9 @@ data class PickClientState(
     val existingCreateClientAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val existingCreateClient: CacheCreateClientDocument = CacheCreateClientDocument(),
     val hasLookedForExistingClient: Boolean = false,
+
+    val editClientResponseAsync: Async<ClientAndLegalResponse> = Uninitialized,
+    val cacheCreateClientInsertResponseAsync: Async<CacheCreateClientInsertResponse> = Uninitialized,
 ): MavericksState {
     val isLoading = clientListResponseAsync is Loading
 

@@ -28,7 +28,7 @@ fun ClientDocument.toCacheCreateClientDocument(
         whatsapp = whatsapp,
         isCreating = false,
 
-        phoneHasWhatsApp = phone == whatsapp,
+        phoneHasWhatsApp = cellphone == whatsapp,
         hasPhoneContact = phone.isNotBlank(),
         hasAcceptedPromotionalMessages = hasAcceptedPromotionalMessages,
     )

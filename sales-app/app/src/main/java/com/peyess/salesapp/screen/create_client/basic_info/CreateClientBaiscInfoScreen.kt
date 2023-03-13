@@ -24,8 +24,7 @@ fun BasicInfoScreen(
         paymentId: Long,
         saleId: String,
         serviceOrderId: String,
-        isUpdatingAnExistingClient: Boolean,
-    ) -> Unit = { _, _, _, _, _, _ -> },
+    ) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: BasicInfoViewModel = mavericksViewModel()
 
@@ -36,7 +35,6 @@ fun BasicInfoScreen(
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
         onUpdateSaleId = viewModel::onSaleIdChanged,
         onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
-        onUpdateExistingClient = viewModel::onUpdateExistingClientChanged,
     )
 
     val saleId by viewModel.collectAsState(BasicInfoState::saleId)
@@ -45,8 +43,6 @@ fun BasicInfoScreen(
     val clientId by viewModel.collectAsState(BasicInfoState::clientId)
     val scenario by viewModel.collectAsState(BasicInfoState::createScenario)
     val paymentId by viewModel.collectAsState(BasicInfoState::paymentId)
-    val isUpdatingExistingClient by viewModel
-        .collectAsState(BasicInfoState::isUpdatingAnExistingClient)
 
     val name by viewModel.collectAsState(BasicInfoState::nameInput)
     val nameDisplay by viewModel.collectAsState(BasicInfoState::nameDisplayInput)
@@ -81,7 +77,6 @@ fun BasicInfoScreen(
                 paymentId,
                 saleId,
                 serviceOrderId,
-                isUpdatingExistingClient,
             )
         }
     }

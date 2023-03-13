@@ -30,7 +30,6 @@ import com.peyess.salesapp.ui.theme.SalesAppTheme
 
 const val clientIdParam = "clientId"
 const val createScenarioParam = "createScenario"
-const val updateExistingClientParam = "updateExistingClient"
 
 const val saleIdParam = "saleId"
 const val serviceOrderIdParam = "serviceOrderId"
@@ -39,21 +38,18 @@ const val paymentIdParam = "paymentId"
 private val basicInfoRoute = SalesAppScreens.CreateNewClientBasicInfo.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "/{$updateExistingClientParam}" +
         "?$paymentIdParam={$paymentIdParam}" +
         "?$saleIdParam={$saleIdParam}" +
         "?$serviceOrderIdParam={$serviceOrderIdParam}"
 private val addressRoute = SalesAppScreens.CreateNewClientAddress.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "/{$updateExistingClientParam}" +
         "?$paymentIdParam={$paymentIdParam}" +
         "?$saleIdParam={$saleIdParam}" +
         "?$serviceOrderIdParam={$serviceOrderIdParam}"
 private val communicationRoute = SalesAppScreens.CreateNewClientContact.name +
         "/{$clientIdParam}" +
         "/{$createScenarioParam}" +
-        "/{$updateExistingClientParam}" +
         "?$paymentIdParam={$paymentIdParam}" +
         "?$saleIdParam={$saleIdParam}" +
         "?$serviceOrderIdParam={$serviceOrderIdParam}"
@@ -64,19 +60,16 @@ fun buildBasicInfoRoute(
     paymentId: Long = 0L,
     saleId: String = "",
     serviceOrderId: String = "",
-    updateExistingClient: Boolean = false,
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
             SalesAppScreens.CreateNewClientBasicInfo.name +
                     "/$clientId" +
-                    "/${createScenario.toName()}" +
-                    "/${updateExistingClient}"
+                    "/${createScenario.toName()}"
         else ->
             SalesAppScreens.CreateNewClientBasicInfo.name +
                     "/$clientId" +
                     "/${createScenario.toName()}" +
-                    "/${updateExistingClient}" +
                     "?$paymentIdParam=$paymentId" +
                     "?$saleIdParam=$saleId" +
                     "?$serviceOrderIdParam=$serviceOrderId"
@@ -86,7 +79,6 @@ fun buildBasicInfoRoute(
 fun buildAddressRoute(
     clientId: String,
     createScenario: CreateScenario,
-    updateExistingClient: Boolean,
     paymentId: Long = 0L,
     saleId: String = "",
     serviceOrderId: String = "",
@@ -95,13 +87,11 @@ fun buildAddressRoute(
         CreateScenario.Home ->
             SalesAppScreens.CreateNewClientAddress.name +
                     "/${clientId}" +
-                    "/${createScenario.toName()}" +
-                    "/${updateExistingClient}"
+                    "/${createScenario.toName()}"
         else ->
             SalesAppScreens.CreateNewClientAddress.name +
                     "/${clientId}" +
                     "/${createScenario.toName()}" +
-                    "/${updateExistingClient}" +
                     "?$paymentIdParam=$paymentId" +
                     "?$saleIdParam=$saleId" +
                     "?$serviceOrderIdParam=$serviceOrderId"
@@ -114,19 +104,16 @@ fun buildCommunicationRoute(
     paymentId: Long = 0L,
     saleId: String = "",
     serviceOrderId: String = "",
-    updateExistingClient: Boolean = false,
 ): String {
     return when(createScenario) {
         CreateScenario.Home ->
             SalesAppScreens.CreateNewClientContact.name +
                     "/${clientId}" +
-                    "/${createScenario.toName()}" +
-                    "/${updateExistingClient}"
+                    "/${createScenario.toName()}"
         else ->
             SalesAppScreens.CreateNewClientContact.name +
                     "/${clientId}" +
                     "/${createScenario.toName()}" +
-                    "/${updateExistingClient}" +
                     "?$paymentIdParam=$paymentId" +
                     "?$saleIdParam=$saleId" +
                     "?$serviceOrderIdParam=$serviceOrderId"
@@ -144,7 +131,6 @@ fun buildCreateClientNavGraph(
         arguments = listOf(
             navArgument(clientIdParam) { type = NavType.StringType },
             navArgument(createScenarioParam) { type = NavType.StringType },
-            navArgument(updateExistingClientParam) { type = NavType.BoolType },
             navArgument(paymentIdParam) {
                 type = NavType.LongType
                 defaultValue = 0L
@@ -166,14 +152,13 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId, isUpdating ->
+            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId ->
                 when(createScenario) {
                     CreateScenario.Home ->
                         navHostController.navigate(
                             buildAddressRoute(
                                 clientId = clientId,
                                 createScenario = createScenario,
-                                updateExistingClient = isUpdating,
                             )
                         )
                     else ->
@@ -181,7 +166,6 @@ fun buildCreateClientNavGraph(
                             buildAddressRoute(
                                 clientId = clientId,
                                 createScenario = createScenario,
-                                updateExistingClient = isUpdating,
                                 paymentId = paymentId,
                                 saleId = saleId,
                                 serviceOrderId = serviceOrderId,
@@ -197,7 +181,6 @@ fun buildCreateClientNavGraph(
         arguments = listOf(
             navArgument(clientIdParam) { type = NavType.StringType },
             navArgument(createScenarioParam) { type = NavType.StringType },
-            navArgument(updateExistingClientParam) { type = NavType.BoolType },
             navArgument(paymentIdParam) {
                 type = NavType.LongType
                 defaultValue = 0L
@@ -219,14 +202,13 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId, isUpdating ->
+            onDone = { clientId, createScenario, paymentId, saleId, serviceOrderId ->
                 when(createScenario) {
                     CreateScenario.Home ->
                         navHostController.navigate(
                             buildCommunicationRoute(
                                 clientId = clientId,
                                 createScenario = createScenario,
-                                updateExistingClient = isUpdating,
                             )
                         )
 
@@ -235,7 +217,6 @@ fun buildCreateClientNavGraph(
                             buildCommunicationRoute(
                                 clientId = clientId,
                                 createScenario = createScenario,
-                                updateExistingClient = isUpdating,
                                 paymentId = paymentId,
                                 saleId = saleId,
                                 serviceOrderId = serviceOrderId,
@@ -251,7 +232,6 @@ fun buildCreateClientNavGraph(
         arguments = listOf(
             navArgument(clientIdParam) { type = NavType.StringType },
             navArgument(createScenarioParam) { type = NavType.StringType },
-            navArgument(updateExistingClientParam) { type = NavType.BoolType },
             navArgument(paymentIdParam) {
                 type = NavType.LongType
                 defaultValue = 0L
@@ -265,7 +245,7 @@ fun buildCreateClientNavGraph(
                 .fillMaxSize()
                 .padding(SalesAppTheme.dimensions.grid_2),
             navHostController = navHostController,
-            onDone = { createScenario, clientId, paymentId, saleId, serviceOrderId, _ ->
+            onDone = { createScenario, clientId, paymentId, saleId, serviceOrderId ->
                  when (createScenario) {
                      CreateScenario.Home -> {
                          navHostController.navigate(SalesAppScreens.Home.name) {

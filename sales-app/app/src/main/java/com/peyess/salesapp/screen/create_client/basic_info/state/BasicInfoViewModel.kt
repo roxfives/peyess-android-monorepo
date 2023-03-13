@@ -100,10 +100,6 @@ class BasicInfoViewModel @AssistedInject constructor(
         copy(createScenario = createScenario)
     }
 
-    fun onUpdateExistingClientChanged(isUpdatingExistingClient: Boolean) = setState {
-        copy(isUpdatingAnExistingClient = isUpdatingExistingClient)
-    }
-
     fun onPictureChanged(picture: Uri) = setState {
         val update = this.client.copy(picture = picture)
 

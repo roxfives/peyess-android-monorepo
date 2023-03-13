@@ -54,6 +54,10 @@ enum class SalesAppScreens {
     CreateNewClientAddress,
     CreateNewClientContact,
 
+    EditClientBasicInfo,
+    EditClientAddress,
+    EditClientContact,
+
     VisualAcuity,
     SettingsAndActions,
 
@@ -116,6 +120,10 @@ enum class SalesAppScreens {
                 CreateNewClientBasicInfo.name -> CreateNewClientBasicInfo
                 CreateNewClientAddress.name -> CreateNewClientAddress
                 CreateNewClientContact.name -> CreateNewClientContact
+
+                EditClientBasicInfo.name -> EditClientBasicInfo
+                EditClientAddress.name -> EditClientAddress
+                EditClientContact.name -> EditClientContact
 
                 VisualAcuity.name -> VisualAcuity
                 SettingsAndActions.name -> SettingsAndActions
@@ -186,6 +194,10 @@ enum class SalesAppScreens {
                 CreateNewClientBasicInfo.name -> "Criar novo cliente"
                 CreateNewClientAddress.name -> "Criar novo cliente"
                 CreateNewClientContact.name -> "Criar novo cliente"
+
+                EditClientBasicInfo.name -> "Editando cliente"
+                EditClientAddress.name -> "Editando cliente"
+                EditClientContact.name -> "Editando cliente"
 
                 VisualAcuity.name -> "Acuidade Visual"
                 SettingsAndActions.name -> "Configurações e ações"

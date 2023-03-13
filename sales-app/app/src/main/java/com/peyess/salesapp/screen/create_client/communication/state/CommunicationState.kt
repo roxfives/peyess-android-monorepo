@@ -25,7 +25,7 @@ data class CommunicationState(
     val clientId: String = "",
     val paymentId: Long = 0L,
     val createScenario: CreateScenario = CreateScenario.Home,
-    val isUpdatingAnExistingClient: Boolean = false,
+    val isUpdatingClient: Boolean = false,
 
     val clientResponseAsync: Async<CacheCreateClientFetchSingleResponse> = Uninitialized,
     val client: Client = Client(),

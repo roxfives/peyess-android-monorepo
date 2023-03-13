@@ -11,6 +11,7 @@ import com.peyess.salesapp.navigation.authentication.buildStoreAuthNavGraph
 import com.peyess.salesapp.navigation.authentication_user.buildUserAuthNavGraph
 import com.peyess.salesapp.navigation.create_client.buildCreateClientNavGraph
 import com.peyess.salesapp.navigation.demonstration.buildDemonstrationNavGraph
+import com.peyess.salesapp.navigation.edit_client.buildEditClientNavGraph
 import com.peyess.salesapp.navigation.home.buildHomeNavGraph
 import com.peyess.salesapp.navigation.landing.buildLandingNavGraph
 import com.peyess.salesapp.navigation.sale.buildSaleNavGraph
@@ -56,6 +57,8 @@ fun SalesAppNavHost(
         buildDemonstrationNavGraph(modifier, navHostController, this)
 
         buildCreateClientNavGraph(modifier, navHostController, this)
+
+        buildEditClientNavGraph(modifier, navHostController, this)
 
         buildVisualAcuityNavGraph(modifier, navHostController, this)
 

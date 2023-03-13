@@ -321,7 +321,7 @@ class CommunicationViewModel @AssistedInject constructor(
     }
 
     fun onUpdateExistingClientChanged(isUpdatingExistingClient: Boolean) = setState {
-        copy(isUpdatingAnExistingClient = isUpdatingExistingClient)
+        copy(isUpdatingClient = isUpdatingExistingClient)
     }
 
     fun onEmailChanged(email: String) = setState {
@@ -454,7 +454,7 @@ class CommunicationViewModel @AssistedInject constructor(
                 client = it.client,
                 hasAcceptedPromotionalMessages = it.hasAcceptedPromotionalMessages,
                 createScenario = it.createScenario,
-                isUpdatingExistingClient = it.isUpdatingAnExistingClient,
+                isUpdatingExistingClient = it.isUpdatingClient,
             )
         }.execute(Dispatchers.IO) {
             copy(uploadClientResponseAsync = it)

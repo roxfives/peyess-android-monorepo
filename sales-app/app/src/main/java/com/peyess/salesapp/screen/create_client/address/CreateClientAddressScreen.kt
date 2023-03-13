@@ -24,8 +24,7 @@ fun CreateClientAddressScreen(
         paymentId: Long,
         saleId: String,
         serviceOrder: String,
-        isUpdatingAnExistingClient: Boolean,
-    ) -> Unit = { _, _, _, _, _, _ -> },
+    ) -> Unit = { _, _, _, _, _ -> },
 ) {
     val viewModel: ClientAddressViewModel = mavericksViewModel()
 
@@ -36,7 +35,6 @@ fun CreateClientAddressScreen(
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
         onUpdateSaleId = viewModel::onSaleIdChanged,
         onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
-        onUpdateExistingClient = viewModel::onUpdateExistingClientChanged,
     )
 
     val saleId by viewModel.collectAsState(ClientAddressState::saleId)
@@ -45,8 +43,6 @@ fun CreateClientAddressScreen(
     val clientId by viewModel.collectAsState(ClientAddressState::clientId)
     val paymentId by viewModel.collectAsState(ClientAddressState::paymentId)
     val scenario by viewModel.collectAsState(ClientAddressState::createScenario)
-    val isUpdatingExistingClient by viewModel
-        .collectAsState(ClientAddressState::isUpdatingAnExistingClient)
 
     val zipCode by viewModel.collectAsState(ClientAddressState::zipCodeInput)
     val street by viewModel.collectAsState(ClientAddressState::streetInput)
@@ -93,7 +89,6 @@ fun CreateClientAddressScreen(
                 paymentId,
                 saleId,
                 serviceOrderId,
-                isUpdatingExistingClient,
             )
         }
     }

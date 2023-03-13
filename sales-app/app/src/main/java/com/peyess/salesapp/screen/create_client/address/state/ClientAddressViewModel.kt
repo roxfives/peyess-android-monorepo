@@ -157,10 +157,6 @@ class ClientAddressViewModel @AssistedInject constructor(
         copy(createScenario = createScenario)
     }
 
-    fun onUpdateExistingClientChanged(isUpdatingExistingClient: Boolean) = setState {
-        copy(isUpdatingAnExistingClient = isUpdatingExistingClient)
-    }
-
     fun onZipCodeChanged(value: String) = setState {
         val zipCode = if (value.length <= maxZipCodeLength) {
             value

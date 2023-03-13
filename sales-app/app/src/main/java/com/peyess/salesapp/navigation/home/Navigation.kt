@@ -12,6 +12,7 @@ import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.home.SalesScreen
 import com.peyess.salesapp.navigation.create_client.CreateScenario
 import com.peyess.salesapp.navigation.create_client.buildBasicInfoRoute
+import com.peyess.salesapp.navigation.edit_client.buildEditBasicInfoRoute
 import com.peyess.salesapp.navigation.edit_service_order.service_order.buildEditServiceOrderRoute
 import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavRoute
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -92,11 +93,7 @@ fun buildHomeNavGraph(
                 navHostController.navigate(buildBasicInfoRoute(it, scenario))
             },
             onEditClient = {
-                val route = buildBasicInfoRoute(
-                    clientId = it,
-                    createScenario = scenario,
-                    updateExistingClient = true,
-                )
+                val route = buildEditBasicInfoRoute(clientId = it)
 
                 navHostController.navigate(route)
             },

@@ -18,17 +18,18 @@ import com.peyess.salesapp.navigation.create_client.CreateScenario
 fun CreateClientCommunicationScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    isUpdating: Boolean = false,
     onDone: (
         createScenario: CreateScenario,
         clientId: String,
         paymentId: Long,
         saleId: String,
         serviceOrderId: String,
-        isUpdatingAnExistingClient: Boolean,
-    ) -> Unit = { _, _, _ , _, _, _ -> },
+    ) -> Unit = { _, _, _ , _, _ -> },
 ) {
     val viewModel: CommunicationViewModel = mavericksViewModel()
 
+    LaunchedEffect(Unit) { viewModel.onUpdateExistingClientChanged(isUpdating) }
     ParseParameters(
         navController = navHostController,
         onUpdateClientId = viewModel::onClientIdChanged,
@@ -36,7 +37,6 @@ fun CreateClientCommunicationScreen(
         onUpdateCreateScenario = viewModel::onCreateScenarioChanged,
         onUpdateSaleId = viewModel::onSaleIdChanged,
         onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
-        onUpdateExistingClient = viewModel::onUpdateExistingClientChanged,
     )
 
     val saleId by viewModel.collectAsState(CommunicationState::saleId)
@@ -45,8 +45,6 @@ fun CreateClientCommunicationScreen(
     val clientId by viewModel.collectAsState(CommunicationState::clientId)
     val paymentId by viewModel.collectAsState(CommunicationState::paymentId)
     val createScenario by viewModel.collectAsState(CommunicationState::createScenario)
-    val isUpdatingExistingClient by viewModel
-        .collectAsState(CommunicationState::isUpdatingAnExistingClient)
 
     val hasAcceptedPromotionalMessages by
         viewModel.collectAsState(CommunicationState::hasAcceptedPromotionalMessages)
@@ -95,7 +93,6 @@ fun CreateClientCommunicationScreen(
                 paymentId,
                 saleId,
                 serviceOrderId,
-                isUpdatingExistingClient,
             )
         }
     }

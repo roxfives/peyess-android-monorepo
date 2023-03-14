@@ -13,6 +13,8 @@ import com.peyess.salesapp.data.repository.local_sale.frames.model.FramesDocumen
 import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescriptionResponse
 import com.peyess.salesapp.feature.lens_suggestion.model.toMeasuring
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
+import com.peyess.salesapp.screen.sale.frames.data.adapter.toDisplayMeasure
+import com.peyess.salesapp.screen.sale.frames.data.model.DisplayMeasure
 import com.peyess.salesapp.typing.frames.FramesType
 import timber.log.Timber
 import java.text.DecimalFormat
@@ -99,5 +101,16 @@ data class FramesLandingState(
         diff < diameterDiffThreshold
     } else {
         true
+    }
+
+    val displayMeasureLeft: DisplayMeasure = if (positioningDataLeft is Success) {
+        positioningDataLeft.invoke().toMeasuring().toDisplayMeasure()
+    } else {
+        DisplayMeasure()
+    }
+    val displayMeasureRight: DisplayMeasure = if (positioningDataRight is Success) {
+        positioningDataRight.invoke().toMeasuring().toDisplayMeasure()
+    } else {
+        DisplayMeasure()
     }
 }

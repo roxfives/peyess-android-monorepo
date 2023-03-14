@@ -260,6 +260,20 @@
     <string name="dialog_diameter_too_diff_title">Encontramos um problema em potencial</string>
     <string name="dialog_diameter_too_diff_message">A diferença entre valores calculados para os diâmetros dos dois olhos está muito diferente. Por favor, verifique as medidas.</string>
 
+    <string name="view_measure_button">Ver medidas</string>
+    <string name="dialog_message_not_available">Ainda não há nenhuma medida disponível</string>
+    <string name="dialog_value_display"><u>%1$s:</u> %2$smm</string>
+    <string name="dialog_value_title_ipd">DNP</string>
+    <string name="dialog_value_title_height">Alture</string>
+    <string name="dialog_value_title_diameter">Diâmetro</string>
+    <string name="dialog_value_title_bridge_hoop">Ponte-aro</string>
+    <string name="dialog_value_title_v_hoop">Aro vertical</string>
+    <string name="dialog_value_title_h_hoop">Aro horizontal</string>
+    <string name="dialog_value_title_bridge">Ponte</string>
+    <string name="dialog_value_btn_ok">Ok</string>
+    <string name="dialog_column_title_left">Medidas O.E.</string>
+    <string name="dialog_column_title_right">Medidas O.D.</string>
+
     <!--  UI Component: Frames measure  -->
     <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>
     <string name="camera_access_required">Não é possível utilizar o aplicativo sem dar acesso à câmera</string>

@@ -7,6 +7,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +18,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,7 +50,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
+import com.peyess.salesapp.screen.sale.frames.data.model.DisplayMeasure
 import com.peyess.salesapp.screen.sale.frames.landing.dialog.DiameterDifferenceTooBig
+import com.peyess.salesapp.screen.sale.frames.landing.dialog.DisplayMeasureDialog
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingState
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewModel
@@ -54,6 +63,10 @@ import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
 private val measureButtonHeight = 240.dp
+
+private val viewMeasuringButtonSize = 48.dp
+private val viewMeasuringButtonPadding = 12.dp
+private val viewMeasuringButtonSpacer = 2.dp
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -81,6 +94,9 @@ fun FramesLandingScreen(
 
     val diameterLeft by viewModel.collectAsState(FramesLandingState::diameterLeft)
     val diameterRight by viewModel.collectAsState(FramesLandingState::diameterRight)
+
+    val displayMeasureLeft by viewModel.collectAsState(FramesLandingState::displayMeasureLeft)
+    val displayMeasureRight by viewModel.collectAsState(FramesLandingState::displayMeasureRight)
 
     val isDiameterDiffAcceptable by viewModel
         .collectAsState(FramesLandingState::isDiameterDiffAcceptable)
@@ -133,6 +149,9 @@ fun FramesLandingScreen(
         diameterLeft = diameterLeft,
         diameterRight = diameterRight,
 
+        displayMeasureLeft = displayMeasureLeft,
+        displayMeasureRight = displayMeasureRight,
+
         onNext = onNext,
     )
 }
@@ -155,8 +174,11 @@ private fun FramesLandingScreenImpl(
     pictureUriLeftEye: Uri = Uri.EMPTY,
     pictureUriRightEye: Uri = Uri.EMPTY,
 
-    diameterLeft: String = "0.00mm",
-    diameterRight: String = "0.00mm",
+    diameterLeft: String = "0.00",
+    diameterRight: String = "0.00",
+
+    displayMeasureLeft: DisplayMeasure = DisplayMeasure(),
+    displayMeasureRight: DisplayMeasure = DisplayMeasure(),
 
     onNext: () -> Unit = {},
 ) {
@@ -176,12 +198,24 @@ private fun FramesLandingScreenImpl(
         )
     }
 
+    val viewMeasureDialogState = rememberMaterialDialogState(false)
+    DisplayMeasureDialog(
+        dialogState = viewMeasureDialogState,
+
+        showMeasureLeft = pictureUriLeftEye != Uri.EMPTY,
+        showMeasureRight = pictureUriRightEye != Uri.EMPTY,
+
+        measureLeft = displayMeasureLeft,
+        measureRight = displayMeasureRight,
+    )
+
+
     Column(modifier = modifier) {
         FramesInput(
             hasSetFrames = hasSetFrames,
             areFramesNew = areFramesNew,
-            onSetOwnFrames = {onAddFrames(false)},
-            onSetNewFrames = {onAddFrames(true)},
+            onSetOwnFrames = { onAddFrames(false) },
+            onSetNewFrames = { onAddFrames(true) },
         )
 
         Divider(
@@ -270,11 +304,41 @@ private fun FramesLandingScreenImpl(
         Spacer(modifier = Modifier.height(32.dp))
         Spacer(modifier = Modifier.weight(1f))
         PeyessStepperFooter(
-            onNext = onNext
+            middle = {
+                 Column(
+                     horizontalAlignment = Alignment.CenterHorizontally,
+                     verticalArrangement = Arrangement.Center,
+                 ) {
+                     IconButton(
+                         modifier = Modifier
+                             .size(viewMeasuringButtonSize)
+                             .padding(viewMeasuringButtonPadding)
+                             .background(
+                                 color = MaterialTheme.colors.primary,
+                                 shape = CircleShape,
+                             ),
+                         onClick = { viewMeasureDialogState.show() },
+                     ) {
+                         Icon(
+                             imageVector = Icons.Default.Straighten,
+                             contentDescription = "",
+                             tint = MaterialTheme.colors.onPrimary,
+                         )
+                     }
+
+                     Spacer(modifier = Modifier.height(viewMeasuringButtonSpacer))
+                     
+                     Text(
+                        text = stringResource(id = R.string.view_measure_button).lowercase(),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                     )
+                 }
+            },
+            onNext = onNext,
         )
     }
 }
-
 
 @Composable
 private fun FramesInput(

@@ -256,6 +256,10 @@
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
     <string name="mike_bad_lens_type_default_client_name">cliente</string>
 
+    <string name="dialog_diameter_too_diff_btn">Confirmo que as medidas serão verificadas</string>
+    <string name="dialog_diameter_too_diff_title">Encontramos um problema em potencial</string>
+    <string name="dialog_diameter_too_diff_message">A diferença entre valores calculados para os diâmetros dos dois olhos está muito diferente. Por favor, verifique as medidas.</string>
+
     <!--  UI Component: Frames measure  -->
     <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>
     <string name="camera_access_required">Não é possível utilizar o aplicativo sem dar acesso à câmera</string>

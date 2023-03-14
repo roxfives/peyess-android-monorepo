@@ -18,6 +18,9 @@ import timber.log.Timber
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+import kotlin.math.abs
+
+private const val diameterDiffThreshold = 5.0
 
 data class FramesLandingState(
     val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
@@ -84,5 +87,17 @@ data class FramesLandingState(
         }
     } else {
         "0.00"
+    }
+
+    val isDiameterDiffAcceptable: Boolean = if (
+        positioningDataLeft is Success && positioningDataRight is Success
+    ) {
+        val measuringLeft = positioningDataLeft.invoke().toMeasuring()
+        val measuringRight = positioningDataRight.invoke().toMeasuring()
+
+        val diff = abs(measuringLeft.fixedDiameter - measuringRight.fixedDiameter)
+        diff < diameterDiffThreshold
+    } else {
+        true
     }
 }

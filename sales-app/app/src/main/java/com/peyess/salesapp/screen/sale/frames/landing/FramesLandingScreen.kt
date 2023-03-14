@@ -19,11 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +43,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
+import com.peyess.salesapp.screen.sale.frames.landing.dialog.DiameterDifferenceTooBig
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingState
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewModel
@@ -83,9 +82,22 @@ fun FramesLandingScreen(
     val diameterLeft by viewModel.collectAsState(FramesLandingState::diameterLeft)
     val diameterRight by viewModel.collectAsState(FramesLandingState::diameterRight)
 
+    val isDiameterDiffAcceptable by viewModel
+        .collectAsState(FramesLandingState::isDiameterDiffAcceptable)
+    val dialogState = rememberMaterialDialogState(false)
+
+    LaunchedEffect(isDiameterDiffAcceptable) {
+        if (!isDiameterDiffAcceptable) {
+            dialogState.show()
+        }
+    }
+    DiameterDifferenceTooBig(
+        dialogState = dialogState,
+        onDismiss = { dialogState.hide() },
+    )
+
     val hasFinishedSettingFramesType
         by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
-
     if (hasFinishedSettingFramesType) {
         LaunchedEffect(Unit) {
             viewModel.onNavigateToSetFrames()

@@ -57,8 +57,7 @@ fun buildFramesMeasureNavGraph(
         exitTransition = measureTakePictureExitTransition()
     ) {
         TakePictureScreen(
-            modifier = modifier
-                .fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             navHostController = navHostController,
             onNext = {
                 val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
@@ -84,8 +83,8 @@ fun buildFramesMeasureNavGraph(
         MeasureFramesScreen(
             modifier = modifier.fillMaxSize(),
             navHostController = navHostController,
-        ) {
-            navHostController.popBackStack()
-        }
+            onDone = { navHostController.popBackStack() },
+            onCancel = { navHostController.popBackStack() },
+        )
     }
 }

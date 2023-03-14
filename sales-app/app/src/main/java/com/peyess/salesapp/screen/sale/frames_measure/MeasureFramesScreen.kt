@@ -85,6 +85,7 @@ import timber.log.Timber
 fun MeasureFramesScreen(
     modifier: Modifier = Modifier,
     navHostController: NavHostController = rememberNavController(),
+    onCancel: () -> Unit = {},
     onDone: () -> Unit = {},
 ) {
     val viewModel: FramesMeasureViewModel = mavericksViewModel()
@@ -136,13 +137,14 @@ fun MeasureFramesScreen(
             onCancel = {
                 viewModel.onCancelMeasure()
                 // TODO: move to navigation function
-                navHostController.navigate(
-                    "${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParameter"
-                ) {
-                    popUpTo("${SalesAppScreens.FramesMeasure.name}/{eye}") {
-                        inclusive = true
-                    }
-                }
+//                navHostController.navigate(
+//                    "${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParameter"
+//                ) {
+//                    popUpTo("${SalesAppScreens.FramesMeasure.name}/{eye}") {
+//                        inclusive = true
+//                    }
+//                }
+                onCancel()
             },
 
             onMoveUp = viewModel::onMoveUp,

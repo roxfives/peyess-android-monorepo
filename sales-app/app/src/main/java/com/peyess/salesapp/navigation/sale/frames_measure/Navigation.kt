@@ -40,15 +40,12 @@ fun buildFramesMeasureNavGraph(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,
-        ) {
-            val eyeParam = if (it is Eye.Left) {
-                "left"
-            } else {
-                "right"
-            }
+            onNext = {
+                val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
 
-            navHostController.navigate("${SalesAppScreens.FramesMeasureTakePicture.name}/$eyeParam")
-        }
+                navHostController.navigate("${SalesAppScreens.FramesMeasureTakePicture.name}/$eyeParam")
+            },
+        )
     }
 
     builder.composable(
@@ -63,19 +60,16 @@ fun buildFramesMeasureNavGraph(
             modifier = modifier
                 .fillMaxSize(),
             navHostController = navHostController,
-        ) {
-            val eyeParam = if (it is Eye.Left) {
-                "left"
-            } else {
-                "right"
-            }
+            onNext = {
+                val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
 
-            navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam") {
-                popUpTo("${SalesAppScreens.FramesMeasureAnimation.name}/{eye}") {
-                    inclusive = false
+                navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam") {
+                    popUpTo("${SalesAppScreens.FramesMeasureAnimation.name}/{eye}") {
+                        inclusive = false
+                    }
                 }
             }
-        }
+        )
     }
 
 

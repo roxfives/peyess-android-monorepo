@@ -34,13 +34,12 @@ fun buildFramesNavGraph(
     builder.composable(
         route = SalesAppScreens.FramesLanding.name,
         enterTransition = framesEnterTransition(),
-        exitTransition = framesExitTransition()
+        exitTransition = framesExitTransition(),
     ) {
         val scrollState = rememberScrollState()
 
         FramesLandingScreen(
-            modifier = modifier
-                .verticalScroll(scrollState)
+            modifier = modifier.verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset),
             onAddFrames = {
                 val route = buildFramesDataRoute(it)
@@ -48,17 +47,13 @@ fun buildFramesNavGraph(
                 navHostController.navigate(route)
             },
             onAddMeasure = {
-                val eyeParam = if (it is Eye.Left) {
-                    "left"
-                } else {
-                    "right"
-                }
+                val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
 
                 navHostController.navigate("${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParam")
-            }
-        ) {
-            navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name)
-        }
+            },
+
+            onNext = { navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name) },
+        )
     }
 
     builder.composable(
@@ -67,11 +62,9 @@ fun buildFramesNavGraph(
         exitTransition = setFramesExitTransition()
     ) {
         FramesDataScreen(
-            modifier = modifier
-                .padding(SalesAppTheme.dimensions.screen_offset),
+            modifier = modifier.padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,
-        ) {
-            navHostController.popBackStack()
-        }
+            onDone = { navHostController.popBackStack() },
+        )
     }
 }

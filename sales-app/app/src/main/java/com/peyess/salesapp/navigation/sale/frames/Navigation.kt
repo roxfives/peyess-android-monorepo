@@ -52,6 +52,12 @@ fun buildFramesNavGraph(
                 navHostController.navigate("${SalesAppScreens.FramesMeasureAnimation.name}/$eyeParam")
             },
 
+            onEditMeasure = {
+                val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
+
+                navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam")
+            },
+
             onNext = { navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name) },
         )
     }

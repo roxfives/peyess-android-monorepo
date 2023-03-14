@@ -53,6 +53,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.peyess.salesapp.R
 import com.peyess.salesapp.screen.sale.frames.data.model.DisplayMeasure
+import com.peyess.salesapp.screen.sale.frames.landing.dialog.CreateOrUpdateMeasureDialog
 import com.peyess.salesapp.screen.sale.frames.landing.dialog.DiameterDifferenceTooBig
 import com.peyess.salesapp.screen.sale.frames.landing.dialog.DisplayMeasureDialog
 import com.peyess.salesapp.typing.general.Eye
@@ -76,6 +77,7 @@ fun FramesLandingScreen(
     modifier: Modifier = Modifier,
     onAddFrames: (serviceOrderId: String) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
+    onEditMeasure: (eye: Eye) -> Unit = {},
     onAddPantoscopic: (eye: Eye) -> Unit = {},
     onNext: () -> Unit = {},
 ) {
@@ -103,8 +105,8 @@ fun FramesLandingScreen(
     val isDiameterDiffAcceptable by viewModel
         .collectAsState(FramesLandingState::isDiameterDiffAcceptable)
 
-    val hasFinishedSettingFramesType
-            by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
+    val hasFinishedSettingFramesType by viewModel
+        .collectAsState(FramesLandingState::hasFinishedSettingFramesType)
     if (hasFinishedSettingFramesType) {
         LaunchedEffect(Unit) {
             viewModel.onNavigateToSetFrames()
@@ -113,7 +115,6 @@ fun FramesLandingScreen(
     }
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-
     FramesLandingScreenImpl(
         modifier = modifier,
 
@@ -130,6 +131,7 @@ fun FramesLandingScreen(
                 onAddMeasure(it)
             }
         },
+        onEditMeasure = { onEditMeasure(it) },
         onAddPantocospic = onAddPantoscopic,
 
         mikeMessage = landingMikeMessage,
@@ -159,6 +161,7 @@ private fun FramesLandingScreenImpl(
     areFramesNew: Boolean = false,
     onAddFrames: (isNew: Boolean) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
+    onEditMeasure: (eye: Eye) -> Unit = {},
     onAddPantocospic: (eye: Eye) -> Unit = {},
 
     mikeMessage: String = "",
@@ -244,6 +247,9 @@ private fun FramesLandingScreenImpl(
 
             onMeasureLeft = { onAddMeasure(Eye.Left) },
             onMeasureRight = { onAddMeasure(Eye.Right) },
+
+            onEditMeasureLeft = { onEditMeasure(Eye.Left) },
+            onEditMeasureRight = { onEditMeasure(Eye.Right) },
         )
 
         val materialDialogState = rememberMaterialDialogState()
@@ -464,7 +470,33 @@ private fun FramesMeasure(
 
     onMeasureLeft: () -> Unit = {},
     onMeasureRight: () -> Unit = {},
+
+    onEditMeasureLeft: () -> Unit = {},
+    onEditMeasureRight: () -> Unit = {},
 ) {
+    val dialogState = rememberMaterialDialogState()
+    val activeDialogEye = remember { mutableStateOf<Eye>(Eye.None) }
+    CreateOrUpdateMeasureDialog(
+        dialogState = dialogState,
+
+        onConfirmOverwrite = {
+            when (activeDialogEye.value) {
+                is Eye.Left -> { onMeasureLeft() }
+                is Eye.Right -> { onMeasureRight() }
+                is Eye.None -> Unit
+            }
+        },
+
+        onConfirmUpdate = {
+            when (activeDialogEye.value) {
+                is Eye.Left -> { onEditMeasureLeft() }
+                is Eye.Right -> { onEditMeasureRight() }
+                is Eye.None -> Unit
+            }
+        },
+    )
+
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -474,7 +506,14 @@ private fun FramesMeasure(
             modifier = Modifier
                 .height(measureButtonHeight)
                 .weight(1f)
-                .clickable { onMeasureRight() },
+                .clickable {
+                    if (hasMeasuredRight) {
+                        activeDialogEye.value = Eye.Right
+                        dialogState.show()
+                    } else {
+                        onMeasureRight()
+                    }
+                },
 
             hasMeasured = hasMeasuredRight,
             diameter = diameterRight,
@@ -487,7 +526,14 @@ private fun FramesMeasure(
             modifier = Modifier
                 .height(measureButtonHeight)
                 .weight(1f)
-                .clickable { onMeasureLeft() },
+                .clickable {
+                    if (hasMeasuredLeft) {
+                        activeDialogEye.value = Eye.Left
+                        dialogState.show()
+                    } else {
+                        onMeasureLeft()
+                    }
+                },
 
             hasMeasured = hasMeasuredLeft,
             diameter = diameterLeft,

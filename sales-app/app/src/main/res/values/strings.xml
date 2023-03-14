@@ -274,6 +274,11 @@
     <string name="dialog_column_title_left">Medidas O.E.</string>
     <string name="dialog_column_title_right">Medidas O.D.</string>
 
+    <string name="dialog_overwrite_title">Encontramos uma medida para esse olho!</string>
+    <string name="dialog_overwrite_message">Como deseja prosseguir com a medida existente? Caso a sobrescreva, os seus dados atuais serão perdidos para sempre.</string>
+    <string name="dialog_overwrite_btn_overwrite">Sobrescrevê-la</string>
+    <string name="dialog_overwrite_btn_update">Atualizá-la</string>
+
     <!--  UI Component: Frames measure  -->
     <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>
     <string name="camera_access_required">Não é possível utilizar o aplicativo sem dar acesso à câmera</string>

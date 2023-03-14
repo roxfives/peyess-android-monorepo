@@ -76,7 +76,6 @@ import com.peyess.salesapp.screen.sale.frames_measure.animation.utils.lottieComp
 import com.peyess.salesapp.screen.sale.frames_measure.state.FramesMeasureState
 import com.peyess.salesapp.screen.sale.frames_measure.state.FramesMeasureViewModel
 import com.peyess.salesapp.screen.sale.frames_measure.state.HelperZoomState
-import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.utils.image.decodeAndRotateBitmapFrom
 import timber.log.Timber
@@ -95,10 +94,19 @@ fun MeasureFramesScreen(
         ?.arguments
         ?.getString("eye")
 
+    val isEditingParameter = navHostController.currentBackStackEntry
+        ?.arguments
+        ?.getBoolean("isEditing")
+        ?: false
+
     LaunchedEffect(eyeParameter) {
         Timber.i("Using eye $eyeParameter")
         eye.value = if (eyeParameter == "left") Eye.Left else Eye.Right
         viewModel.updateEye(eye.value)
+    }
+
+    LaunchedEffect(isEditingParameter) {
+        viewModel.onIsEditing(isEditingParameter)
     }
 
     val measuringParameter by viewModel.collectAsState(FramesMeasureState::measuringParameters)

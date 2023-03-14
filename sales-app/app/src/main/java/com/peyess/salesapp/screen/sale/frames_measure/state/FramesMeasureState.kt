@@ -63,8 +63,7 @@ data class FramesMeasureState(
 
     val movableParameter: Parameter? = null,
     val measuringParameters: Map<Parameter, MeasuringParameter> = emptyMap(),
-    val positioningAnimationState: PositioningAnimationState =
-        PositioningAnimationState.Idle,
+    val positioningAnimationState: PositioningAnimationState = PositioningAnimationState.Idle,
     val zoomHelperState: HelperZoomState = HelperZoomState.ZoomNormal,
 
     val isPointTopAttached: Boolean = true,

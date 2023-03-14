@@ -301,6 +301,25 @@ class FramesMeasureViewModel @AssistedInject constructor(
         return abs(positioning.checkMiddle - bridgeHelper) > checkMiddleThreshold
     }
 
+    fun onIsEditing(isEditing: Boolean) {
+        if (isEditing) {
+            val state = PositioningAnimationState.DrawAll
+            val parameter = animationParameterFromState(state)
+
+            setState {
+                copy(
+                    positioningAnimationState = state,
+                    movableParameter = parameter,
+                    measuringParameters = handleDrawAll(
+                        state =this,
+                        from = PositioningAnimationState.Idle,
+                        to = PositioningAnimationState.DrawAll,
+                    ).measuringParameters,
+                )
+            }
+        }
+    }
+
     fun onFinishMeasure() = setState {
         val positioning = positioning
         saleRepository.updatePositioning(positioning.updateProportion())

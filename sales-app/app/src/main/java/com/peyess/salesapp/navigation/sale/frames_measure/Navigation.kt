@@ -71,11 +71,15 @@ fun buildFramesMeasureNavGraph(
         )
     }
 
-
+// ""
     builder.composable(
-        route = "${SalesAppScreens.FramesMeasure.name}/{eye}",
+        route = "${SalesAppScreens.FramesMeasure.name}/{eye}?isEditing={isEditing}",
         arguments = listOf(
-            navArgument("eye") { type = NavType.StringType }
+            navArgument("eye") { type = NavType.StringType },
+            navArgument("isEditing") {
+                type = NavType.BoolType
+                defaultValue = false
+            },
         ),
         enterTransition = measureFramesEnterTransition(),
         exitTransition = measureFramesExitTransition()

@@ -55,7 +55,7 @@ fun buildFramesNavGraph(
             onEditMeasure = {
                 val eyeParam = if (it is Eye.Left) { "left" } else { "right" }
 
-                navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam")
+                navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam?isEditing=true")
             },
 
             onNext = { navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name) },

@@ -175,8 +175,6 @@ private fun FramesLandingScreenImpl(
 
     onNext: () -> Unit = {},
 ) {
-//    val hasConfirmedDiameterDiff = remember { mutableStateOf(false) }
-
     val dialogState = rememberMaterialDialogState(true)
     MaterialDialog(
         dialogState = dialogState,

@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -100,20 +102,9 @@ fun FramesLandingScreen(
 
     val isDiameterDiffAcceptable by viewModel
         .collectAsState(FramesLandingState::isDiameterDiffAcceptable)
-    val dialogState = rememberMaterialDialogState(false)
-
-    LaunchedEffect(isDiameterDiffAcceptable) {
-        if (!isDiameterDiffAcceptable) {
-            dialogState.show()
-        }
-    }
-    DiameterDifferenceTooBig(
-        dialogState = dialogState,
-        onDismiss = { dialogState.hide() },
-    )
 
     val hasFinishedSettingFramesType
-        by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
+            by viewModel.collectAsState(FramesLandingState::hasFinishedSettingFramesType)
     if (hasFinishedSettingFramesType) {
         LaunchedEffect(Unit) {
             viewModel.onNavigateToSetFrames()
@@ -146,6 +137,7 @@ fun FramesLandingScreen(
         pictureUriLeftEye = pictureUriLeftEye,
         pictureUriRightEye = pictureUriRightEye,
 
+        needsDiameterDiffConfirmation = !isDiameterDiffAcceptable,
         diameterLeft = diameterLeft,
         diameterRight = diameterRight,
 
@@ -174,6 +166,7 @@ private fun FramesLandingScreenImpl(
     pictureUriLeftEye: Uri = Uri.EMPTY,
     pictureUriRightEye: Uri = Uri.EMPTY,
 
+    needsDiameterDiffConfirmation: Boolean = false,
     diameterLeft: String = "0.00",
     diameterRight: String = "0.00",
 
@@ -182,11 +175,13 @@ private fun FramesLandingScreenImpl(
 
     onNext: () -> Unit = {},
 ) {
+//    val hasConfirmedDiameterDiff = remember { mutableStateOf(false) }
+
     val dialogState = rememberMaterialDialogState(true)
     MaterialDialog(
         dialogState = dialogState,
         buttons = {
-            // TODO: Use string resource
+            //TODO: Use string resource
             positiveButton("Vamos lá!")
         }
     ) {
@@ -197,6 +192,12 @@ private fun FramesLandingScreenImpl(
             text = mikeMessage,
         )
     }
+
+    val diameterDiffDialogState = rememberMaterialDialogState(false)
+    DiameterDifferenceTooBig(
+        dialogState = diameterDiffDialogState,
+        onConfirm = onNext,
+    )
 
     val viewMeasureDialogState = rememberMaterialDialogState(false)
     DisplayMeasureDialog(
@@ -285,7 +286,7 @@ private fun FramesLandingScreenImpl(
                 spec = LottieCompositionSpec.RawRes(R.raw.lottie_frames_landing_pantoscopic)
             )
             
-            // TODO: Use string resource
+            //TODO: Use string resource
             Text(text = "Ângulo Pantoscópico e Dist. Vértice")
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -335,7 +336,13 @@ private fun FramesLandingScreenImpl(
                      )
                  }
             },
-            onNext = onNext,
+            onNext = {
+                if (!needsDiameterDiffConfirmation) {
+                    onNext()
+                } else {
+                    diameterDiffDialogState.show()
+                }
+            },
         )
     }
 }

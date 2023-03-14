@@ -256,13 +256,13 @@
     <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
     <string name="mike_bad_lens_type_default_client_name">cliente</string>
 
-    <string name="dialog_diameter_too_diff_btn">Confirmo que as medidas serão verificadas</string>
+    <string name="dialog_diameter_too_diff_btn">Confirmo que as medidas foram verificadas</string>
     <string name="dialog_diameter_too_diff_title">Encontramos um problema em potencial</string>
     <string name="dialog_diameter_too_diff_message">A diferença entre valores calculados para os diâmetros dos dois olhos está muito diferente. Por favor, verifique as medidas.</string>
 
     <string name="view_measure_button">Ver medidas</string>
     <string name="dialog_message_not_available">Ainda não há nenhuma medida disponível</string>
-    <string name="dialog_value_display"><u>%1$s:</u> %2$smm</string>
+    <string name="dialog_value_display">%1$s: %2$smm</string>
     <string name="dialog_value_title_ipd">DNP</string>
     <string name="dialog_value_title_height">Alture</string>
     <string name="dialog_value_title_diameter">Diâmetro</string>

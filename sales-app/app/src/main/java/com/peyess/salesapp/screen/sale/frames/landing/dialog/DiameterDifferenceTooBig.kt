@@ -13,18 +13,14 @@ import com.vanpra.composematerialdialogs.title
 @Composable
 fun DiameterDifferenceTooBig(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
-    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {},
 ) {
     MaterialDialog(
         dialogState = dialogState,
-        properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
-        ),
         buttons = {
             positiveButton(
                 text = stringResource(id = R.string.dialog_diameter_too_diff_btn),
-                onClick = onDismiss,
+                onClick = onConfirm,
             )
         },
     ) {

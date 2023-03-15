@@ -2,7 +2,7 @@ buildscript {
     extra.apply {
         set("compose_version", "1.2.1")
         set("compose_accompanist_version", "0.25.1")
-        set("compose_nav_version", "2.4.0-rc01")
+        set("compose_nav_version", "2.5.3")
         set("compose_compiler_version", "1.3.2")
         set("material_dialogs", "0.8.1-rc")
 

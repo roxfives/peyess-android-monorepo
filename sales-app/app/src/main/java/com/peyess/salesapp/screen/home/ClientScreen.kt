@@ -1,6 +1,8 @@
 package com.peyess.salesapp.screen.home
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -157,6 +160,7 @@ fun ClientScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ClientScreenImpl(
     modifier: Modifier = Modifier,
@@ -189,14 +193,16 @@ private fun ClientScreenImpl(
             modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
         ) {
-            item {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    ClientActions(
-                        onCreateNewClient = onCreateNewClient,
-                        onSearchClient = onSearchClient,
-                    )
+            stickyHeader {
+                Surface(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        ClientActions(
+                            onCreateNewClient = onCreateNewClient,
+                            onSearchClient = {},
+                        )
 
-                    Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
+                        Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
+                    }
                 }
             }
 
@@ -371,7 +377,7 @@ private fun NoClientsYet(
         ClientActions(
             modifier = Modifier.padding(horizontal = 8.dp),
             onCreateNewClient = onCreateNewClient,
-            onSearchClient = onSearchClient,
+            onSearchClient = {},
         )
 
         LottieAnimation(

@@ -112,7 +112,7 @@ fun ClientListScreenUI(
                     ClientActions(
                         modifier = Modifier.padding(horizontal = clientActionPadding),
                         onCreateNewClient = onCreateNewClient,
-                        onSearchClient = onSearchClient,
+                        onSearchClient = {  },
                     )
 
                     Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
@@ -247,11 +247,13 @@ private fun ClientCard(
                 .background(
                     color = MaterialTheme.colors.onPrimary,
                     shape = CircleShape,
-                ).border(
+                )
+                .border(
                     width = 1.dp,
                     color = MaterialTheme.colors.primary,
                     shape = CircleShape,
-                ).size(SalesAppTheme.dimensions.minimum_touch_target),
+                )
+                .size(SalesAppTheme.dimensions.minimum_touch_target),
             onClick = { onEditClient(client) },
         ) {
             Icon(
@@ -268,11 +270,13 @@ private fun ClientCard(
                 .background(
                     color = MaterialTheme.colors.primary,
                     shape = CircleShape,
-                ).border(
+                )
+                .border(
                     width = 1.dp,
                     color = MaterialTheme.colors.primary,
                     shape = CircleShape,
-                ).size(SalesAppTheme.dimensions.minimum_touch_target),
+                )
+                .size(SalesAppTheme.dimensions.minimum_touch_target),
             onClick = { onClientPicked(client) },
         ) {
             Icon(
@@ -306,7 +310,7 @@ private fun NoClientsYet(
         ClientActions(
             modifier = Modifier.padding(horizontal = 8.dp),
             onCreateNewClient = onCreateNewClient,
-            onSearchClient = onSearchClient,
+            onSearchClient = {},
         )
 
         LottieAnimation(

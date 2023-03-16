@@ -258,6 +258,7 @@ fun SaleList(
                             && isGeneratingPdfFor.second == it.id,
                     onGenerateSalePdf = onGenerateSalePdf,
 
+                    canEditServiceOrder = !isUpdatingProducts,
                     onEditServiceOrder = onEditServiceOrder,
                 )
             }
@@ -277,6 +278,7 @@ private fun ServiceOrderCard(
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
+    canEditServiceOrder: Boolean = true,
     onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
@@ -326,7 +328,8 @@ private fun ServiceOrderCard(
                         width = 2.dp,
                         color = MaterialTheme.colors.primary,
                         shape = CircleShape,
-                    ).clip(CircleShape),
+                    )
+                    .clip(CircleShape),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(pictureUri.value)
                     .crossfade(true)
@@ -383,14 +386,20 @@ private fun ServiceOrderCard(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Button(
-                onClick = {
-                    val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+            AnimatedVisibility(
+                visible = canEditServiceOrder,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ){
+                Button(
+                    onClick = {
+                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
 
-                    onEditServiceOrder(purchase.id, serviceOrderId)
-                },
-            ) {
-                Text(text = purchase.state.actionButtonTitle())
+                        onEditServiceOrder(purchase.id, serviceOrderId)
+                    },
+                ) {
+                    Text(text = purchase.state.actionButtonTitle())
+                }
             }
 
             Spacer(modifier = Modifier.width(8.dp))

@@ -4,9 +4,13 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -19,7 +23,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -74,11 +81,22 @@ private val cardPadding = 16.dp
 private val cardSpacerWidth = 2.dp
 private val spacingBetweenCards = 8.dp
 private val profilePicPadding = 8.dp
+private val cardRoundCorner = 8.dp
+
+
+private val cardHighlightWidth = 240.dp
+private val cardHighlightPadding = 16.dp
+private val cardHighlightSpacingSize = 16.dp
+private val cardHighlightRoundCorner = 8.dp
+private val cardHighlightBorderWidth = 1.dp
+private val cardHighlightPictureSize = 120.dp
 
 private val buttonActionSpacerWidth = 8.dp
 private val endingSpacerWidth = 16.dp
 
 private val clientActionPadding = 8.dp
+
+private val clientListPadding = 8.dp
 
 private val lazyColumnHeaderBottomSpacer = 16.dp
 
@@ -88,6 +106,8 @@ fun ClientListScreenUI(
     modifier: Modifier = Modifier,
 
     isLoadingClients: Boolean = false,
+
+    clientHighlightList: List<Client> = emptyList(),
 
     clientList: Flow<PagingData<Client>> = emptyFlow(),
 
@@ -108,14 +128,14 @@ fun ClientListScreenUI(
     val clients = clientList.collectAsLazyPagingItems()
 
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.padding(clientListPadding),
         verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
     ) {
         stickyHeader {
             Surface(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ClientActions(
-                        modifier = modifier.padding(horizontal = clientActionPadding),
+//                        modifier = modifier.padding(horizontal = clientActionPadding),
                         onCreateNewClient = onCreateNewClient,
 
                         clientSearchQuery = clientSearchQuery,
@@ -132,40 +152,68 @@ fun ClientListScreenUI(
         }
 
         item {
-            AnimatedVisibility(
-                visible = !isSearchActive && (isLoadingClients || clients.loadState.refresh is LoadState.Loading),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                LoadingClients(modifier)
-            }
+            Column {
+                AnimatedVisibility(
+                    visible = !isSearchActive && clientHighlightList.isNotEmpty(),
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = cardPadding),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        clientHighlightList.forEach {
+                            ClientCardHighlight(
+                                modifier = Modifier
+                                    .width(cardHighlightWidth)
+                                    .padding(horizontal = cardHighlightPadding)
+                                    .clip(RoundedCornerShape(cardHighlightRoundCorner)),
+                                client = it,
+                                pictureForClient = pictureForClient,
+                                onClientPicked = onClientPicked,
+                            )
+                        }
+                    }
+                }
 
-            AnimatedVisibility(
-                visible = !isLoadingClients
-                        && !isSearchActive
-                        && clients.loadState.refresh is LoadState.NotLoading
-                        && clients.itemCount == 0,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                NoClientsYet(
-                    modifier = modifier,
-                    syncClients = onSyncClients,
-                )
-            }
+                AnimatedVisibility(
+                    visible = !isSearchActive
+                            && (isLoadingClients || clients.loadState.refresh is LoadState.Loading),
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    LoadingClients(modifier)
+                }
 
-            AnimatedVisibility(
-                visible = !isLoadingClients
-                        && isSearchActive
-                        && clients.loadState.refresh is LoadState.NotLoading
-                        && clients.itemCount == 0,
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                NoClientsFound(
-                    modifier = modifier,
-                    onClearSearch = onClearClientSearch,
-                )
+                AnimatedVisibility(
+                    visible = !isLoadingClients
+                            && !isSearchActive
+                            && clients.loadState.refresh is LoadState.NotLoading
+                            && clients.itemCount == 0,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    NoClientsYet(
+                        modifier = modifier,
+                        syncClients = onSyncClients,
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = !isLoadingClients
+                            && isSearchActive
+                            && clients.loadState.refresh is LoadState.NotLoading
+                            && clients.itemCount == 0,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                ) {
+                    NoClientsFound(
+                        modifier = modifier,
+                        onClearSearch = onClearClientSearch,
+                    )
+                }
             }
         }
 
@@ -235,7 +283,12 @@ private fun ClientCard(
 
     Row(
         modifier = modifier
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.primary.copy(alpha = 0.2f),
+                shape = RoundedCornerShape(cardRoundCorner),
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
     ) {
@@ -261,9 +314,7 @@ private fun ClientCard(
         Spacer(modifier = Modifier.width(cardSpacerWidth))
 
         Column(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(cardPadding),
+            modifier = Modifier.fillMaxHeight().padding(cardPadding),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start,
         ) {
@@ -336,6 +387,63 @@ private fun ClientCard(
         }
 
         Spacer(modifier = Modifier.width(endingSpacerWidth))
+    }
+}
+
+@Composable
+private fun ClientCardHighlight(
+    modifier: Modifier = Modifier,
+    client: Client = Client(),
+    onClientPicked: (client: Client) -> Unit = {},
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
+    LaunchedEffect(Unit) {
+        coroutineScope.launch(Dispatchers.IO) {
+            val picture = pictureForClient(client.id)
+
+            pictureUri.value = picture
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .background(
+                color = Color.Transparent,
+                shape = RoundedCornerShape(cardHighlightRoundCorner),
+            ).border(
+                width = cardHighlightBorderWidth,
+                color = MaterialTheme.colors.primary.copy(0.3f),
+                shape = RoundedCornerShape(cardHighlightRoundCorner),
+            ).clickable { onClientPicked(client) }
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+    ) {
+        AsyncImage(
+            modifier = Modifier.padding(profilePicPadding).size(cardHighlightPictureSize)
+                // Clip image to be shaped as a circle
+                .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape)
+                .clip(CircleShape),
+            model = ImageRequest.Builder(LocalContext.current).data(pictureUri.value)
+                .crossfade(true).size(width = pictureSizePx, height = pictureSizePx).build(),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = "",
+            error = painterResource(id = R.drawable.ic_profile_placeholder),
+            fallback = painterResource(id = R.drawable.ic_profile_placeholder),
+            placeholder = painterResource(id = R.drawable.ic_profile_placeholder),
+        )
+
+        Spacer(modifier = Modifier.height(cardHighlightSpacingSize))
+
+        Text(
+            modifier = Modifier.padding(bottom = 4.dp),
+            text = client.name,
+            style = MaterialTheme.typography.body1
+                .copy(fontWeight = FontWeight.Bold)
+        )
     }
 }
 
@@ -413,6 +521,19 @@ private fun NoClientsFound(
         Button(onClick = onClearSearch) {
             Text(text = stringResource(id = R.string.clients_screen_btn_clear_search))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ClientCardHighlightPreview() {
+    SalesAppTheme {
+        ClientCardHighlight(
+            modifier = Modifier.fillMaxWidth(),
+            client = Client(
+                name = "João Ferreira",
+            )
+        )
     }
 }
 

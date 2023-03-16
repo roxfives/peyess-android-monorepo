@@ -25,10 +25,13 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.client.ClientRepository
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchAllResponse
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
+import com.peyess.salesapp.data.repository.local_sale.client_picked.AllClientsPickedResponse
+import com.peyess.salesapp.data.repository.local_sale.client_picked.ClientPickedRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
@@ -72,6 +75,7 @@ class PickClientViewModel @AssistedInject constructor(
     @Assisted initialState: PickClientState,
     private val saleRepository: SaleRepository,
     private val editClientPickedRepository: EditClientPickedRepository,
+    private val clientPickedRepository: ClientPickedRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
     private val clientRepository: ClientRepository,
     private val localClientRepository: LocalClientRepository,
@@ -82,6 +86,30 @@ class PickClientViewModel @AssistedInject constructor(
         updateClientList()
 
         onEach(PickClientState::clientSearchQuery) { clientSearchState.value = it }
+
+        onEach(PickClientState::clientUidHighlightList) { loadHighlightClients(it) }
+
+        onEach(
+            PickClientState::pickScenario,
+            PickClientState::serviceOrderId,
+        ) { scenario, serviceOrderId ->
+            when (scenario) {
+                PickScenario.EditPayment,
+                PickScenario.EditResponsible,
+                PickScenario.EditUser,
+                PickScenario.EditWitness -> {
+                    loadMainEditClients(serviceOrderId)
+                }
+
+                PickScenario.Payment,
+                PickScenario.Responsible,
+                PickScenario.ServiceOrder,
+                PickScenario.User,
+                PickScenario.Witness -> {
+                    loadMainClients(serviceOrderId)
+                }
+            }
+        }
 
         onAsync(PickClientState::existingCreateClientAsync) { processActiveCreatingClientResponse(it) }
         onAsync(PickClientState::createClientResponseAsync) { processCreateNewClientResponse(it) }
@@ -94,6 +122,15 @@ class PickClientViewModel @AssistedInject constructor(
         }
 
         onAsync(PickClientState::clientListSearchAsync) { processSearchClientListResponse(it) }
+
+        onAsync(PickClientState::editClientPickedHighlightListAsync) {
+            processMainEditClientsResponse(it)
+        }
+        onAsync(PickClientState::clientPickedHighlightListAsync) {
+            processMainClientsResponse(it)
+        }
+
+        onAsync(PickClientState::clientHighlightListAsync) { processClientHighlightResponse(it) }
 
         observeClientSearch()
     }
@@ -362,6 +399,64 @@ class PickClientViewModel @AssistedInject constructor(
                 pagingData.map { it.toClient() }
             }
         }
+    }
+
+    private fun loadMainEditClients(serviceOrderId: String) {
+        suspend {
+            editClientPickedRepository.allClientsForServiceOrder(serviceOrderId)
+        }.execute {
+            copy(editClientPickedHighlightListAsync = it)
+        }
+    }
+
+    private fun processMainEditClientsResponse(
+        response: EditClientPickedFetchAllResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(editClientPickedHighlightListAsync = Fail(it.error))
+            },
+
+            ifRight = {
+                copy(clientUidHighlightList = it.map { c -> c.id })
+            }
+        )
+    }
+
+    private fun loadMainClients(serviceOrderId: String) {
+        suspend {
+            clientPickedRepository.allClientsForServiceOrder(serviceOrderId)
+        }.execute {
+            copy(clientPickedHighlightListAsync = it)
+        }
+    }
+
+    private fun processMainClientsResponse(
+        response: AllClientsPickedResponse,
+    ) = setState {
+        response.fold(
+            ifLeft = {
+                copy(editClientPickedHighlightListAsync = Fail(it.error ?: Throwable(it.description)))
+            },
+
+            ifRight = {
+                copy(clientUidHighlightList = it.map { c -> c.id })
+            }
+        )
+    }
+
+    private fun loadHighlightClients(uids: List<String>) {
+        suspend {
+            uids.toSet().map { localClientRepository.clientById(it) }.mapNotNull { response ->
+                response.fold(ifLeft = { null }, ifRight = { it })
+            }.map { it.toClient() }
+        }.execute {
+            copy(clientHighlightListAsync = it)
+        }
+    }
+
+    private fun processClientHighlightResponse(clients: List<Client>) = setState {
+        copy(clientHighlightList = clients)
     }
 
     fun clearClientSearch() = setState {

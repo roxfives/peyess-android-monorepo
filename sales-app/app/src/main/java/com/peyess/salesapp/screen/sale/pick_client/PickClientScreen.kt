@@ -116,6 +116,7 @@ fun PickClientScreen(
     val clientListSearchStream by viewModel.collectAsState(PickClientState::clientListSearchStream)
     val isLoadingClientSearch by viewModel.collectAsState(PickClientState::isLoadingClientSearch)
 
+    val clientHighlightList by viewModel.collectAsState(PickClientState::clientHighlightList)
 
     val createClientDialogState = rememberMaterialDialogState()
     ExistingClientDialog(
@@ -150,6 +151,8 @@ fun PickClientScreen(
 
         ClientListScreenUI(
             modifier = modifier,
+
+            clientHighlightList = clientHighlightList,
 
             isLoadingClients = if (isSearchActive) isLoadingClientSearch else isLoading,
             clientList = if (isSearchActive) clientListSearchStream else clientList,

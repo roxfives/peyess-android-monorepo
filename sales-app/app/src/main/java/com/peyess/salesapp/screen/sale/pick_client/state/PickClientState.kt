@@ -6,16 +6,16 @@ import com.airbnb.mvrx.Async
 import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
+import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchAllResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
+import com.peyess.salesapp.data.repository.local_sale.client_picked.AllClientsPickedResponse
 import com.peyess.salesapp.feature.client_list.model.Client
 import com.peyess.salesapp.navigation.client_list.PickScenario
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -36,6 +36,12 @@ data class PickClientState(
     val clientSearchQuery: String = "",
     val clientListSearchAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListSearchStream: ClientListStream = emptyFlow(),
+
+    val editClientPickedHighlightListAsync: Async<EditClientPickedFetchAllResponse> = Uninitialized,
+    val clientPickedHighlightListAsync: Async<AllClientsPickedResponse> = Uninitialized,
+    val clientUidHighlightList: List<String> = emptyList(),
+    val clientHighlightListAsync: Async<List<Client>> = Uninitialized,
+    val clientHighlightList: List<Client> = emptyList(),
 
     val hasPickedClient: Boolean = false,
 

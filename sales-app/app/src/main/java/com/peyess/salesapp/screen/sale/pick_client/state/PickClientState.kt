@@ -32,6 +32,11 @@ data class PickClientState(
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
 
+    val isSearchActive: Boolean = false,
+    val clientSearchQuery: String = "",
+    val clientListSearchAsync: Async<ClientsListResponse> = Uninitialized,
+    val clientListSearchStream: ClientListStream = emptyFlow(),
+
     val hasPickedClient: Boolean = false,
 
     val paymentId: Long = 0L,
@@ -57,4 +62,6 @@ data class PickClientState(
     val creatingClientExists = existingCreateClientId.isNotBlank()
 
     val areClientsLoading = clientListResponseAsync is Loading
+
+    val isLoadingClientSearch = clientListSearchAsync is Loading
 }

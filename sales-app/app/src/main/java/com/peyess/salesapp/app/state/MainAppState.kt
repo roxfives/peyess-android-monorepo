@@ -10,14 +10,12 @@ import com.airbnb.mvrx.Uninitialized
 import com.peyess.salesapp.app.model.Client
 import com.peyess.salesapp.dao.sale.active_so.db_view.ServiceOrderDBView
 import com.peyess.salesapp.data.model.cache.CacheCreateClientDocument
-import com.peyess.salesapp.data.model.client.ClientDocument
 import com.peyess.salesapp.data.model.products_table_state.ProductsTableStatus
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientCreateResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientFetchSingleResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
-import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientTotalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
@@ -72,6 +70,11 @@ data class MainAppState(
 
     val clientListResponseAsync: Async<ClientsListResponse> = Uninitialized,
     val clientListStream: ClientListStream = emptyFlow(),
+
+    val isSearchActive: Boolean = false,
+    val clientSearchQuery: String = "",
+    val clientListSearchAsync: Async<ClientsListResponse> = Uninitialized,
+    val clientListSearchStream: ClientListStream = emptyFlow(),
 
     val currentCollaboratorDocumentAsync: Async<CollaboratorDocument?> = Uninitialized,
     val currentStoreAsync: Async<OpticalStore> = Uninitialized,
@@ -129,4 +132,6 @@ data class MainAppState(
     val creatingClientExists = existingCreateClientId.isNotBlank()
 
     val areClientsLoading = clientListResponseAsync is Loading
+
+    val isLoadingClientSearch = clientListSearchAsync is Loading
 }

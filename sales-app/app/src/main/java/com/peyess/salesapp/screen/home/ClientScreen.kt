@@ -1,8 +1,12 @@
 package com.peyess.salesapp.screen.home
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -104,6 +109,13 @@ fun ClientScreen(
     val isLoading by viewModel.collectAsState(MainAppState::areClientsLoading)
     val clientList by viewModel.collectAsState(MainAppState::clientListStream)
 
+    val clientSearchQuery by viewModel.collectAsState(MainAppState::clientSearchQuery)
+
+    val isSearchActive by viewModel.collectAsState(MainAppState::isSearchActive)
+    val clientListSearchStream by viewModel.collectAsState(MainAppState::clientListSearchStream)
+    val isLoadingClientSearch by viewModel.collectAsState(MainAppState::isLoadingClientSearch)
+
+
     val createClientDialogState = rememberMaterialDialogState()
     ExistingClientDialog(
         dialogState = createClientDialogState,
@@ -152,15 +164,21 @@ fun ClientScreen(
 
             onCreateNewClient = viewModel::findActiveCreatingClient,
             onEditClient = { viewModel.loadEditClientToCache(it.id) },
-            onSearchClient = onSearchClient,
-            onSyncClients = {
-                viewModel.syncClients(context)
-            },
+
+            isSearchActive = isSearchActive,
+            clientSearchList = clientListSearchStream,
+            isLoadingClientSearch = isLoadingClientSearch,
+            clientSearchQuery = clientSearchQuery,
+            onSearchClient = viewModel::onClientSearchChanged,
+            onClearClientSearch = viewModel::clearClientSearch,
+            onStartSearching = viewModel::startClientSearch,
+            onStopSearching = viewModel::stopClientSearch,
+
+            onSyncClients = { viewModel.syncClients(context) },
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ClientScreenImpl(
     modifier: Modifier = Modifier,
@@ -171,57 +189,139 @@ private fun ClientScreenImpl(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onCreateNewClient: () -> Unit = {},
     onEditClient: (Client) -> Unit = {},
-    onSearchClient: () -> Unit = {},
+
+    clientSearchList: ClientListStream = emptyFlow(),
+    isLoadingClientSearch: Boolean = false,
+    clientSearchQuery: String = "",
+    isSearchActive: Boolean = false,
+    onSearchClient: (query: String) -> Unit = {},
+    onClearClientSearch: () -> Unit = {},
+    onStartSearching: () -> Unit = {},
+    onStopSearching: () -> Unit = {},
+
+    onSyncClients: () -> Unit = {},
+) {
+    ClientList(
+        modifier = modifier,
+
+        clientList = if (isSearchActive) clientSearchList else clientList,
+        isLoadingClients = if (isSearchActive) isLoadingClientSearch else isLoadingClients,
+
+        pictureForClient = pictureForClient,
+        onCreateNewClient = onCreateNewClient,
+        onEditClient = onEditClient,
+
+        clientSearchQuery = clientSearchQuery,
+        isSearchActive = isSearchActive,
+        onSearchClient = onSearchClient,
+        onClearClientSearch = onClearClientSearch,
+        onStartSearching = onStartSearching,
+        onStopSearching = onStopSearching,
+
+        onSyncClients = onSyncClients,
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ClientList(
+    modifier: Modifier = Modifier,
+
+    clientList: ClientListStream = emptyFlow(),
+    isLoadingClients: Boolean = false,
+
+    pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
+    onCreateNewClient: () -> Unit = {},
+    onEditClient: (Client) -> Unit = {},
+
+    clientSearchQuery: String = "",
+    isSearchActive: Boolean = false,
+    onSearchClient: (query: String) -> Unit = {},
+    onClearClientSearch: () -> Unit = {},
+    onStartSearching: () -> Unit = {},
+    onStopSearching: () -> Unit = {},
 
     onSyncClients: () -> Unit = {},
 ) {
     val clients = clientList.collectAsLazyPagingItems()
 
-    if (isLoadingClients) {
-        LoadingClients(modifier)
-    } else if (clients.itemCount == 0) {
-        NoClientsYet(
-            modifier = modifier,
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
+    ) {
+        stickyHeader {
+            Surface(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    ClientActions(
+                        onCreateNewClient = onCreateNewClient,
 
-            onCreateNewClient = onCreateNewClient,
-            onSearchClient = onSearchClient,
+                        clientSearchQuery = clientSearchQuery,
+                        onSearchClient = onSearchClient,
 
-            syncClients = onSyncClients,
-        )
-    } else {
-        LazyColumn(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
-        ) {
-            stickyHeader {
-                Surface(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        ClientActions(
-                            onCreateNewClient = onCreateNewClient,
-                            onSearchClient = {},
-                        )
-
-                        Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
-                    }
-                }
-            }
-
-            items(clients.itemCount) { index ->
-                val client = clients[index]
-
-                client?.let {
-                    ClientCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        pictureForClient = pictureForClient,
-                        client = it,
-                        onEditClient = onEditClient,
+                        isSearchActive = isSearchActive,
+                        onStartSearching = onStartSearching,
+                        onStopSearching = onStopSearching,
                     )
+
+                    Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
                 }
             }
+        }
 
-            item {
-                Spacer(modifier = Modifier.height(48.dp))
+        item {
+            AnimatedVisibility(
+                visible = !isSearchActive
+                        && (isLoadingClients || clients.loadState.refresh is LoadState.Loading),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                LoadingClients(modifier)
             }
+
+            AnimatedVisibility(
+                visible = !isLoadingClients
+                        && !isSearchActive
+                        && clients.loadState.refresh is LoadState.NotLoading
+                        && clients.itemCount == 0,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                NoClientsYet(
+                    modifier = modifier,
+                    syncClients = onSyncClients,
+                )
+            }
+
+            AnimatedVisibility(
+                visible = !isLoadingClients
+                        && isSearchActive
+                        && clients.loadState.refresh is LoadState.NotLoading
+                        && clients.itemCount == 0,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                NoClientsFound(
+                    modifier = modifier,
+                    onClearSearch = onClearClientSearch,
+                )
+            }
+        }
+
+        items(clients.itemCount) { index ->
+            val client = clients[index]
+
+            client?.let {
+                ClientCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    pictureForClient = pictureForClient,
+                    client = it,
+                    onEditClient = onEditClient,
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }
@@ -350,7 +450,7 @@ private fun LoadingClients(
         )
 
         Text(
-            text = stringResource(id = R.string.no_clients_yet),
+            text = stringResource(id = R.string.searching_clients),
             style = MaterialTheme.typography.h6
                 .copy(fontWeight = FontWeight.Bold),
         )
@@ -361,8 +461,6 @@ private fun LoadingClients(
 private fun NoClientsYet(
     modifier: Modifier = Modifier,
 
-    onCreateNewClient: () -> Unit = {},
-    onSearchClient: () -> Unit = {},
     syncClients: () -> Unit = {},
 ) {
     Column(
@@ -372,12 +470,6 @@ private fun NoClientsYet(
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.lottie_no_data)
-        )
-
-        ClientActions(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            onCreateNewClient = onCreateNewClient,
-            onSearchClient = {},
         )
 
         LottieAnimation(
@@ -400,6 +492,44 @@ private fun NoClientsYet(
 
         Button(onClick = syncClients) {
             Text(text = stringResource(id = R.string.clients_screen_btn_sync))
+        }
+    }
+}
+
+@Composable
+private fun NoClientsFound(
+    modifier: Modifier = Modifier,
+    onClearSearch: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results)
+        )
+
+        LottieAnimation(
+            modifier = Modifier
+                .padding(36.dp)
+                .height(360.dp)
+                .width(420.dp),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
+
+        Text(
+            text = stringResource(id = R.string.no_clients_found),
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold),
+        )
+
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Button(onClick = onClearSearch) {
+            Text(text = stringResource(id = R.string.clients_screen_btn_clear_search))
         }
     }
 }

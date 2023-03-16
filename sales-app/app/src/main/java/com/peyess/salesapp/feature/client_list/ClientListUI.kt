@@ -1,6 +1,10 @@
 package com.peyess.salesapp.feature.client_list
 
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +24,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -43,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
@@ -76,6 +82,7 @@ private val clientActionPadding = 8.dp
 
 private val lazyColumnHeaderBottomSpacer = 16.dp
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ClientListScreenUI(
     modifier: Modifier = Modifier,
@@ -88,49 +95,91 @@ fun ClientListScreenUI(
     onClientPicked: (client: Client) -> Unit = {},
     onEditClient: (client: Client) -> Unit = {},
     onCreateNewClient: () -> Unit = {},
-    onSearchClient: () -> Unit = {},
+
+    clientSearchQuery: String = "",
+    isSearchActive: Boolean = false,
+    onSearchClient: (query: String) -> Unit = {},
+    onClearClientSearch: () -> Unit = {},
+    onStartSearching: () -> Unit = {},
+    onStopSearching: () -> Unit = {},
+
     onSyncClients: () -> Unit = {},
 ) {
     val clients = clientList.collectAsLazyPagingItems()
 
-    if (isLoadingClients) {
-        LoadingClients(modifier)
-    } else if (clients.itemCount == 0) {
-        NoClientsYet(
-            modifier = modifier,
-            onCreateNewClient = onCreateNewClient,
-            onSearchClient = onSearchClient,
-            syncClients = onSyncClients,
-        )
-    } else {
-        LazyColumn(
-            modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
-        ) {
-            item {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spacingBetweenCards),
+    ) {
+        stickyHeader {
+            Surface(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     ClientActions(
-                        modifier = Modifier.padding(horizontal = clientActionPadding),
+                        modifier = modifier.padding(horizontal = clientActionPadding),
                         onCreateNewClient = onCreateNewClient,
-                        onSearchClient = {  },
+
+                        clientSearchQuery = clientSearchQuery,
+                        onSearchClient = onSearchClient,
+
+                        isSearchActive = isSearchActive,
+                        onStartSearching = onStartSearching,
+                        onStopSearching = onStopSearching,
                     )
 
                     Spacer(modifier = Modifier.height(lazyColumnHeaderBottomSpacer))
                 }
             }
+        }
 
-            items(clients.itemCount) { index ->
-                val client = clients[index]
+        item {
+            AnimatedVisibility(
+                visible = !isSearchActive && (isLoadingClients || clients.loadState.refresh is LoadState.Loading),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                LoadingClients(modifier)
+            }
 
-                client?.let {
-                    ClientCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        pictureForClient = pictureForClient,
-                        client = it,
-                        onEditClient = onEditClient,
-                        onClientPicked = onClientPicked,
-                    )
-                }
+            AnimatedVisibility(
+                visible = !isLoadingClients
+                        && !isSearchActive
+                        && clients.loadState.refresh is LoadState.NotLoading
+                        && clients.itemCount == 0,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                NoClientsYet(
+                    modifier = modifier,
+                    syncClients = onSyncClients,
+                )
+            }
+
+            AnimatedVisibility(
+                visible = !isLoadingClients
+                        && isSearchActive
+                        && clients.loadState.refresh is LoadState.NotLoading
+                        && clients.itemCount == 0,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                NoClientsFound(
+                    modifier = modifier,
+                    onClearSearch = onClearClientSearch,
+                )
+            }
+        }
+
+        items(clients.itemCount) { index ->
+            val client = clients[index]
+
+            client?.let {
+                ClientCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    pictureForClient = pictureForClient,
+                    client = it,
+                    onEditClient = onEditClient,
+                    onClientPicked = onClientPicked,
+                )
             }
         }
     }
@@ -294,8 +343,6 @@ private fun ClientCard(
 private fun NoClientsYet(
     modifier: Modifier = Modifier,
 
-    onCreateNewClient: () -> Unit = {},
-    onSearchClient: () -> Unit = {},
     syncClients: () -> Unit = {},
 ) {
     Column(
@@ -305,12 +352,6 @@ private fun NoClientsYet(
     ) {
         val composition by rememberLottieComposition(
             LottieCompositionSpec.RawRes(R.raw.lottie_no_data)
-        )
-
-        ClientActions(
-            modifier = Modifier.padding(horizontal = 8.dp),
-            onCreateNewClient = onCreateNewClient,
-            onSearchClient = {},
         )
 
         LottieAnimation(
@@ -333,6 +374,44 @@ private fun NoClientsYet(
 
         Button(onClick = syncClients) {
             Text(text = stringResource(id = R.string.clients_screen_btn_sync))
+        }
+    }
+}
+
+@Composable
+private fun NoClientsFound(
+    modifier: Modifier = Modifier,
+    onClearSearch: () -> Unit = {},
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.lottie_no_search_results)
+        )
+
+        LottieAnimation(
+            modifier = Modifier
+                .padding(36.dp)
+                .height(360.dp)
+                .width(420.dp),
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            clipSpec = LottieClipSpec.Progress(0f, 1f),
+        )
+
+        Text(
+            text = stringResource(id = R.string.no_clients_found),
+            style = MaterialTheme.typography.h6
+                .copy(fontWeight = FontWeight.Bold),
+        )
+
+        Spacer(modifier = Modifier.height(64.dp))
+
+        Button(onClick = onClearSearch) {
+            Text(text = stringResource(id = R.string.clients_screen_btn_clear_search))
         }
     }
 }

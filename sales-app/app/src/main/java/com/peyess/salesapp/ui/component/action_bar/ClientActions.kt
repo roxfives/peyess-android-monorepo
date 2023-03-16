@@ -27,8 +27,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -45,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import com.peyess.salesapp.R
 import com.peyess.salesapp.ui.component.text.PeyessSimpleTextField
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import timber.log.Timber
 
 private val searchBarBaseHeight = 12.dp
 
@@ -64,19 +61,21 @@ fun ClientActions(
     modifier: Modifier = Modifier,
 
     onCreateNewClient: () -> Unit = {},
+
+    clientSearchQuery: String = "",
+
+    isSearchActive: Boolean = false,
     onSearchClient: (search: String) -> Unit = {},
+    onStartSearching: () -> Unit = {},
+    onStopSearching: () -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val searchFocusRequester = remember { FocusRequester() }
 
-    val isSearchActive = remember { mutableStateOf(false) }
-
-    val search = remember { mutableStateOf("") }
-
     val createClientBackgroundColor = MaterialTheme.colors.primary
     val cancelSearchBackgroundColor = Color.Gray.copy(alpha = 0.3f)
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSearchActive.value) {
+        targetValue = if (isSearchActive) {
             cancelSearchBackgroundColor
         } else {
             createClientBackgroundColor
@@ -86,7 +85,7 @@ fun ClientActions(
     val createClientIconColor = MaterialTheme.colors.onPrimary
     val cancelSearchIconColor = Color.DarkGray
     val iconColor by animateColorAsState(
-        targetValue = if (isSearchActive.value) {
+        targetValue = if (isSearchActive) {
             cancelSearchIconColor
         } else {
             createClientIconColor
@@ -94,7 +93,7 @@ fun ClientActions(
     )
 
     val searchBarHeight by animateDpAsState(
-        targetValue = if (isSearchActive.value) {
+        targetValue = if (isSearchActive) {
             searchBarActiveHeight
         } else {
             searchBarInactiveHeight
@@ -102,7 +101,7 @@ fun ClientActions(
     )
 
     val searchIconSize by animateDpAsState(
-        targetValue = if (isSearchActive.value) {
+        targetValue = if (isSearchActive) {
             searchIconActiveSize
         } else {
             searchIconInactiveSize
@@ -118,7 +117,7 @@ fun ClientActions(
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(clientSearchRoundedCornerShape),
             onClick = {
-                isSearchActive.value = true
+                onStartSearching()
                 keyboardController?.show()
             },
         ) {
@@ -135,7 +134,7 @@ fun ClientActions(
 
                 Spacer(modifier = Modifier.width(clientSearchSpacer))
 
-                if (isSearchActive.value) {
+                if (isSearchActive) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
@@ -144,8 +143,8 @@ fun ClientActions(
                             modifier = Modifier
                                 .background(color = Color.Transparent)
                                 .focusRequester(searchFocusRequester),
-                            value = search.value,
-                            onValueChange = { search.value = it },
+                            value = clientSearchQuery,
+                            onValueChange = onSearchClient,
                             singleLine = true,
                             placeholder = {
                                 Text(
@@ -185,15 +184,15 @@ fun ClientActions(
                 )
                 .size(SalesAppTheme.dimensions.minimum_touch_target),
             onClick = {
-                if (isSearchActive.value) {
-                    isSearchActive.value = false
+                if (isSearchActive) {
+                    onStopSearching()
                 } else {
                     onCreateNewClient()
                 }
             },
         ) {
             Icon(
-                imageVector = if (isSearchActive.value) {
+                imageVector = if (isSearchActive) {
                     Icons.Filled.Close
                 } else {
                     Icons.Filled.PersonAdd

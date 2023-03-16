@@ -31,7 +31,6 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.cache.CacheCreateClientRepository
 import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.client.ClientRepository
-import com.peyess.salesapp.data.repository.client.ClientRepositoryResponse
 import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
@@ -40,20 +39,31 @@ import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.data.utils.query.PeyessQueryField
+import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
+import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.repository.sale.ActiveSalesStreamResponse
 import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import com.peyess.salesapp.utils.file.createPrintFile
+import com.peyess.salesapp.utils.string.removeDiacritics
+import com.peyess.salesapp.utils.string.removePonctuation
 import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -62,10 +72,14 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 private const val purchasesTablePageSize = 20
 private const val clientsTablePageSize = 20
 private const val lensesTablePrefetchDistance = 10
+
+private const val clientSearchDebounceTime = 500
 
 class MainViewModel @AssistedInject constructor(
     @Assisted initialState: MainAppState,
@@ -78,6 +92,7 @@ class MainViewModel @AssistedInject constructor(
     private val clientRepository: ClientRepository,
     private val cacheCreateClientRepository: CacheCreateClientRepository,
 ): MavericksViewModel<MainAppState>(initialState) {
+    private val clientSearchState = MutableStateFlow("")
 
     init {
         streamUnfinishedSales()
@@ -106,6 +121,8 @@ class MainViewModel @AssistedInject constructor(
 
         onAsync(MainAppState::createSaleResponseAsync) { processCreateSaleResponse(it) }
 
+        onEach(MainAppState::clientSearchQuery) { clientSearchState.value = it }
+
         onAsync(MainAppState::purchaseListResponseAsync) {
             processServiceOrderListResponse(it)
         }
@@ -124,9 +141,24 @@ class MainViewModel @AssistedInject constructor(
             processAddClientToCacheResponse(it)
         }
 
+        onAsync(MainAppState::clientListSearchAsync) { processSearchClientListResponse(it) }
+
         loadProductTableStatus()
         loadCurrentCollaborator()
         loadStore()
+
+        observeClientSearch()
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun observeClientSearch() {
+        viewModelScope.launch {
+            val duration = clientSearchDebounceTime.toDuration(DurationUnit.MILLISECONDS)
+
+            clientSearchState.debounce(duration).collect {
+                searchClient(it)
+            }
+        }
     }
 
     private fun setExistingCreateClient(client: CacheCreateClientDocument) = setState {
@@ -189,7 +221,6 @@ class MainViewModel @AssistedInject constructor(
         )
 
         return localClientRepository.paginateClients(query).map { pagingSourceFactory ->
-
             val pager = Pager(
                 pagingSourceFactory = pagingSourceFactory,
                 config = PagingConfig(
@@ -394,6 +425,82 @@ class MainViewModel @AssistedInject constructor(
                 copy(updateClient = true)
             }
         )
+    }
+
+    private fun searchClient(query: String) {
+        suspend {
+            updatedClientSearchListStream(
+                query.lowercase().removeDiacritics().removePonctuation()
+            )
+        }.execute(Dispatchers.IO) {
+            copy(clientListSearchAsync = it)
+        }
+    }
+
+    private fun processSearchClientListResponse(response: ClientsListResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(clientListSearchAsync = Fail(it.error ?: Throwable(it.description)))
+            },
+
+            ifRight = { copy(clientListSearchStream = it) }
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun updatedClientSearchListStream(queryStr: String): ClientsListResponse {
+        // TODO: build query using utils
+        val query = PeyessQuery(
+            queryFields = listOf(
+                buildQueryField(
+                    field = "searchable",
+                    op = PeyessQueryOperation.Like,
+                    value = queryStr,
+                ),
+            ),
+            orderBy = listOf(
+                PeyessOrderBy(
+                    field = "name",
+                    order = Order.ASCENDING,
+                ),
+            ),
+            groupBy = emptyList(),
+            defaultOp = "OR"
+        )
+
+        return localClientRepository.paginateClients(query).map { pagingSourceFactory ->
+            val pager = Pager(
+                pagingSourceFactory = pagingSourceFactory,
+                config = PagingConfig(
+                    pageSize = clientsTablePageSize,
+                    enablePlaceholders = true,
+                    prefetchDistance = lensesTablePrefetchDistance,
+                ),
+            )
+
+            pager.flow.cancellable().cachedIn(viewModelScope).mapLatest { pagingData ->
+                pagingData.map { it.toClient() }
+            }
+        }
+    }
+
+    fun clearClientSearch() = setState {
+        copy(clientSearchQuery = "")
+    }
+
+    fun startClientSearch() = setState {
+        copy(isSearchActive = true)
+    }
+
+    fun stopClientSearch() = setState {
+        copy(
+            isSearchActive = false,
+            clientSearchQuery = "",
+        )
+    }
+
+    fun onClientSearchChanged(query: String) = setState {
+        copy(clientSearchQuery = query)
     }
 
     fun syncClients(context: Context) {

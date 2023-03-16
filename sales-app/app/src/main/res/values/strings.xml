@@ -138,6 +138,7 @@
 
     <!--    UI Component: Clients -->
     <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
+    <string name="clients_screen_btn_clear_search">Limpar pesquisa</string>
     <string name="clients_screen_btn_edit">Editar</string>
 
     <!-- UI Component: Welcome   -->
@@ -400,6 +401,8 @@
 
     <!--  UI Component: PickClient  -->
     <string name="no_clients_yet">Não encontramos clientes cadastrados</string>
+    <string name="no_clients_found">Não encontramos nenhum cliente</string>
+    <string name="searching_clients">Não encontramos clientes cadastrados</string>
     <string name="btn_add_new_client">Adicionar cliente</string>
     <string name="btn_select_client">Selecionar</string>
 

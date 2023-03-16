@@ -110,6 +110,13 @@ fun PickClientScreen(
     val creatingClientExists by viewModel.collectAsState(PickClientState::creatingClientExists)
     val hasLookedForExistingClient by viewModel.collectAsState(PickClientState::hasLookedForExistingClient)
 
+    val clientSearchQuery by viewModel.collectAsState(PickClientState::clientSearchQuery)
+
+    val isSearchActive by viewModel.collectAsState(PickClientState::isSearchActive)
+    val clientListSearchStream by viewModel.collectAsState(PickClientState::clientListSearchStream)
+    val isLoadingClientSearch by viewModel.collectAsState(PickClientState::isLoadingClientSearch)
+
+
     val createClientDialogState = rememberMaterialDialogState()
     ExistingClientDialog(
         dialogState = createClientDialogState,
@@ -144,14 +151,10 @@ fun PickClientScreen(
         ClientListScreenUI(
             modifier = modifier,
 
-            isLoadingClients = isLoading,
-
-            clientList = clientList,
+            isLoadingClients = if (isSearchActive) isLoadingClientSearch else isLoading,
+            clientList = if (isSearchActive) clientListSearchStream else clientList,
 
             pictureForClient = viewModel::pictureForClient,
-
-            onSyncClients = { viewModel.syncClients(context) },
-            onSearchClient = onSearchClient,
 
             onEditClient = { viewModel.loadEditClientToCache(it.id) },
             onCreateNewClient = viewModel::findActiveCreatingClient,
@@ -159,6 +162,15 @@ fun PickClientScreen(
                 viewModel.pickClient(it)
                 canNavigate.value = true
             },
+
+            isSearchActive = isSearchActive,
+            clientSearchQuery = clientSearchQuery,
+            onSearchClient = viewModel::onClientSearchChanged,
+            onClearClientSearch = viewModel::clearClientSearch,
+            onStartSearching = viewModel::startClientSearch,
+            onStopSearching = viewModel::stopClientSearch,
+
+            onSyncClients = { viewModel.syncClients(context) },
         )
     }
 }

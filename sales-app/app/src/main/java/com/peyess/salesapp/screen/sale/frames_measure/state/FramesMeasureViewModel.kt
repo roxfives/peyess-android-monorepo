@@ -1,10 +1,15 @@
 package com.peyess.salesapp.screen.sale.frames_measure.state
 
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
+import arrow.core.Either
+import arrow.core.contains
+import arrow.core.rightIor
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.model.local_sale.positioning.PositioningEntity
 import com.peyess.salesapp.data.model.local_sale.positioning.updateInitialPositioningState
@@ -18,6 +23,8 @@ import com.peyess.salesapp.screen.sale.frames_measure.animation.utils.nextStateR
 import com.peyess.salesapp.screen.sale.frames_measure.animation.utils.previousStateLeftEye
 import com.peyess.salesapp.screen.sale.frames_measure.animation.utils.previousStateRightEye
 import com.peyess.salesapp.repository.sale.SaleRepository
+import com.peyess.salesapp.utils.device.infoAboutDevice
+import com.peyess.salesapp.utils.extentions.activity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -299,6 +306,34 @@ class FramesMeasureViewModel @AssistedInject constructor(
                 abs(bridgePivot - (if (eye == Eye.Right) framesRight else framesLeft)) / 2.0
 
         return abs(positioning.checkMiddle - bridgeHelper) > checkMiddleThreshold
+    }
+
+    fun updateStateStandardSize(context: Context) = setState {
+        val deviceInfo = Either.catch {
+            infoAboutDevice(context.activity())
+        }.mapLeft {
+            Timber.e(it, "Error while getting device info")
+        }.fold(
+            ifLeft = { "" },
+            ifRight = { it },
+        )
+
+        val length = if (deviceInfo.contains("active")) {
+            2600.0
+        } else {
+            1800.0
+        }
+
+        val middleX = if (deviceInfo.contains("active")) {
+            1600.0
+        } else {
+            1224.0
+        }
+
+        copy(
+            standardLength = length,
+            standardMiddleX = middleX,
+        )
     }
 
     fun onIsEditing(isEditing: Boolean) {

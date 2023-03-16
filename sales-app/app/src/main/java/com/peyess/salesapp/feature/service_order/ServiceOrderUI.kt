@@ -122,8 +122,9 @@ private val infoTextPadding = 32.dp
 fun ServiceOrderUI(
     modifier: Modifier = Modifier,
 
-    canUpdate: Boolean = false,
     isUpdating: Boolean = false,
+
+    canUpdate: Boolean = false,
 
     onFinishSale: () -> Unit = {},
 
@@ -141,6 +142,8 @@ fun ServiceOrderUI(
     isPrescriptionLoading: Boolean = false,
     prescription: Prescription = Prescription(),
     onEditPrescription: () -> Unit = {},
+
+    onEditMeasure: () -> Unit = {},
 
     isProductLoading: Boolean = false,
     lens: Lens = Lens(),
@@ -216,7 +219,10 @@ fun ServiceOrderUI(
 
             MeasuresSection(
                 isLoading = isMeasureLoading,
+
                 canUpdate = canUpdate,
+                onEditMeasure = onEditMeasure,
+
                 measureLeft = measureLeft,
                 measureRight = measureRight,
             )
@@ -1131,8 +1137,10 @@ private fun PrescriptionSection(
 @Composable
 private fun MeasuresSection(
     modifier: Modifier = Modifier,
-    canUpdate: Boolean = false,
     isLoading: Boolean = false,
+
+    canUpdate: Boolean = true,
+    onEditMeasure: () -> Unit = {},
 
     measureLeft: Measuring = Measuring(),
     measureRight: Measuring = Measuring(),
@@ -1162,12 +1170,12 @@ private fun MeasuresSection(
                 Icon(imageVector = Icons.Filled.Info, contentDescription = "")
             }
 
-//            IconButton(
-//                onClick = { /*TODO*/ },
-//                enabled = !isLoading,
-//            ) {
-//                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
-//            }
+            IconButton(
+                onClick = onEditMeasure,
+                enabled = !isLoading && canUpdate,
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+            }
         }
 
         Divider(

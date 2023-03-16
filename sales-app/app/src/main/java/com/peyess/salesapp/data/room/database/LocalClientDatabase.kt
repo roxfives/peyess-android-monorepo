@@ -15,7 +15,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalClientStatusEntity::class,
         LocalClientEntity::class,
     ],
-    version = 5,
+    version = 7,
 )
 @TypeConverters(
     ConverterSex::class,

@@ -77,6 +77,9 @@ data class LocalClientEntity(
     val downloadedAt: ZonedDateTime = ZonedDateTime.now(),
     @ColumnInfo(name = "uploaded_at")
     val uploadedAt: ZonedDateTime = ZonedDateTime.now(),
+
+    @ColumnInfo(name = "searchable")
+    val searchable: String = "",
 ) {
     companion object {
         const val tableName = "local_client"

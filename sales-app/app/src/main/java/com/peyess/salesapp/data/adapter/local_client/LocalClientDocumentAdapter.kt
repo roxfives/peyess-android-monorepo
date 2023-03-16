@@ -3,9 +3,12 @@ package com.peyess.salesapp.data.adapter.local_client
 import com.peyess.salesapp.data.model.client.FSClient
 import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.local_client.LocalClientEntity
+import com.peyess.salesapp.utils.string.removeDiacritics
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
+    val searchField = (name + nameDisplay + document).lowercase().removeDiacritics()
+
     return LocalClientEntity(
         id = id,
         name = name,
@@ -37,6 +40,8 @@ fun LocalClientDocument.toLocalClientEntity(): LocalClientEntity {
         localUpdated = localUpdated,
         downloadedAt = downloadedAt,
         uploadedAt = uploadedAt,
+
+        searchable = searchField,
     )
 }
 

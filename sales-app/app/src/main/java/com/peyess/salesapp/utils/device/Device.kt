@@ -17,6 +17,7 @@ import android.text.TextUtils
 import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import com.peyess.salesapp.BuildConfig
+import timber.log.Timber
 import java.util.Enumeration
 
 /**
@@ -61,7 +62,7 @@ fun isInternetAvailable(c: Context): Boolean {
 
 fun infoAboutDevice(a: ComponentActivity?): String {
     if (a == null) {
-//        Log.d("SUPER_TAG", "infoAboutDevice: Activity is null")
+        Timber.d("infoAboutDevice: Activity is null")
         return ""
     }
     val sb = StringBuilder()

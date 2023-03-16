@@ -32,6 +32,20 @@ class EditClientPickedRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun allClientsForServiceOrder(
+        serviceOrderId: String,
+    ): EditClientPickedFetchAllResponse = Either.catch {
+        clientPickedDao.allClientsPickedForServiceOrder(serviceOrderId).map {
+            it.toEditClientPickedDocument()
+        }
+    }.mapLeft {
+        ReadClientPickedError.Unexpected(
+            description = "Unexpected error when reading all " +
+                    "clients picked for service order $serviceOrderId",
+            throwable = it,
+        )
+    }
+
     override suspend fun findClientPickedForServiceOrder(
         serviceOrderId: String,
         role: ClientRole,

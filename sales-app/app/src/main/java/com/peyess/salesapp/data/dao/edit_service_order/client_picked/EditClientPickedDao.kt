@@ -16,6 +16,12 @@ interface EditClientPickedDao {
 
     @Query("""
         SELECT * FROM ${EditClientPickedEntity.tableName}
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun allClientsPickedForServiceOrder(serviceOrderId: String): List<EditClientPickedEntity>
+
+    @Query("""
+        SELECT * FROM ${EditClientPickedEntity.tableName}
         WHERE so_id = :serviceOrderId AND role = :role
     """)
     suspend fun findClientPickedForServiceOrder(

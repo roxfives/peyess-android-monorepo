@@ -28,4 +28,17 @@ class ClientPickedRepositoryImpl @Inject constructor(
             description = "Client for service order $soId using role $role not found",
         )
     }
+
+    override suspend fun allClientsForServiceOrder(
+        soId: String,
+    ): AllClientsPickedResponse = Either.catch {
+        clientPickedDao.allClientsForServiceOrder(soId).map {
+            it.toClientPickedDocument()
+        }
+    }.mapLeft {
+        Unexpected(
+            description = "Failed to get all client for service order $soId",
+            error = it,
+        )
+    }
 }

@@ -17,10 +17,17 @@ typealias EditClientPickedUpdateResponse = Either<UpdateClientPickedError, Unit>
 
 typealias EditClientPickedDeleteResponse = Either<DeleteClientPickedError, Unit>
 
+typealias EditClientPickedFetchAllResponse =
+        Either<ReadClientPickedError, List<EditClientPickedDocument>>
+
 interface EditClientPickedRepository {
     suspend fun insertClientPicked(
         clientPicked: EditClientPickedDocument,
     ): EditClientPickedAddResponse
+
+    suspend fun allClientsForServiceOrder(
+        serviceOrderId: String,
+    ): EditClientPickedFetchAllResponse
 
     suspend fun findClientPickedForServiceOrder(
         serviceOrderId: String,

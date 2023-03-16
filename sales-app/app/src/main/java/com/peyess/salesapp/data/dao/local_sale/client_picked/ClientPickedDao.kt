@@ -14,6 +14,12 @@ interface ClientPickedDao {
     @Insert(onConflict = REPLACE)
     fun add(clientEntity: ClientPickedEntity)
 
+    @Query("""
+        SELECT * FROM ${ClientPickedEntity.tableName}
+        WHERE so_id = :soId  
+    """)
+    suspend fun allClientsForServiceOrder(soId: String): List<ClientPickedEntity>
+
     @Query("SELECT * FROM ${ClientPickedEntity.tableName} " +
             "WHERE role = :role " +
             "AND so_id = :soId ")

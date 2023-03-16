@@ -6,7 +6,10 @@ import com.peyess.salesapp.data.repository.local_sale.client_picked.error.Client
 import com.peyess.salesapp.typing.sale.ClientRole
 
 typealias ClientPickedResponse = Either<ClientPickedReadError, ClientPickedDocument>
+typealias AllClientsPickedResponse = Either<ClientPickedReadError, List<ClientPickedDocument>>
 
 interface ClientPickedRepository {
     suspend fun getClientForServiceOrder(role: ClientRole, soId: String): ClientPickedResponse
+
+    suspend fun allClientsForServiceOrder(soId: String): AllClientsPickedResponse
 }

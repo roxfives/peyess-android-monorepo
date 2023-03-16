@@ -115,7 +115,6 @@ fun ClientScreen(
     val clientListSearchStream by viewModel.collectAsState(MainAppState::clientListSearchStream)
     val isLoadingClientSearch by viewModel.collectAsState(MainAppState::isLoadingClientSearch)
 
-
     val createClientDialogState = rememberMaterialDialogState()
     ExistingClientDialog(
         dialogState = createClientDialogState,
@@ -233,6 +232,7 @@ private fun ClientList(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     onCreateNewClient: () -> Unit = {},
     onEditClient: (Client) -> Unit = {},
+    canEditClient: Boolean = true,
 
     clientSearchQuery: String = "",
     isSearchActive: Boolean = false,
@@ -316,6 +316,7 @@ private fun ClientList(
                     pictureForClient = pictureForClient,
                     client = it,
                     onEditClient = onEditClient,
+                    canEditClient = canEditClient,
                 )
             }
         }
@@ -332,6 +333,7 @@ private fun ClientCard(
     client: Client = Client(),
     onClientPicked: (client: Client) -> Unit = {},
     onEditClient: (client: Client) -> Unit = {},
+    canEditClient: Boolean = true,
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -415,13 +417,19 @@ private fun ClientCard(
 
 //        Spacer(modifier = Modifier.height(cardSpacerWidth))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.End,
+        AnimatedVisibility(
+            visible = canEditClient,
+            enter = fadeIn(),
+            exit = fadeOut(),
         ) {
-            Button(onClick = { onEditClient(client) }) {
-                Text(text = stringResource(id = R.string.clients_screen_btn_edit))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.End,
+            ) {
+                Button(onClick = { onEditClient(client) }) {
+                    Text(text = stringResource(id = R.string.clients_screen_btn_edit))
+                }
             }
         }
     }

@@ -23,7 +23,7 @@ fun PeyessQuery.toSqlQuery(selectStatement: String): SimpleSQLiteQuery {
     var clauseExpression: String
     queryFields.forEach { peyessQuery ->
         whereClause = if (query.contains("WHERE")) {
-            " AND "
+            " $defaultOp "
         } else {
             " WHERE "
         }
@@ -106,8 +106,10 @@ private fun buildExpressionForRegularField(
 ): String {
     val value = if (queryField.value is Boolean) {
         if (queryField.value as Boolean) 1 else 0
-    } else if (queryField.value is String) {
+    } else if (queryField.value is String && queryField.op !is PeyessQueryOperation.Like) {
         "'${queryField.value}'"
+    } else if (queryField.value is String && queryField.op is PeyessQueryOperation.Like) {
+        "'%${queryField.value}%'"
     } else {
         queryField.value
     }
@@ -130,6 +132,9 @@ private fun buildExpressionForRegularField(
 
         PeyessQueryOperation.LessThanOrEqual ->
             "${queryField.field} <= $value"
+
+        PeyessQueryOperation.Like ->
+            "${queryField.field} LIKE $value"
 
         PeyessQueryOperation.Noop -> {
             Timber.i("Used a noop while building the query")

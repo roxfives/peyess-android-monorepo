@@ -12,5 +12,7 @@ sealed class PeyessQueryOperation {
     object LessThan: PeyessQueryOperation()
     object LessThanOrEqual: PeyessQueryOperation()
 
+    object Like: PeyessQueryOperation()
+
     object ArrayContains: PeyessQueryOperation()
 }

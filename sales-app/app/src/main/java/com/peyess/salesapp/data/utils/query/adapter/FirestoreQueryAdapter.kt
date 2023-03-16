@@ -87,5 +87,9 @@ private fun Query.buildQueryForRegularField(
             Timber.i("Used a noop while building the query")
             this
         }
+        PeyessQueryOperation.Like -> {
+            Timber.i("Used a like operation while building the query")
+            this
+        }
     }
 }

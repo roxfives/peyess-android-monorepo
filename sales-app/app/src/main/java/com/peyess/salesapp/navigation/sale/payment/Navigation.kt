@@ -1,5 +1,6 @@
 package com.peyess.salesapp.navigation.sale.payment
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -11,6 +12,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.screen.sale.payment.PaymentScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import timber.log.Timber
 
 const val paymentIdParam = "paymentId"
 const val clientIdParam = "clientId"
@@ -53,6 +55,10 @@ fun buildPaymentNavGraph(
         enterTransition = paymentEnterTransition(),
         exitTransition = paymentExitTransition()
     ) {
+        BackHandler(true) {
+            // Disable physical back button
+        }
+
         PaymentScreen(
             modifier = modifier
                 .padding(SalesAppTheme.dimensions.screen_offset),

@@ -13,6 +13,7 @@ import com.peyess.salesapp.navigation.client_list.PickScenario
 import com.peyess.salesapp.navigation.client_list.buildClientListRoute
 import com.peyess.salesapp.navigation.sale.discount.buildDiscountNavRoute
 import com.peyess.salesapp.navigation.sale.fee.buildFeeNavRoute
+import com.peyess.salesapp.navigation.sale.frames.buildFramesLandingRoute
 import com.peyess.salesapp.navigation.sale.lenses.buildLensSuggestionNavRoute
 import com.peyess.salesapp.navigation.sale.payment.buildPaymentNavRoute
 
@@ -110,6 +111,12 @@ fun buildServiceOrderNavGraph(
 
                 navHostController
                     .navigate(route)
+            },
+
+            onEditMeasure = { _, _ ->
+                val route = buildFramesLandingRoute(isEditing = true)
+
+                navHostController.navigate(route)
             },
 
             onAddPayment = { saleId, serviceOrderId, paymentId ->

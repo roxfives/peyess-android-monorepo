@@ -125,6 +125,7 @@ fun ServiceOrderUI(
     isUpdating: Boolean = false,
 
     canUpdate: Boolean = false,
+    canUpdateMeasuring: Boolean = false,
 
     onFinishSale: () -> Unit = {},
 
@@ -220,7 +221,7 @@ fun ServiceOrderUI(
             MeasuresSection(
                 isLoading = isMeasureLoading,
 
-                canUpdate = canUpdate,
+                canUpdate = canUpdateMeasuring,
                 onEditMeasure = onEditMeasure,
 
                 measureLeft = measureLeft,

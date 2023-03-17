@@ -28,6 +28,8 @@ data class FramesLandingState(
     val activeServiceOrderResponseAsync: Async<ActiveServiceOrderResponse> = Uninitialized,
     val serviceOrderId: String = "",
 
+    val isEditing: Boolean = false,
+
     val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val prescriptionResponse: LocalPrescriptionDocument = LocalPrescriptionDocument(),
 

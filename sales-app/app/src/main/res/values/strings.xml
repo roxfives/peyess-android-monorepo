@@ -450,7 +450,7 @@
     </plurals>
 
     <string name="so_measure_info_title">Sobre as medidas</string>
-    <string name="so_measure_info_content">As medidas variam com o ângulo da foto, e o posicionamento dos traços. Solicite a confirmação de alguém autorizado. Os valores são arredondados para escala decimal de "0,5" e o diâmetro contém 3mm a mais por margem de segurança, considerando o chanfro das armações</string>
+    <string name="so_measure_info_content">As medidas variam com o ângulo da foto, e o posicionamento dos traços. Solicite a confirmação de alguém autorizado. Os valores são arredondados para escala decimal de "0,5" e o diâmetro contém 1mm a mais por margem de segurança, considerando o chanfro das armações</string>
 
     <string name="so_confirmation_dialog_title">Deseja finalizar a venda?</string>
     <string name="so_confirmation_dialog_positive_btn">Finalizar</string>

@@ -41,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
@@ -59,6 +61,7 @@ import com.peyess.salesapp.screen.sale.frames.landing.dialog.DisplayMeasureDialo
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingState
 import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewModel
+import com.peyess.salesapp.screen.sale.frames.landing.util.ParseParameters
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -75,14 +78,21 @@ private val viewMeasuringButtonSpacer = 2.dp
 @Composable
 fun FramesLandingScreen(
     modifier: Modifier = Modifier,
+    navHostController: NavHostController = rememberNavController(),
     onAddFrames: (serviceOrderId: String) -> Unit = {},
     onAddMeasure: (eye: Eye) -> Unit = {},
     onEditMeasure: (eye: Eye) -> Unit = {},
     onAddPantoscopic: (eye: Eye) -> Unit = {},
-    onNext: () -> Unit = {},
+    onNext: (isEditing: Boolean) -> Unit = {},
 ) {
     val viewModel: FramesLandingViewModel = mavericksViewModel()
 
+    ParseParameters(
+        navController = navHostController,
+        onUpdateIsEditing = viewModel::onIsEditingParamChanged,
+    )
+
+    val isEditing by viewModel.collectAsState(FramesLandingState::isEditing)
     val serviceOrderId by viewModel.collectAsState(FramesLandingState::serviceOrderId)
 
     val idealCurvatureMessage by viewModel.collectAsState(FramesLandingState::idealBaseMessage)
@@ -146,7 +156,7 @@ fun FramesLandingScreen(
         displayMeasureLeft = displayMeasureLeft,
         displayMeasureRight = displayMeasureRight,
 
-        onNext = onNext,
+        onNext = { onNext(isEditing) },
     )
 }
 

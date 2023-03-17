@@ -151,6 +151,7 @@ fun EditServiceOrderScreen(
             modifier = modifier,
             
             canUpdate = canUpdate,
+            canUpdateMeasuring = false,
             isUpdating = true,
 
             prescription = prescription,

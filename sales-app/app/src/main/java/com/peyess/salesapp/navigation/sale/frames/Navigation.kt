@@ -7,6 +7,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.sale.frames.landing.FramesLandingScreen
@@ -16,10 +18,18 @@ import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesEnterTrans
 import com.peyess.salesapp.navigation.sale.frames.set_frames.setFramesExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
+const val isEditingParam = "isEditing"
 const val serviceOrderParamName = "serviceOrderId"
 
+private val framesLandingRoute = SalesAppScreens.FramesLanding.name +
+        "?$isEditingParam={$isEditingParam}"
 private val framesDataRoute = SalesAppScreens.SetFramesData.name +
         "/{$serviceOrderParamName}"
+
+fun buildFramesLandingRoute(isEditing: Boolean = false): String {
+    return SalesAppScreens.FramesLanding.name +
+            "?$isEditingParam=$isEditing"
+}
 
 fun buildFramesDataRoute(serviceOrderId: String): String {
     return "${SalesAppScreens.SetFramesData.name}/$serviceOrderId"
@@ -32,15 +42,23 @@ fun buildFramesNavGraph(
     builder: NavGraphBuilder
 ) {
     builder.composable(
-        route = SalesAppScreens.FramesLanding.name,
+        route = framesLandingRoute,
         enterTransition = framesEnterTransition(),
         exitTransition = framesExitTransition(),
+        arguments = listOf(
+            navArgument(isEditingParam) {
+                type = NavType.BoolType
+                defaultValue = false
+            }
+        )
     ) {
         val scrollState = rememberScrollState()
 
         FramesLandingScreen(
-            modifier = modifier.verticalScroll(scrollState)
+            modifier = modifier
+                .verticalScroll(scrollState)
                 .padding(SalesAppTheme.dimensions.screen_offset),
+            navHostController = navHostController,
             onAddFrames = {
                 val route = buildFramesDataRoute(it)
 
@@ -58,7 +76,13 @@ fun buildFramesNavGraph(
                 navHostController.navigate("${SalesAppScreens.FramesMeasure.name}/$eyeParam?isEditing=true")
             },
 
-            onNext = { navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name) },
+            onNext = { isEditing ->
+                 if (isEditing) {
+                     navHostController.popBackStack()
+                 } else {
+                     navHostController.navigate(SalesAppScreens.AnamnesisFirstStep.name)
+                 }
+            },
         )
     }
 

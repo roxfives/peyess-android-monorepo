@@ -22,6 +22,20 @@ import com.peyess.salesapp.navigation.sale.frames_measure.picture.measureTakePic
 import com.peyess.salesapp.navigation.sale.frames_measure.picture.measureTakePictureExitTransition
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 
+
+val eyeParam = "eye"
+val isEditingParam = "isEditing"
+
+private val framesMeasureRoute = SalesAppScreens.FramesMeasure.name +
+        "/{$eyeParam}" +
+        "?$isEditingParam={isEditing}"
+
+fun buildFramesMeasureRoute(eye: Eye, isEditing: Boolean): String {
+    return SalesAppScreens.FramesMeasure.name +
+            "/$eye" +
+            "?$isEditingParam=$isEditing"
+}
+
 @OptIn(ExperimentalAnimationApi::class)
 fun buildFramesMeasureNavGraph(
     modifier: Modifier = Modifier,
@@ -71,12 +85,11 @@ fun buildFramesMeasureNavGraph(
         )
     }
 
-// ""
     builder.composable(
-        route = "${SalesAppScreens.FramesMeasure.name}/{eye}?isEditing={isEditing}",
+        route = framesMeasureRoute,
         arguments = listOf(
-            navArgument("eye") { type = NavType.StringType },
-            navArgument("isEditing") {
+            navArgument(eyeParam) { type = NavType.StringType },
+            navArgument(isEditingParam) {
                 type = NavType.BoolType
                 defaultValue = false
             },

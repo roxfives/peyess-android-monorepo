@@ -50,6 +50,7 @@ fun CreateServiceOrderScreen(
 
     onEditProducts: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
+    onEditMeasure: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onConfirmMeasure: () -> Unit = {},
 
     onAddPayment: (
@@ -138,6 +139,7 @@ fun CreateServiceOrderScreen(
             modifier = modifier,
 
             canUpdate = true,
+            canUpdateMeasuring = true,
             isUpdating = false,
 
             onFinishSale = { viewModel.generateSale(context) },
@@ -174,6 +176,7 @@ fun CreateServiceOrderScreen(
             isMeasureLoading = isPositioningLeftLoading || isPositioningRightLoading,
             measureLeft = measureLeft,
             measureRight = measureRight,
+            onEditMeasure = { onEditMeasure(saleId, serviceOrderId) },
 
             canAddNewPayment = canAddNewPayment,
             totalPaid = totalPaid,

@@ -218,6 +218,10 @@ class FramesLandingViewModel @AssistedInject constructor(
         )
     }
 
+    fun onIsEditingParamChanged(isEditing: Boolean) = setState {
+        copy(isEditing = isEditing)
+    }
+
     fun onFramesNewChanged(areNew: Boolean) = withState {
         suspend {
             localFramesRepository.createFramesIfNotExists(it.serviceOrderId)

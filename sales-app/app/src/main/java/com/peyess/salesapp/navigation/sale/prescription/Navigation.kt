@@ -14,6 +14,7 @@ import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionDataScreen
 import com.peyess.salesapp.screen.sale.prescription_data.PrescriptionSymptomsScreen
 import com.peyess.salesapp.screen.sale.prescription_lens_type.PrescriptionLensTypeScreen
 import com.peyess.salesapp.navigation.SalesAppScreens
+import com.peyess.salesapp.navigation.sale.frames.buildFramesLandingRoute
 import com.peyess.salesapp.screen.sale.prescription_picture.PrescriptionPictureScreen
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenEnterTransition
 import com.peyess.salesapp.navigation.sale.prescription.data.prescriptionDataScreenExitTransition
@@ -97,7 +98,9 @@ fun buildPrescriptionScreenNavGraph(
                         popUpTo(route) { inclusive = true }
                     }
                 } else {
-                    navHostController.navigate(SalesAppScreens.FramesLanding.name)
+                    val framesRoute = buildFramesLandingRoute(isEditing = false)
+
+                    navHostController.navigate(framesRoute)
                 }
             }
         )

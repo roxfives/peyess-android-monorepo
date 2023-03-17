@@ -2,6 +2,8 @@ package com.peyess.salesapp.screen.sale.frames_measure.state
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import androidx.annotation.Keep
 import androidx.core.net.toFile
 import arrow.core.Either
 import arrow.core.contains
@@ -51,6 +53,8 @@ class FramesMeasureViewModel @AssistedInject constructor(
 
     private val timeThreshold = 2000000
     private val checkMiddleThreshold = 7
+
+    private val activeTabletDevice = "active"
 
     init {
         setState { copy(measuringParameters = animationParameters) }
@@ -312,27 +316,38 @@ class FramesMeasureViewModel @AssistedInject constructor(
         val deviceInfo = Either.catch {
             infoAboutDevice(context.activity())
         }.mapLeft {
+//            Log.d("TAG_DEVICE", "Error while getting device info " + it.message)
             Timber.e(it, "Error while getting device info")
         }.fold(
             ifLeft = { "" },
             ifRight = { it },
         )
 
-        val length = if (deviceInfo.contains("active")) {
-            2600.0
+//        Log.d("TAG_DEVICE", "deviceInfo: $deviceInfo")
+//        Log.d("TAG_DEVICE", "deviceInfo contains $activeTabletDevice: ${deviceInfo.contains(activeTabletDevice)}")
+
+        val length = if (deviceInfo.contains(activeTabletDevice)) {
+            2800.0
         } else {
             1800.0
         }
 
-        val middleX = if (deviceInfo.contains("active")) {
-            1600.0
+        val middleX = if (deviceInfo.contains(activeTabletDevice)) {
+            1500.0
         } else {
             1224.0
+        }
+
+        val height = if (deviceInfo.contains(activeTabletDevice)) {
+            1400.0
+        } else {
+            720.0
         }
 
         copy(
             standardLength = length,
             standardMiddleX = middleX,
+            standardHeight = height,
         )
     }
 

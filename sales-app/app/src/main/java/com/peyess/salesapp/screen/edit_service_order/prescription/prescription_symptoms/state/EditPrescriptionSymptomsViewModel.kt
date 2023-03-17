@@ -68,11 +68,11 @@ class EditPrescriptionSymptomsViewModel @AssistedInject constructor(
     }
 
     private fun loadPrescription(prescriptionId: String) {
-        suspend {
-            editPrescriptionRepository.prescriptionById(prescriptionId)
-        }.execute(Dispatchers.IO) {
-            copy(prescriptionResponseAsync = it)
-        }
+        editPrescriptionRepository
+            .streamPrescriptionById(prescriptionId)
+            .execute(Dispatchers.IO) {
+                copy(prescriptionResponseAsync = it)
+            }
     }
 
     private fun processPrescriptionResponse(

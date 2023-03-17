@@ -80,7 +80,8 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         onEach(
             PrescriptionDataState::lensTypeCategoryName,
             PrescriptionDataState::clientName,
-        ) { _, _ ->
+            PrescriptionDataState::prescriptionResponse,
+        ) { _, _, _ ->
             mikeMessageAmetropie()
         }
     }

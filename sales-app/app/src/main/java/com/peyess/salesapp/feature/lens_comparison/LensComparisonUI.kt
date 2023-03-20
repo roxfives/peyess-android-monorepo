@@ -35,8 +35,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -72,6 +74,8 @@ import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -251,36 +255,44 @@ private fun LensComparisonCard(
     val treatmentComparison = individualComparison.treatmentComparison
 
     val techDialogState = rememberMaterialDialogState()
-    PickTechDialog(
-        dialogState = techDialogState,
-        techs = availableTechList,
-        comparison = individualComparison,
-        onPickTech = onPickTech,
-    )
+    if (!isTechListLoading) {
+        PickTechDialog(
+            dialogState = techDialogState,
+            techs = availableTechList,
+            comparison = individualComparison,
+            onPickTech = onPickTech,
+        )
+    }
 
     val materialDialogState = rememberMaterialDialogState()
-    PickMaterialDialog(
-        dialogState = materialDialogState,
-        materials = availableMaterialList,
-        comparison = individualComparison,
-        onPickMaterial = onPickMaterial,
-    )
+    if (!isMaterialListLoading) {
+        PickMaterialDialog(
+            dialogState = materialDialogState,
+            materials = availableMaterialList,
+            comparison = individualComparison,
+            onPickMaterial = onPickMaterial,
+        )
+    }
 
     val treatmentDialogState = rememberMaterialDialogState()
-    PickTreatmentDialog(
-        dialogState = treatmentDialogState,
-        treatments = availableTreatmentList,
-        comparison = individualComparison,
-        onPickTreatment = onPickTreatment,
-    )
+    if (!isTreatmentListLoading) {
+        PickTreatmentDialog(
+            dialogState = treatmentDialogState,
+            treatments = availableTreatmentList,
+            comparison = individualComparison,
+            onPickTreatment = onPickTreatment,
+        )
+    }
 
     val coloringDialogState = rememberMaterialDialogState()
-    PickColoringDialog(
-        dialogState = coloringDialogState,
-        colorings = availableColoringList,
-        comparison = individualComparison,
-        onPickColoring = onPickColoring,
-    )
+    if (!isColoringListLoading) {
+        PickColoringDialog(
+            dialogState = coloringDialogState,
+            colorings = availableColoringList,
+            comparison = individualComparison,
+            onPickColoring = onPickColoring,
+        )
+    }
 
     val animationDialogState = rememberMaterialDialogState()
     AnimationDialog(
@@ -716,6 +728,23 @@ private fun PickTechDialog(
     comparison: IndividualComparison,
     onPickTech: (techId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {
+    val scope = rememberCoroutineScope()
+
+    // Workaround in case the list changes when the dialog is open
+    // https://github.com/vanpra/compose-material-dialogs/issues/122
+    // TODO: When the issue is fixed, remove this workaround and the if around the dialogs
+    LaunchedEffect(techs) {
+        // If the list changes when the dialog is open, we should refresh the dialog manually
+        // by closing and opening it again
+        if (dialogState.showing) {
+            dialogState.hide()
+            scope.launch {
+                // this won't work without adding delay
+                delay(50)
+                dialogState.show()
+            }
+        }
+    }
 
     MaterialDialog(
         dialogState = dialogState,
@@ -744,6 +773,23 @@ private fun PickMaterialDialog(
     comparison: IndividualComparison,
     onPickMaterial: (materialId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {
+    val scope = rememberCoroutineScope()
+
+    // Workaround in case the list changes when the dialog is open
+    // https://github.com/vanpra/compose-material-dialogs/issues/122
+    // TODO: When the issue is fixed, remove this workaround and the if around the dialogs
+    LaunchedEffect(materials) {
+        // If the list changes when the dialog is open, we should refresh the dialog manually
+        // by closing and opening it again
+        if (dialogState.showing) {
+            dialogState.hide()
+            scope.launch {
+                // this won't work without adding delay
+                delay(50)
+                dialogState.show()
+            }
+        }
+    }
 
     MaterialDialog(
         dialogState = dialogState,
@@ -772,6 +818,23 @@ private fun PickTreatmentDialog(
     comparison: IndividualComparison,
     onPickTreatment: (treatmentId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {
+    val scope = rememberCoroutineScope()
+
+    // Workaround in case the list changes when the dialog is open
+    // https://github.com/vanpra/compose-material-dialogs/issues/122
+    // TODO: When the issue is fixed, remove this workaround and the if around the dialogs
+    LaunchedEffect(treatments) {
+        // If the list changes when the dialog is open, we should refresh the dialog manually
+        // by closing and opening it again
+        if (dialogState.showing) {
+            dialogState.hide()
+            scope.launch {
+                // this won't work without adding delay
+                delay(50)
+                dialogState.show()
+            }
+        }
+    }
 
     MaterialDialog(
         dialogState = dialogState,
@@ -804,6 +867,24 @@ private fun PickColoringDialog(
     comparison: IndividualComparison,
     onPickColoring: (coloringId: String, comparison: IndividualComparison) -> Unit = { _, _ -> },
 ) {
+    val scope = rememberCoroutineScope()
+
+    // Workaround in case the list changes when the dialog is open
+    // https://github.com/vanpra/compose-material-dialogs/issues/122
+    // TODO: When the issue is fixed, remove this workaround and the if around the dialogs
+    LaunchedEffect(colorings) {
+        // If the list changes when the dialog is open, we should refresh the dialog manually
+        // by closing and opening it again
+        if (dialogState.showing) {
+            dialogState.hide()
+            scope.launch {
+                // this won't work without adding delay
+                delay(50)
+                dialogState.show()
+            }
+        }
+    }
+
     MaterialDialog(
         dialogState = dialogState,
         buttons = {

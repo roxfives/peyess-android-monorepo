@@ -1,5 +1,6 @@
 package com.peyess.salesapp.navigation.edit_service_order.payment
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
@@ -54,6 +55,10 @@ fun buildEditPaymentNavGraph(
         enterTransition = editPaymentEnterTransition(),
         exitTransition = editPaymentExitTransition()
     ) {
+        BackHandler(true) {
+            // Disable physical back button
+        }
+
         EditPaymentScreen(
             modifier = modifier.padding(SalesAppTheme.dimensions.screen_offset),
             navHostController = navHostController,

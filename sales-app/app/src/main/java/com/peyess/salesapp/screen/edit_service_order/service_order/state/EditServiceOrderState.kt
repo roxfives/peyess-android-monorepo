@@ -92,7 +92,6 @@ data class EditServiceOrderState(
 
     val paymentsResponseAsync: Async<EditLocalPaymentFetchResponse> = Uninitialized,
     val payments: List<Payment> = emptyList(),
-    val totalPaid: Double = 0.0,
 
     val discountResponseAsync: Async<EditPaymentDiscountFetchResponse> = Uninitialized,
     val discount: OverallDiscountDocument = OverallDiscountDocument(),
@@ -106,6 +105,10 @@ data class EditServiceOrderState(
 
     val hasSaleUpdateFailed: Boolean = false,
 ): MavericksState {
+    val totalPaid = payments.map { p -> p.value }
+        .reduceOrNull { acc, value -> acc + value }
+        ?: 0.0
+
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()
     val errorWhileFetchingServiceOrder = serviceOrderFetchResponseAsync is Fail ||

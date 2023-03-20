@@ -471,17 +471,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
             },
 
             ifRight = {
-                val totalPaid = if (it.isEmpty()) {
-                    0.0
-                } else {
-                    it.map { p -> p.value }
-                        .reduce { acc, value -> acc + value }
-                }
-
-                copy(
-                    payments = it.map { p -> p.toPayment() },
-                    totalPaid = totalPaid,
-                )
+                copy(payments = it.map { p -> p.toPayment() })
             },
         )
     }
@@ -518,13 +508,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         response: EditPaymentFeeFetchResponse,
     ) = setState {
         response.fold(
-            ifLeft = {
-                copy(feeResponseAsync = Fail(it.error))
-            },
+            ifLeft = { copy(feeResponseAsync = Fail(it.error)) },
 
-            ifRight = {
-                copy(fee = it)
-            },
+            ifRight = { copy(fee = it) },
         )
     }
 

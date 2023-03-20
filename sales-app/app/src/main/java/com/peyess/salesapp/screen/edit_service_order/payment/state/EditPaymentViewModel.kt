@@ -533,6 +533,13 @@ class EditPaymentViewModel @AssistedInject constructor(
         copy(paymentInput = update)
     }
 
+    fun checkPaymentForMissingClient() = withState {
+        if (it.paymentInput.clientId.isBlank()) {
+            // TODO: Add warning through a snackBar
+            cancelPayment()
+        }
+    }
+
     fun cancelPayment() = withState {
         viewModelScope.launch(Dispatchers.IO) {
             val payment = it.paymentInput.toLocalPaymentDocument()

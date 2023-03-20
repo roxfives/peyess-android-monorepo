@@ -7,6 +7,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.repository.card_flag.CardFlagRepository
 import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
@@ -373,9 +374,17 @@ class PaymentViewModel @AssistedInject constructor(
             },
 
             ifRight = {
+                checkPaymentForMissingClient()
                 copy(finishedPayment = true)
             }
         )
+    }
+
+    private fun checkPaymentForMissingClient() = withState {
+        if (it.paymentInput.clientId.isBlank()) {
+            // TODO: Add warning through a snackBar
+            cancelPayment()
+        }
     }
 
     private fun updateTotalToPay(

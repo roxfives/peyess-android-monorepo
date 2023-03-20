@@ -70,7 +70,10 @@ fun EditPaymentScreen(
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,
         onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
-        onDone = { navHostController.popBackStack() },
+        onDone = {
+            viewModel.checkPaymentForMissingClient()
+            navHostController.popBackStack()
+        },
         onCancel = {
             viewModel.cancelPayment()
             navHostController.popBackStack()

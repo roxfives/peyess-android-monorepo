@@ -167,8 +167,7 @@ fun UserGrid(
             ) {
                 items(users.size) {
                     UserBox(
-                        modifier = Modifier
-                            .padding(SalesAppTheme.dimensions.grid_1),
+                        modifier = Modifier.padding(SalesAppTheme.dimensions.grid_1),
                         pictureForUser = pictureForUser,
                         user = users[it],
                         onEnter = onEnter
@@ -188,7 +187,7 @@ private fun Header(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(store) {
         coroutineScope.launch(Dispatchers.IO) {
             pictureUri.value = pictureForStore(store.id)
         }
@@ -342,7 +341,7 @@ fun UserBox(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(user) {
         coroutineScope.launch(Dispatchers.IO) {
             pictureUri.value = pictureForUser(user.id)
         }

@@ -220,7 +220,7 @@ fun UserSignIn(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(userId) {
         coroutineScope.launch(Dispatchers.IO) {
             val picture = pictureForUser(userId)
 

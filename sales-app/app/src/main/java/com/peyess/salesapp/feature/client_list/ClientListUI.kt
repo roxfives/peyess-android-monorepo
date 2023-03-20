@@ -273,7 +273,7 @@ private fun ClientCard(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(client) {
         coroutineScope.launch(Dispatchers.IO) {
             val picture = pictureForClient(client.id)
 
@@ -399,7 +399,7 @@ private fun ClientCardHighlight(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(client) {
         coroutineScope.launch(Dispatchers.IO) {
             val picture = pictureForClient(client.id)
 

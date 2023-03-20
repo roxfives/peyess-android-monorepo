@@ -375,17 +375,9 @@ private fun ClientSection(
     hasWitness: Boolean = false,
     witness: Client = Client(),
 ) {
-    Column(
-        modifier = modifier
-            .padding(sectionPadding),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            SectionTitle(
-                title = stringResource(id = R.string.so_section_title_clients)
-            )
+    Column(modifier = modifier.padding(sectionPadding)) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            SectionTitle(title = stringResource(id = R.string.so_section_title_clients))
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -500,7 +492,7 @@ private fun ClientCard(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(client) {
         coroutineScope.launch(Dispatchers.IO) {
             val picture = pictureForClient(client.id)
 
@@ -660,9 +652,10 @@ private fun PrescriptionSection(
                         .size(prescriptionPictureSize)
                         // Clip image to be shaped as a circle
                         .border(
-                            width = 2.dp, color = MaterialTheme.colors.primary, shape = CircleShape
-                        )
-                        .clip(CircleShape)
+                            width = 2.dp,
+                            color = MaterialTheme.colors.primary,
+                            shape = CircleShape,
+                        ).clip(CircleShape)
                         .align(Alignment.Center),
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(prescription.pictureUri)
@@ -1876,7 +1869,7 @@ private fun PaymentCard(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(payment) {
         coroutineScope.launch(Dispatchers.IO) {
             val picture = pictureForClient(payment.clientId)
 

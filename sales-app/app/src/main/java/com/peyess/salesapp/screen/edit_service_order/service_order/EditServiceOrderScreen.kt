@@ -159,6 +159,7 @@ fun EditServiceOrderScreen(
             measureLeft = measuringLeft,
             measureRight = measuringRight,
 
+            pictureForClient = viewModel::pictureForClient,
             hasWitness = hasWitness,
             user = userPicked,
             responsible = responsiblePicked,

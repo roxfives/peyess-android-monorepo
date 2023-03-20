@@ -1,11 +1,14 @@
 package com.peyess.salesapp.screen.edit_service_order.service_order.state
 
 import android.content.Context
+import android.net.Uri
+import arrow.core.Either
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.base.MavericksViewModel
+import com.peyess.salesapp.data.repository.client.ClientRepository
 import com.peyess.salesapp.data.repository.collaborator.CollaboratorsRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
@@ -71,6 +74,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     private val serviceOrderUpdater: ServiceOrderUpdater,
 
     private val collaboratorsRepository: CollaboratorsRepository,
+
+    private val clientRepository: ClientRepository,
 
     private val editServiceOrderRepository: EditServiceOrderRepository,
     private val editPrescriptionRepository: EditPrescriptionRepository,
@@ -554,6 +559,17 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
     fun onServiceOrderIdChanged(serviceOrderId: String) = setState {
         copy(serviceOrderId = serviceOrderId)
+    }
+
+    suspend fun pictureForClient(clientId: String): Uri {
+        return Either.catch {
+            clientRepository.pictureForClient(clientId)
+        }.mapLeft {
+            Timber.e("Error getting picture for client $clientId: ${it.message}", it)
+        }.fold(
+            ifLeft = { Uri.EMPTY },
+            ifRight = { it },
+        )
     }
 
     fun createPayment(onAdded: (id: Long) -> Unit) = withState {

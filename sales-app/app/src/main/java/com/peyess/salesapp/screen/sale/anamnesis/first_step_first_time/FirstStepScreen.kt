@@ -24,12 +24,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.gowtham.ratingbar.RatingBar
@@ -42,6 +44,8 @@ import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.Fir
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 
@@ -76,7 +80,7 @@ fun FirstTimeScreen(
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun FirstTimeScreenImpl(
     modifier: Modifier = Modifier,
@@ -95,6 +99,9 @@ private fun FirstTimeScreenImpl(
     val dialogState = rememberMaterialDialogState(true)
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             // TODO: Use string resource
             positiveButton("Vamos lá!")

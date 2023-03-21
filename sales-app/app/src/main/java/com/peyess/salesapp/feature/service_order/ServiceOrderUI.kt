@@ -49,6 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieAnimation
@@ -85,6 +87,8 @@ import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.message
@@ -297,6 +301,7 @@ fun ServiceOrderUI(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ConfirmationDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
@@ -305,6 +310,9 @@ private fun ConfirmationDialog(
 ) {
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             negativeButton(text = stringResource(id = R.string.so_confirmation_dialog_negative_btn))
             positiveButton(
@@ -2011,6 +2019,7 @@ private fun NoPaymentsYet(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun InfoDialog(
     modifier: Modifier = Modifier,
@@ -2024,6 +2033,9 @@ private fun InfoDialog(
     // TODO: use string resource
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = { positiveButton("Legal!") },
     ) {
         Column(

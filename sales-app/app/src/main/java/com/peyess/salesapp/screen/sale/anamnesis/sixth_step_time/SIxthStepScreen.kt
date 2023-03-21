@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksActivityViewModel
 import com.peyess.salesapp.R
@@ -37,6 +39,8 @@ import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -114,6 +118,7 @@ fun SixthStepScreen(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SixthStepScreenImpl(
     modifier: Modifier = Modifier,
@@ -165,6 +170,9 @@ private fun SixthStepScreenImpl(
     val sleepDialogState = rememberMaterialDialogState(false)
     MaterialDialog(
         dialogState = sleepDialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             // TODO: Use string resource
             positiveButton("CONFIRMAR")
@@ -187,6 +195,9 @@ private fun SixthStepScreenImpl(
     val wakeUpDialogState = rememberMaterialDialogState(true)
     MaterialDialog(
         dialogState = wakeUpDialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             // TODO: Use string resource
             positiveButton("CONFIRMAR") { sleepDialogState.show() }

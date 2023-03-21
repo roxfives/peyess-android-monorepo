@@ -19,11 +19,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.os.ConfigurationCompat
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
@@ -32,6 +34,8 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.peyess.salesapp.R
 import com.peyess.salesapp.screen.sale.frames.data.model.DisplayMeasure
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -48,6 +52,7 @@ private val availabilityMessageHeight = 16.dp
 
 private val heightTitleSpacing = 42.dp
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DisplayMeasureDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
@@ -60,6 +65,9 @@ fun DisplayMeasureDialog(
 ) {
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             positiveButton(text = stringResource(id = R.string.dialog_value_btn_ok))
         },

@@ -66,6 +66,8 @@ import com.peyess.salesapp.R
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -351,6 +353,7 @@ fun PrescriptionPicture(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun DatePicker(
     modifier: Modifier = Modifier,
@@ -408,13 +411,16 @@ fun DatePicker(
         }
     }
 
-    MaterialDialog(dialogState = dialogState,
-        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+    MaterialDialog(
+        dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             positiveButton(stringResource(id = R.string.dialog_select_date_ok))
             negativeButton(stringResource(id = R.string.dialog_select_date_cancel))
-        }) {
-
+        },
+    ) {
         datepicker(
             title = stringResource(id = R.string.dialog_select_date_title),
             initialDate = currDate,

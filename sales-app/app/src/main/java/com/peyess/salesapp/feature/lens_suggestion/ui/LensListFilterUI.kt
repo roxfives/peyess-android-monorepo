@@ -18,11 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.peyess.salesapp.R
 import com.peyess.salesapp.feature.lens_suggestion.model.LensFilter
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
@@ -33,6 +37,7 @@ import kotlinx.coroutines.launch
 
 private val errorTitleSpacerHeight = 4.dp
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun FilterLensDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
@@ -68,6 +73,9 @@ internal fun FilterLensDialog(
 
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             negativeButton(stringResource(id = R.string.lens_filter_action_cancel))
         },

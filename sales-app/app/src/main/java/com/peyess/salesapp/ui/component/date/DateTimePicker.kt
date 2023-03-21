@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -24,12 +25,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.peyess.salesapp.R
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun PeyessDialogDatePicker(
     modifier: Modifier = Modifier,
@@ -90,12 +94,16 @@ fun PeyessDialogDatePicker(
         }
     }
 
-    MaterialDialog(dialogState = dialogState,
-        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+    MaterialDialog(
+        dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             positiveButton(stringResource(id = R.string.dialog_select_date_ok))
             negativeButton(stringResource(id = R.string.dialog_select_date_cancel))
-        }) {
+        },
+    ) {
 
         datepicker(
             title = title,

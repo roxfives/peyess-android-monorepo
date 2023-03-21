@@ -8,9 +8,13 @@ import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.Square
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.window.DialogProperties
 import com.peyess.salesapp.R
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.iconTitle
@@ -18,6 +22,7 @@ import com.vanpra.composematerialdialogs.message
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateOrUpdateMeasureDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
@@ -27,6 +32,9 @@ fun CreateOrUpdateMeasureDialog(
 ) {
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             positiveButton(stringResource(id = R.string.dialog_overwrite_btn_update)) {
                 onConfirmUpdate()

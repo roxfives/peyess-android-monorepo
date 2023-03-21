@@ -54,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -72,6 +73,8 @@ import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.component.text.PeyessOutlinedTextField
 import com.peyess.salesapp.ui.text_transformation.UserDocumentVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.listItems
@@ -247,7 +250,6 @@ fun ClientBasicInfo(
 
         Spacer(modifier = Modifier.height(defaultSpacerSize))
 
-
         SexPicker(
             modifier = Modifier
                 .minimumWidthModifier(
@@ -360,6 +362,7 @@ private fun ProfilePicture(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun PickSexDialog(
     dialogState: MaterialDialogState = rememberMaterialDialogState(),
@@ -377,6 +380,9 @@ private fun PickSexDialog(
 
     MaterialDialog(
         dialogState = dialogState,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = !isHighResolution() || isScreenSizeLarge(),
+        ),
         buttons = {
             negativeButton(stringResource(id = R.string.dialog_select_prism_axis_cancel))
         },

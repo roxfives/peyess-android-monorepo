@@ -1,10 +1,12 @@
 package com.peyess.salesapp.screen.sale.prescription_picture
 
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,21 +53,14 @@ fun PrescriptionPictureScreen(
 
     val isCopy by viewModel.collectAsState(PrescriptionPictureState::isCopy)
 
-    val pictureFile = remember { createPrescriptionFile(context) }
-    val pictureFileUri = remember {
-        FileProvider.getUriForFile(
-            context,
-            context.applicationContext.packageName + ".provider",
-            pictureFile,
-        )
-    }
+    val pictureFileUri = remember { mutableStateOf(Uri.EMPTY) }
 
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                viewModel.onPictureTaken(pictureFileUri)
+                viewModel.onPictureTaken(pictureFileUri.value)
             }
         }
     )
@@ -108,7 +103,13 @@ fun PrescriptionPictureScreen(
 
             takePicture = {
                 if (cameraPermissionState.status == PermissionStatus.Granted) {
-                    cameraLauncher.launch(pictureFileUri)
+                    pictureFileUri.value = FileProvider.getUriForFile(
+                        context,
+                        context.applicationContext.packageName + ".provider",
+                        createPrescriptionFile(context),
+                    )
+
+                    cameraLauncher.launch(pictureFileUri.value)
                 } else {
                     cameraPermissionState.launchPermissionRequest()
                 }

@@ -1,11 +1,13 @@
 package com.peyess.salesapp.screen.edit_service_order.prescription.prescription_picture
 
 import android.Manifest
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -54,21 +56,14 @@ fun EditPrescriptionPictureScreen(
 
     val canGoNext by viewModel.collectAsState(EditPrescriptionPictureState::canGoNext)
 
-    val pictureFile = remember { createPrescriptionFile(context) }
-    val pictureFileUri = remember {
-        FileProvider.getUriForFile(
-            context,
-            context.applicationContext.packageName + ".provider",
-            pictureFile,
-        )
-    }
+    val pictureFileUri = remember { mutableStateOf(Uri.EMPTY) }
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
             if (success) {
-                viewModel.onPictureTaken(pictureFileUri)
+                viewModel.onPictureTaken(pictureFileUri.value)
             }
         }
     )
@@ -108,7 +103,13 @@ fun EditPrescriptionPictureScreen(
 
         takePicture = {
             if (cameraPermissionState.status == PermissionStatus.Granted) {
-                cameraLauncher.launch(pictureFileUri)
+                pictureFileUri.value = FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName + ".provider",
+                    createPrescriptionFile(context)
+                )
+
+                cameraLauncher.launch(pictureFileUri.value)
             } else {
                 cameraPermissionState.launchPermissionRequest()
             }

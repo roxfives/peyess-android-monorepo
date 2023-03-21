@@ -202,40 +202,40 @@ fun SaleList(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-        item {
-            OutlinedButton(
-                modifier = Modifier
-                    .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-                    .fillMaxWidth()
-                    .height(buttonHeight),
-                shape = MaterialTheme.shapes.large,
-                enabled = !isUpdatingProducts,
-                onClick = onStartNewSale,
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = SalesAppTheme.dimensions.grid_3)
-                            .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            tint = MaterialTheme.colors.onPrimary,
-                            contentDescription = "",
-                        )
-                    }
-
-                    Text(
-                        text = stringResource(id = R.string.btn_make_new_sale),
-                        style = MaterialTheme.typography.body1,
-                    )
-                }
-            }
-        }
+//        item {
+//            OutlinedButton(
+//                modifier = Modifier
+//                    .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
+//                    .fillMaxWidth()
+//                    .height(buttonHeight),
+//                shape = MaterialTheme.shapes.large,
+//                enabled = !isUpdatingProducts,
+//                onClick = onStartNewSale,
+//            ) {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start,
+//                    verticalAlignment = Alignment.CenterVertically,
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .padding(horizontal = SalesAppTheme.dimensions.grid_3)
+//                            .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Filled.Add,
+//                            tint = MaterialTheme.colors.onPrimary,
+//                            contentDescription = "",
+//                        )
+//                    }
+//
+//                    Text(
+//                        text = stringResource(id = R.string.btn_make_new_sale),
+//                        style = MaterialTheme.typography.body1,
+//                    )
+//                }
+//            }
+//        }
 
         item {
             if (isServiceOrderListLoading) {

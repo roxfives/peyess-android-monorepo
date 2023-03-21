@@ -233,16 +233,18 @@ fun HomeScreen(
         }
     }
 
-    ActiveSalesDialog(
-        dialogState = dialogState,
-        sales = unfinishedSales,
-        onDismiss = { dismissActiveSales.value = true },
-        onCancelSale = viewModel::cancelSale,
-        onResumeSale = {
-            viewModel.resumeSale(it)
-            onStartSale()
-        },
-    )
+    if (canStartSale) {
+        ActiveSalesDialog(
+            dialogState = dialogState,
+            sales = unfinishedSales,
+            onDismiss = { dismissActiveSales.value = true },
+            onCancelSale = viewModel::cancelSale,
+            onResumeSale = {
+                viewModel.resumeSale(it)
+                onStartSale()
+            },
+        )
+    }
 
     HomeScreenImpl(
         modifier = modifier,

@@ -89,6 +89,7 @@ import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.utils.screen.isHighResolution
 import com.peyess.salesapp.utils.screen.isScreenSizeLarge
+import com.peyess.salesapp.utils.string.removeDiacritics
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
 import com.vanpra.composematerialdialogs.message
@@ -1532,7 +1533,11 @@ private fun ProductsSection(
             // TODO: use string resource
             SubSectionTitle(title = "Outros")
 
-            if (lens.priceAddColoring > 0) {
+            if (
+                lens.priceAddColoring > 0
+                && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
+            ) {
                 MiscCard(
                     miscProduct = ProductSoldDescriptionDocument(
                         nameDisplay = "Adicional por coloração",
@@ -1540,7 +1545,11 @@ private fun ProductsSection(
                     )
                 )
             }
-            if (lens.priceAddTreatment > 0) {
+            if (
+                lens.priceAddTreatment > 0
+                && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
+            ) {
                 MiscCard(
                     miscProduct = ProductSoldDescriptionDocument(
                         nameDisplay = "Adicional por tratamento",

@@ -65,6 +65,7 @@ import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.SOState
+import com.peyess.salesapp.utils.string.removeDiacritics
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.runBlocking
@@ -471,7 +472,12 @@ class ServiceOrderUploader constructor(
         if (!lens.isColoringIncluded && !lens.isColoringDiscounted) {
             total += coloring.price
 
-            if (lens.priceAddColoring > 0) {
+            // TODO: refactor to remove identification by name
+            if (
+                lens.priceAddColoring > 0
+                && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
+            ) {
                 total += lens.priceAddColoring
 
                 misc.add(
@@ -484,10 +490,15 @@ class ServiceOrderUploader constructor(
             }
         }
 
+        // TODO: refactor to remove identification by name
         if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
             total += treatment.price
 
-            if (lens.priceAddTreatment > 0) {
+            if (
+                lens.priceAddTreatment > 0
+                && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
+            ) {
                 total += lens.priceAddTreatment
 
                 misc.add(

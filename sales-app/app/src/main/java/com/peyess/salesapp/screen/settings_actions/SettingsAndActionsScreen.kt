@@ -1,5 +1,9 @@
 package com.peyess.salesapp.screen.settings_actions
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,12 +12,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CallToAction
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +56,7 @@ fun SettingsAndActionsScreen(
 
         isUpdatingProductsTable = isUpdatingProductsTable,
         onUpdateProductsTable = viewModel::updateProductsTable,
+        onCancelProductsUpdate = viewModel::cancelProductsUpdate,
     )
 }
 
@@ -55,6 +65,7 @@ private fun SettingsAndActionsScreenImpl(
     modifier: Modifier = Modifier,
     isUpdatingProductsTable: Boolean = false,
     onUpdateProductsTable: () -> Unit = {},
+    onCancelProductsUpdate: () -> Unit = {},
 ) {
     Column(
         modifier = modifier,
@@ -75,7 +86,9 @@ private fun SettingsAndActionsScreenImpl(
                 }
             },
             enabled = !isUpdatingProductsTable,
+            isActionRunning = isUpdatingProductsTable,
             onRunAction = onUpdateProductsTable,
+            onCancelAction = onCancelProductsUpdate,
         )
     }
 }
@@ -86,7 +99,9 @@ private fun ActionTile(
     actionIcon: @Composable  () -> Unit = {},
     actionTitle: @Composable  () -> Unit = {},
     enabled: Boolean = false,
+    isActionRunning: Boolean = false,
     onRunAction: () -> Unit = {},
+    onCancelAction: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -102,8 +117,33 @@ private fun ActionTile(
         actionIcon()
 
         Spacer(modifier = Modifier.width(listButtonIconSpacer))
-
         actionTitle()
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        AnimatedVisibility(
+            visible = isActionRunning,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            IconButton(
+                modifier = Modifier.size(SalesAppTheme.dimensions.minimum_touch_target)
+                    .background(
+                        color = MaterialTheme.colors.error,
+                        shape = CircleShape,
+                    ),
+                enabled = isActionRunning,
+                onClick = onCancelAction,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Cancel,
+                    tint = MaterialTheme.colors.onError,
+                    contentDescription = "",
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(listButtonIconSpacer))
     }
 }
 

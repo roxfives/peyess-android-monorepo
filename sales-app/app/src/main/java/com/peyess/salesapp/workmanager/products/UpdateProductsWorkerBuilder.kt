@@ -49,3 +49,7 @@ suspend fun enqueueProductUpdateWorker(
             )
     }
 }
+
+fun cancelAnyProductUpdateWorker(context: Context) {
+    WorkManager.getInstance(context).cancelAllWorkByTag(UpdateProductsWorker.workerTag)
+}

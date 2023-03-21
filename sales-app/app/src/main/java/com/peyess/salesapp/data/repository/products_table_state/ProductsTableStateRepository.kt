@@ -9,4 +9,6 @@ interface ProductsTableStateRepository {
     fun observeState(): Flow<ProductsTableStatus>
 
     fun update(productsTableStatus: ProductsTableStatus)
+
+    suspend fun cancelUpdate()
 }

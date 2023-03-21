@@ -307,7 +307,7 @@ class UpdateProductsWorker @AssistedInject constructor(
 
             Timber.i("doWork: Starting product update...")
             productsTableStateRepository.update(
-                productsTableStatus.copy(isUpdating = true)
+                productsTableStatus.copy(isUpdating = true, hasUpdateFailed = false)
             )
             createNotification()
 

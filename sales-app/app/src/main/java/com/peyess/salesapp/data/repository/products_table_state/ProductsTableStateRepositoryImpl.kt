@@ -54,4 +54,10 @@ class ProductsTableStateRepositoryImpl @Inject constructor(
 
         productsTableStateDao.update(tableAsEntity)
     }
+
+    override suspend fun cancelUpdate() {
+        productsTableStateDao.updateStatus(defaultId, 0)
+        productsTableStateDao.updateHasUpdated(defaultId, 0)
+        productsTableStateDao.updateHasUpdateFailed(defaultId, 1)
+    }
 }

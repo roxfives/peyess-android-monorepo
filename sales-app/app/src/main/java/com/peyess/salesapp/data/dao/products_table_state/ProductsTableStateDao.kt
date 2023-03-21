@@ -12,6 +12,27 @@ interface ProductsTableStateDao {
     @Insert(onConflict = REPLACE)
     fun update(productState: ProductTableStateEntity)
 
+    @Query("""
+        UPDATE ${ProductTableStateEntity.tableName}
+        SET is_updating = :isUpdating
+        WHERE id = :id
+    """)
+    fun updateStatus(id: Int, isUpdating: Int)
+
+    @Query("""
+        UPDATE ${ProductTableStateEntity.tableName}
+        SET has_updated = :hasUpdating
+        WHERE id = :id
+    """)
+    fun updateHasUpdated(id: Int, hasUpdating: Int)
+
+    @Query("""
+        UPDATE ${ProductTableStateEntity.tableName}
+        SET has_updated_failed = :hasUpdateFailed
+        WHERE id = :id
+    """)
+    fun updateHasUpdateFailed(id: Int, hasUpdateFailed: Int)
+
     @Query("SELECT * FROM ${ProductTableStateEntity.tableName} WHERE id = :id")
     fun observeProductTableState(id: Int): Flow<ProductTableStateEntity?>
 

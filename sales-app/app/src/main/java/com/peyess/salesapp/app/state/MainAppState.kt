@@ -102,8 +102,12 @@ data class MainAppState(
 
     val isCreatingNewSale = createSaleResponseAsync is Loading
 
+    val hasUpdatedProductsTable = productsTableStatusAsync.invoke()?.hasUpdated ?: false
     val isUpdatingProducts = productsTableStatusAsync.invoke()?.isUpdating ?: false
     val hasProductUpdateFailed = productsTableStatusAsync.invoke()?.hasUpdateFailed ?: true
+    val canStartSale = hasUpdatedProductsTable
+            && !hasProductUpdateFailed
+            && !isUpdatingProducts
 
     // Home Screen
     val isLoadingCollaborator: Boolean = false

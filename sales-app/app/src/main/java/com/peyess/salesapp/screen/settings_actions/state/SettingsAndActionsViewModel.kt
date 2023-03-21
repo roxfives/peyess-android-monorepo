@@ -1,6 +1,7 @@
 package com.peyess.salesapp.screen.settings_actions.state
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
@@ -8,7 +9,9 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.base.MavericksViewModel
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
+import com.peyess.salesapp.workmanager.products.cancelAnyProductUpdateWorker
 import com.peyess.salesapp.workmanager.products.enqueueProductUpdateWorker
+import com.peyess.salesapp.workmanager.products.notificationId
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,20 +26,16 @@ class SettingsAndActionViewModel @AssistedInject constructor(
 ): MavericksViewModel<SettingsAndActionState>(initialState) {
 
     init {
-        listenToProductTableStatus()
-
-
+        streamProductTableStatus()
     }
 
-    private fun listenToProductTableStatus() {
-        productsTableStateRepository
-            .observeState()
-            .execute(
-                dispatcher = Dispatchers.IO,
-                retainValue = SettingsAndActionState::isUpdatingProductsTableAsync,
-            ) {
-                copy(isUpdatingProductsTableAsync = it)
-            }
+    private fun streamProductTableStatus() {
+        productsTableStateRepository.observeState().execute(
+            dispatcher = Dispatchers.IO,
+            retainValue = SettingsAndActionState::isUpdatingProductsTableAsync,
+        ) {
+            copy(isUpdatingProductsTableAsync = it)
+        }
     }
 
     private suspend fun createWorker() {
@@ -49,8 +48,22 @@ class SettingsAndActionViewModel @AssistedInject constructor(
         )
     }
 
+    private fun removeUpdateNotification() {
+        with(NotificationManagerCompat.from(salesApplication as Context)) {
+            cancel(notificationId)
+        }
+    }
+
     fun updateProductsTable() {
         viewModelScope.launch { createWorker() }
+    }
+
+    fun cancelProductsUpdate() {
+        cancelAnyProductUpdateWorker(salesApplication as Context)
+        viewModelScope.launch(Dispatchers.IO) {
+            productsTableStateRepository.cancelUpdate()
+            removeUpdateNotification()
+        }
     }
 
     // hilt

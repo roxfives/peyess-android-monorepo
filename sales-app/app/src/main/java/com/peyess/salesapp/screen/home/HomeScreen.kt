@@ -157,6 +157,7 @@ fun HomeScreen(
     val isCreatingNewSale by viewModel.collectAsState(MainAppState::isCreatingNewSale)
     val hasCreatedSale by viewModel.collectAsState(MainAppState::hasCreatedSale)
 
+    val canStartSale by viewModel.collectAsState(MainAppState::canStartSale)
     val isUpdatingProductsTable by viewModel.collectAsState(MainAppState::isUpdatingProducts)
     val hasProductsTableUpdateFailed by viewModel.collectAsState(MainAppState::hasProductUpdateFailed)
 
@@ -253,6 +254,7 @@ fun HomeScreen(
         store = store,
         isLoadingStore = isLoadingStore,
 
+        canStartSale = canStartSale,
         isUpdatingProductsTable = isUpdatingProductsTable,
         hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
 
@@ -266,8 +268,12 @@ fun HomeScreen(
         },
 
         onStartSale = { viewModel.startNewSale() },
+
         onAddClient = viewModel::findActiveCreatingClient,
+
         onStartVisualAcuity = onStartVisualAcuity,
+
+        canShowProductsTable = canStartSale,
         onOpenProductsTable = onOpenProductsTable,
     )
 }
@@ -291,9 +297,14 @@ private fun HomeScreenImpl(
     onSettings: () -> Unit = {},
     onSignOut: () -> Unit = {},
 
+    canStartSale: Boolean = false,
     onStartSale: () -> Unit = {},
+
     onAddClient: () -> Unit = {},
+
     onStartVisualAcuity: () -> Unit = {},
+
+    canShowProductsTable: Boolean = false,
     onOpenProductsTable: () -> Unit = {},
 ) {
     Column(
@@ -322,9 +333,14 @@ private fun HomeScreenImpl(
             isUpdatingProductsTable = isUpdatingProductsTable,
             hasProductsTableUpdateFailed = hasProductsTableUpdateFailed,
 
+            canStartSale = canStartSale,
             onStartSale = onStartSale,
+
             onAddClient = onAddClient,
+
             onStartVisualAcuity = onStartVisualAcuity,
+
+            canShowProductsTable = canShowProductsTable,
             onOpenProductsTable = onOpenProductsTable,
         )
 
@@ -491,21 +507,23 @@ private fun ButtonsPanel(
     isUpdatingProductsTable: Boolean = false,
     hasProductsTableUpdateFailed: Boolean = false,
 
+    canStartSale: Boolean = false,
     onStartSale: () -> Unit = {},
+
     onAddClient: () -> Unit = {},
+
     onStartVisualAcuity: () -> Unit = {},
+
+    canShowProductsTable: Boolean = false,
     onOpenProductsTable: () -> Unit = {},
 ) {
     Column(
-        modifier = modifier
-            .widthIn(buttonPanelMinWidth, buttonPanelMaxWidth),
+        modifier = modifier.widthIn(buttonPanelMinWidth, buttonPanelMaxWidth),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top,
     ) {
         val density = LocalDensity.current
-        val minimumWidthState = remember {
-            MinimumWidthState()
-        }
+        val minimumWidthState = remember { MinimumWidthState() }
 
         Row (
             horizontalArrangement = Arrangement.Start,
@@ -550,7 +568,7 @@ private fun ButtonsPanel(
                     }
                 },
 
-                enabled = !isUpdatingProductsTable,
+                enabled = canStartSale,
                 onClick = onStartSale,
             )
 
@@ -643,7 +661,7 @@ private fun ButtonsPanel(
                     }
                 },
 
-                enabled = !isUpdatingProductsTable,
+                enabled = canShowProductsTable,
                 onClick = onOpenProductsTable,
             )
         }

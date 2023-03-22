@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.Flow
 typealias LensTypeCategoriesResponse =
         Either<LensCategoryDaoReadError, List<LensTypeCategoryDocument>>
 
+typealias LensTypeCategoryResponse = Either<LensCategoryDaoReadError, LensTypeCategoryDocument>
+
 interface LensTypeCategoryDao {
     fun streamCategories(): Flow<List<LensTypeCategoryDocument>>
     suspend fun typeCategories(): LensTypeCategoriesResponse
+    suspend fun typeCategoryById(id: String): LensTypeCategoryResponse
 }

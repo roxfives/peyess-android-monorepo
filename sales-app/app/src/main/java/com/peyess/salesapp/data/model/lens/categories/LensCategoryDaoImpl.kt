@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.lens.categories
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
+import arrow.core.leftIfNull
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.model.lens.categories.error.LensCategoryDaoReadError
@@ -61,6 +62,39 @@ class LensCategoryDaoImpl @Inject constructor(
             LensCategoryDaoReadError.LensCategoryDaoFetchError(
                 description = it.message ?: "Unknown error",
                 throwable = it,
+            )
+        }.bind()
+    }
+
+    override suspend fun typeCategoryById(id: String): LensTypeCategoryResponse = either {
+        val firestore = firebaseManager.storeFirestore
+
+        ensureNotNull(firestore) {
+            LensCategoryDaoReadError.Unexpected(
+                description = "Firestore instance is null",
+                throwable = null,
+            )
+        }
+
+        val documentPath = salesApplication
+            .stringResource(R.string.fs_doc_lens_type_category)
+            .format(id)
+
+        Either.catch {
+            val snap = firestore
+                .document(documentPath)
+                .get()
+                .await()
+
+            snap.toObject(FSLensCategory::class.java)?.toDocument(snap.id)
+        }.mapLeft {
+            LensCategoryDaoReadError.LensCategoryDaoFetchError(
+                description = it.message ?: "Unknown error",
+                throwable = it,
+            )
+        }.leftIfNull {
+            LensCategoryDaoReadError.LensCategoryDaoFetchError(
+                description = "Lens category with id $id not found",
             )
         }.bind()
     }

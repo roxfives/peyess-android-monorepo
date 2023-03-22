@@ -15,6 +15,9 @@ fun PrescriptionEntity.toLocalPrescriptionDocument(): LocalPrescriptionDocument 
         prescriptionDate = prescriptionDate,
         pictureUri = pictureUri,
 
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
+
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,
         cylindricalLeft = cylindricalLeft,

@@ -13,6 +13,7 @@ import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionD
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.PrescriptionNotFound
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.Unexpected
 import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -57,6 +58,7 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
         serviceOrderId: String,
         hasAddition: Boolean
     ): LocalPrescriptionUpdateResponse = either {
+        // TODO: remove the creation from this method
         val exists = (localPrescriptionDao.exitsForServiceOrder(serviceOrderId) ?: 0) > 0
         if (!exists) {
             createPrescriptionForServiceOrder(serviceOrderId).bind()
@@ -70,6 +72,23 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
                     error = it,
                 )
             }.bind()
+    }
+
+    override suspend fun updateLensTypeCategory(
+        serviceOrderId: String,
+        lensTypeCategoryId: String,
+        lensTypeCategory: LensTypeCategoryName
+    ): LocalPrescriptionUpdateResponse = Either.catch {
+        localPrescriptionDao.updateLensTypeCategory(
+            serviceOrderId = serviceOrderId,
+            lensTypeCategoryId = lensTypeCategoryId,
+            lensTypeCategory = lensTypeCategory,
+        )
+    }.mapLeft {
+        Unexpected(
+            description = "Unexpected error while updating prescription for service order $serviceOrderId",
+            error = it,
+        )
     }
 
     override fun streamPrescriptionForServiceOrderExists(

@@ -12,6 +12,9 @@ data class LocalLensTypeCategoryEntity(
 
     @ColumnInfo(name = "name")
     val name: String = "",
+
+    @ColumnInfo(name = "explanation")
+    val explanation: String = "",
 ) {
     companion object {
         const val tableName = "local_lens_type_category"

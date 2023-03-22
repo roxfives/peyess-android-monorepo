@@ -1,9 +1,13 @@
 package com.peyess.salesapp.features.disponibility.model
 
 import com.peyess.salesapp.features.disponibility.contants.LensType
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 
 data class Prescription(
+    // TODO: remove this field
     val lensType: LensType = LensType.None,
+
+    val lensTypeCategory: LensTypeCategoryName = LensTypeCategoryName.None,
 
     val leftDiameter: Double = 0.0,
     val rightDiameter: Double = 0.0,

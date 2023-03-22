@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.prescription
 
 import com.peyess.salesapp.data.dao.local_sale.local_prescription.PrescriptionEntity
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import java.time.ZonedDateTime
 
 fun prescriptionFrom(
@@ -30,6 +31,10 @@ fun prescriptionFrom(
 
         professionalDocument = prescriptionEntity.professionalId,
         professionalName = prescriptionEntity.professionalName,
+
+
+        lensTypeCategoryId = prescriptionEntity.lensTypeCategoryId,
+        lensTypeCategory = prescriptionEntity.lensTypeCategory,
 
         hasAddition = prescriptionEntity.hasAddition,
         lAddition = prescriptionEntity.additionLeft,

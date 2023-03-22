@@ -17,6 +17,9 @@ data class FSPrescriptionUpdate(
     val professionalDocument: String = "",
     val professionalName: String = "",
 
+    val lensTypeCategoryId: String = "",
+    val lensTypeCategory: String = "",
+
     val hasPrism: Boolean = false,
 
     val hasAddition: Boolean = false,

@@ -4,6 +4,7 @@ import androidx.annotation.Keep
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 
 @Keep
 @IgnoreExtraProperties
@@ -63,6 +64,15 @@ data class FSPrescription(
     @Keep
     @PropertyName("professional_name")
     val professionalName: String = "",
+
+    @JvmField
+    @Keep
+    @PropertyName("lens_type_category")
+    val lensTypeCategory: String = LensTypeCategoryName.None.toName(),
+    @JvmField
+    @Keep
+    @PropertyName("lens_type_category_id")
+    val lensTypeCategoryId: String = "",
 
     @JvmField
     @Keep

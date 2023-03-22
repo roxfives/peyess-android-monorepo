@@ -13,7 +13,11 @@ fun buildPrescription(
     localMeasuringRight: LocalMeasuringDocument,
 ): Prescription {
     return Prescription(
+        lensTypeCategory = localPrescriptionDocument.lensTypeCategory,
+
+        // TODO: remove this field
         lensType = lensType,
+
         leftDiameter = localMeasuringLeft.fixedDiameter,
         rightDiameter = localMeasuringRight.fixedDiameter,
         leftHeight = localMeasuringLeft.fixedHe,
@@ -40,7 +44,11 @@ fun buildPrescription(
     localMeasuringRight: Measuring,
 ): Prescription {
     return Prescription(
+        lensTypeCategory = localPrescriptionDocument.lensTypeCategory,
+
+        // TODO: remove this field
         lensType = lensType,
+
         leftDiameter = localMeasuringLeft.fixedDiameter,
         rightDiameter = localMeasuringRight.fixedDiameter,
         leftHeight = localMeasuringLeft.fixedHe,

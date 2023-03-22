@@ -8,5 +8,6 @@ fun StoreLensTypeCategoryDocument.toLocalLensTypeCategoryEntity(): LocalLensType
     return LocalLensTypeCategoryEntity(
         id = id,
         name = name,
+        explanation = explanation,
     )
 }

@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.lenses.room
 
 import arrow.core.Either
 import arrow.core.leftIfNull
+import com.peyess.salesapp.data.adapter.lenses.lens_type_category.toStoreLensTypeCategoryDocument
 import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringDocument
 import com.peyess.salesapp.data.adapter.lenses.room.coloring.toLocalLensColoringEntity
 import com.peyess.salesapp.data.adapter.lenses.room.toLocalLensAltHeight
@@ -359,6 +360,28 @@ class LocalLensesRepositoryImpl @Inject constructor(
                 categoryId = lens.categoryId,
                 materialId = lens.materialId,
             )
+        )
+    }
+
+    override suspend fun lensTypeCategoryById(
+        categoryId: String,
+    ): LensesTypeCategoryResponse = Either.catch {
+        localLensDao.lensTypeCategoryById(categoryId)?.toStoreLensTypeCategoryDocument()
+    }.mapLeft {
+        Unexpected(
+            description = "Error while fetching lens type category by id $categoryId",
+            error = it,
+        )
+    }.leftIfNull {
+        Unexpected(description = "Lens type category with id $categoryId not found")
+    }
+
+    override suspend fun lensTypeCategories(): LensesTypeCategoriesResponse = Either.catch {
+        localLensDao.lensTypeCategories().map { it.toStoreLensTypeCategoryDocument() }
+    }.mapLeft {
+        Unexpected(
+            description = "Error while fetching lens type categories",
+            error = it,
         )
     }
 

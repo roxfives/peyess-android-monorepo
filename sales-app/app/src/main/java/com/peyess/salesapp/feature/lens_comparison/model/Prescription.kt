@@ -7,6 +7,8 @@ import com.peyess.salesapp.constants.minAddition
 import com.peyess.salesapp.constants.minAxis
 import com.peyess.salesapp.constants.minPrismAxis
 import com.peyess.salesapp.constants.minPrismDegree
+import com.peyess.salesapp.features.disponibility.contants.LensType
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.utils.math.middle
 import java.time.ZonedDateTime
@@ -14,6 +16,9 @@ import kotlin.math.floor
 
 data class Prescription(
     val soId: String = "",
+
+    val lensTypeCategoryId: String = "",
+    val lensTypeCategory: LensTypeCategoryName = LensTypeCategoryName.None,
 
     val sphericalLeft: Double = 0.0,
     val sphericalRight: Double = 0.0,

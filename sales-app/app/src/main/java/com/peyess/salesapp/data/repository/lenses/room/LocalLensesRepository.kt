@@ -33,6 +33,12 @@ import com.peyess.salesapp.data.utils.query.PeyessQuery
 
 typealias LensesTypesResponse = Either<LocalLensRepositoryException, List<StoreLensTypeDocument>>
 
+typealias LensesTypeCategoriesResponse =
+        Either<LocalLensRepositoryException, List<StoreLensTypeCategoryDocument>>
+
+typealias LensesTypeCategoryResponse =
+        Either<LocalLensRepositoryException, StoreLensTypeCategoryDocument>
+
 typealias LensesSuppliersResponse =
         Either<LocalLensRepositoryException, List<StoreLensSupplierDocument>>
 
@@ -127,6 +133,10 @@ interface LocalLensesRepository {
     suspend fun addAlternativeHeightToLens(alternativeHeightId: String, lensId: String)
 
     suspend fun addLens(lens: StoreLensDocument)
+
+    suspend fun lensTypeCategoryById(categoryId: String): LensesTypeCategoryResponse
+
+    suspend fun lensTypeCategories(): LensesTypeCategoriesResponse
 
     suspend fun paginateLensesWithDetailsOnly(query: PeyessQuery = PeyessQuery()): LensesResponse
 

@@ -10,6 +10,8 @@ import com.peyess.salesapp.constants.minAddition
 import com.peyess.salesapp.constants.minAxis
 import com.peyess.salesapp.constants.minPrismAxis
 import com.peyess.salesapp.constants.minPrismDegree
+import com.peyess.salesapp.features.disponibility.contants.LensType
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.utils.math.middle
 import java.time.ZonedDateTime
@@ -66,6 +68,11 @@ data class PrescriptionEntity(
     val additionLeft: Double = minAddition,
     @ColumnInfo(name = "addition_right")
     val additionRight: Double = minAddition,
+
+    @ColumnInfo(name = "lens_type_category_id")
+    val lensTypeCategoryId: String = "",
+    @ColumnInfo(name = "lens_type_category")
+    val lensTypeCategory: LensTypeCategoryName = LensTypeCategoryName.None,
 
     @ColumnInfo(name = "has_prism")
     val hasPrism: Boolean = false,

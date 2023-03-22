@@ -6,6 +6,7 @@ import com.peyess.salesapp.feature.lens_comparison.model.Prescription
 fun LocalPrescriptionDocument.toPrescription(): Prescription {
     return Prescription(
         soId = soId,
+        lensTypeCategory = lensTypeCategory,
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,
         cylindricalLeft = cylindricalLeft,

@@ -158,6 +158,17 @@ interface LocalLensDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addLensDetails(entity: LocalLensDetailsCrossRef)
 
+    @Query("""
+        SELECT * FROM ${LocalLensTypeCategoryEntity.tableName}
+    """)
+    suspend fun lensTypeCategories(): List<LocalLensTypeCategoryEntity>
+
+    @Query("""
+        SELECT * FROM ${LocalLensTypeCategoryEntity.tableName}
+        WHERE id = :id
+    """)
+    suspend fun lensTypeCategoryById(id: String): LocalLensTypeCategoryEntity?
+
     @Transaction
     @RawQuery(observedEntities = [LocalLensWithDetailsDBView::class])
     fun getFilteredLenses(query: SimpleSQLiteQuery): PagingSource<Int, LocalLensWithDetails>

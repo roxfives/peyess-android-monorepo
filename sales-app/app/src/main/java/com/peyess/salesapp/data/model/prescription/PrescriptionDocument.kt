@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.model.prescription
 
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import java.time.ZonedDateTime
 
@@ -22,6 +23,9 @@ data class PrescriptionDocument(
     val patientUid: String = "",
     val professionalDocument: String = "",
     val professionalName: String = "",
+
+    val lensTypeCategoryId: String = "",
+    val lensTypeCategory: LensTypeCategoryName = LensTypeCategoryName.None,
 
     val hasPrism: Boolean = false,
 

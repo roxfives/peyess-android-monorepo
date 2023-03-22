@@ -14,6 +14,8 @@ fun LocalPrescriptionDocument.toPrescriptionUpdateDocument(
         emitted = prescriptionDate,
         typeId = "",
         typeDesc = "",
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
         isCopy = isCopy,
         patientUid = client.id,
         patientDocument = client.document,

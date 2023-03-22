@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.repository.prescription.adapter
 
 import com.peyess.salesapp.data.model.prescription.FSPrescription
 import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.utils.time.toZonedDateTime
 
@@ -14,6 +15,8 @@ fun FSPrescription.toPrescriptionDocument(): PrescriptionDocument {
         typeId = typeId,
         typeDesc = typeDesc,
         isCopy = isCopy,
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = LensTypeCategoryName.fromName(lensTypeCategory),
         patientDocument = patientDocument,
         patientName = patientName,
         patientUid = patientUid,

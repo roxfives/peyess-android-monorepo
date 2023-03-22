@@ -10,6 +10,8 @@ fun LocalPrescriptionDocument.toEditPrescriptionEntity(): EditPrescriptionEntity
         pictureUri = pictureUri,
         professionalName = professionalName,
         professionalId = professionalId,
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
         sphericalLeft = sphericalLeft,

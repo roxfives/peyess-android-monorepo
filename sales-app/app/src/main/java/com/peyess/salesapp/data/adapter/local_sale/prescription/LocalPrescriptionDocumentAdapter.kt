@@ -10,6 +10,8 @@ fun LocalPrescriptionDocument.toPrescriptionEntity(): PrescriptionEntity {
         pictureUri = pictureUri,
         professionalName = professionalName,
         professionalId = professionalId,
+        lensTypeCategory = lensTypeCategory,
+        lensTypeCategoryId = lensTypeCategoryId,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
         sphericalLeft = sphericalLeft,

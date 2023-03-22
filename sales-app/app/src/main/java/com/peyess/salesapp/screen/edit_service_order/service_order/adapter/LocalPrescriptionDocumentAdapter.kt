@@ -10,6 +10,7 @@ fun LocalPrescriptionDocument.toPrescription(): Prescription {
         pictureUri = pictureUri,
         professionalName = professionalName,
         professionalId = professionalId,
+        lensTypeCategory = lensTypeCategory,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
         sphericalLeft = sphericalLeft,

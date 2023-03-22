@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.repository.local_sale.prescription
 import arrow.core.Either
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.data.repository.local_sale.prescription.error.LocalPrescriptionResponseError
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import kotlinx.coroutines.flow.Flow
 
 typealias LocalPrescriptionInsertResponse = Either<LocalPrescriptionResponseError, Unit>
@@ -29,6 +30,12 @@ interface LocalPrescriptionRepository {
     suspend fun updateHasAddition(
         serviceOrderId: String,
         hasAddition: Boolean,
+    ): LocalPrescriptionUpdateResponse
+
+    suspend fun updateLensTypeCategory(
+        serviceOrderId: String,
+        lensTypeCategoryId: String,
+        lensTypeCategory: LensTypeCategoryName,
     ): LocalPrescriptionUpdateResponse
 
     fun streamPrescriptionForServiceOrderExists(

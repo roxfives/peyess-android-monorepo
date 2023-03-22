@@ -4,6 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.peyess.salesapp.screen.sale.prescription_lens_type.model.LensTypeCategory
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,6 +31,18 @@ interface LocalPrescriptionDao {
         WHERE so_id = :serviceOrderId
     """)
     suspend fun updateHasAddition(serviceOrderId: String, hasAddition: Int)
+
+    @Query("""
+        UPDATE ${PrescriptionEntity.tableName}
+        SET lens_type_category_id = :lensTypeCategoryId, 
+            lens_type_category = :lensTypeCategory
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun updateLensTypeCategory(
+        serviceOrderId: String,
+        lensTypeCategoryId: String,
+        lensTypeCategory: LensTypeCategoryName,
+    )
 
     @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} WHERE so_id = :serviceOrderId")
     suspend fun exitsForServiceOrder(serviceOrderId: String): Int?

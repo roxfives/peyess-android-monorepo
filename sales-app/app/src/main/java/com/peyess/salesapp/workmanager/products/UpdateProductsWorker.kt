@@ -29,6 +29,7 @@ import com.peyess.salesapp.data.adapter.lenses.extractType
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
 import com.peyess.salesapp.data.model.lens.StoreLensDocument
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
+import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
@@ -60,6 +61,8 @@ class UpdateProductsWorker @AssistedInject constructor(
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val storeLensesRepository: StoreLensesRepository,
     private val localLensesRepository: LocalLensesRepository,
+    // TODO: Create specific repository and remove this dependency
+    private val lensTypeDao: LensTypeCategoryDao,
 ): CoroutineWorker(context, workerParams) {
 
     private suspend fun populateDatabase(docs: List<StoreLensDocument>) {
@@ -103,11 +106,32 @@ class UpdateProductsWorker @AssistedInject constructor(
         localLensesRepository.addCategory(category)
 
         localLensesRepository.addLensType(type)
-        lens.typeCategories.forEach {
-            localLensesRepository.addLensTypeCategory(it)
+        lens.typeCategories.forEach { lensTypeCategory ->
+            localLensesRepository.lensTypeCategoryById(lensTypeCategory.id).fold(
+                ifLeft = {
+                    Timber.i("populateLensData: Adding category $lensTypeCategory... ")
+                    lensTypeDao.typeCategoryById(lensTypeCategory.id).fold(
+                        ifLeft = {
+                            Timber.i("populateLensData: Failed while fetching category " +
+                                    "${lensTypeCategory.id} from remove database... ")
+                        },
+
+                        ifRight = {
+                            Timber.i("populateLensData: Using category from... ")
+                            localLensesRepository.addLensTypeCategory(
+                                lensTypeCategory.copy(explanation = it.explanation)
+                            )
+                        }
+                    )
+                },
+
+                ifRight = {
+                    Timber.i("populateLensData: Category $lensTypeCategory already exists... ")
+                }
+            )
 
             localLensesRepository.addCategoryToType(
-                categoryId = it.id,
+                categoryId = lensTypeCategory.id,
                 typeId = lens.typeId,
             )
         }

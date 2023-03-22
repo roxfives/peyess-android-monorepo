@@ -611,9 +611,7 @@ class ServiceOrderUploader constructor(
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {
-            PurchaseCreationFailed(
-                description = "Store id $storeId not found",
-            )
+            PurchaseCreationFailed(description = "Store id $storeId not found")
         }
 
         val payments = localPaymentRepository

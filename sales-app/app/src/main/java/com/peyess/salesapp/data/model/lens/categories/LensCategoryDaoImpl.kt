@@ -39,7 +39,6 @@ class LensCategoryDaoImpl @Inject constructor(
     override suspend fun typeCategories(): LensTypeCategoriesResponse = either {
         val firestore = firebaseManager.storeFirestore
 
-
         ensureNotNull(firestore) {
             LensCategoryDaoReadError.Unexpected(
                 description = "Firestore instance is null",

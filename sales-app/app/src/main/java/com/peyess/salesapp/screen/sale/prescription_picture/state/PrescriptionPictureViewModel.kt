@@ -45,6 +45,14 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
         }
     }
 
+    private fun loadServiceOrder() = withState {
+        suspend {
+            saleRepository.currentServiceOrder()
+        }.execute(Dispatchers.IO) {
+            copy(activeServiceOrderAsync = it)
+        }
+    }
+
     private fun processServiceOrderResponse(response: ActiveServiceOrderResponse) = setState {
         response.fold(
             ifLeft = {
@@ -61,20 +69,12 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadServiceOrder() = withState {
-        suspend {
-            saleRepository.currentServiceOrder()
-        }.execute(Dispatchers.IO) {
-            copy(activeServiceOrderAsync = it)
-        }
-    }
-
-    private fun createPrescription() = withState {
-        suspend {
-            localPrescriptionRepository.createPrescriptionForServiceOrder(it.serviceOrderId)
-        }.execute(Dispatchers.IO) {
-            copy(createPrescriptionResponseAsync = it)
-        }
+    private fun loadPrescription(serviceOrderId: String) = withState {
+        localPrescriptionRepository
+            .streamPrescriptionForServiceOrder(serviceOrderId)
+            .execute(Dispatchers.IO) {
+                copy(prescriptionResponseAsync = it)
+            }
     }
 
     private fun processPrescriptionResponse(response: LocalPrescriptionResponse) = setState {
@@ -98,12 +98,12 @@ class PrescriptionPictureViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadPrescription(serviceOrderId: String) = withState {
-        localPrescriptionRepository
-            .streamPrescriptionForServiceOrder(serviceOrderId)
-            .execute(Dispatchers.IO) {
-                copy(prescriptionResponseAsync = it)
-            }
+    private fun createPrescription() = withState {
+        suspend {
+            localPrescriptionRepository.createPrescriptionForServiceOrder(it.serviceOrderId)
+        }.execute(Dispatchers.IO) {
+            copy(createPrescriptionResponseAsync = it)
+        }
     }
 
     private fun updatePrescription(prescription: PrescriptionPicture) {

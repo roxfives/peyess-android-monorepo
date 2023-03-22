@@ -2,6 +2,7 @@ package com.peyess.salesapp.screen.sale.prescription_picture.adapter
 
 import com.peyess.salesapp.data.model.local_sale.prescription.LocalPrescriptionDocument
 import com.peyess.salesapp.feature.prescription.model.PrescriptionPicture
+import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 
 fun LocalPrescriptionDocument.toPrescriptionPicture(): PrescriptionPicture {
     return PrescriptionPicture(
@@ -13,6 +14,9 @@ fun LocalPrescriptionDocument.toPrescriptionPicture(): PrescriptionPicture {
         professionalId = professionalId,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
+
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
 
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,

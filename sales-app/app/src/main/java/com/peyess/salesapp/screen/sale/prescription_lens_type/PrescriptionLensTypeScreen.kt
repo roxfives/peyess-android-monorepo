@@ -19,6 +19,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.peyess.salesapp.screen.sale.prescription_lens_type.state.PrescriptionLensTypeState
 import com.peyess.salesapp.screen.sale.prescription_lens_type.state.PrescriptionLensTypeViewModel
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDocument
+import com.peyess.salesapp.screen.sale.prescription_lens_type.model.LensTypeCategory
 import com.peyess.salesapp.ui.component.chip.PeyessChipGroup
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
@@ -68,8 +69,8 @@ private fun PrescriptionTypeScreenImpl(
     modifier: Modifier = Modifier,
 
     areCategoriesLoading: Boolean = false,
-    categoryPicked: LensTypeCategoryDocument? = null,
-    lensCategories: List<LensTypeCategoryDocument> = emptyList(),
+    categoryPicked: LensTypeCategory = LensTypeCategory(),
+    lensCategories: List<LensTypeCategory> = emptyList(),
     onSelectChanged: (categoryName: String) -> Unit =  {},
 
     isMikeLoading: Boolean = false,
@@ -119,13 +120,12 @@ private fun PrescriptionTypeScreenImpl(
 @Composable
 private fun LensTypeCategories(
     modifier: Modifier = Modifier,
-    categories: List<LensTypeCategoryDocument> = emptyList(),
-    selected: LensTypeCategoryDocument? = null,
+    categories: List<LensTypeCategory> = emptyList(),
+    selected: LensTypeCategory = LensTypeCategory(),
     onSelectChanged: (categoryName: String) -> Unit =  {},
 ) {
     PeyessChipGroup(
-        modifier = modifier
-            .padding(26.dp),
+        modifier = modifier.padding(26.dp),
         keepSameWidth = true,
         items = categories,
         itemName = { it?.name ?: "" },

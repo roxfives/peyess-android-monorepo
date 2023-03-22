@@ -77,7 +77,6 @@ data class EditPrescriptionEntity(
     @ColumnInfo(name = "lens_type_category")
     val lensTypeCategory: LensTypeCategoryName = LensTypeCategoryName.None,
 
-
     @ColumnInfo(name = "has_prism")
     val hasPrism: Boolean = false,
     @ColumnInfo(name = "prism_degree_left")

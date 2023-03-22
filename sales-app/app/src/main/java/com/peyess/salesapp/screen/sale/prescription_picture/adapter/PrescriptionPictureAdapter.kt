@@ -12,6 +12,10 @@ fun PrescriptionPicture.toLocalPrescriptionDocument(): LocalPrescriptionDocument
         professionalId = professionalId,
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
+
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
+
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,
         cylindricalLeft = cylindricalLeft,

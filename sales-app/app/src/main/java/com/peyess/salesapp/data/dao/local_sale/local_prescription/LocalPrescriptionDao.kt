@@ -41,7 +41,7 @@ interface LocalPrescriptionDao {
     suspend fun updateLensTypeCategory(
         serviceOrderId: String,
         lensTypeCategoryId: String,
-        lensTypeCategory: LensTypeCategoryName,
+        lensTypeCategory: String,
     )
 
     @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} WHERE so_id = :serviceOrderId")

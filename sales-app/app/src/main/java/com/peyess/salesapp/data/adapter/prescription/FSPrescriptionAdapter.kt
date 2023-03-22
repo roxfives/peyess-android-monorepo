@@ -32,7 +32,6 @@ fun prescriptionFrom(
         professionalDocument = prescriptionEntity.professionalId,
         professionalName = prescriptionEntity.professionalName,
 
-
         lensTypeCategoryId = prescriptionEntity.lensTypeCategoryId,
         lensTypeCategory = prescriptionEntity.lensTypeCategory,
 

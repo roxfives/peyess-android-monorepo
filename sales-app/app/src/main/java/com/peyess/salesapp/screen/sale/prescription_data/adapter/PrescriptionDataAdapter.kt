@@ -14,6 +14,9 @@ fun PrescriptionData.toLocalPrescriptionDocument(): LocalPrescriptionDocument {
         isCopy = isCopy,
         prescriptionDate = prescriptionDate,
 
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory,
+
         sphericalLeft = sphericalLeft,
         sphericalRight = sphericalRight,
         cylindricalLeft = cylindricalLeft,

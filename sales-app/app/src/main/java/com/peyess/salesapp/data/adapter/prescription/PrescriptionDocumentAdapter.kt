@@ -25,6 +25,9 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
         professionalDocument = professionalDocument,
         professionalName = professionalName,
 
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory.toName(),
+
         hasPrism = hasPrism,
 
         hasAddition = hasAddition,

@@ -647,6 +647,7 @@
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
+    <string name="fs_doc_lens_type_category">lenses_types_category/%1$s</string>
     <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
     <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
     <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>

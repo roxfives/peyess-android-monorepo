@@ -6,6 +6,7 @@ import java.time.ZonedDateTime
 private const val lensesFullUnionDBView = LocalLensFullUnionDBView.viewName
 
 @DatabaseView(
+    //TODO: Remove isLensMono dependency from name
     viewName = LocalLensFullUnionWithHeightAndLensTypeDBView.viewName,
     value = """
         SELECT *, 
@@ -13,7 +14,7 @@ private const val lensesFullUnionDBView = LocalLensFullUnionDBView.viewName
             IIF(altHeightName IS NULL, "", altHeightName) AS altHeightName,
             IIF(altHeightNameDisplay IS NULL, "", altHeightNameDisplay) AS altHeightDisplay,
             IIF(altHeightObservation IS NULL, "", altHeightObservation) AS altHeightObservation,
-            IIF(typeName LIKE '%multi%', 0, 1) AS isLensMono
+            IIF(typeName LIKE '%multi%' OR typeName LIKE '%regressiv%', 0, 1) AS isLensMono
         FROM $lensesFullUnionDBView
     """,
 )

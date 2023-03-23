@@ -82,7 +82,7 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
         localPrescriptionDao.updateLensTypeCategory(
             serviceOrderId = serviceOrderId,
             lensTypeCategoryId = lensTypeCategoryId,
-            lensTypeCategory = lensTypeCategory,
+            lensTypeCategory = lensTypeCategory.toName(),
         )
     }.mapLeft {
         Unexpected(

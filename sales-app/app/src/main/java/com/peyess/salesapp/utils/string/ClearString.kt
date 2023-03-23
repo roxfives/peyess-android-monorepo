@@ -13,3 +13,7 @@ fun CharSequence.removeDiacritics(): String {
 fun CharSequence.removePonctuation(): String {
     return replace("[^a-zA-Z\\d\\s]".toRegex(), "")
 }
+
+fun String.normalize(): String {
+    return this.trim().lowercase().removeDiacritics()
+}

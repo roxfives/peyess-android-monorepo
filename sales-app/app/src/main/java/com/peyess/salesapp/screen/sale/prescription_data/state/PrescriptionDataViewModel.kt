@@ -56,12 +56,12 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 ): MavericksViewModel<PrescriptionDataState>(initialState) {
 
     init {
-        loadHasAddition()
-        loadAnimation()
-        loadMessage()
+//        loadHasAddition()
 //        loadClientName()
-        loadLensTypeCategory()
+//        loadLensTypeCategory()
         loadServiceOrderData()
+
+        onEach(PrescriptionDataState::lensTypeCategoryName) { loadMessage(it) }
 
         onAsync(PrescriptionDataState::activeServiceOrderResponseAsync) {
             processServiceOrderDataResponse(it)
@@ -71,17 +71,20 @@ class PrescriptionDataViewModel @AssistedInject constructor(
             processPrescriptionResponse(it)
         }
 
-        onAsync(PrescriptionDataState::hasAdditionAsync) { updateHasAddition(it) }
+//        onAsync(PrescriptionDataState::hasAdditionAsync) { updateHasAddition(it) }
 
         onEach(PrescriptionDataState::activeServiceOrderResponse) {
-            loadPrescription(it.id)
+            if (it.id.isNotBlank()) {
+                loadPrescription(it.id)
+            }
         }
         
         onEach(
             PrescriptionDataState::lensTypeCategoryName,
             PrescriptionDataState::clientName,
             PrescriptionDataState::prescriptionResponse,
-        ) { _, _, _ ->
+        ) { category, _, _ ->
+            updateAnimation(category)
             mikeMessageAmetropie()
         }
     }
@@ -96,7 +99,7 @@ class PrescriptionDataViewModel @AssistedInject constructor(
                 )
             },
 
-            ifRight = { copy(activeServiceOrderResponse = it) }
+            ifRight = { copy(activeServiceOrderResponse = it) },
         )
     }
 
@@ -108,43 +111,31 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         }
     }
 
-    private fun loadMessage() = withState {
-        saleRepository.activeSO()
-            .filterNotNull()
-            .map { messageFor(it.lensTypeCategoryName, salesApplication) }
-            .execute(Dispatchers.IO) {
-                copy(generalMessage = it)
-            }
+    private fun loadMessage(lensTypeCategoryName: LensTypeCategoryName) = setState {
+        copy(generalMessage = messageFor(lensTypeCategoryName, salesApplication))
     }
 
-    private fun loadHasAddition() = withState {
-        saleRepository.activeSO()
-            .filterNotNull()
-            .map { !it.isLensTypeMono }
-            .execute(Dispatchers.IO) {
-                Timber.i("Loading has addition $it")
-                copy(hasAdditionAsync = it)
-            }
-    }
+//    private fun loadHasAddition() = withState {
+//        saleRepository.activeSO()
+//            .filterNotNull()
+//            .map { !it.isLensTypeMono }
+//            .execute(Dispatchers.IO) {
+//                Timber.i("Loading has addition $it")
+//                copy(hasAdditionAsync = it)
+//            }
+//    }
 
-    private fun loadLensTypeCategory() = withState {
-        saleRepository.activeSO()
-            .filterNotNull()
-            .map { it.lensTypeCategoryName }
-            .execute(Dispatchers.IO) {
-                copy(lensTypeCategoryName = it)
-            }
-    }
+//    private fun loadLensTypeCategory() = withState {
+//        saleRepository.activeSO()
+//            .filterNotNull()
+//            .map { it.lensTypeCategoryName }
+//            .execute(Dispatchers.IO) {
+//                copy(lensTypeCategoryName = it)
+//            }
+//    }
 
-    private fun loadAnimation() = withState {
-        saleRepository.activeSO()
-            .filterNotNull()
-            .map {
-                animationFor(it.lensTypeCategoryName)
-            }
-            .execute(Dispatchers.IO) {
-                copy(animationId = it)
-            }
+    private fun updateAnimation(category: LensTypeCategoryName) = setState {
+        copy(animationId = animationFor(category))
     }
 
     private fun mikeMessageAmetropie() = withState {
@@ -270,16 +261,16 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         }
     }
 
-    private fun updateHasAddition(hasAddition: Boolean) = withState {
-        val prescriptionData = it.prescriptionResponse
-        
-        if (prescriptionData.id.isNotBlank()) {
-            val prescription = it.prescriptionResponse
-                .copy(hasAddition = hasAddition)
-            
-            updatePrescription(prescription)
-        }
-    }
+//    private fun updateHasAddition(hasAddition: Boolean) = withState {
+//        val prescriptionData = it.prescriptionResponse
+//
+//        if (prescriptionData.id.isNotBlank()) {
+//            val prescription = it.prescriptionResponse
+//                .copy(hasAddition = hasAddition)
+//
+//            updatePrescription(prescription)
+//        }
+//    }
 
 
     fun increaseSphericalLeft(curValue: Double) = withState {

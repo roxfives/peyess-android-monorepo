@@ -21,11 +21,11 @@ data class PrescriptionDataState(
     val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val prescriptionResponse: PrescriptionData = PrescriptionData(),
 
-    val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
-    val hasAdditionAsync: Async<Boolean> = Uninitialized,
+//    val lensTypeCategoryName: Async<LensTypeCategoryName> = Uninitialized,
+//    val hasAdditionAsync: Async<Boolean> = Uninitialized,
     val mikeMessageAmetropies: String = "",
-    val animationId: Async<Int> = Uninitialized,
-    val generalMessage: Async<String> = Uninitialized,
+    val animationId: Int = 0,
+    val generalMessage: String = "",
 
     val isLoading: Boolean = false,
 ): MavericksState {
@@ -34,11 +34,10 @@ data class PrescriptionDataState(
 
     val clientName = activeServiceOrderResponse.clientName
 
-    val isMessageLoading = generalMessage is Loading
+    val isMessageLoading = prescriptionResponseAsync is Loading
+    val isAnimationLoading = prescriptionResponseAsync is Loading
 
-    val isAnimationLoading = animationId is Loading
-
-    val hasAddition = hasAdditionAsync is Success && hasAdditionAsync.invoke()
+//    val hasAddition = hasAdditionAsync is Success && hasAdditionAsync.invoke()
     val hasPrism = prescriptionResponse.hasPrism
 
     val hasAxisLeft = prescriptionResponse.cylindricalLeft < 0.0
@@ -62,25 +61,36 @@ data class PrescriptionDataState(
     val isPrismAxisLeftEnabled = hasPrism && prismPositionLeft == PrismPosition.Axis
     val isPrismAxisRightEnabled = hasPrism && prismPositionRight == PrismPosition.Axis
 
+    val lensTypeCategoryName = prescriptionResponse.lensTypeCategory
+    val hasAddition = lensTypeCategoryName is LensTypeCategoryName.Multi
+
     val hasHypermetropiaLeft =  sphericalLeft > 0
-            && lensTypeCategoryName is Success
-            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
+            && lensTypeCategoryName !is LensTypeCategoryName.Near
+//            && lensTypeCategoryName is Success
+//            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
     val hasMyopiaLeft = sphericalLeft < 0;
     val hasAstigmatismLeft = cylindricalLeft < 0;
-    val hasPresbyopiaLeft = lensTypeCategoryName is Success
-            && (
-                lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
-                || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
-            )
+    val hasPresbyopiaLeft = lensTypeCategoryName is LensTypeCategoryName.Near
+            || lensTypeCategoryName is LensTypeCategoryName.Multi
+
+//        lensTypeCategoryName is Success
+//            && (
+//                lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
+//                || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
+//            )
 
     val hasHypermetropiaRight =  sphericalRight > 0
-            && lensTypeCategoryName is Success
-            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
+            && lensTypeCategoryName !is LensTypeCategoryName.Near
+//            && lensTypeCategoryName is Success
+//            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
     val hasMyopiaRight = sphericalRight < 0;
     val hasAstigmatismRight = cylindricalRight < 0;
-    val hasPresbyopiaRight = lensTypeCategoryName is Success
-            && (
-            lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
-                    || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
-            )
+    val hasPresbyopiaRight = lensTypeCategoryName is LensTypeCategoryName.Near
+            || lensTypeCategoryName is LensTypeCategoryName.Multi
+
+//        lensTypeCategoryName is Success
+//            && (
+//            lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
+//                    || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
+//            )
 }

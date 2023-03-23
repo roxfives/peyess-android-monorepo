@@ -636,13 +636,13 @@ class ServiceOrderUpdater @Inject constructor(
     ): GeneratePrescriptionDataResponse = either {
         val collaboratorUid = authenticationRepository.fetchCurrentUserId()
 
-        val localPrescription =
-            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId).mapLeft {
-                    GeneratePrescriptionDataError.Unexpected(
-                        description = it.description,
-                        throwable = it.error,
-                    )
-                }.bind()
+        val localPrescription = editPrescriptionRepository
+            .prescriptionByServiceOrder(serviceOrderId).mapLeft {
+                GeneratePrescriptionDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
 
         val user = editClientPickedRepository.findClientPickedForServiceOrder(
                 serviceOrderId,

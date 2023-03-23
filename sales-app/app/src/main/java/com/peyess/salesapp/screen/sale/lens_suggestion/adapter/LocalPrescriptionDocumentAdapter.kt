@@ -7,16 +7,12 @@ import com.peyess.salesapp.features.disponibility.contants.LensType
 import com.peyess.salesapp.features.disponibility.model.Prescription
 
 fun buildPrescription(
-    lensType: LensType,
     localPrescriptionDocument: LocalPrescriptionDocument,
     localMeasuringLeft: LocalMeasuringDocument,
     localMeasuringRight: LocalMeasuringDocument,
 ): Prescription {
     return Prescription(
         lensTypeCategory = localPrescriptionDocument.lensTypeCategory,
-
-        // TODO: remove this field
-        lensType = lensType,
 
         leftDiameter = localMeasuringLeft.fixedDiameter,
         rightDiameter = localMeasuringRight.fixedDiameter,
@@ -38,16 +34,12 @@ fun buildPrescription(
 
 
 fun buildPrescription(
-    lensType: LensType,
     localPrescriptionDocument: LocalPrescriptionDocument,
     localMeasuringLeft: Measuring,
     localMeasuringRight: Measuring,
 ): Prescription {
     return Prescription(
         lensTypeCategory = localPrescriptionDocument.lensTypeCategory,
-
-        // TODO: remove this field
-        lensType = lensType,
 
         leftDiameter = localMeasuringLeft.fixedDiameter,
         rightDiameter = localMeasuringRight.fixedDiameter,

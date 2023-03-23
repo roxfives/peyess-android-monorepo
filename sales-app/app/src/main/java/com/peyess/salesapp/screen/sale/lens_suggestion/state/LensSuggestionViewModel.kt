@@ -466,7 +466,6 @@ class LensSuggestionViewModel @AssistedInject constructor(
             .bind()
 
         val prescription = buildPrescription(
-            lensType = activeServiceOrder.lensTypeCategoryName.toLensType(),
             localPrescriptionDocument = localPrescription,
             localMeasuringLeft = measuringLeft,
             localMeasuringRight = measuringRight,

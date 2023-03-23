@@ -9,8 +9,8 @@ private fun checkLensTypeMatch(
     prescription: Prescription,
 ): List<Disponibility> {
     return disponibilities.filter {
-        (prescription.lensType.isLensTypeMono() && it.isLensTypeMono)
-                || (!prescription.lensType.isLensTypeMono() && !it.isLensTypeMono)
+        (prescription.lensTypeCategory.isMono() && it.isLensTypeMono)
+                || (!prescription.lensTypeCategory.isMono() && !it.isLensTypeMono)
     }
 }
 
@@ -134,10 +134,10 @@ fun supportsPrescription(
     val reasonsUnsupported = mutableListOf<ReasonUnsupported>()
 
     val matchingTypes = checkLensTypeMatch(disponibilities, prescription)
-    if (matchingTypes.isEmpty() && prescription.lensType.isLensTypeMono()) {
+    if (matchingTypes.isEmpty() && prescription.lensTypeCategory.isMono()) {
         reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMono)
         return reasonsUnsupported
-    } else if (matchingTypes.isEmpty() && !prescription.lensType.isLensTypeMono()) {
+    } else if (matchingTypes.isEmpty() && !prescription.lensTypeCategory.isMono()) {
         reasonsUnsupported.add(ReasonUnsupported.LensTypeShouldBeMulti)
         return reasonsUnsupported
     }

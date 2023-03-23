@@ -205,10 +205,10 @@ class EditLensSuggestionViewModel @AssistedInject constructor(
     private suspend fun getPrescriptionForFilter(
         serviceOrderId: String,
     ): PrescriptionFilterResponse = either {
-        val localServiceOrder = localServiceOrderRepository
-            .serviceOrderById(serviceOrderId)
-            .mapLeft { Unexpected() }
-            .bind()
+//        val localServiceOrder = localServiceOrderRepository
+//            .serviceOrderById(serviceOrderId)
+//            .mapLeft { Unexpected() }
+//            .bind()
 
         val localPrescription = localPrescriptionRepository
             .prescriptionByServiceOrder(serviceOrderId)
@@ -228,7 +228,6 @@ class EditLensSuggestionViewModel @AssistedInject constructor(
             .bind()
 
         val prescription = buildPrescription(
-            lensType = localServiceOrder.lensTypeCategoryName.toLensType(),
             localPrescriptionDocument = localPrescription,
             localMeasuringLeft = measuringLeft,
             localMeasuringRight = measuringRight,

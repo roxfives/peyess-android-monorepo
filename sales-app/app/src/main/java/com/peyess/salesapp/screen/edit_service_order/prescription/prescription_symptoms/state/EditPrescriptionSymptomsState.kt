@@ -23,7 +23,7 @@ data class EditPrescriptionSymptomsState(
     val mikeMessageAmetropies: String = "",
 ): MavericksState {
     val clientName = serviceOrderResponse.clientName
-    val lensTypeCategoryName = serviceOrderResponse.lensTypeCategoryName
+    val lensTypeCategoryName = prescriptionResponse.lensTypeCategory
 
     val sphericalLeft = prescriptionResponse.sphericalLeft
     val sphericalRight = prescriptionResponse.sphericalRight

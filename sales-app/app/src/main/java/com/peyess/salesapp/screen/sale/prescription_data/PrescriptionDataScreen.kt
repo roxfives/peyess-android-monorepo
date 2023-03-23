@@ -72,10 +72,10 @@ fun PrescriptionDataScreen(
             onShowSymptoms = onShowSymptoms,
 
             isMessageLoading = isMessageLoading,
-            generalMessage = generalMessage.invoke() ?: "",
+            generalMessage = generalMessage,
 
             isAnimationLoading = isAnimationLoading,
-            animationId = animationId.invoke() ?: R.raw.lottie_lens_far,
+            animationId = animationId,
 
             hasAddition = hasAddition,
             hasPrism = hasPrism,

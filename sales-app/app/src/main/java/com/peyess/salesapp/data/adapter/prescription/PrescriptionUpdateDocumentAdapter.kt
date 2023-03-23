@@ -15,6 +15,8 @@ fun PrescriptionUpdateDocument.toFSPrescriptionUpdate(): FSPrescriptionUpdate {
         patientName = patientName,
         professionalDocument = professionalDocument,
         professionalName = professionalName,
+        lensTypeCategoryId = lensTypeCategoryId,
+        lensTypeCategory = lensTypeCategory.toName(),
         hasPrism = hasPrism,
         hasAddition = hasAddition,
         lCylinder = lCylinder,

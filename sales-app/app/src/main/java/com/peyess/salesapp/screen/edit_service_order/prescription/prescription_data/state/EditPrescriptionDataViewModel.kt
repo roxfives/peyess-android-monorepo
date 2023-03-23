@@ -57,7 +57,7 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
 
         onEach(EditPrescriptionDataState::prescriptionId) { loadPrescription(it) }
 
-        onEach(EditPrescriptionDataState::serviceOrderResponse) { loadGeneralMessage(it) }
+        onEach(EditPrescriptionDataState::lensTypeCategoryName) { loadGeneralMessage(it) }
 
         onEach(
             EditPrescriptionDataState::prescriptionResponse,
@@ -109,11 +109,8 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadGeneralMessage(serviceOrder: LocalServiceOrderDocument) = setState {
-        copy(
-            generalMessage =
-                messageFor(serviceOrder.lensTypeCategoryName, salesApplication)
-        )
+    private fun loadGeneralMessage(lensTypeCategoryName: LensTypeCategoryName) = setState {
+        copy(generalMessage = messageFor(lensTypeCategoryName, salesApplication))
     }
 
     private fun mikeMessageAmetropie() = setState {

@@ -35,7 +35,7 @@ data class EditPrescriptionDataState(
 
     val hasServiceOrderLoaded = serviceOrderResponseAsync is Success
             && serviceOrderResponseAsync.invoke().isRight()
-    val lensTypeCategoryName = serviceOrderResponse.lensTypeCategoryName
+    val lensTypeCategoryName = prescriptionResponse.lensTypeCategory
     val clientName = serviceOrderResponse.clientName
 
     val isAnimationLoading = serviceOrderResponseAsync is Loading

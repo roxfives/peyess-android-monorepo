@@ -22,6 +22,7 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.screen.sale.prescription_lens_type.adapter.toLensTypeCategory
 import com.peyess.salesapp.screen.sale.prescription_lens_type.model.LensTypeCategory
 import com.peyess.salesapp.screen.sale.prescription_picture.adapter.toPrescriptionPicture
+import com.peyess.salesapp.utils.string.normalize
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -197,7 +198,9 @@ class PrescriptionLensTypeViewModel @AssistedInject constructor(
     }
 
     fun onPick(name: String) = withState { state ->
-        val picked = state.lensCategories.find { it.name == name }
+        val picked = state.lensCategories.find {
+            it.name.normalize() == name.normalize()
+        }
 
         if (picked != null) {
             viewModelScope.launch(Dispatchers.IO) {

@@ -395,6 +395,8 @@ class ServiceOrderFetcher @Inject constructor(
             professionalName = prescriptionDocument.professionalName,
             professionalId = prescriptionDocument.professionalDocument,
             isCopy = prescriptionDocument.isCopy,
+            lensTypeCategoryId = prescriptionDocument.lensTypeCategoryId,
+            lensTypeCategory = prescriptionDocument.lensTypeCategory,
             prescriptionDate = prescriptionDocument.emitted,
             sphericalLeft = prescriptionDocument.lSpherical,
             sphericalRight = prescriptionDocument.rSpherical,

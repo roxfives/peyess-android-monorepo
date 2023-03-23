@@ -88,34 +88,6 @@ class EditServiceOrderRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun updateLensTypeCategoryName(
-        id: String,
-        lensTypeCategoryName: LensTypeCategoryName,
-    ): EditServiceOrderUpdateResponse = Either.catch {
-        serviceOrderDao.updateLensTypeCategoryName(id, lensTypeCategoryName)
-    }.mapLeft {
-        UpdateServiceOrderError.Unexpected(
-            description = "Error while updating service order $id with " +
-                    "lensTypeCategoryName = $lensTypeCategoryName",
-            throwable = it,
-        )
-    }
-
-    override suspend fun updateIsLensTypeMono(
-        id: String,
-        isLensTypeMono: Boolean,
-    ): EditServiceOrderUpdateResponse = Either.catch {
-        val asInt = if (isLensTypeMono) 1 else 0
-
-        serviceOrderDao.updateIsLensTypeMono(id, asInt)
-    }.mapLeft {
-        UpdateServiceOrderError.Unexpected(
-            description = "Error while updating service order $id with " +
-                    "isLensTypeMono = $isLensTypeMono",
-            throwable = it,
-        )
-    }
-
     override suspend fun deleteServiceOrderById(
         serviceOrderId: String,
     ): EditServiceOrderDeleteResponse = Either.catch {

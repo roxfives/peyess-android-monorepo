@@ -205,11 +205,6 @@ class EditLensSuggestionViewModel @AssistedInject constructor(
     private suspend fun getPrescriptionForFilter(
         serviceOrderId: String,
     ): PrescriptionFilterResponse = either {
-//        val localServiceOrder = localServiceOrderRepository
-//            .serviceOrderById(serviceOrderId)
-//            .mapLeft { Unexpected() }
-//            .bind()
-
         val localPrescription = localPrescriptionRepository
             .prescriptionByServiceOrder(serviceOrderId)
             .mapLeft { Unexpected() }
@@ -540,20 +535,10 @@ class EditLensSuggestionViewModel @AssistedInject constructor(
         serviceOrderId: String,
         groupId: String,
     ): BestLensResponse = either {
-        val localServiceOrder = localServiceOrderRepository
-            .serviceOrderById(serviceOrderId)
-            .mapLeft {
-                Unexpected(
-                    "Failed while fetching prescription for SO $serviceOrderId"
-                )
-            }.bind()
-
         val localPrescription = localPrescriptionRepository
             .prescriptionByServiceOrder(serviceOrderId)
             .mapLeft {
-                Unexpected(
-                    "Failed while fetching prescription for SO $serviceOrderId"
-                )
+                Unexpected("Failed while fetching prescription for SO $serviceOrderId")
             }.bind()
 
         val measuringLeft = localPositioningRepository
@@ -576,7 +561,7 @@ class EditLensSuggestionViewModel @AssistedInject constructor(
 
         val queryFields = buildQueryFieldsForLensSuggestions(
             lensGroupId = groupId,
-            lensType = localServiceOrder.lensTypeCategoryName.toLensType(),
+            lensType = localPrescription.lensTypeCategory.toLensType(),
             prescription = localPrescription,
             measuringLeft = measuringLeft,
             measuringRight = measuringRight,

@@ -213,7 +213,6 @@ class SaleRepositoryImpl @Inject constructor(
         val serviceOrder = ActiveSOEntity(
             id = firebaseManager.uniqueId(),
             saleId = sale.id,
-            lensTypeCategoryName = LensTypeCategoryName.None,
         )
 
         salesApplication.dataStoreCurrentSale.edit { prefs ->

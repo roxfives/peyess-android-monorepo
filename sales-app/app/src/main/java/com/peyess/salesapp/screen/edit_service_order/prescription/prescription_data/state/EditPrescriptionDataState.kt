@@ -43,7 +43,7 @@ data class EditPrescriptionDataState(
 
     val isMessageLoading = serviceOrderResponseAsync is Loading
 
-    val hasAddition = !serviceOrderResponse.isLensTypeMono
+    val hasAddition = prescriptionResponse.hasAddition
     val hasPrism = prescriptionResponse.hasPrism
 
     val hasAxisLeft = prescriptionResponse.cylindricalLeft < 0.0

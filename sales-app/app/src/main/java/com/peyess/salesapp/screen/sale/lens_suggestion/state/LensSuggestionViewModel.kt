@@ -586,7 +586,7 @@ class LensSuggestionViewModel @AssistedInject constructor(
 
         val queryFields = buildQueryFieldsForLensSuggestions(
             lensGroupId = groupId,
-            lensType = activeServiceOrder.lensTypeCategoryName.toLensType(),
+            lensType = localPrescription.lensTypeCategory.toLensType(),
             prescription = localPrescription,
             measuringLeft = measuringLeft,
             measuringRight = measuringRight,

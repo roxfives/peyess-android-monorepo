@@ -436,15 +436,11 @@ class ServiceOrderFetcher @Inject constructor(
         serviceOrderDocument: ServiceOrderDocument,
         lens: StoreLensWithDetailsDocument,
     ): LocalServiceOrderDocument {
-        val categoryName = LensTypeCategoryName.fromName(lens.typeName)
-
         return LocalServiceOrderDocument(
             id = serviceOrderDocument.id,
             hasPrescription = true,
             saleId = serviceOrderDocument.purchaseId,
             clientName = serviceOrderDocument.clientName,
-            lensTypeCategoryName = categoryName,
-            isLensTypeMono = categoryName.isMono(),
         )
     }
 

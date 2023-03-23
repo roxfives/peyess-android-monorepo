@@ -9,7 +9,5 @@ fun LocalServiceOrderDocument.toEditServiceOrderEntity(): EditServiceOrderEntity
         hasPrescription = hasPrescription,
         saleId = saleId,
         clientName = clientName,
-        lensTypeCategoryName = lensTypeCategoryName,
-        isLensTypeMono = isLensTypeMono,
     )
 }

@@ -31,10 +31,6 @@ data class EditServiceOrderEntity(
 
     @ColumnInfo(name = "client_name")
     val clientName: String = "",
-    @ColumnInfo(name = "lens_type_name")
-    val lensTypeCategoryName: LensTypeCategoryName = LensTypeCategoryName.None,
-    @ColumnInfo(name = "is_lens_type_mono")
-    val isLensTypeMono: Boolean = false,
 ) {
     companion object {
         const val tableName = "edit_service_order"

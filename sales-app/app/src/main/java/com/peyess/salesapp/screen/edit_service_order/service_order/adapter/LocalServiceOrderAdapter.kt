@@ -9,7 +9,5 @@ fun LocalServiceOrderDocument.toServiceOrder(): ServiceOrder {
         hasPrescription = hasPrescription,
         saleId = saleId,
         clientName = clientName,
-        lensTypeCategoryName = lensTypeCategoryName,
-        isLensTypeMono = isLensTypeMono,
     )
 }

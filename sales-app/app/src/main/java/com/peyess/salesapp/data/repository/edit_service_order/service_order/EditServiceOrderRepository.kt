@@ -35,16 +35,6 @@ interface EditServiceOrderRepository {
         clientName: String,
     ): EditServiceOrderUpdateResponse
 
-    suspend fun updateLensTypeCategoryName(
-        id: String,
-        lensTypeCategoryName: LensTypeCategoryName,
-    ): EditServiceOrderUpdateResponse
-
-    suspend fun updateIsLensTypeMono(
-        id: String,
-        isLensTypeMono: Boolean,
-    ): EditServiceOrderUpdateResponse
-
     suspend fun deleteServiceOrderById(
         serviceOrderId: String,
     ): EditServiceOrderDeleteResponse

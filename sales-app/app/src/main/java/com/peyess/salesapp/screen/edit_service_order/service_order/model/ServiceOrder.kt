@@ -7,6 +7,4 @@ data class ServiceOrder(
     val hasPrescription: Boolean = true,
     val saleId: String = "",
     val clientName: String = "",
-    val lensTypeCategoryName: LensTypeCategoryName = LensTypeCategoryName.None,
-    val isLensTypeMono: Boolean = false,
 )

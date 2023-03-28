@@ -3,6 +3,32 @@
     <string name="error_msg_default">Algo inesperado aconteceu, por favor tente novamente</string>
     <string name="empty_string" />
 
+    <string name="error_generic">Infelizmente algo deu errado :(</string>
+    <string name="error_generic_retry">Tentar novamente</string>
+
+    <string name="channel_name_products_table">Atualização de produtos</string>
+    <string name="channel_description_products_table">Notificações sobre atualizações de produtos</string>
+
+    <string name="channel_name_clients_sync">Atualização de produtos</string>
+    <string name="channel_description_clients_sync">Notificações sobre atualizações de produtos</string>
+
+    <string name="notification_title_update_products_table">Atualização em andamento</string>
+    <string name="notification_description_update_products_table">Atualizando tabela de produtos…</string>
+
+    <string name="notification_title_download_clients">Sincronização em andamento</string>
+    <string name="notification_description_download_clients">Procurando pelos seus clientes…</string>
+
+    <string name="loading_text_long_placeholder">Long text to display a placeholder</string>
+    <string name="loading_text_medium_placeholder">Medium placeholder displayed</string>
+    <string name="loading_text_short_placeholder">Short placeholder</string>
+<!--    <string name="loading_text_placeholder">Long text to display a placeholder</string>-->
+
+    <string name="default_error_empty_field">Esse campo não pode ser vazio</string>
+
+    <string name="bottom_bar_home">Início</string>
+    <string name="bottom_bar_sale">Vendas</string>
+    <string name="bottom_bar_client">Clientes</string>
+
     <!-- UI Component: Password  -->
     <string name="password_input">Digite a sua senha</string>
     <string name="show_password">Mostrar senha</string>
@@ -13,7 +39,7 @@
     <string name="title">Peyess</string>
 
     <!--  UI Component: AuthScreen  -->
-    <string name="label_username_input">Entre com o e-mail da loja</string>
+    <string name="label_username_input">Entre usando o e-mail da loja</string>
     <string name="label_password_input">Digite a senha criada para conta da loja</string>
     <string name="placeholder_username_input">loja.calcadao@diniz.com.br</string>
     <string name="btn_sign_in_store">Entrar na loja</string>
@@ -23,4 +49,636 @@
     <string name="msg_error_empty_password">Por favor, digite a sua senha</string>
     <string name="msg_error_empty_email">Por favor, digite o e-mail para conta da loja</string>
     <string name="msg_error_invalid_email">Esse e-mail é inválido</string>
+
+    <!--  UI Component: userAuthScreen  -->
+    <string name="short_address">$1s, $2s</string>
+    <string name="message_local_sign_in">Use a senha mais simples que criou para acessar esse dispositivo</string>
+    <string name="message_regular_sign_in">Use a mesma senha que criou ao acessar o nosso site</string>
+    <string name="btn_enter">Entrar na loja</string>
+    <string name="btn_reset_passcode">Alterar senha local</string>
+    <string name="label_user_email">Entre usando o email que usou em nosso sistema</string>
+    <string name="placeholder_user_email">aline.souza@gmail.com</string>
+    <string name="label_user_passcode">Digite a senha que criou para esse dispositivio</string>
+    <string name="dialog_title_reset_passcode">Realmente deseja alterar a sua senha local?</string>
+    <string name="dialog_content_reset_passcode">Você terá que entrar novamente com a sua senha padrão e essa ação não pode ser executada sem acesso à Internet</string>
+    <string name="dialog_btn_ok_reset_passcode">Alterar</string>
+    <string name="dialog_btn_cancel_reset_passcode">Cancelar</string>
+
+    <!--  UI Component: localPasscodeScreen  -->
+    <string name="btn_create_passcode">Criar senha local</string>
+    <string name="create_passcode">Crie uma senha para que possa acessar esse dispositivo rapidamente. Essa senha será somente válida para esse dipositivo</string>
+    <string name="input_enter_passcode">Digite uma senha para acesso local</string>
+    <string name="input_confirm_passcode">Confirme a sua senha</string>
+    <string name="error_diff_passcode">As senhas devem ser a mesma</string>
+    <string name="error_empty_passcode">Por favor, preencha os campos acima</string>
+    <string name="error_wrong_passcode">A senha é inválida</string>
+
+    <!-- UI Component: ExistingClientDialog -->
+    <string name="existing_client_dialog_title">Notamos que um cliente já estava sendo criado</string>
+    <string name="existing_client_dialog_content">Você pode continuar a criação do cliente com os dados que encontramos ou criar um novo. O que deseja fazer?</string>
+    <string name="existing_client_dialog_btn_reuse">Retomar criação</string>
+    <string name="existing_client_dialog_btn_create_new">Criar um novo</string>
+
+    <!-- UI Component: Home -->
+    <string name="home_welcome">Boas vindas, %1$s</string>
+
+    <string name="home_notifications">Notificações</string>
+    <string name="home_no_notifications">Você não tem nenhuma notificação</string>
+
+    <string name="home_btn_exit">Sair</string>
+    <string name="home_btn_settings_actions">Configurações e ações</string>
+
+    <string name="home_btn_visual_acuity_title">Acuidade visual</string>
+    <string name="home_btn_visual_acuity_subtitle">Para perto</string>
+
+    <string name="home_btn_clients_title">Novo cliente</string>
+    <string name="home_btn_no_clients_subtitle">Sem clientes cadastrados</string>
+    <string name="home_btn_clients_subtitle">%1$d clientes</string>
+
+    <string name="home_btn_sale_title">Nova venda</string>
+    <string name="home_btn_sale_title_updating">Atualizando</string>
+    <string name="home_btn_sale_title_failed">Erro</string>
+    <string name="home_btn_sale_pending_subtitle">Existem vendas pendentes</string>
+    <string name="home_btn_sale_subtitle">Sem vendas pendentes</string>
+    <string name="home_btn_sale_subtitle_updating">Lista de produtos em atualização</string>
+    <string name="home_btn_sale_subtitle_failed">Erro ao atualizar produtos</string>
+
+    <string name="home_btn_products_title">Tabela</string>
+    <string name="home_btn_products_title_updating">Atualizando</string>
+    <string name="home_btn_products_title_failed">Erro</string>
+    <string name="home_btn_products_subtitle">Tabela das lentes</string>
+    <string name="home_btn_products_subtitle_updating">Atualizando tabela de lentes</string>
+    <string name="home_btn_products_subtitle_failed">Erro ao atualizar a tabela</string>
+
+    <string name="home_dialog_btn_dismiss">Decidir depois</string>
+    <string name="home_dialog_sale_found">Venda não finalizada para %1$s</string>
+    <string name="home_dialog_title_sale_found">Encontramos vendas não finalizadas</string>
+
+    <string name="btn_make_new_sale">Fazer nova venda</string>
+
+    <string name="btn_client_action_add_client">Adicionar cliente</string>
+    <string name="btn_client_action_search_client">Procurar cliente usando nome ou CPF</string>
+
+    <!--    UI Component: Sales -->
+    <string name="go_next_default">Próximo</string>
+    <string name="purchase_card_message">Venda no valor de %1$s feita no dia %2$s com responsável %3$s</string>
+
+    <string name="purchase_action_button_edit">Editar</string>
+    <string name="purchase_action_button_view">Ver</string>
+
+    <string name="purchase_state_display_name_pending">Em andamento</string>
+    <string name="purchase_state_display_name_confirmed">Confirmada</string>
+    <string name="purchase_state_display_name_failed">Venda com falhas</string>
+    <string name="purchase_state_display_name_cancelled">Venda cancelada</string>
+    <string name="purchase_state_display_name_unknown">Venda com problemas</string>
+    <string name="purchase_state_display_name_finished">Venda finalizada</string>
+
+    <string name="btn_open_pdf">Abrir PDF</string>
+    <string name="btn_edit_service_order">Editar Ordem de Serviço</string>
+
+    <!--    UI Component: Clients -->
+    <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
+    <string name="clients_screen_btn_clear_search">Limpar pesquisa</string>
+    <string name="clients_screen_btn_edit">Editar</string>
+
+    <!-- UI Component: Welcome   -->
+    <string name="mike_welcome">Olá, prazer em conhecê-lo! Sou Mike, o assistente pessoal de %1$s. Estou aqui para ajudar a escolher o melhor e mais incrível óculos para você!\n\nAhh, me desculpe! Ainda não perguntei o seu nome!</string>
+    <string name="label_client_name">Primeiro nome do(a) cliente</string>
+    <string name="error_client_name_empty">O nome não pode ser vazio</string>
+    <string name="btn_cancel_sale">Cancelar a venda</string>
+
+    <!-- UI Component: Setttings and Actions   -->
+    <string name="settings_title_update_products">Forçar atualização da tabela de produtos</string>
+    <string name="settings_title_updating_products">Atualizando a tabela de produtos…</string>
+    <string name="settings_btn_done">Voltar</string>
+
+    <!-- UI Component: PickLensType   -->
+    <string name="mike_lens_type_default">Fantástico %1$s, agora podemos começar! Nos fale qual será o tipo de óculos que deseja entre as opções acima!</string>
+
+    <!-- UI Component: PrescriptionPicture   -->
+    <string name="dialog_select_date_title">Data de emissão da receita</string>
+    <string name="dialog_select_date_ok">Selecionar</string>
+    <string name="dialog_select_date_cancel">Cancelar</string>
+    <string name="label_professional_id">CRM/CRO do profissional</string>
+    <string name="label_professional_name">Nome do profissional</string>
+    <string name="txt_prescription_date">Data de emissão da receita</string>
+    <string name="btn_take_picture">Tirar foto</string>
+    <string name="btn_select_picture">Selecionar foto da galeria</string>
+
+    <!-- UI Component: PrescriptionData   -->
+    <string name="left_eye">OE</string>
+    <string name="right_eye">OD</string>
+
+    <string name="title_degree">Graus da receita</string>
+    <string name="title_addition">Adição</string>
+    <string name="title_prism">Prisma</string>
+
+    <string name="degree_spherical">Esférico</string>
+    <string name="degree_cylindrical">Cilíndrico</string>
+    <string name="degree_axis">Eixo</string>
+
+    <string name="prism_necessary">Prisma é necessário?</string>
+    <string name="prism_degree">Grau</string>
+    <string name="prism_position">Posição</string>
+    <string name="prism_axis">Eixo</string>
+
+    <string name="curiosities">Curiosidades</string>
+
+    <string name="dialog_select_prism_axis_title">Selecione a posição</string>
+    <string name="dialog_select_prism_axis_ok">Selecionar</string>
+    <string name="dialog_select_prism_axis_cancel">Cancelar</string>
+
+    <string name="mike_message_far">Coloque o seu grau para Longe</string>
+    <string name="mike_message_near">Coloque o seu grau para Perto</string>
+    <string name="mike_message_multi">Coloque o seu grau Multifocal</string>
+    <string name="mike_message_default">Coloque o grau da sua receita</string>
+
+    <string name="dialog_curiosities_title_no_ametropy">Sem ametropias</string>
+    <string name="dialog_curiosities_title_hypermetropia">Hipermetropia</string>
+    <string name="dialog_curiosities_title_myopia">Miopia</string>
+    <string name="dialog_curiosities_title_astigmatism">Astigmatismo</string>
+    <string name="dialog_curiosities_title_presbyopia">Presbiopia</string>
+
+    <string name="dialog_curiosities_return_button">Legal!</string>
+    <string name="dialog_curiosities_show_me_button">Vamos vê-las!</string>
+    <string name="dialog_curiosities_title">Sintomas e curiosidades</string>
+    <string name="dialog_symptoms">Sintomas</string>
+
+    <string name="mike_refractive_errors_base">%s, você tem %s.\n\nContinue para ver sintomas comuns e curiosidades sobre o assunto</string>
+    <string name="mike_refractive_errors_none">Legal %s, você faz parte de uma privilegiada porcentagem no Brasil. Atualmente no país mais de 35 milhões de pessoas sofrem de algum problema de visão.\n\nContinue para ver mais curiosidades sobre o assunto.</string>
+    <string name="mike_refractive_errors_right_eye">%s no olho direito</string>
+    <string name="mike_refractive_errors_left_eye">%s no olho esquerdo</string>
+
+    <string name="dialog_curiosities_no_ametropy">Uma pesquisa do IBGE (Instituto Brasileiro de Geografia e Estatística) mostrou que no Brasil mais de 35 milhões de pessoas sofrem algum problema de visão (aproximadamente 19% da população). Em torno de 500 mil pessoas tiveram o diagnóstico de cegueira.</string>
+    <string name="dialog_symptoms_hypermetropia">Lacrimejamento, coceira, pestanejamento excessivo, dor de cabeça e dor nos olhos ao executar trabalhos que exigem maior tempo de dedicação e sonolência.</string>
+    <string name="dialog_curiosities_hypermetropia">Mais de 50% dos casos de ametropias (Miopia, Hipermetropia e Astigmatismo etc.) no mundo são casos de hipermetropia, mas como a maioria dos casos possui baixa “graduação” eles são compensados, sendo somente “visíveis” mediante a exames de vista ou quando a pessoa se aproxima dos 40 anos.</string>
+    <string name="dialog_symptoms_myopia">Míopes normalmente têm uma visão excelente de perto, mas possuem dificuldades para focar objetos distantes. Também há piora da acuidade visual a noite.</string>
+    <string name="dialog_curiosities_myopia">O uso excessivo da visão de perto, seja ele por leitura de livros, celulares ou a trabalho, gera nas pessoas a chamada “Pseudo Miopia”. Esse problema gera uma certa perda temporária ou permanente da acomodação do indivíduo.</string>
+    <string name="dialog_symptoms_astigmatism">Visão borrada, dificuldade de leitura, visão dupla, fotofobia (sensibilidade à luz), piora da acuidade visual à noite, dificuldade com foco em palavras e linhas impressas, tensão do olho, olhos cansados, dores de cabeça.</string>
+    <string name="dialog_curiosities_astigmatism">Um simples coçar dos olhos pode danificar a córnea e gerar problemas permanentes no indivíduo. Muitas vezes pessoas passam a adquirir o astigmatismo dessa forma. Sempre que sentir vontade de coçar, passe os dedos envolta do olhos e evite o contato direto.</string>
+    <string name="dialog_symptoms_presbyopia">Dificuldade na visão de perto, afastamento do objeto para melhora da visão, esforço ocular, sensação de cansaço ao tentar ler, dor de cabeça, olhos vermelhos e ardência.</string>
+    <string name="dialog_curiosities_presbyopia">Em indivíduos emétropes e hipermétropes a presbiopia se manifesta em torno dos 40 anos e é necessário óculos para leitura.</string>
+
+    <string name="hypermetropia">Hipermetropia</string>
+    <string name="myopia">Miopia</string>
+    <string name="astigmatism">Astigmatismo</string>
+    <string name="presbyopia">Presbiopia</string>
+
+    <string name="hypermetropia_info">A hipermetropia é quando os raios luminosos formam o foco da imagem depois da retina, resultando em visão borrada para perto e cansaço visual</string>
+    <string name="myopia_info">A miopia é quando os raios luminosos formam o foco da imagem antes da retina. Como resultado, a visão míope fica embaçada para enxergar de longe</string>
+    <string name="astigmatism_info">Astigmatismo é uma imperfeição na curvatura do olho. Um sintoma comum é a visão turva, pela formação da imagem em eixos diferenciados, causado certa distorção</string>
+    <string name="presbyopia_info">A presbiopia “vista cansada”, deve-se a perda da capacidade dos olhos de focarem para perto e ocorre normalmente após os 40 anos de idade</string>
+
+    <!-- UI Component: Frames data   -->
+    <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
+    <string name="btn_cancel_frames">Cancelar</string>
+
+    <string name="ib_message_less_than_3_5">Armações mais planas possiveis (Evite Nylon)</string>
+    <string name="ib_message_between_3_5_and_5">Armações mais planas</string>
+    <string name="ib_message_between_5_and_8">Armações pouco curvadas</string>
+    <string name="ib_message_greater_then_8">Armações um pouco mais curvadas (Evite Nylon)</string>
+
+    <string name="own_frames">Aro próprio</string>
+    <string name="new_frames">Novo aro</string>
+    <string name="frames_title_optical_curvature">Perfis de armações indicadas</string>
+    <string name="measure_screen_ib">Base Ideal</string>
+    <string name="frames_curvature">Curva do aro</string>
+    <string name="measure_left_eye">Medir O.E.</string>
+    <string name="measure_right_eye">Medir O.D.</string>
+
+    <string name="frames_description">Grife</string>
+    <string name="frames_info">Informações sobre o aro próprio</string>
+    <string name="frames_reference">Referência</string>
+    <string name="frames_value">Valor</string>
+    <string name="frames_tag_code">Código da etiqueta</string>
+    <string name="frames_type">Selecione o tipo da armação abaixo</string>
+    <string name="own_frames_data">Digite a descrição da sua armação</string>
+    <string name="frames_data">Digite os demais dados das armação escolhida</string>
+    <string name="mike_bad_lens_type">Esse tipo de armação não é adequado para o grau de %s.\nDeseja continuar mesmo assim?</string>
+    <string name="mike_bad_lens_type_default_client_name">cliente</string>
+
+    <string name="dialog_diameter_too_diff_btn">Confirmo que as medidas foram verificadas</string>
+    <string name="dialog_diameter_too_diff_title">Encontramos um problema em potencial</string>
+    <string name="dialog_diameter_too_diff_message">A diferença entre valores calculados para os diâmetros dos dois olhos está muito diferente. Por favor, verifique as medidas.</string>
+
+    <string name="view_measure_button">Ver medidas</string>
+    <string name="dialog_message_not_available">Ainda não há nenhuma medida disponível</string>
+    <string name="dialog_value_display">%1$s: %2$smm</string>
+    <string name="dialog_value_title_ipd">DNP</string>
+    <string name="dialog_value_title_height">Alture</string>
+    <string name="dialog_value_title_diameter">Diâmetro</string>
+    <string name="dialog_value_title_bridge_hoop">Ponte-aro</string>
+    <string name="dialog_value_title_v_hoop">Aro vertical</string>
+    <string name="dialog_value_title_h_hoop">Aro horizontal</string>
+    <string name="dialog_value_title_bridge">Ponte</string>
+    <string name="dialog_value_btn_ok">Ok</string>
+    <string name="dialog_column_title_left">Medidas O.E.</string>
+    <string name="dialog_column_title_right">Medidas O.D.</string>
+
+    <string name="dialog_overwrite_title">Encontramos uma medida para esse olho!</string>
+    <string name="dialog_overwrite_message">Como deseja prosseguir com a medida existente? Caso a sobrescreva, os seus dados atuais serão perdidos para sempre.</string>
+    <string name="dialog_overwrite_btn_overwrite">Sobrescrevê-la</string>
+    <string name="dialog_overwrite_btn_update">Atualizá-la</string>
+
+    <!--  UI Component: Frames measure  -->
+    <string name="measure_picture_adjustment">Ajuste o rosto da pessoa e alinhe a sua angulação com a câmera</string>
+    <string name="camera_access_required">Não é possível utilizar o aplicativo sem dar acesso à câmera</string>
+
+    <string name="measure_invalid_middle_check">Centralize a haste do parâmetro com o meio da ponte conforme o exemplo animado</string>
+
+    <string name="measure_invalid_middle_check_retry">Voltar</string>
+    <string name="measure_invalid_middle_check_cancel">Tirar outra foto</string>
+
+    <!--  UI Component: Lens Suggestion  -->
+    <string name="lens_suggestion_select">Comparar</string>
+    <string name="lens_suggestion_search_lenses">Procurar por mais lentes</string>
+    <string name="lens_suggestion_filter_group">Categoria</string>
+    <string name="lens_suggestion_filter_type">Tipo</string>
+    <string name="lens_suggestion_filter_specialty">Especialidade</string>
+    <string name="lens_suggestion_filter_supplier">Fornecedor</string>
+    <string name="lens_suggestion_filter_family">Família</string>
+    <string name="lens_suggestion_filter_description">Descrição</string>
+    <string name="lens_suggestion_filter_material">Material</string>
+
+    <string name="lens_suggestion_pick_group">Selecione a categoria</string>
+    <string name="lens_suggestion_pick_type">Selecione o tipo</string>
+    <string name="lens_suggestion_pick_supplier">Selecione o fornecedor</string>
+    <string name="lens_suggestion_pick_family">Selecione a família</string>
+    <string name="lens_suggestion_pick_description">Selecione a fescrição</string>
+    <string name="lens_suggestion_pick_material">Selecione o material</string>
+
+    <string name="lens_suggestion_pick_group_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_type_none">Qualquer um</string>
+    <string name="lens_suggestion_pick_supplier_none">Qualquer um</string>
+    <string name="lens_suggestion_pick_family_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_description_none">Qualquer uma</string>
+    <string name="lens_suggestion_pick_material_none">Qualquer um</string>
+
+    <string name="lens_suggestion_no_results">Não encontramos nenhuma lente compatível com o seu filtro</string>
+    <string name="lens_suggestion_retry">Tentar novamente</string>
+
+    <string name="lens_suggestion_filter_none_found">Infelizmente não encontramos nenhuma lente compatível com as restrições do cliente</string>
+    <string name="lens_suggestion_filter_title">Filtre e encontre mais lentes</string>
+
+    <string name="lens_filter_action_cancel">Cancelar</string>
+    <string name="lens_filter_action_pick">Selecionar</string>
+
+    <string name="lens_incompatible_reason_compatible">A lente é compatível com as exigências do cliente</string>
+    <string name="lens_incompatible_reason_required_mono">A lente é monofocal, mas o cliente precisa de uma multifocal</string>
+    <string name="lens_incompatible_reason_required_multi">A lente é multifocal, mas o cliente precisa de uma monofocal</string>
+    <string name="lens_incompatible_reason_diameter_too_big">O diâmetro do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_spherical_too_big">O grau esférico do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_spherical_too_small">O grau esférico do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical_too_big">O grau cilíndrico do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical_too_small">O grau cilíndrico do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_prism_too_big">O grau do prisma do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_prism_not_supported">Essa lente não suporta prisma</string>
+    <string name="lens_incompatible_reason_addition_too_big">A adição do cliente é maior do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_addition_too_small">A adição do cliente é menor do que o suportado por essa lente</string>
+    <string name="lens_incompatible_reason_sum_rule_failed">A disponibilidade da lente não é compatível com o do cliente</string>
+    <string name="lens_incompatible_reason_unknown">Essa lente não é compatível com o cliente</string>
+
+    <string name="lens_incompatible_reason_diameter">O diâmetro do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_height">A altura do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_spherical">O grau esférico do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_cylindrical">O grau cilíndrico do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_prism">O grau do prisma do cliente não é compatível com essa lente</string>
+    <string name="lens_incompatible_reason_addition">A adição do cliente não é compatível com essa lente</string>
+
+    <!--  UI Component: Lens Comparison  -->
+    <string name="lens_comparison_add_another">Adicionar nova lente para comparação</string>
+
+    <string name="dialog_select_tech">Selecione a tecnologia</string>
+    <string name="dialog_select_material">Selecione a material</string>
+    <string name="dialog_select_coloring">Selecione a coloração</string>
+    <string name="dialog_select_treatment">Selecione a tratamento</string>
+
+    <string name="dialog_front_info_title">Pontos de espessura</string>
+    <string name="dialog_sideways_info_title">Animação espessura</string>
+
+    <string name="dialog_front_info_content">Os valores informados são calculados levando em consideração a base ideal para receita informada, as medidas da armação e considerando o material do produto selecionado. Para lentes prontas acabadas desconsidere esses valores. Valores simulados para lentes surfaçadas tradicionais.</string>
+    <string name="dialog_sideways_info_content">Os valores informados são calculados levando em comparação lentes surfaçadas tradicionalmente no material orgânico de índice 1.50. Lentes prontas acabadas ou de tecnologia digital oferecem melhora considerável na redução de peso e espessura.</string>
+
+    <!-- UI Component: Demonstration   -->
+    <string name="demonstration_multi_category_0">Multifocais de Alto Desempenho</string>
+    <string name="demonstration_multi_category_1">Multifocais Melhor Escolha</string>
+    <string name="demonstration_multi_category_2">Multifocais Custo Benefício</string>
+    <string name="demonstration_multi_category_3">Tradicionais</string>
+    <string name="demonstration_treatment_fat">Mais Limpas</string>
+    <string name="demonstration_treatment_water">Mais Lisas</string>
+    <string name="demonstration_treatment_damaged">Mais Resistência</string>
+    <string name="demonstration_treatment_clear">Mais Nitidez</string>
+    <string name="demonstration_transition_gray">Fotossensível Cinza</string>
+    <string name="demonstration_transition_brown">Fotossensível Marrom</string>
+    <string name="demonstration_transition_green">Fotossensível Verde</string>
+    <string name="demonstration_polarized_gray">Polarizada Cinza</string>
+    <string name="demonstration_polarized_brown">Polarizada Marrom</string>
+    <string name="demonstration_polarized_green">Polarizada Verde</string>
+    <string name="demonstration_mono_blue">Proteção Luz Azul</string>
+    <string name="demonstration_mono_simple">Monofocais - Tradicional vs Digital</string>
+    <string name="demonstration_mono_driving">Para Dirigir</string>
+
+
+    <string name="demonstration_multi_category_0_info_content">Os multifocais de alto desempenho são ótimos para quem busca excelência na transição entre os campos de visão, excelente nitidez e os melhores campos visuais do mercado. A tecnologia utilizada na fabricação dessas lentes é a mais avançada do mundo e proporciona aos usuários uma experiência única.</string>
+    <string name="demonstration_multi_category_1_info_content">Eles têm seu campo de visão com seu ponto forte. Com um excelente ângulo de visão, você terá uma visão perfeita em todos os sentidos. Além disso, a transição entre os campos é suave, proporcionando uma experiência de uso muito mais confortável.</string>
+    <string name="demonstration_multi_category_2_info_content">Estas lentes multifocais permitem que as pessoas enxerguem objetos distantes e próximos com clareza. Possuem um bom campo de visão é ideal para quem precisa de uma visão clara e nítida em todos os ambientes.</string>
+    <string name="demonstration_multi_category_3_info_content">Melhore sua qualidade de vida com as lentes multifocais! Elas podem melhorar significativamente a qualidade de vida das pessoas, pois elas permitem que as pessoas enxerguem melhor tanto objetos distantes quanto próximos. Isso pode ser especialmente útil para aqueles que desejam continuar realizando atividades que requerem visão clara, como dirigir ou ler.</string>
+    <string name="demonstration_treatment_fat_info_content">Lentes com antirreflexo oferecem lentes mais limpas e nítidas durante o seu dia a dia. Graças a uma camada antiestática que ajuda a prevenir o acúmulo de eletricidade estática, não atraindo assim poeiras e fibras para sua superfície. Além disso, oferecem ótima resistência ao acúmulo de gordura provenientes de nossa pele.</string>
+    <string name="demonstration_treatment_water_info_content">Lentes com antirreflexo oferecem uma superfície muito mais lisa e fácil de limpar. Graças a uma camada ultra lisa e ao seu ângulo de contato elevado elas repelem água de uma maneira muito mais eficiente.</string>
+    <string name="demonstration_treatment_damaged_info_content">Lentes com antirreflexo oferecem uma durabilidade excelente para lentes mais robustas e resistentes a riscos \u2731.</string>
+    <string name="demonstration_treatment_clear_info_content">Lentes com antirreflexo oferecem uma visão mais nítida e confortável devido a sua maior transparência e redução dos reflexos incômodos como: Flash de celular, computadores e telas em geral. Além de oferecerem uma excelente aparência estética devido a sua maior transmissibilidade de luz.</string>
+    <string name="demonstration_transition_gray_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
+    <string name="demonstration_transition_brown_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
+    <string name="demonstration_transition_green_info_content">As lentes fotossensíveis são ideais para quem tem olhos sensíveis à luz e procuram lentes que atendam todas as suas necessidades visuais e aumentem o seu conforto no dia a dia. Elas se adaptam a mudanças nas condições de luz, escurecendo e clareando rapidamente, garantindo conforto e visão nítida sem precisar trocar de óculos.</string>
+    <string name="demonstration_polarized_gray_info_content">As lentes polarizadas são ideais para quem pratica esportes ou passa boa parte do seu dia ao ar livre. Pois são produzidas com múltiplas camadas polarizantes, oferecendo uma enorme redução dos brilhos e permitindo que o usuário experimente toda a vibração das cores.</string>
+    <string name="demonstration_polarized_brown_info_content">As lentes polarizadas são ideais para quem pratica esportes ou passa boa parte do seu dia ao ar livre. Pois são produzidas com múltiplas camadas polarizantes, oferecendo uma enorme redução dos brilhos e permitindo que o usuário experimente toda a vibração das cores.</string>
+    <string name="demonstration_polarized_green_info_content">As lentes polarizadas são ideais para quem pratica esportes ou passa boa parte do seu dia ao ar livre. Pois são produzidas com múltiplas camadas polarizantes, oferecendo uma enorme redução dos brilhos e permitindo que o usuário experimente toda a vibração das cores.</string>
+    <string name="demonstration_mono_blue_info_content">As lentes com proteção contra a luz azul possuem um filtro especial que garante conforto visual mesmo quando em ambientes com porção elevada de luz azul. Oferecendo assim uma redução significativa no cansaço e incômodo devido à exposição à luz emitida por lâmpadas de LED, televisores, smartphones e telas de computador.</string>
+    <string name="demonstration_mono_simple_info_content">As lentes tradicionais oferecem alta qualidade visual atrelada a um ótimo custo benefício, sendo uma boa opção de entrada no mundo das lentes. Enquanto isso as lentes digitais disponibilizam o que tem de melhor e mais avançado em tecnologia ao seu usuário, oferecendo lentes mais finas, mais planas, mais leves, com melhor nitidez, campos de visão mais amplos, menor distorção periférica e tudo isso resulta no melhor conforto visual.</string>
+    <string name="demonstration_mono_driving_info_content">As lentes otimizadas para dirigir foram desenvolvidas para oferecer um alto nível de conforto e segurança no trânsito. Elas melhoram significativamente a visão durante a noite e sob condições climáticas adversas, como neblinas e chuva, além de oferecer proteção extra para seus olhos contra reflexos.</string>
+
+    <string name="demonstration_treatment_damaged_info_obs">\u2731 Resistência a riscos não oferece garantia contra riscos, apenas torna a lente menos suscetível a sua deterioração no dia a dia.</string>
+
+    <!--  UI Component: PickClient  -->
+    <string name="no_clients_yet">Não encontramos clientes cadastrados</string>
+    <string name="no_clients_found">Não encontramos nenhum cliente</string>
+    <string name="searching_clients">Não encontramos clientes cadastrados</string>
+    <string name="btn_add_new_client">Adicionar cliente</string>
+    <string name="btn_select_client">Selecionar</string>
+
+    <!--  UI Component: Service Order  -->
+    <string name="so_section_title_clients">Clientes</string>
+    <string name="so_subsection_title_user">Usuário</string>
+    <string name="so_subsection_title_responsible">Responsável</string>
+    <string name="so_subsection_title_witness">Testemunha</string>
+
+    <string name="btn_change_client">Alterar</string>
+    <string name="btn_finish_sale">Gerar O.S.</string>
+    <string name="btn_update_sale">Atualizar O.S.</string>
+
+    <string name="so_section_title_prescription">Receita</string>
+
+    <string name="so_section_title_measure">Medidas</string>
+
+    <string name="so_section_title_products">Produtos</string>
+    <string name="so_subsection_title_left_eye">Olho esquerdo</string>
+    <string name="so_subsection_title_right_eye">Olho direito</string>
+    <string name="so_subsection_title_frames">Armação</string>
+
+    <string name="so_section_title_payments">Pagamentos</string>
+
+    <string name="so_prescription_emission">Data de emissão</string>
+    <string name="so_prescription_name">Profissional</string>
+    <string name="so_prescription_id">CRM ou CROO</string>
+
+    <string name="so_ipd">DNP</string>
+    <string name="so_height">Altura</string>
+    <string name="so_diameter">Diâmetro:</string>
+    <string name="so_bridge_hoop">Ponte-aro:</string>
+    <string name="so_vertical_hoop">Aro vertical:</string>
+    <string name="so_horizontal_hoop">Aro horizontal:</string>
+    <string name="so_bridge">Ponte:</string>
+    <string name="so_measure_status_title">Status</string>
+    <string name="so_measure_status_pending">Pendente confirmação</string>
+    <string name="so_measure_status_confirmed">Confirmado</string>
+    <string name="so_btn_measure_confirm">Confirmar</string>
+
+    <string name="so_no_payments_added_yet">Ainda não foi adicionado nenhum pagamento</string>
+    <plurals name="so_payment_description">
+        <item quantity="one">Pagamento de %1$s usando %2$s em %3$s vez</item>
+        <item quantity="other">Pagamento de %1$s usando %2$s em %3$s vezes</item>
+    </plurals>
+
+    <string name="so_measure_info_title">Sobre as medidas</string>
+    <string name="so_measure_info_content">As medidas variam com o ângulo da foto, e o posicionamento dos traços. Solicite a confirmação de alguém autorizado. Os valores são arredondados para escala decimal de "0,5" e o diâmetro contém 1mm a mais por margem de segurança, considerando o chanfro das armações</string>
+
+    <string name="so_confirmation_dialog_title">Deseja finalizar a venda?</string>
+    <string name="so_confirmation_dialog_positive_btn">Finalizar</string>
+    <string name="so_confirmation_dialog_negative_btn">Cancelar</string>
+
+    <!--  UI Component: Payment Screen  -->
+    <string name="payment_still_missing">Ainda falta ser pago:</string>
+    <string name="payment_how_much">Quanto deseja <b>pagar</b> usando esse <b>método de pagamento</b>?</string>
+    <string name="payment_delete">Excluir pagamento</string>
+    <string name="payment_installments">Número de parcelas: </string>
+    <string name="payment_document_check">Número do cheque: </string>
+    <string name="payment_document_deposit">Número da transferência: </string>
+    <string name="payment_document_check_placeholder">Número do cheque</string>
+    <string name="payment_document_deposit_placeholder">Número da transferência</string>
+    <string name="payment_card">Bandeira do cartão: </string>
+
+    <!-- UI Component: Anamnesis   -->
+    <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>
+
+    <string name="anamnesis_first_step_yes">Sim</string>
+    <string name="anamnesis_first_step_no">Não</string>
+    <string name="anamnesis_first_step_a_little">Um pouco</string>
+
+    <string name="anamnesis_daily">Diário</string>
+    <string name="anamnesis_work">Trabalho</string>
+    <string name="anamnesis_leisure">Lazer</string>
+    <string name="anamnesis_reading">Leitura</string>
+
+    <string name="total_usage_string">Você utilizou %1$s de %2$s</string>
+
+    <string name="user_profile_first_step_question">É a primeira vez que está usando óculos graduado?</string>
+    <string name="user_profile_second_step_question">Qual será o uso do óculos?</string>
+    <string name="user_profile_third_step_question">A luz do sol lhe incomoda?</string>
+    <string name="user_profile_fourth_step_question">Você sente dores na lombar após o uso de eletrônicos, leitura de livros ou em outro uso da visão de perto?</string>
+    <string name="user_profile_fifth_step_question">Após ou durante a prática de esportes você se sente enjoado (zonzo) com o seu óculos?</string>
+
+    <string name="user_profile_time_to_wake_up">Qual horário você costuma acordar?</string>
+    <string name="user_profile_time_to_sleep">Qual horário você costuma dormir?</string>
+    <string name="wake_up">Acorda</string>
+    <string name="sleep">Dorme</string>
+
+    <!--    <string name="user_profile_previous_experience_classification">Por favor, classifique sua experiência com o seu óculos anteior</string>-->
+    <string name="user_profile_previous_experience_classification">Por favor, avalie a sua experiência com o seu óculos anteior</string>
+
+    <string name="user_profile_sixth_step">Ajuste a sua intensidade de uso:</string>
+    <string name="phone_or_tablet">Celular ou tablet</string>
+    <string name="computer">Computador</string>
+    <string name="tv">Televisão</string>
+    <string name="driving">Dirigindo</string>
+    <string name="sports">Esportes</string>
+    <string name="external_area">Área externa</string>
+    <string name="internal_area">Área interna</string>
+    <string name="construction">Construção</string>
+    <string name="office">Escritório</string>
+    <string name="stay_home">Casa (limpeza)</string>
+    <string name="chemicals">Químicos</string>
+    <string name="agriculture">Agrícola</string>
+    <string name="direction">Direção</string>
+
+    <string name="user_profile_choose_work">Por favor, escolha o tipo de trabalho abaixo</string>
+
+    <string name="prescription_screen_curiosities">Curiosidades</string>
+
+    <string name="pie_chart_label"> </string>
+    <string name="pie_chart_far_label">Longe</string>
+    <string name="pie_chart_near_label">Perto</string>
+    <string name="pie_chart_middle_label">Intermediário</string>
+    <string name="pie_chart_far_label_sports">Esportes</string>
+    <string name="pie_chart_far_label_driving">Dirigir</string>
+    <string name="pie_chart_far_label_external_area">Área externa</string>
+    <string name="pie_chart_near_label_internal_area">Área interna</string>
+    <string name="pie_chart_near_label_reading">Leitura</string>
+    <string name="pie_chart_near_label_cellphone">Celular ou tablet</string>
+    <string name="pie_chart_middle_label_computer">Computador</string>
+    <string name="pie_chart_middle_label_television">Televisão</string>
+    <string name="pie_chart_middle_label_work">Trabalho</string>
+
+    <string name="bar_chart_sun_light_title">Tempo diário de exposição à luz solar</string>
+    <string name="bar_chart_sun_light_driving">Dirigir: </string>
+    <string name="bar_chart_sun_light_sports">Esportes: </string>
+    <string name="bar_chart_sun_light_external_area">Área externa: </string>
+
+    <string name="bar_chart_blue_light_title">Tempo diário de exposição à luz azul</string>
+    <string name="bar_chart_blue_light_cellphone">Celular: </string>
+    <string name="bar_chart_blue_light_television">Televisão: </string>
+    <string name="bar_chart_blue_light_computer">Computador: </string>
+    <string name="bar_chart_blue_light_external_area">Área externa: </string>
+    <string name="bar_chart_blue_light_internal_area">Área interna: </string>
+
+    <string name="bar_chart_artificial_light_title">Tempo diário de exposição à luz artificial</string>
+    <string name="bar_chart_artificial_light_cellphone">Celular: </string>
+    <string name="bar_chart_artificial_light_television">Televisão: </string>
+    <string name="bar_chart_artificial_light_computer">Computador: </string>
+    <string name="bar_chart_artificial_light_external_area">Área externa: </string>
+    <string name="bar_chart_artificial_light_internal_area">Área interna: </string>
+
+    <string name="mike_user_profile_message_daily">Huummmm&#8230; Lentes com campos mais abertos e tratamentos são necessários já que passará a maior parte do dia com o óculos!</string>
+    <string name="mike_user_profile_message_leisure">Legal&#8230; Existem lentes especializadas para cada tipo lazer! Nos conte um pouco mais adiante para personalizarmos a lente de acordo com a sua necessidade!</string>
+    <string name="mike_user_profile_message_reading">Fantástico, também adoro ler! Para isso temos duas opções: uma são óculos especializados para campo de perto, e outra são óculos especializados para visão intermediária, o que permitirá um bom balanceamento visão até uma distância de 2 metros.</string>
+    <string name="mike_user_profile_message_work_construction">Legal! Para quem trabalha em construção o mais indicado são óculos sem tratamentos e com índices maiores! Assim você terá lentes resistentes e leves que ajudarão na proteção de seus olhos!</string>
+    <string name="mike_user_profile_message_work_office">Legal! Para quem trabalha em escritórios são indicadas lentes com auxílios para visão de perto e tratamentos que lhe protejam da luz azul e artificiais. Afinal o maior problema aqui é o uso continuo da visão de perto e aparelhos eletrônicos.</string>
+    <string name="mike_user_profile_message_work_housekeeping">Huummmm&#8230; No seu caso lhe indicarei Lentes sem Tratamentos e Material Orma já que faz uso de produtos químicos! Aconselho também armações fechadas em acetato, pois essas serão mais resistentes e lhe ajudarão no dia a dia.</string>
+    <string name="mike_user_profile_message_work_chemicals">Huummmm&#8230; No seu caso lhe indicarei Lentes sem Tratamentos e Material Orma já que faz uso de produtos químicos! Aconselho também armações fechadas em acetato, pois essas serão mais resistentes e lhe ajudarão no dia a dia.</string>
+    <string name="mike_user_profile_message_work_agriculture">Legal&#8230; Já que trabalha no setor agrícola lhe indicarei lentes sem tratamentos e com índices maiores! Aconselho também armações fechadas em acetato, pois essas são mais resistentes e fecharão o pacote completo para proteger seus olhos no dia a dia.</string>
+    <string name="mike_user_profile_message_work_driving">Esse é um trabalho fantástico que literalmente movimenta o país! Hoje já temos lentes especializadas para quem trabalha como motorista ou passa boa parte do dia dirigindo, essas Lentes não vão só adicionar segurança ao seu trabalho e também trará conforto para o seu dia a dia.</string>
+
+    <string name="mike_user_profile_message_light_yes">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Mas como você provavelmente sofre de uma hipersensibilidade é altamente aconselhável o uso de lentes fotossensíveis para uma proteção total de seus olhos.</string>
+    <string name="mike_user_profile_message_light_no">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Não se esqueça de sempre usar protetor solar e bons óculos de sol já que nossos olhos são muito sensíveis!</string>
+    <string name="mike_user_profile_message_light_alittle">A luz do sol traz vários benefícios à saúde e ativa várias funções em nosso corpo. Entretanto é comum sentir um incomodo nos olhos ao ser exposto a ele e o melhor a fazer é se proteger com lentes fotossensíveis para uma proteção total de seus olhos.</string>
+
+    <string name="mike_user_profile_message_pain_yes_simple">Procure sempre ajustar o objeto de leitura de uma forma que não incline sua cabeça, a má postura pode gerar dor na coluna, dor de cabeça e dores no corpo.</string>
+    <string name="mike_user_profile_message_pain_yes_multi">Procure sempre ajustar o objeto de leitura de uma forma que não incline sua cabeça e use a parte inferior da lente para enxergar o objeto. A má postura pode gerar dor na coluna, dor de cabeça e dores no corpo.</string>
+
+    <string name="mike_user_profile_message_sport_nauseating_yes_simple">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes FreeForm para amenizar essa sensação.</string>
+    <string name="mike_user_profile_message_sport_nauseating_yes_multi">A postura correta ao praticar esportes com óculos é muito importante pois ela evita enjoos, tonturas e certos vultos. Procure sempre olhar pelo centro da lente, movimentando a cabeça de acordo com o objeto focado, evitando as áreas periféricas das lentes. Se possível invista em lentes específicas para práticas de esportes. \n\n Obs.: Lentes Multifocais normalmente trazem um certo desconforto na visão de perto.</string>
+
+    <!--  UI Component: Create client  -->
+    <string name="create_client_accept_promotional_messages">Eu gostaria de receber promoções e campanhas das Óticas Diniz</string>
+
+    <string name="create_client_error_name_blank">Nome do cliente não pode ser vazio</string>
+    <string name="create_client_error_name_incomplete">Nome do cliente deve ser completo</string>
+
+    <string name="create_client_error_name_display_blank">Campo não opcional</string>
+
+    <string name="create_client_error_cpf_blank">Campo não opcional</string>
+    <string name="create_client_error_cpf_invalid">CPF inválido</string>
+
+    <string name="create_client_birthday_input">Data de nascimento</string>
+    <string name="create_client_error_birthday_invalid">Data de nascimento inválida</string>
+
+    <string name="create_client_sex_input">Sexo</string>
+
+    <string name="create_client_name_input">Nome Completo</string>
+    <string name="create_client_name_display_input">Como gostaria que te chamássemos</string>
+    <string name="create_client_document_input">Número do CPF</string>
+
+    <string name="create_client_zip_code_input">CEP</string>
+    <string name="create_client_street_input">Rua</string>
+    <string name="create_client_house_number_input">Número residencial</string>
+    <string name="create_client_complement_input">Complemento</string>
+    <string name="create_client_neighbourhood_input">Bairro</string>
+    <string name="create_client_city_input">Cidade</string>
+    <string name="create_client_state_input">Estado</string>
+
+    <string name="create_client_type_address">Por favor, digite o CEP que vamos procurar o endereço</string>
+    <string name="create_client_loading_address">Por favor, aguarde enquanto procuramos o seu endereço</string>
+    <string name="create_client_address_not_found">Infelizmente não encontramos o endereço com esse CEP :(</string>
+
+    <string name="create_client_communication_title">Por favor, insira as suas informações de contato</string>
+    <string name="create_client_communication_same_phone_and_whatsapp">Esse número de celular possui Whatsapp</string>
+    <string name="create_client_communication_phone_exists">Possuo número de telefone fixo</string>
+
+    <string name="create_client_email_input">E-mail</string>
+    <string name="create_client_cellphone_input">Celular</string>
+    <string name="create_client_whatsapp_input">Whatsapp</string>
+    <string name="create_client_phone_input">Telefone fixo</string>
+
+    <string name="create_client_error_email_empty">E-mail está vazio</string>
+    <string name="create_client_error_email_invalid">E-mail inválido</string>
+    <string name="create_client_error_cellphone_empty">Celular está vazio</string>
+    <string name="create_client_error_cellphone_invalid">Número inválido</string>
+    <string name="create_client_error_whatsapp_invalid">Número inválido</string>
+    <!--    <string name="create_client_error_phone_empty">Telefone está vazio</string>-->
+
+    <!-- UI Component: Discount   -->
+    <string name="discount">Desconto</string>
+    <string name="discount_title">Escolha o método de desconto e digite o valor</string>
+    <string name="discount_final_price">Preço final</string>
+    <string name="discount_original_price">Sem desconto</string>
+
+    <!-- UI Component: Fee   -->
+    <string name="fee">Taxa</string>
+    <string name="fee_title">Escolha o método para a taxa e digite o valor</string>
+    <string name="fee_final_price">Preço final</string>
+    <string name="fee_original_price">Sem a taxa</string>
+
+    <!-- Firestore collections   -->
+    <string name="fs_col_collaborators">optical_stores/%1$s/local_optical_collaborators</string>
+    <string name="fs_col_store">optical_stores</string>
+    <string name="fs_col_lenses">optical_stores/%1$s/local_optical_lenses</string>
+    <string name="fs_col_lenses_types_category">lenses_types_category</string>
+    <string name="fs_col_lenses_groups">lenses_default_groups</string>
+    <string name="fs_col_family">lenses_designs</string>
+    <string name="fs_col_description">lenses_designs</string>
+    <string name="fs_col_clients">clients</string>
+    <string name="fs_col_so">optical_stores/%1$s/local_optical_so</string>
+    <string name="fs_col_positioning">optical_stores/%1$s/local_optical_positioning</string>
+    <string name="fs_col_measuring">optical_stores/%1$s/local_optical_measuring</string>
+    <string name="fs_col_prescription">optical_stores/%1$s/local_optical_prescription</string>
+    <string name="fs_col_purchase">optical_stores/%1$s/local_optical_purchase</string>
+    <string name="fs_col_card_flags">payment_card</string>
+    <string name="fs_col_discount_groups">optical_stores/%1$s/local_optical_product_discount_groups</string>
+    <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
+
+    <!--  Firestore documents  -->
+    <string name="fs_doc_client">clients/%1$s</string>
+    <string name="fs_doc_lens_type_category">lenses_types_category/%1$s</string>
+    <string name="fs_doc_client_legal">clients/%1$s/legal/communication</string>
+    <string name="fs_doc_purchase">optical_stores/%1$s/local_optical_purchase/%2$s</string>
+    <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>
+    <string name="fs_doc_payment_method">optical_stores/%1$s/local_optical_payment_method/%2$s</string>
+    <string name="fs_doc_prescription">/optical_stores/%1$s/local_optical_prescription/%2$s</string>
+
+    <!-- Firestore field   -->
+    <string name="fs_field_collaborators_account_status">status</string>
+    <string name="fs_field_lenses_types_category_name">name</string>
+    <string name="fs_field_lenses_types_category_priority">priority</string>
+    <string name="fs_field_description_families_ids">families_ids</string>
+    <string name="fs_field_clients_name">name</string>
+    <string name="fs_field_clients_document">document</string>
+    <string name="fs_field_clients_updated">updated</string>
+    <string name="fs_field_clients_store_ids">stores_ids</string>
+    <string name="fs_field_payments_priority">priority</string>
+    <string name="fs_field_payments_is_enabled">is_enabled</string>
+    <string name="fs_field_so_created">created</string>
+    <string name="fs_field_card_flag_name">name</string>
+    <string name="fs_field_lens_enabled">is_local_enabled</string>
+    <string name="fs_field_lenses_priority">priority</string>
+    <string name="fs_field_payment_method_priority">priority</string>
+
+    <!-- Storage file paths -->
+    <string name="storage_store_picture">public/stores/%1$s/store-picture.jpeg</string>
+    <string name="storage_collaborator_picture">users/%1$s/profile-picture.jpeg</string>
+    <string name="storage_client_picture">clients/%1$s/profile-picture.jpeg</string>
+    <string name="storage_client_profile">clients/%1$s</string>
+    <string name="storage_client_profile_filename">profile-picture.jpeg</string>
+    <string name="storage_client_prescription">documents/prescription/%1$s/%2$s/%3$s</string>
+    <string name="storage_client_prescription_filename">prescription.jpeg</string>
+    <string name="storage_client_positioning">measure/positioning/%1$s/%2$s/%3$s</string>
+    <string name="storage_client_positioning_filename">positioning.jpeg</string>
 </resources>

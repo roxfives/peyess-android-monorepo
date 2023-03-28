@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.peyess.salesapp.R
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.ui.component.bottom_bar.shouldShowBottomBarFor
 
 @Composable
 fun TopBar(
@@ -30,25 +30,35 @@ fun TopBar(
     ) {
         TopAppBar(
             modifier = modifier,
-            title = { TopBarTitle() },
-            navigationIcon = { NavigationIcon(canNavigateBack = canNavigateBack) }
+            title = { TopBarTitle(currentScreen) },
+            navigationIcon = {
+                NavigationIcon(
+                    canNavigateBack = showNavigateBack(currentScreen, navHostController),
+                    navHostController = navHostController,
+                )
+            }
         )
     }
 }
 
 @Composable
-fun NavigationIcon(canNavigateBack: Boolean = true) {
+fun NavigationIcon(
+    canNavigateBack: Boolean = false,
+    navHostController: NavHostController,
+) {
     if (canNavigateBack) {
-        Icon(
-            imageVector = Icons.Filled.ArrowBack,
-            contentDescription = stringResource(id = R.string.desc_navigate_back)
-        )
+        IconButton(onClick = { navHostController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.desc_navigate_back)
+            )
+        }
     }
 }
 
 @Composable
-fun TopBarTitle() {
-    Text(stringResource(id = R.string.title))
+fun TopBarTitle(screen: SalesAppScreens) {
+    Text(SalesAppScreens.title(screen.name))
 }
 
 fun shouldShowTopBarFor(
@@ -58,5 +68,35 @@ fun shouldShowTopBarFor(
     val prevScreen =
         SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
 
-    return false//screen == SalesAppScreens.Home
+    return !(
+            screen == SalesAppScreens.UserListAuthentication
+                    || screen == SalesAppScreens.StoreAuthentication
+                    || screen == SalesAppScreens.FramesMeasureTakePicture
+                    || screen == SalesAppScreens.FramesMeasure
+                    || screen == SalesAppScreens.Landing
+    )
+}
+
+fun showNavigateBack(
+    screen: SalesAppScreens,
+    navHostController: NavHostController,
+): Boolean {
+    val prevScreen =
+        SalesAppScreens.fromRoute(navHostController.previousBackStackEntry?.destination?.route)
+
+    return !(
+        screen == SalesAppScreens.UserListAuthentication
+                || screen == SalesAppScreens.SaleWelcome
+                || screen == SalesAppScreens.SalePayment
+                || screen == SalesAppScreens.SaleScreen
+                || screen == SalesAppScreens.FramesMeasureTakePicture
+                || screen == SalesAppScreens.FramesMeasure
+                || screen == SalesAppScreens.Home
+                || screen == SalesAppScreens.Clients
+                || screen == SalesAppScreens.Landing
+                || screen == SalesAppScreens.SetFramesData
+                || screen == SalesAppScreens.Discount
+                || screen == SalesAppScreens.PaymentFee
+                || screen == SalesAppScreens.EditSalePayment
+    )
 }

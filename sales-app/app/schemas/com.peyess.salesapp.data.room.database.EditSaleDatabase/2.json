@@ -1,0 +1,1153 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "464a7319591c0cacf0e934460e976430",
+    "entities": [
+      {
+        "tableName": "edit_sale",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `collaborator_uid` TEXT NOT NULL, `active` INTEGER NOT NULL, `is_uploading` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collaboratorUid",
+            "columnName": "collaborator_uid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUploading",
+            "columnName": "is_uploading",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "edit_service_order",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `has_prescription` INTEGER NOT NULL, `sale_id` TEXT NOT NULL, `client_name` TEXT NOT NULL, `lens_type_name` TEXT NOT NULL, `is_lens_type_mono` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`sale_id`) REFERENCES `edit_sale`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasPrescription",
+            "columnName": "has_prescription",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "saleId",
+            "columnName": "sale_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientName",
+            "columnName": "client_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensTypeCategoryName",
+            "columnName": "lens_type_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLensTypeMono",
+            "columnName": "is_lens_type_mono",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_edit_service_order_sale_id",
+            "unique": false,
+            "columnNames": [
+              "sale_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_edit_service_order_sale_id` ON `${TABLE_NAME}` (`sale_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "edit_sale",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "sale_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_frames_data",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`so_id` TEXT NOT NULL, `is_new` INTEGER NOT NULL, `description` TEXT NOT NULL, `reference` TEXT NOT NULL, `value` REAL NOT NULL, `tag_code` TEXT NOT NULL, `type` TEXT NOT NULL, `info` TEXT NOT NULL, PRIMARY KEY(`so_id`), FOREIGN KEY(`so_id`) REFERENCES `edit_service_order`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "soId",
+            "columnName": "so_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "areFramesNew",
+            "columnName": "is_new",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reference",
+            "columnName": "reference",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagCode",
+            "columnName": "tag_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesInfo",
+            "columnName": "info",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "so_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "edit_service_order",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "so_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_lens_comparison",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `so_id` TEXT NOT NULL, `original_lens_id` TEXT NOT NULL, `original_coloring_id` TEXT NOT NULL, `original_treatment_id` TEXT NOT NULL, `comparison_lens_id` TEXT NOT NULL, `comparison_coloring_id` TEXT NOT NULL, `comparison_treatment_id` TEXT NOT NULL, FOREIGN KEY(`so_id`) REFERENCES `edit_service_order`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "soId",
+            "columnName": "so_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalLensId",
+            "columnName": "original_lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalColoringId",
+            "columnName": "original_coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "originalTreatmentId",
+            "columnName": "original_treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comparisonLensId",
+            "columnName": "comparison_lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comparisonColoringId",
+            "columnName": "comparison_coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "comparisonTreatmentId",
+            "columnName": "comparison_treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_edit_lens_comparison_so_id",
+            "unique": false,
+            "columnNames": [
+              "so_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_edit_lens_comparison_so_id` ON `${TABLE_NAME}` (`so_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "edit_service_order",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "so_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_sale_payment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `sale_id` TEXT NOT NULL, `client_id` TEXT NOT NULL, `method_id` TEXT NOT NULL, `method_name` TEXT NOT NULL, `method_type` TEXT NOT NULL, `value` REAL NOT NULL, `installments` INTEGER NOT NULL, `document` TEXT NOT NULL, `card_flag_name` TEXT NOT NULL, `card_flag_icon` TEXT NOT NULL, FOREIGN KEY(`client_id`) REFERENCES `local_client`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "saleId",
+            "columnName": "sale_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clientId",
+            "columnName": "client_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "methodId",
+            "columnName": "method_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "methodName",
+            "columnName": "method_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "methodType",
+            "columnName": "method_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "installments",
+            "columnName": "installments",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "document",
+            "columnName": "document",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardFlagName",
+            "columnName": "card_flag_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cardFlagIcon",
+            "columnName": "card_flag_icon",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_edit_sale_payment_client_id",
+            "unique": false,
+            "columnNames": [
+              "client_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_edit_sale_payment_client_id` ON `${TABLE_NAME}` (`client_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_client",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "client_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_payment_fee",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sale_id` TEXT NOT NULL, `method` TEXT NOT NULL, `value` REAL NOT NULL, PRIMARY KEY(`sale_id`), FOREIGN KEY(`sale_id`) REFERENCES `edit_sale`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "saleId",
+            "columnName": "sale_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "method",
+            "columnName": "method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "sale_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "edit_sale",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "sale_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "sale_overall_discount",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sale_id` TEXT NOT NULL, `method` TEXT NOT NULL, `value` REAL NOT NULL, PRIMARY KEY(`sale_id`), FOREIGN KEY(`sale_id`) REFERENCES `edit_sale`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "saleId",
+            "columnName": "sale_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "method",
+            "columnName": "method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "sale_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "edit_sale",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "sale_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_positioning",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `so_id` TEXT NOT NULL, `eye` TEXT NOT NULL, `picture` TEXT NOT NULL, `device` TEXT NOT NULL, `base_left` REAL NOT NULL, `base_left_rotation` REAL NOT NULL, `base_right` REAL NOT NULL, `base_right_rotation` REAL NOT NULL, `base_top` REAL NOT NULL, `base_bottom` REAL NOT NULL, `top_point_length` REAL NOT NULL, `top_point_rotation` REAL NOT NULL, `bottom_point_length` REAL NOT NULL, `bottom_point_rotation` REAL NOT NULL, `bridge_pivot` REAL NOT NULL, `check_bottom` REAL NOT NULL, `check_top` REAL NOT NULL, `check_left` REAL NOT NULL, `check_left_rotation` REAL NOT NULL, `check_middle` REAL NOT NULL, `check_right` REAL NOT NULL, `check_right_rotation` REAL NOT NULL, `frames_bottom` REAL NOT NULL, `frames_left` REAL NOT NULL, `frames_right` REAL NOT NULL, `frames_top` REAL NOT NULL, `optic_center_radius` REAL NOT NULL, `optic_center_x` REAL NOT NULL, `optic_center_y` REAL NOT NULL, `height` REAL NOT NULL, `width` REAL NOT NULL, `proportion_to_picture_horizontal` REAL NOT NULL, `proportion_to_picture_vertical` REAL NOT NULL, `euler_angle_x` REAL NOT NULL, `euler_angle_y` REAL NOT NULL, `euler_angle_z` REAL NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`so_id`) REFERENCES `edit_service_order`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "soId",
+            "columnName": "so_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eye",
+            "columnName": "eye",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "picture",
+            "columnName": "picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "device",
+            "columnName": "device",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseLeft",
+            "columnName": "base_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseLeftRotation",
+            "columnName": "base_left_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseRight",
+            "columnName": "base_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseRightRotation",
+            "columnName": "base_right_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseTop",
+            "columnName": "base_top",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "baseBottom",
+            "columnName": "base_bottom",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "topPointLength",
+            "columnName": "top_point_length",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "topPointRotation",
+            "columnName": "top_point_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bottomPointLength",
+            "columnName": "bottom_point_length",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bottomPointRotation",
+            "columnName": "bottom_point_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bridgePivot",
+            "columnName": "bridge_pivot",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkBottom",
+            "columnName": "check_bottom",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkTop",
+            "columnName": "check_top",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkLeft",
+            "columnName": "check_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkLeftRotation",
+            "columnName": "check_left_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkMiddle",
+            "columnName": "check_middle",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkRight",
+            "columnName": "check_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkRightRotation",
+            "columnName": "check_right_rotation",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesBottom",
+            "columnName": "frames_bottom",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesLeft",
+            "columnName": "frames_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesRight",
+            "columnName": "frames_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "framesTop",
+            "columnName": "frames_top",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opticCenterRadius",
+            "columnName": "optic_center_radius",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opticCenterX",
+            "columnName": "optic_center_x",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opticCenterY",
+            "columnName": "optic_center_y",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realParamHeight",
+            "columnName": "height",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realParamWidth",
+            "columnName": "width",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "proportionToPictureHorizontal",
+            "columnName": "proportion_to_picture_horizontal",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "proportionToPictureVertical",
+            "columnName": "proportion_to_picture_vertical",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eulerAngleX",
+            "columnName": "euler_angle_x",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eulerAngleY",
+            "columnName": "euler_angle_y",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eulerAngleZ",
+            "columnName": "euler_angle_z",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_edit_positioning_so_id",
+            "unique": false,
+            "columnNames": [
+              "so_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_edit_positioning_so_id` ON `${TABLE_NAME}` (`so_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "edit_service_order",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "so_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_prescription",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `so_id` TEXT NOT NULL, `picture_uri` TEXT NOT NULL, `professional_name` TEXT NOT NULL, `professional_id` TEXT NOT NULL, `is_copy` INTEGER NOT NULL, `local_date` INTEGER NOT NULL, `spherical_left` REAL NOT NULL, `spherical_right` REAL NOT NULL, `cylindrical_left` REAL NOT NULL, `cylindrical_right` REAL NOT NULL, `axis_left` REAL NOT NULL, `axis_right` REAL NOT NULL, `has_addition` INTEGER NOT NULL, `addition_left` REAL NOT NULL, `addition_right` REAL NOT NULL, `has_prism` INTEGER NOT NULL, `prism_degree_left` REAL NOT NULL, `prism_degree_right` REAL NOT NULL, `prism_axis_left` REAL NOT NULL, `prism_axis_right` REAL NOT NULL, `prism_position_left` TEXT NOT NULL, `prism_position_right` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`so_id`) REFERENCES `edit_service_order`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "soId",
+            "columnName": "so_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pictureUri",
+            "columnName": "picture_uri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "professionalName",
+            "columnName": "professional_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "professionalId",
+            "columnName": "professional_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCopy",
+            "columnName": "is_copy",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prescriptionDate",
+            "columnName": "local_date",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sphericalLeft",
+            "columnName": "spherical_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sphericalRight",
+            "columnName": "spherical_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cylindricalLeft",
+            "columnName": "cylindrical_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cylindricalRight",
+            "columnName": "cylindrical_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "axisLeft",
+            "columnName": "axis_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "axisRight",
+            "columnName": "axis_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasAddition",
+            "columnName": "has_addition",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "additionLeft",
+            "columnName": "addition_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "additionRight",
+            "columnName": "addition_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasPrism",
+            "columnName": "has_prism",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismDegreeLeft",
+            "columnName": "prism_degree_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismDegreeRight",
+            "columnName": "prism_degree_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismAxisLeft",
+            "columnName": "prism_axis_left",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismAxisRight",
+            "columnName": "prism_axis_right",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismPositionLeft",
+            "columnName": "prism_position_left",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismPositionRight",
+            "columnName": "prism_position_right",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_edit_prescription_so_id",
+            "unique": false,
+            "columnNames": [
+              "so_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_edit_prescription_so_id` ON `${TABLE_NAME}` (`so_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "edit_service_order",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "so_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "edit_product_picked",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`so_id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `treatment_id` TEXT NOT NULL, `coloring_id` TEXT NOT NULL, PRIMARY KEY(`so_id`), FOREIGN KEY(`so_id`) REFERENCES `edit_service_order`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "soId",
+            "columnName": "so_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "treatmentId",
+            "columnName": "treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coloringId",
+            "columnName": "coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "so_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "edit_service_order",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "so_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_client",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `name_display` TEXT NOT NULL, `birthday` INTEGER NOT NULL, `document` TEXT NOT NULL, `sex` TEXT NOT NULL, `zip_code` TEXT NOT NULL, `street` TEXT NOT NULL, `house_number` TEXT NOT NULL, `complement` TEXT NOT NULL, `neighborhood` TEXT NOT NULL, `city` TEXT NOT NULL, `state` TEXT NOT NULL, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, `cellphone` TEXT NOT NULL, `whatsapp` TEXT NOT NULL, `doc version` INTEGER NOT NULL, `is editable` INTEGER NOT NULL, `created` INTEGER NOT NULL, `created_by` TEXT NOT NULL, `create_allowed_by` TEXT NOT NULL, `remote_updated` INTEGER NOT NULL, `updated_by` TEXT NOT NULL, `update_allowed_by` TEXT NOT NULL, `has_been_uploaded` INTEGER NOT NULL, `has_been_downloaded` INTEGER NOT NULL, `local_updated` INTEGER NOT NULL, `downloaded_at` INTEGER NOT NULL, `uploaded_at` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameDisplay",
+            "columnName": "name_display",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "birthday",
+            "columnName": "birthday",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "document",
+            "columnName": "document",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sex",
+            "columnName": "sex",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zipCode",
+            "columnName": "zip_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "street",
+            "columnName": "street",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "houseNumber",
+            "columnName": "house_number",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "complement",
+            "columnName": "complement",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "neighborhood",
+            "columnName": "neighborhood",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "city",
+            "columnName": "city",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cellphone",
+            "columnName": "cellphone",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "whatsapp",
+            "columnName": "whatsapp",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "doc_version",
+            "columnName": "doc version",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_editable",
+            "columnName": "is editable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdBy",
+            "columnName": "created_by",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createAllowedBy",
+            "columnName": "create_allowed_by",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remoteUpdated",
+            "columnName": "remote_updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedBy",
+            "columnName": "updated_by",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updateAllowedBy",
+            "columnName": "update_allowed_by",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasBeenUploaded",
+            "columnName": "has_been_uploaded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasBeenDownloaded",
+            "columnName": "has_been_downloaded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localUpdated",
+            "columnName": "local_updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "downloadedAt",
+            "columnName": "downloaded_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "uploadedAt",
+            "columnName": "uploaded_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "edit_payment_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            payment.id AS id, \n            payment.sale_id AS saleId, \n            payment.client_id AS clientId, \n            client.document AS clientDocument, \n            client.name AS clientName, \n            client.city AS clientCity, \n            client.state AS clientState, \n            payment.method_id AS methodId, \n            payment.method_name AS methodName, \n            payment.method_type AS methodType, \n            payment.value AS value, \n            payment.installments AS installments, \n            payment.document AS document, \n            payment.card_flag_name AS cardFlagName, \n            payment.card_flag_icon AS cardFlagIcon \n         FROM edit_sale_payment AS payment\n         JOIN local_client AS client ON payment.client_id = client.id"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '464a7319591c0cacf0e934460e976430')"
+    ]
+  }
+}

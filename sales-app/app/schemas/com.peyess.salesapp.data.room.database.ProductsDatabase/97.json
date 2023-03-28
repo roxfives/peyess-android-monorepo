@@ -1,0 +1,3366 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 97,
+    "identityHash": "d3d2f68c9c6201054528a3a0a57497f4",
+    "entities": [
+      {
+        "tableName": "join_lens_treatment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `treatment_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `treatment_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "treatmentId",
+            "columnName": "treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "treatment_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "join_lens_coloring",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `coloring_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `coloring_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coloringId",
+            "columnName": "coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "coloring_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "join_lens_tech",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `tech_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `tech_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "techId",
+            "columnName": "tech_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "tech_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "join_lens_material",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `material_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `material_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialId",
+            "columnName": "material_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "material_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_alt_height",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, `name_display` TEXT NOT NULL, `value` REAL NOT NULL, `observation` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name_display",
+            "columnName": "name_display",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_coloring",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `specialty` TEXT NOT NULL, `is_coloring_required` INTEGER NOT NULL, `has_medical` INTEGER NOT NULL, `is_treatment_required` INTEGER NOT NULL, `priority` REAL NOT NULL, `is_generic` INTEGER NOT NULL, `price` REAL NOT NULL, `cost` REAL NOT NULL, `suggested_price` REAL NOT NULL, `shipping_time` REAL NOT NULL, `observation` TEXT NOT NULL, `warning` TEXT NOT NULL, `brand` TEXT NOT NULL, `brand_id` TEXT NOT NULL, `design` TEXT NOT NULL, `design_id` TEXT NOT NULL, `supplier_picture` TEXT NOT NULL, `supplier` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `is_manufacturing_local` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `reason_disabled` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialty",
+            "columnName": "specialty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringRequired",
+            "columnName": "is_coloring_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasMedical",
+            "columnName": "has_medical",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentRequired",
+            "columnName": "is_treatment_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isGeneric",
+            "columnName": "is_generic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suggestedPrice",
+            "columnName": "suggested_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandId",
+            "columnName": "brand_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "design",
+            "columnName": "design",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "designId",
+            "columnName": "design_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierPicture",
+            "columnName": "supplier_picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isManufacturingLocal",
+            "columnName": "is_manufacturing_local",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonDisabled",
+            "columnName": "reason_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "coloring_display",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coloring_id` TEXT NOT NULL, `color_code` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coloring_id",
+            "columnName": "coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "colorCode",
+            "columnName": "color_code",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_disp",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lens_id` TEXT NOT NULL, `diam` REAL NOT NULL, `max_cyl` REAL NOT NULL, `min_cyl` REAL NOT NULL, `max_sph` REAL NOT NULL, `min_sph` REAL NOT NULL, `max_add` REAL NOT NULL, `min_add` REAL NOT NULL, `has_prism` INTEGER NOT NULL, `prism` REAL NOT NULL, `prism_price` REAL NOT NULL, `prism_cost` REAL NOT NULL, `separate_prism` INTEGER NOT NULL, `needs_check` INTEGER NOT NULL, `sum_rule` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "diam",
+            "columnName": "diam",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxCyl",
+            "columnName": "max_cyl",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minCyl",
+            "columnName": "min_cyl",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxSph",
+            "columnName": "max_sph",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minSph",
+            "columnName": "min_sph",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxAdd",
+            "columnName": "max_add",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minAdd",
+            "columnName": "min_add",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasPrism",
+            "columnName": "has_prism",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prism",
+            "columnName": "prism",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismPrice",
+            "columnName": "prism_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismCost",
+            "columnName": "prism_cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "separatePrism",
+            "columnName": "separate_prism",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "needsCheck",
+            "columnName": "needs_check",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sumRule",
+            "columnName": "sum_rule",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `is_local_enabled` INTEGER NOT NULL, `reason_local_disabled` TEXT NOT NULL, `price` REAL NOT NULL, `price_add_coloring` REAL NOT NULL, `price_add_treatment` REAL NOT NULL, `height` REAL NOT NULL, `group` TEXT NOT NULL, `group_id` TEXT NOT NULL, `specialty` TEXT NOT NULL, `specialty_id` TEXT NOT NULL, `tech` TEXT NOT NULL, `tech_id` TEXT NOT NULL, `type` TEXT NOT NULL, `type_id` TEXT NOT NULL, `category` TEXT NOT NULL, `category_id` TEXT NOT NULL, `material` TEXT NOT NULL, `material_n` REAL NOT NULL, `material_id` TEXT NOT NULL, `material_category` TEXT NOT NULL, `material_category_id` TEXT NOT NULL, `material_observation` TEXT NOT NULL, `has_addition` INTEGER NOT NULL, `has_filter_blue` INTEGER NOT NULL, `has_filter_uv` INTEGER NOT NULL, `is_coloring_treatment_mutex` INTEGER NOT NULL, `is_coloring_discounted` INTEGER NOT NULL, `is_coloring_included` INTEGER NOT NULL, `is_treatment_discounted` INTEGER NOT NULL, `is_treatment_included` INTEGER NOT NULL, `default_treatment` TEXT NOT NULL, `cost_add_coloring` REAL NOT NULL, `cost_add_treatment` REAL NOT NULL, `suggested_price_add_coloring` REAL NOT NULL, `suggested_price_add_treatment` REAL NOT NULL, `priority` REAL NOT NULL, `is_generic` INTEGER NOT NULL, `cost` REAL NOT NULL, `suggested_price` REAL NOT NULL, `shipping_time` REAL NOT NULL, `observation` TEXT NOT NULL, `warning` TEXT NOT NULL, `brand` TEXT NOT NULL, `brand_id` TEXT NOT NULL, `design` TEXT NOT NULL, `design_id` TEXT NOT NULL, `supplier_picture` TEXT NOT NULL, `supplier` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `is_manufacturing_local` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `reason_disabled` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLocalEnabled",
+            "columnName": "is_local_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonLocalDisabled",
+            "columnName": "reason_local_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceAddColoring",
+            "columnName": "price_add_coloring",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceAddTreatment",
+            "columnName": "price_add_treatment",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "group",
+            "columnName": "group",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "group_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialty",
+            "columnName": "specialty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialtyId",
+            "columnName": "specialty_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tech",
+            "columnName": "tech",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "techId",
+            "columnName": "tech_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "material",
+            "columnName": "material",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialN",
+            "columnName": "material_n",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialId",
+            "columnName": "material_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialCategory",
+            "columnName": "material_category",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialCategoryId",
+            "columnName": "material_category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialObservation",
+            "columnName": "material_observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasAddition",
+            "columnName": "has_addition",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasFilterBlue",
+            "columnName": "has_filter_blue",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasFilterUv",
+            "columnName": "has_filter_uv",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringTreatmentMutex",
+            "columnName": "is_coloring_treatment_mutex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringDiscounted",
+            "columnName": "is_coloring_discounted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringIncluded",
+            "columnName": "is_coloring_included",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentDiscounted",
+            "columnName": "is_treatment_discounted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentIncluded",
+            "columnName": "is_treatment_included",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultTreatment",
+            "columnName": "default_treatment",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "costAddColoring",
+            "columnName": "cost_add_coloring",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "costAddTreatment",
+            "columnName": "cost_add_treatment",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suggestedPriceAddColoring",
+            "columnName": "suggested_price_add_coloring",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suggestedPriceAddTreatment",
+            "columnName": "suggested_price_add_treatment",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isGeneric",
+            "columnName": "is_generic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suggestedPrice",
+            "columnName": "suggested_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandId",
+            "columnName": "brand_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "design",
+            "columnName": "design",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "designId",
+            "columnName": "design_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierPicture",
+            "columnName": "supplier_picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isManufacturingLocal",
+            "columnName": "is_manufacturing_local",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonDisabled",
+            "columnName": "reason_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "lens_base",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lens_id` TEXT NOT NULL, `base` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lens_id",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "base",
+            "columnName": "base",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_category_type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_disp_manufacturer",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, `shipping_time` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_material_type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_product_exp",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`product_id` TEXT NOT NULL, `exp` TEXT NOT NULL, PRIMARY KEY(`product_id`, `exp`))",
+        "fields": [
+          {
+            "fieldPath": "productId",
+            "columnName": "product_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "exp",
+            "columnName": "exp",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "product_id",
+            "exp"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_treatment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `specialty` TEXT NOT NULL, `is_coloring_required` INTEGER NOT NULL, `priority` REAL NOT NULL, `is_generic` INTEGER NOT NULL, `cost` REAL NOT NULL, `price` REAL NOT NULL, `suggested_price` REAL NOT NULL, `shipping_time` REAL NOT NULL, `observation` TEXT NOT NULL, `warning` TEXT NOT NULL, `brand` TEXT NOT NULL, `brand_id` TEXT NOT NULL, `design` TEXT NOT NULL, `design_id` TEXT NOT NULL, `supplier_picture` TEXT NOT NULL, `supplier` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `is_manufacturing_local` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `reason_disabled` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialty",
+            "columnName": "specialty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringRequired",
+            "columnName": "is_coloring_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isGeneric",
+            "columnName": "is_generic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cost",
+            "columnName": "cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "suggestedPrice",
+            "columnName": "suggested_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandId",
+            "columnName": "brand_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "design",
+            "columnName": "design",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "designId",
+            "columnName": "design_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierPicture",
+            "columnName": "supplier_picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isManufacturingLocal",
+            "columnName": "is_manufacturing_local",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonDisabled",
+            "columnName": "reason_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_description",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `family_id` TEXT NOT NULL, `supplier_id` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "primaryKey",
+            "columnName": "primaryKey",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familyId",
+            "columnName": "family_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "primaryKey"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_family",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` TEXT NOT NULL, `name` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `priority` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "primaryKey",
+            "columnName": "primaryKey",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "primaryKey"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_group",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `lens_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_material",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_specialty",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_supplier",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_tech",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "filter_lens_type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "products_state_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `has_updated` INTEGER NOT NULL, `has_updated_failed` INTEGER NOT NULL, `is_updating` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasUpdated",
+            "columnName": "has_updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasUpdateFailed",
+            "columnName": "has_updated_failed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isUpdating",
+            "columnName": "is_updating",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_family",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_description",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_supplier",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `picture` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "picture",
+            "columnName": "picture",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_group",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_specialty",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_tech",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_type",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_material",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, `n` REAL NOT NULL, `observation` TEXT NOT NULL, `category_id` TEXT NOT NULL, `category` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`category_id`) REFERENCES `local_lens_material_category`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "n",
+            "columnName": "n",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_local_lens_material_category_id",
+            "unique": false,
+            "columnNames": [
+              "category_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lens_material_category_id` ON `${TABLE_NAME}` (`category_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lens_material_category",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lenses_material_types",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_material_category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `priority` INTEGER NOT NULL, `store_priority` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storePriority",
+            "columnName": "store_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_explanations",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lens_id` TEXT NOT NULL, `explanation` TEXT NOT NULL, FOREIGN KEY(`lens_id`) REFERENCES `local_lenses`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "explanation",
+            "columnName": "explanation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_explanations_lens_id",
+            "unique": false,
+            "columnNames": [
+              "lens_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_explanations_lens_id` ON `${TABLE_NAME}` (`lens_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lenses",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lens_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lenses_disponibility",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lens_id` TEXT NOT NULL, `diam` REAL NOT NULL, `max_cyl` REAL NOT NULL, `min_cyl` REAL NOT NULL, `max_sph` REAL NOT NULL, `min_sph` REAL NOT NULL, `max_add` REAL NOT NULL, `min_add` REAL NOT NULL, `has_prism` INTEGER NOT NULL, `prism` REAL NOT NULL, `prism_price` REAL NOT NULL, `prism_cost` REAL NOT NULL, `separate_prism` INTEGER NOT NULL, `needs_check` INTEGER NOT NULL, `sum_rule` INTEGER NOT NULL, FOREIGN KEY(`lens_id`) REFERENCES `local_lenses`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "diam",
+            "columnName": "diam",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxCyl",
+            "columnName": "max_cyl",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minCyl",
+            "columnName": "min_cyl",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxSph",
+            "columnName": "max_sph",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minSph",
+            "columnName": "min_sph",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maxAdd",
+            "columnName": "max_add",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minAdd",
+            "columnName": "min_add",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasPrism",
+            "columnName": "has_prism",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prism",
+            "columnName": "prism",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismPrice",
+            "columnName": "prism_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "prismCost",
+            "columnName": "prism_cost",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "separatePrism",
+            "columnName": "separate_prism",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "needsCheck",
+            "columnName": "needs_check",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sumRule",
+            "columnName": "sum_rule",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_disponibility_lens_id",
+            "unique": false,
+            "columnNames": [
+              "lens_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_disponibility_lens_id` ON `${TABLE_NAME}` (`lens_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lenses",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lens_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lenses_disponibility_manufacturer",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `shipping_time` REAL NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_alt_height",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `name_display` TEXT NOT NULL, `value` REAL NOT NULL, `observation` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameDisplay",
+            "columnName": "name_display",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_type_category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `explanation` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "explanation",
+            "columnName": "explanation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_bases",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lens_id` TEXT NOT NULL, `base` REAL NOT NULL, FOREIGN KEY(`lens_id`) REFERENCES `local_lenses`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lens_id",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "base",
+            "columnName": "base",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_bases_lens_id",
+            "unique": false,
+            "columnNames": [
+              "lens_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_bases_lens_id` ON `${TABLE_NAME}` (`lens_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lenses",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "lens_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lenses",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `priority` REAL NOT NULL, `store_lens_priority` INTEGER NOT NULL, `height` REAL NOT NULL, `needs_check` INTEGER NOT NULL, `has_addition` INTEGER NOT NULL, `has_filter_blue` INTEGER NOT NULL, `has_filter_uv` INTEGER NOT NULL, `is_coloring_treatment_mutex` INTEGER NOT NULL, `is_coloring_discounted` INTEGER NOT NULL, `is_coloring_included` INTEGER NOT NULL, `is_treatment_discounted` INTEGER NOT NULL, `is_treatment_included` INTEGER NOT NULL, `is_generic` INTEGER NOT NULL, `shipping_time` REAL NOT NULL, `observation` TEXT NOT NULL, `warning` TEXT NOT NULL, `is_manufacturing_local` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `reason_disabled` TEXT NOT NULL, `is_local_enabled` INTEGER NOT NULL, `reason_local_disabled` TEXT NOT NULL, `price` REAL NOT NULL, `price_add_coloring` REAL NOT NULL, `price_add_treatment` REAL NOT NULL, `is_editable` INTEGER NOT NULL, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, `brand_id` TEXT NOT NULL, `design_id` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `group_id` TEXT NOT NULL, `specialty_id` TEXT NOT NULL, `tech_id` TEXT NOT NULL, `type_id` TEXT NOT NULL, `category_id` TEXT NOT NULL, `material_id` TEXT NOT NULL, `default_treatment_id` TEXT NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`brand_id`) REFERENCES `local_lens_family`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`design_id`) REFERENCES `local_lens_description`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`supplier_id`) REFERENCES `local_lens_supplier`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`group_id`) REFERENCES `local_lens_group`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`specialty_id`) REFERENCES `local_lens_specialty`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`tech_id`) REFERENCES `local_lens_tech`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`type_id`) REFERENCES `local_lens_type`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`category_id`) REFERENCES `local_lens_category`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`material_id`) REFERENCES `local_lens_material`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storeLensPriority",
+            "columnName": "store_lens_priority",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "needsCheck",
+            "columnName": "needs_check",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasAddition",
+            "columnName": "has_addition",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasFilterBlue",
+            "columnName": "has_filter_blue",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasFilterUv",
+            "columnName": "has_filter_uv",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringTreatmentMutex",
+            "columnName": "is_coloring_treatment_mutex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringDiscounted",
+            "columnName": "is_coloring_discounted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringIncluded",
+            "columnName": "is_coloring_included",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentDiscounted",
+            "columnName": "is_treatment_discounted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentIncluded",
+            "columnName": "is_treatment_included",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isGeneric",
+            "columnName": "is_generic",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isManufacturingLocal",
+            "columnName": "is_manufacturing_local",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonDisabled",
+            "columnName": "reason_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLocalEnabled",
+            "columnName": "is_local_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reasonLocalDisabled",
+            "columnName": "reason_local_disabled",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceAddColoring",
+            "columnName": "price_add_coloring",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priceAddTreatment",
+            "columnName": "price_add_treatment",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEditable",
+            "columnName": "is_editable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated",
+            "columnName": "updated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brandId",
+            "columnName": "brand_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "designId",
+            "columnName": "design_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "group_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialtyId",
+            "columnName": "specialty_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "techId",
+            "columnName": "tech_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialId",
+            "columnName": "material_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultTreatmentId",
+            "columnName": "default_treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_brand_id",
+            "unique": false,
+            "columnNames": [
+              "brand_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_brand_id` ON `${TABLE_NAME}` (`brand_id`)"
+          },
+          {
+            "name": "index_local_lenses_design_id",
+            "unique": false,
+            "columnNames": [
+              "design_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_design_id` ON `${TABLE_NAME}` (`design_id`)"
+          },
+          {
+            "name": "index_local_lenses_supplier_id",
+            "unique": false,
+            "columnNames": [
+              "supplier_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_supplier_id` ON `${TABLE_NAME}` (`supplier_id`)"
+          },
+          {
+            "name": "index_local_lenses_group_id",
+            "unique": false,
+            "columnNames": [
+              "group_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_group_id` ON `${TABLE_NAME}` (`group_id`)"
+          },
+          {
+            "name": "index_local_lenses_specialty_id",
+            "unique": false,
+            "columnNames": [
+              "specialty_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_specialty_id` ON `${TABLE_NAME}` (`specialty_id`)"
+          },
+          {
+            "name": "index_local_lenses_tech_id",
+            "unique": false,
+            "columnNames": [
+              "tech_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_tech_id` ON `${TABLE_NAME}` (`tech_id`)"
+          },
+          {
+            "name": "index_local_lenses_type_id",
+            "unique": false,
+            "columnNames": [
+              "type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_type_id` ON `${TABLE_NAME}` (`type_id`)"
+          },
+          {
+            "name": "index_local_lenses_category_id",
+            "unique": false,
+            "columnNames": [
+              "category_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_category_id` ON `${TABLE_NAME}` (`category_id`)"
+          },
+          {
+            "name": "index_local_lenses_material_id",
+            "unique": false,
+            "columnNames": [
+              "material_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_material_id` ON `${TABLE_NAME}` (`material_id`)"
+          },
+          {
+            "name": "index_local_lenses_default_treatment_id",
+            "unique": false,
+            "columnNames": [
+              "default_treatment_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_default_treatment_id` ON `${TABLE_NAME}` (`default_treatment_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lens_family",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "brand_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_description",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "design_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_supplier",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "supplier_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_group",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "group_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_specialty",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "specialty_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_tech",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tech_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_type",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "type_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_category",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "local_lens_material",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "material_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lens_coloring",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `brand` TEXT NOT NULL, `price` REAL NOT NULL, `design` TEXT NOT NULL, `has_medical` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `is_local_enabled` INTEGER NOT NULL, `is_treatment_required` INTEGER NOT NULL, `observation` TEXT NOT NULL, `priority` REAL NOT NULL, `shipping_time` REAL NOT NULL, `specialty` TEXT NOT NULL, `supplier` TEXT NOT NULL, `type` TEXT NOT NULL, `warning` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "design",
+            "columnName": "design",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasMedical",
+            "columnName": "has_medical",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLocalEnabled",
+            "columnName": "is_local_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTreatmentRequired",
+            "columnName": "is_treatment_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialty",
+            "columnName": "specialty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_local_lens_coloring_id",
+            "unique": false,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lens_coloring_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_coloring_exp",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `coloring_id` TEXT NOT NULL, `explanation` TEXT NOT NULL, FOREIGN KEY(`coloring_id`) REFERENCES `local_lens_coloring`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coloringId",
+            "columnName": "coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "explanation",
+            "columnName": "explanation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_local_lens_coloring_exp_coloring_id",
+            "unique": false,
+            "columnNames": [
+              "coloring_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lens_coloring_exp_coloring_id` ON `${TABLE_NAME}` (`coloring_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lens_coloring",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "coloring_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lens_treatment",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `brand` TEXT NOT NULL, `price` REAL NOT NULL, `design` TEXT NOT NULL, `is_coloring_required` INTEGER NOT NULL, `is_enabled` INTEGER NOT NULL, `is_local_enabled` INTEGER NOT NULL, `observation` TEXT NOT NULL, `priority` REAL NOT NULL, `shipping_time` REAL NOT NULL, `specialty` TEXT NOT NULL, `supplier` TEXT NOT NULL, `warning` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "brand",
+            "columnName": "brand",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "design",
+            "columnName": "design",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isColoringRequired",
+            "columnName": "is_coloring_required",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isEnabled",
+            "columnName": "is_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isLocalEnabled",
+            "columnName": "is_local_enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shippingTime",
+            "columnName": "shipping_time",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialty",
+            "columnName": "specialty",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplier",
+            "columnName": "supplier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "warning",
+            "columnName": "warning",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lens_treatment_exp",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `treatment_id` TEXT NOT NULL, `explanation` TEXT NOT NULL, FOREIGN KEY(`treatment_id`) REFERENCES `local_lens_treatment`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "treatmentId",
+            "columnName": "treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "explanation",
+            "columnName": "explanation",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_local_lens_treatment_exp_treatment_id",
+            "unique": false,
+            "columnNames": [
+              "treatment_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lens_treatment_exp_treatment_id` ON `${TABLE_NAME}` (`treatment_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "local_lens_treatment",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "treatment_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "local_lenses_alt_height_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `alt_height_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `alt_height_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "altHeightId",
+            "columnName": "alt_height_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "alt_height_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_alt_height_cross_ref_lens_id",
+            "unique": false,
+            "columnNames": [
+              "lens_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_alt_height_cross_ref_lens_id` ON `${TABLE_NAME}` (`lens_id`)"
+          },
+          {
+            "name": "index_local_lenses_alt_height_cross_ref_alt_height_id",
+            "unique": false,
+            "columnNames": [
+              "alt_height_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_alt_height_cross_ref_alt_height_id` ON `${TABLE_NAME}` (`alt_height_id`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_disponibility_manufacturer_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`disp_id` INTEGER NOT NULL, `manufacturer_id` TEXT NOT NULL, PRIMARY KEY(`disp_id`, `manufacturer_id`))",
+        "fields": [
+          {
+            "fieldPath": "dispId",
+            "columnName": "disp_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "manufacturerId",
+            "columnName": "manufacturer_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "disp_id",
+            "manufacturer_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_coloring_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `coloring_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `coloring_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coloringId",
+            "columnName": "coloring_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "coloring_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_treatment_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_id` TEXT NOT NULL, `treatment_id` TEXT NOT NULL, PRIMARY KEY(`lens_id`, `treatment_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensId",
+            "columnName": "lens_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "treatmentId",
+            "columnName": "treatment_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_id",
+            "treatment_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_type_category_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`lens_type_id` TEXT NOT NULL, `category_id` TEXT NOT NULL, PRIMARY KEY(`lens_type_id`, `category_id`))",
+        "fields": [
+          {
+            "fieldPath": "lensTypeId",
+            "columnName": "lens_type_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "lens_type_id",
+            "category_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_material_type_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`material_id` TEXT NOT NULL, `material_type_id` TEXT NOT NULL, PRIMARY KEY(`material_id`, `material_type_id`))",
+        "fields": [
+          {
+            "fieldPath": "materialId",
+            "columnName": "material_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialTypeId",
+            "columnName": "material_type_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "material_id",
+            "material_type_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "local_lenses_details_cross_ref",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`brand_id` TEXT NOT NULL, `design_id` TEXT NOT NULL, `supplier_id` TEXT NOT NULL, `group_id` TEXT NOT NULL, `specialty_id` TEXT NOT NULL, `tech_id` TEXT NOT NULL, `type_id` TEXT NOT NULL, `category_id` TEXT NOT NULL, `material_id` TEXT NOT NULL, PRIMARY KEY(`brand_id`, `design_id`, `supplier_id`, `group_id`, `specialty_id`, `tech_id`, `type_id`, `category_id`, `material_id`))",
+        "fields": [
+          {
+            "fieldPath": "brandId",
+            "columnName": "brand_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "designId",
+            "columnName": "design_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplierId",
+            "columnName": "supplier_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupId",
+            "columnName": "group_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialtyId",
+            "columnName": "specialty_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "techId",
+            "columnName": "tech_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "typeId",
+            "columnName": "type_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "materialId",
+            "columnName": "material_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "brand_id",
+            "design_id",
+            "supplier_id",
+            "group_id",
+            "specialty_id",
+            "tech_id",
+            "type_id",
+            "category_id",
+            "material_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_local_lenses_details_cross_ref_brand_id",
+            "unique": false,
+            "columnNames": [
+              "brand_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_brand_id` ON `${TABLE_NAME}` (`brand_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_design_id",
+            "unique": false,
+            "columnNames": [
+              "design_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_design_id` ON `${TABLE_NAME}` (`design_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_supplier_id",
+            "unique": false,
+            "columnNames": [
+              "supplier_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_supplier_id` ON `${TABLE_NAME}` (`supplier_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_group_id",
+            "unique": false,
+            "columnNames": [
+              "group_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_group_id` ON `${TABLE_NAME}` (`group_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_specialty_id",
+            "unique": false,
+            "columnNames": [
+              "specialty_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_specialty_id` ON `${TABLE_NAME}` (`specialty_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_tech_id",
+            "unique": false,
+            "columnNames": [
+              "tech_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_tech_id` ON `${TABLE_NAME}` (`tech_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_type_id",
+            "unique": false,
+            "columnNames": [
+              "type_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_type_id` ON `${TABLE_NAME}` (`type_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_category_id",
+            "unique": false,
+            "columnNames": [
+              "category_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_category_id` ON `${TABLE_NAME}` (`category_id`)"
+          },
+          {
+            "name": "index_local_lenses_details_cross_ref_material_id",
+            "unique": false,
+            "columnNames": [
+              "material_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_local_lenses_details_cross_ref_material_id` ON `${TABLE_NAME}` (`material_id`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "lenses_with_details",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            lenses.id AS id,\n            lenses.priority AS priority,\n            lenses.store_lens_priority AS storeLensPriority,\n            lenses.height AS height,\n            lenses.has_addition AS hasAddition,\n            lenses.has_filter_blue AS hasFilterBlue,\n            lenses.has_filter_uv AS hasFilterUv,\n            lenses.is_coloring_treatment_mutex AS isColoringTreatmentMutex,\n            lenses.is_coloring_discounted AS isColoringDiscounted,\n            lenses.is_coloring_included AS isColoringIncluded,\n            lenses.is_treatment_discounted AS isTreatmentDiscounted,\n            lenses.is_treatment_included AS isTreatmentIncluded,\n            lenses.is_generic AS isGeneric,\n            lenses.shipping_time AS shippingTime,\n            lenses.observation AS observation,\n            lenses.warning AS warning,\n            lenses.needs_check as needsCheck,\n            lenses.is_manufacturing_local AS isManufacturingLocal,\n            lenses.is_enabled AS isEnabled,\n            lenses.reason_disabled AS reasonDisabled,\n            lenses.is_local_enabled AS isLocalEnabled,\n            lenses.reason_local_disabled AS reasonLocalDisabled,\n            lenses.price AS price,\n            lenses.price_add_coloring AS priceAddColoring,\n            lenses.price_add_treatment AS priceAddTreatment,\n            lenses.is_editable AS isEditable,\n            lenses.default_treatment_id AS defaultTreatmentId,\n            lenses.created AS created,\n            lenses.updated AS updated,\n            \n            lenses.brand_id AS brandId,\n            lenses.design_id AS designId,\n            lenses.supplier_id AS supplierId,\n            lenses.group_id AS groupId,\n            lenses.specialty_id AS specialtyId,\n            lenses.tech_id AS techId,\n            lenses.type_id AS typeId,\n            lenses.category_id AS categoryId,\n            lenses.material_id AS materialId,\n            \n            brands.name AS brandName,\n            brands.priority AS brandPriority,\n            designs.name AS designName,\n            designs.priority AS designPriority,\n            suppliers.name AS supplierName,\n            suppliers.priority AS supplierPriority,\n            groups.name AS groupName,\n            groups.priority AS groupPriority,\n            specialties.name AS specialtyName,\n            specialties.priority AS specialtyPriority,\n            techs.name AS techName,\n            techs.priority AS techPriority,\n            types.name AS typeName,\n            types.priority AS typePriority,\n            categories.name AS categoryName,\n            categories.priority AS categoryPriority,\n            materials.name AS materialName,\n            materials.priority AS materialPriority,\n            materials.category AS materialCategory\n            \n        FROM local_lenses AS lenses\n        JOIN local_lens_family AS brands ON lenses.brand_id = brands.id\n        JOIN local_lens_description AS designs ON lenses.design_id = designs.id\n        JOIN local_lens_supplier AS suppliers ON lenses.supplier_id = suppliers.id\n        JOIN local_lens_group AS groups ON lenses.group_id = groups.id\n        JOIN local_lens_specialty AS specialties ON lenses.specialty_id = specialties.id\n        JOIN local_lens_tech AS techs ON lenses.tech_id = techs.id\n        JOIN local_lens_type AS types ON lenses.type_id = types.id\n        JOIN local_lens_category AS categories ON lenses.category_id = categories.id\n        JOIN local_lens_material AS materials ON lenses.material_id = materials.id"
+      },
+      {
+        "viewName": "local_lenses_type_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesTypes.id AS id,\n            lensesTypes.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_type AS lensesTypes\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesTypes.id = lensesDetails.type_id"
+      },
+      {
+        "viewName": "local_lenses_family_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesFamilies.id AS id,\n            lensesFamilies.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_family AS lensesFamilies\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesFamilies.id = lensesDetails.brand_id"
+      },
+      {
+        "viewName": "local_lenses_description_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesDescriptions.id AS id,\n            lensesDescriptions.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_description AS lensesDescriptions\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesDescriptions.id = lensesDetails.design_id"
+      },
+      {
+        "viewName": "local_lenses_group_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesCategories.id AS id,\n            lensesCategories.name AS name,\n            lensesCategories.priority AS priority,\n            \n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_group AS lensesCategories\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesCategories.id = lensesDetails.group_id"
+      },
+      {
+        "viewName": "local_lenses_material_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesMaterials.id AS id,\n            lensesMaterials.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_material AS lensesMaterials\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesMaterials.id = lensesDetails.material_id"
+      },
+      {
+        "viewName": "local_lenses_specialty_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            lensesSpecialties.id AS id,\n            lensesSpecialties.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_specialty AS lensesSpecialties\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON lensesSpecialties.id = lensesDetails.specialty_id"
+      },
+      {
+        "viewName": "local_lenses_supplier_db_view",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT\n            suppliers.id AS id,\n            suppliers.name AS name,\n            lensesDetails.brand_id AS lensFamilyId,\n            lensesDetails.design_id AS lensDescriptionId,\n            lensesDetails.supplier_id AS lensSupplierId,\n            lensesDetails.group_id AS lensGroupId,\n            lensesDetails.specialty_id AS lensSpecialtyId,\n            lensesDetails.tech_id AS lensTechId,\n            lensesDetails.type_id AS lensTypeId,\n            lensesDetails.category_id AS lensCategoryId,\n            lensesDetails.material_id AS lensMaterialId\n         FROM local_lens_supplier AS suppliers\n         JOIN local_lenses_details_cross_ref AS lensesDetails ON suppliers.id = lensesDetails.supplier_id"
+      },
+      {
+        "viewName": "lenses_details_with_disponibilities",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            lenses.*,\n            \n            disp.diam AS diameter,\n            disp.max_cyl AS maxCylindrical,\n            disp.min_cyl AS minCylindrical,\n            disp.max_sph AS maxSpherical,\n            disp.min_sph AS minSpherical,\n            disp.max_add AS maxAddition,\n            disp.min_add AS minAddition,\n            disp.has_prism AS hasPrism,\n            disp.PRISM AS prism,\n            disp.prism_price AS prismPrice,\n            disp.prism_cost AS prismCost,\n            disp.separate_prism AS separatePrism,\n            disp.needs_check AS dispNeedsCheck,\n            disp.sum_rule AS sumRule\n        FROM lenses_with_details AS lenses\n        JOIN local_lenses_disponibility AS disp ON lenses.id = disp.lens_id"
+      },
+      {
+        "viewName": "lenses_disponibilities_with_alt_height",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT \n            lenses.*,\n            \n            IIF(alt_height.name IS NULL, \"\", alt_height.name) AS altHeightName,\n            IIF(alt_height.name_display IS NULL, \"\", alt_height.name_display) AS altHeightNameDisplay, \n            IIF(alt_height.value IS NULL, 0, alt_height.value) AS altHeightValue, \n            IIF(alt_height.observation IS NULL, \"\", alt_height.observation) AS altHeightObservation \n            \n        FROM lenses_details_with_disponibilities AS lenses\n        LEFT OUTER JOIN local_lenses_alt_height_cross_ref AS _junction ON _junction.lens_id = lenses.id\n        LEFT JOIN local_lenses_alt_height AS alt_height ON alt_height.id = _junction.alt_height_id"
+      },
+      {
+        "viewName": "lenses_full_union",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT lensesWithAltHeight.*\n            FROM lenses_details_with_disponibilities AS lensesWithDisp\n            LEFT OUTER JOIN lenses_disponibilities_with_alt_height AS lensesWithAltHeight \n                ON lensesWithDisp.id = lensesWithAltHeight.id\n        UNION\n        SELECT lensesWithAltHeight.*\n            FROM lenses_disponibilities_with_alt_height AS lensesWithAltHeight\n            LEFT OUTER JOIN lenses_details_with_disponibilities AS lensesWithDisp \n                ON lensesWithDisp.id = lensesWithAltHeight.id"
+      },
+      {
+        "viewName": "lenses_full_union_with_height",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT *, \n            IIF(altHeightValue IS NULL, height, altHeightValue) AS heightResult,\n            IIF(altHeightName IS NULL, \"\", altHeightName) AS altHeightName,\n            IIF(altHeightNameDisplay IS NULL, \"\", altHeightNameDisplay) AS altHeightDisplay,\n            IIF(altHeightObservation IS NULL, \"\", altHeightObservation) AS altHeightObservation,\n            IIF(typeName LIKE '%multi%', 0, 1) AS isLensMono\n        FROM lenses_full_union"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd3d2f68c9c6201054528a3a0a57497f4')"
+    ]
+  }
+}

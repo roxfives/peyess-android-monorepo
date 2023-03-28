@@ -17,3 +17,4 @@ val PrimaryDark = PeyessGreyLight
 val PrimaryLight = PeyessBlue
 val PrimaryVariant = PeyessBlueDark
 val Secondary = PeyessGreyLight
+val SecondaryVariant = PeyessGreyLight

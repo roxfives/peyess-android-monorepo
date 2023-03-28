@@ -10,30 +10,28 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.ktx.initialize
-import com.peyess.salesapp.R
 import com.peyess.salesapp.app.state.AppAuthenticationState
 import com.peyess.salesapp.app.state.MainAppState
 import com.peyess.salesapp.app.state.MainViewModel
-import com.peyess.salesapp.firebase.FirebaseManager
 import com.peyess.salesapp.navigation.SalesAppScreens
-import com.peyess.salesapp.repository.auth.AuthenticationRepository
-import com.peyess.salesapp.screen.root.SalesAppRoot
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.workmanager.clients.enqueueOneTimeClientDownloadWorker
+import com.peyess.salesapp.workmanager.clients.enqueuePeriodicClientDownloadWorker
+import com.peyess.salesapp.workmanager.products.enqueueProductUpdateWorker
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_SalesApp)
+//        setTheme(R.style.Theme_SalesApp)
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -43,16 +41,22 @@ class MainActivity: ComponentActivity() {
             val authState by viewModel.collectAsState(MainAppState::authState)
 
             LaunchedEffect(authState) {
+                Timber.i("Setting auth state with $authState")
+
                 when (authState) {
                     is AppAuthenticationState.Unauthenticated -> {
                         navHostController.backQueue.clear()
                         navHostController.navigate(SalesAppScreens.StoreAuthentication.name)
                     }
 
-                    else -> {
+                    is AppAuthenticationState.Authenticated -> {
+                        createWorkers()
+
                         navHostController.backQueue.clear()
-                        navHostController.navigate(SalesAppScreens.Home.name)
+                        navHostController.navigate(SalesAppScreens.UserListAuthentication.name)
                     }
+
+                    AppAuthenticationState.Away -> {}
                 }
             }
 
@@ -68,6 +72,24 @@ class MainActivity: ComponentActivity() {
         // TODO: Control timeout for auto-blocking due to inactivity here
 
         return super.onTouchEvent(event)
+    }
+
+
+
+    private suspend fun createWorkers() {
+        enqueuePeriodicClientDownloadWorker(
+            context = applicationContext,
+            workPolicy = ExistingPeriodicWorkPolicy.KEEP,
+        )
+        enqueueOneTimeClientDownloadWorker(
+            context = applicationContext,
+            workPolicy = ExistingWorkPolicy.KEEP,
+        )
+
+        enqueueProductUpdateWorker(
+            context = applicationContext,
+            workPolicy = ExistingWorkPolicy.KEEP,
+        )
     }
 
     @Suppress("DEPRECATION")

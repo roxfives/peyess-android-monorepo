@@ -8,11 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 
 private val DarkColorPalette = darkColors(
-    primary = PrimaryDark, primaryVariant = PrimaryVariant, secondary = Secondary
+    primary = PrimaryDark,
+    primaryVariant = PrimaryVariant,
+    secondary = Secondary,
+    secondaryVariant = SecondaryVariant,
 )
 
 private val LightColorPalette = lightColors(
-    primary = PrimaryLight, primaryVariant = PrimaryVariant, secondary = Secondary
+    primary = PrimaryLight,
+    primaryVariant = PrimaryVariant,
+    secondary = Secondary,
+    secondaryVariant = SecondaryVariant,
 
     /* Other default colors to override
     background = Color.White,
@@ -25,7 +31,10 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun SalesAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun SalesAppTheme(
+    darkTheme: Boolean = false, // isSystemInDarkTheme(),
+    content: @Composable () -> Unit
+) {
     val configuration = LocalConfiguration.current
 
     val dimensions = if (configuration.screenWidthDp <= 360) smallDimensions else sw360Dimensions

@@ -1,11 +1,11 @@
 afterEvaluate { project ->
     if (project.hasProperty("android")) {
         android {
-            compileSdk 32
+            compileSdk 33
 
             defaultConfig {
-                minSdk 22
-                targetSdk 32
+                minSdk 28
+                targetSdk 33
 
                 vectorDrawables {
                     useSupportLibrary true
@@ -15,8 +15,12 @@ afterEvaluate { project ->
             }
 
             testOptions {
-                unitTests.returnDefaultValues = true
+                unitTests {
+                    returnDefaultValues = true
+                    includeAndroidResources = true
+                }
             }
+
             packagingOptions {
                 resources {
                     excludes += "/META-INF/{AL2.0,LGPL2.1}"

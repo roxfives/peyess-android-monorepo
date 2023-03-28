@@ -28,6 +28,8 @@ import com.peyess.salesapp.R
 fun PeyessPasswordInput(
     modifier: Modifier = Modifier,
     password: String,
+    label: @Composable () -> Unit = { DefaultLabel() },
+    placeholder: @Composable () -> Unit = { DefaultPlaceholder() },
     isError: Boolean = false,
     errorMessage: String = "",
     onValueChange: (update: String) -> Unit,
@@ -38,6 +40,8 @@ fun PeyessPasswordInput(
 
     PasswordInput(
         modifier = modifier,
+        label = label,
+        placeholder = placeholder,
         password = password,
         hidePassword = hidePassword,
         onToggleHidePassword = { hidePassword = !hidePassword },
@@ -52,6 +56,8 @@ fun PeyessPasswordInput(
 @Composable
 fun PasswordInput(
     modifier: Modifier = Modifier,
+    label: @Composable () -> Unit = { DefaultLabel() },
+    placeholder: @Composable () -> Unit = { DefaultPlaceholder() },
     password: String,
     hidePassword: Boolean = true,
     onToggleHidePassword: () -> Unit = {},
@@ -73,8 +79,8 @@ fun PasswordInput(
         onValueChange = { onValueChange(it) },
         isError = isError,
         errorMessage = errorMessage,
-        label = { Text(stringResource(R.string.password_input)) },
-        placeholder = { Text(stringResource(R.string.password_input)) },
+        label = label,
+        placeholder = placeholder,
         keyboardOptions = keyboardOptions.copy(autoCorrect = false),
         keyboardActions = keyboardActions,
         visualTransformation = transformation,
@@ -101,6 +107,16 @@ fun PasswordIcon(
             Icon(Icons.Filled.VisibilityOff, stringResource(id = R.string.hide_password))
         }
     }
+}
+
+@Composable
+fun DefaultLabel(modifier: Modifier = Modifier) {
+    Text(stringResource(R.string.password_input))
+}
+
+@Composable
+fun DefaultPlaceholder(modifier: Modifier = Modifier) {
+    Text(stringResource(R.string.password_input))
 }
 
 @Preview

@@ -13,12 +13,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        maven(url = "https://jitpack.io")
     }
 }
 
 include("app")
-monoInclude("logging")
-monoInclude("authentication")
+//monoInclude("logging")
+//monoInclude("authentication")
 
 fun monoInclude(name: String) {
     include(":$name")

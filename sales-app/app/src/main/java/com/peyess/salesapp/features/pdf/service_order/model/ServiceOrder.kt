@@ -114,5 +114,5 @@ data class ServiceOrder(
     val updateAllowedBy:  String = "",
 ) {
     val hasAxisLeft = lCylinder < 0.0
-    val hasAxisRight = lCylinder < 0.0
+    val hasAxisRight = rCylinder < 0.0
 }

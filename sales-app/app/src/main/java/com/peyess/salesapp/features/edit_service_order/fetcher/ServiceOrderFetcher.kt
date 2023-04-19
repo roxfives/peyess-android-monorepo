@@ -782,7 +782,7 @@ class ServiceOrderFetcher @Inject constructor(
         }
         val witness = serviceOrder.witnessUid.ifBlank { null }?.let { fetchClient(it).bind() }
         val payers = purchase.payerUids.filter {
-            it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
+            it.isNotBlank() && it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
         }.map { fetchClient(it).bind() }
 
         val prescription = fetchPrescription(serviceOrder.prescriptionId).bind()

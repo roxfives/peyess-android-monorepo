@@ -70,14 +70,18 @@ class UpdateProductsWorker @AssistedInject constructor(
                 "with ${docs.size} documents...")
 
         docs.forEach {
+            Timber.i("populateDatabase: Adding lens ${it.id}...", it)
             populateLensData(it)
 
+            Timber.i("populateDatabase: Adding coloring data for lens ${it.id}...")
             populateColoringData(it.id, it.colorings)
             addColoringsToLens(it.id, it.colorings)
 
+            Timber.i("populateDatabase: Adding treatment data for lens ${it.id}...")
             populateTreatmentData(it.id, it.treatments)
             addTreatmentsToLens(it.id, it.treatments)
 
+            Timber.i("populateDatabase: Adding alt height data for lens ${it.id}...")
             populateAlternativeData(it.id, it.altHeights)
             addAlternativeHeightsToLens(it.id, it.altHeights)
         }

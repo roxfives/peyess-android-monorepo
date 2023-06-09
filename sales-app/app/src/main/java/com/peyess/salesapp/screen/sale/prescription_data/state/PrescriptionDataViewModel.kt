@@ -43,8 +43,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -56,9 +54,6 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 ): MavericksViewModel<PrescriptionDataState>(initialState) {
 
     init {
-//        loadHasAddition()
-//        loadClientName()
-//        loadLensTypeCategory()
         loadServiceOrderData()
 
         onEach(PrescriptionDataState::lensTypeCategoryName) { loadMessage(it) }
@@ -70,8 +65,6 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         onAsync(PrescriptionDataState::prescriptionResponseAsync) {
             processPrescriptionResponse(it)
         }
-
-//        onAsync(PrescriptionDataState::hasAdditionAsync) { updateHasAddition(it) }
 
         onEach(PrescriptionDataState::activeServiceOrderResponse) {
             if (it.id.isNotBlank()) {
@@ -114,25 +107,6 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     private fun loadMessage(lensTypeCategoryName: LensTypeCategoryName) = setState {
         copy(generalMessage = messageFor(lensTypeCategoryName, salesApplication))
     }
-
-//    private fun loadHasAddition() = withState {
-//        saleRepository.activeSO()
-//            .filterNotNull()
-//            .map { !it.isLensTypeMono }
-//            .execute(Dispatchers.IO) {
-//                Timber.i("Loading has addition $it")
-//                copy(hasAdditionAsync = it)
-//            }
-//    }
-
-//    private fun loadLensTypeCategory() = withState {
-//        saleRepository.activeSO()
-//            .filterNotNull()
-//            .map { it.lensTypeCategoryName }
-//            .execute(Dispatchers.IO) {
-//                copy(lensTypeCategoryName = it)
-//            }
-//    }
 
     private fun updateAnimation(category: LensTypeCategoryName) = setState {
         copy(animationId = animationFor(category))
@@ -260,18 +234,6 @@ class PrescriptionDataViewModel @AssistedInject constructor(
                 .updatePrescription(prescription.toLocalPrescriptionDocument())
         }
     }
-
-//    private fun updateHasAddition(hasAddition: Boolean) = withState {
-//        val prescriptionData = it.prescriptionResponse
-//
-//        if (prescriptionData.id.isNotBlank()) {
-//            val prescription = it.prescriptionResponse
-//                .copy(hasAddition = hasAddition)
-//
-//            updatePrescription(prescription)
-//        }
-//    }
-
 
     fun increaseSphericalLeft(curValue: Double) = withState {
         val newValue = (curValue + stepSpherical).coerceAtMost(maxSpherical)

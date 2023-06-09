@@ -33,5 +33,7 @@ fun LocalPrescriptionDocument.toPrescriptionData(): PrescriptionData {
         prismAxisRight = prismAxisRight,
         prismPositionLeft = prismPositionLeft,
         prismPositionRight = prismPositionRight,
+
+        observation = observation,
     )
 }

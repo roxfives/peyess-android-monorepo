@@ -3,6 +3,8 @@ package com.peyess.salesapp.feature.prescription.prescription_data
 import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
@@ -27,6 +29,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -37,9 +41,12 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assistant
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,8 +58,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,7 +81,9 @@ import com.peyess.salesapp.constants.minPrismDegree
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
+import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
+import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -164,6 +177,9 @@ fun PrescriptionDataUI(
 
     prismAxisPositionRight: PrismPosition = PrismPosition.None,
     onPrismAxisRightPicked: (position: PrismPosition) -> Unit = {},
+
+    observation: String = stringResource(id = R.string.empty_string),
+    onObservationUpdate: (observation: String) -> Unit = {},
 ) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(animationId)
@@ -260,6 +276,12 @@ fun PrescriptionDataUI(
 
             prismAxisPositionRight = prismAxisPositionRight,
             onPrismAxisRightPicked = onPrismAxisRightPicked,
+        )
+
+        Spacer(modifier = Modifier.height(betweenSectionSpacer))
+        PrescriptionObservation(
+            observation = observation,
+            onObservationUpdate = onObservationUpdate,
         )
 
         Spacer(modifier = Modifier.height(betweenSectionSpacer))
@@ -520,6 +542,90 @@ private fun PrescriptionDegrees(
             enabled = hasPrism,
             axisEnabled = isPrismAxisLeftEnabled,
         )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun PrescriptionObservation(
+    modifier: Modifier = Modifier,
+    observation: String = "",
+    onObservationUpdate: (observation: String) -> Unit = {},
+) {
+    val minimumHeightState = remember { MinimumHeightState(24.dp) }
+    val density = LocalDensity.current
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        SectionTitle(title = stringResource(id = R.string.title_observation))
+        Spacer(modifier = Modifier.height(sectionTitleSpacer))
+
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            TextField(
+                modifier = modifier
+                    .minimumHeightModifier(minimumHeightState, density)
+                    .weight(0.8f)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(horizontal = 24.dp),
+                value = observation,
+                onValueChange = onObservationUpdate,
+
+                textStyle = MaterialTheme.typography.body1,
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = MaterialTheme.colors.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
+
+                maxLines = 5,
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.observation_placeholder),
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.None,
+                ),
+            )
+
+            AnimatedVisibility(
+                visible = observation.isNotEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                IconButton(
+                    modifier = Modifier.weight(0.2f),
+                    onClick = { onObservationUpdate("") },
+                ) {
+                    Icon(
+                        modifier = Modifier.border(
+                            width = 2.dp,
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                            shape = CircleShape,
+                        ),
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = "",
+                        tint = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -1221,5 +1327,31 @@ private fun NumericMeasurePreview() {
 private fun PrescriptionDegreesPreview() {
     SalesAppTheme {
         PrescriptionDegrees(modifier = Modifier.fillMaxSize())
+    }
+}
+
+@Preview
+@Composable
+private fun PrescriptionObservationEmptyPreview() {
+    SalesAppTheme {
+        PrescriptionObservation(
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrescriptionObservationFilledPreview() {
+    SalesAppTheme {
+        PrescriptionObservation(
+            modifier = Modifier.fillMaxSize(),
+            observation = """
+                lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            """.trimIndent()
+        )
     }
 }

@@ -38,6 +38,11 @@ interface LocalPrescriptionRepository {
         lensTypeCategory: LensTypeCategoryName,
     ): LocalPrescriptionUpdateResponse
 
+    suspend fun updatePrescriptionObservation(
+        serviceOrderId: String,
+        observation: String,
+    ): LocalPrescriptionUpdateResponse
+
     fun streamPrescriptionForServiceOrderExists(
         soId: String,
     ): LocalPrescriptionStreamExistsResponse

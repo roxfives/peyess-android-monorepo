@@ -54,7 +54,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     views = [
         ServiceOrderDBView::class,
     ],
-    version = 64,
+    version = 65,
 )
 @TypeConverters(
     ConverterLocalDate::class,

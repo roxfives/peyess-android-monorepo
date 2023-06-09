@@ -44,6 +44,13 @@ interface LocalPrescriptionDao {
         lensTypeCategory: String,
     )
 
+    @Query("""
+        UPDATE ${PrescriptionEntity.tableName}
+        SET observation = :observation
+        WHERE so_id = :serviceOrderId
+    """)
+    suspend fun updateObservation(serviceOrderId: String, observation: String)
+
     @Query("SELECT COUNT(*) FROM ${PrescriptionEntity.tableName} WHERE so_id = :serviceOrderId")
     suspend fun exitsForServiceOrder(serviceOrderId: String): Int?
 }

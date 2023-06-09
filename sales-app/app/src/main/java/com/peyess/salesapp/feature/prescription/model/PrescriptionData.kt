@@ -43,4 +43,6 @@ data class PrescriptionData(
     val prismAxisRight: Double = floor(middle(maxPrismAxis, minPrismAxis)),
     val prismPositionLeft: PrismPosition = PrismPosition.None,
     val prismPositionRight: PrismPosition = PrismPosition.None,
+
+    val observation: String = "",
 )

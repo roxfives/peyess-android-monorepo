@@ -556,6 +556,16 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         }
     }
 
+    fun updateObservation(observation: String) = withState {
+        val prescriptionData = it.prescriptionResponse
+
+        if (prescriptionData.id.isNotBlank()) {
+            val prescription = it.prescriptionResponse.copy(observation = observation)
+
+            updatePrescription(prescription)
+        }
+    }
+
     @AssistedFactory
     interface Factory: AssistedViewModelFactory<PrescriptionDataViewModel, PrescriptionDataState> {
         override fun create(state: PrescriptionDataState): PrescriptionDataViewModel

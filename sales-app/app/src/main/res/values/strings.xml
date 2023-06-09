@@ -175,6 +175,7 @@
     <string name="title_degree">Graus da receita</string>
     <string name="title_addition">Adição</string>
     <string name="title_prism">Prisma</string>
+    <string name="title_observation">Observação</string>
 
     <string name="degree_spherical">Esférico</string>
     <string name="degree_cylindrical">Cilíndrico</string>
@@ -186,6 +187,8 @@
     <string name="prism_axis">Eixo</string>
 
     <string name="curiosities">Curiosidades</string>
+
+    <string name="observation_placeholder">Fotofobia: O paciente apresenta sensibilidade anormal à luz. Recomenda-se o uso de lentes especializadas com filtro de luz para melhorar o conforto visual.</string>
 
     <string name="dialog_select_prism_axis_title">Selecione a posição</string>
     <string name="dialog_select_prism_axis_ok">Selecionar</string>

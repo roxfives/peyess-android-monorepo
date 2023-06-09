@@ -120,6 +120,9 @@
     <string name="btn_client_action_search_client">Procurar cliente usando nome ou CPF</string>
 
     <!--    UI Component: Sales -->
+    <string name="sales_edit_sale">Editar</string>
+    <string name="sales_finish_sale">Finalizar</string>
+
     <string name="go_next_default">Próximo</string>
     <string name="purchase_card_message">Venda no valor de %1$s feita no dia %2$s com responsável %3$s</string>
 

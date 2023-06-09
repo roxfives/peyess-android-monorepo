@@ -28,20 +28,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -360,7 +365,24 @@ private fun ServiceOrderCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+//                    if (finishedSales.contains(purchase.id)) {
+//                        Box(
+//                            modifier = Modifier
+//                                .size(8.dp)
+//                                .border(
+//                                    shape = RoundedCornerShape(100),
+//                                    border = BorderStroke(
+//                                        width = 1.dp,
+//                                        color = Color.Green,
+//                                    ),
+//                                )
+//                                .background(color = Color.Green)
+//                        )
+//                    } else {
+//
+//                    }
                     purchase.state.PurchaseBadge()
+
 
                     Spacer(modifier = Modifier.width(4.dp))
 
@@ -390,19 +412,70 @@ private fun ServiceOrderCard(
                 visible = canEditServiceOrder,
                 enter = fadeIn(),
                 exit = fadeOut(),
-            ){
-                Button(
-                    onClick = {
-                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
-
-                        onEditServiceOrder(purchase.id, serviceOrderId)
-                    },
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = purchase.state.actionButtonTitle())
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        IconButton(
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colors.primary,
+                                shape = CircleShape,
+                            ),
+                            onClick = {},
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.onPrimary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_finish_sale),
+                            style = MaterialTheme.typography
+                                .caption.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        IconButton(
+                            modifier = Modifier.background(
+                                color = MaterialTheme.colors.primary,
+                                shape = CircleShape,
+                            ),
+                            onClick = {
+                                val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+
+                                onEditServiceOrder(purchase.id, serviceOrderId)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.onPrimary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_finish_sale),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             AnimatedVisibility(
                 visible = isGeneratingPdf,

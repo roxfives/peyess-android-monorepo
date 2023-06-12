@@ -24,5 +24,7 @@ fun LocalLensTreatmentDocument.toDescription(
 
         isIncluded = isIncluded,
         isDiscounted = isDiscounted,
+
+        accessoryPerUnit = emptyList(),
     )
 }

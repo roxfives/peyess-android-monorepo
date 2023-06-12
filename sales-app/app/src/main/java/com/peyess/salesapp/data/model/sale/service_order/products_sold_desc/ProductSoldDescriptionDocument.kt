@@ -1,7 +1,7 @@
 package com.peyess.salesapp.data.model.sale.service_order.products_sold_desc
 
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
-
 
 data class ProductSoldDescriptionDocument(
     val id: String = "",
@@ -15,4 +15,6 @@ data class ProductSoldDescriptionDocument(
 
     val isDiscounted: Boolean = false,
     val isIncluded: Boolean = false,
+
+    val accessoryPerUnit: List<AccessoryItemDocument> = emptyList(),
 )

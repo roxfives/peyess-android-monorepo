@@ -3,12 +3,8 @@ package com.peyess.salesapp.data.adapter.service_order
 import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldDescriptionDocument
 import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.data.adapter.products_sold.toProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.utils.time.toZonedDateTime
 
 

@@ -61,6 +61,7 @@ data class ServiceOrderUpdateDocument(
     val framesProducts: ProductSoldFramesDescriptionDocument = ProductSoldFramesDescriptionDocument(),
     val miscProducts: List<ProductSoldDescriptionDocument> = emptyList(),
 
+    val prescriptionId: String = "",
     val isCopy: Boolean = false,
     val professionalName: String = "",
     val professionalId: String = "",

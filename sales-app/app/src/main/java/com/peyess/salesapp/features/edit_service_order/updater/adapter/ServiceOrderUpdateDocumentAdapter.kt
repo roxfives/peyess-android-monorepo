@@ -116,5 +116,8 @@ fun ServiceOrderUpdateDocument.toPreview(): DenormalizedServiceOrderDescDocument
         framesProducts = framesProducts,
 
         miscProducts = miscProducts,
+
+        observation = observation,
+        prescriptionId = prescriptionId,
     )
 }

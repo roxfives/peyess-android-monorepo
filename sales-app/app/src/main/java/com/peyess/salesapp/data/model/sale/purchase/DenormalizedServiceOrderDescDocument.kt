@@ -14,4 +14,7 @@ data class DenormalizedServiceOrderDescDocument(
     val framesProducts: ProductSoldFramesDescriptionDocument = ProductSoldFramesDescriptionDocument(),
 
     val miscProducts: List<ProductSoldDescriptionDocument> = emptyList(),
+
+    val observation: String = "",
+    val prescriptionId: String = "",
 )

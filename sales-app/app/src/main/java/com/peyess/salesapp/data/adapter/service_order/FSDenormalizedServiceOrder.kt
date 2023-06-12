@@ -16,5 +16,8 @@ fun FSDenormalizedServiceOrderDesc.toDenormalizedServiceOrderDescDocument(): Den
         framesProducts = framesProducts.toProductSoldFramesDescriptionDocument(),
 
         miscProducts = miscProducts.map { it.toProductSoldDescriptionDocument() },
+
+        observation = observation,
+        prescriptionId = prescriptionId,
     )
 }

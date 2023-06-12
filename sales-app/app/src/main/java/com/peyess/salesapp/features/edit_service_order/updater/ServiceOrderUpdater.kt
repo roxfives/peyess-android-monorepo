@@ -218,6 +218,7 @@ class ServiceOrderUpdater @Inject constructor(
                 }.bind()
 
         update.copy(
+            prescriptionId = prescription.id,
             isCopy = prescription.isCopy,
             professionalName = prescription.professionalName,
             professionalId = prescription.professionalId,

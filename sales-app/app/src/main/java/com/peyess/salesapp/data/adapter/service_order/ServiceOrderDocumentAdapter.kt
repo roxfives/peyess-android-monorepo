@@ -4,12 +4,8 @@ import com.peyess.salesapp.data.adapter.product_sold_desc.toFSProductSoldFramesD
 import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescription
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductSoldEyeSet
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldFramesDescription
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {

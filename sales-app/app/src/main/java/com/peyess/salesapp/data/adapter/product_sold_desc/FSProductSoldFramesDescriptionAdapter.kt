@@ -1,5 +1,6 @@
 package com.peyess.salesapp.data.adapter.product_sold_desc
 
+import com.peyess.salesapp.data.adapter.purchase.discount.description.toAccessoryItemDocument
 import com.peyess.salesapp.typing.frames.FramesType
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toDiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldFramesDescription
@@ -19,5 +20,6 @@ fun FSProductSoldFramesDescription
         units = units,
         price = price,
         discount = discount.toDiscountDescriptionDocument(),
+        accessoriesPerUnit = accessoryPerUnit.map { it.toAccessoryItemDocument() },
     )
 }

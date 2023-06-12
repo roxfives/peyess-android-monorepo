@@ -23,6 +23,8 @@ fun FramesDocument.toDescription(): ProductSoldFramesDescriptionDocument {
         color = "",
         style = "",
         type = type,
+
+        accessoriesPerUnit = emptyList(),
     )
 }
 
@@ -44,5 +46,7 @@ fun LocalFramesDocument.toDescription(): ProductSoldFramesDescriptionDocument {
         color = "",
         style = "",
         type = type,
+
+        accessoriesPerUnit = emptyList(),
     )
 }

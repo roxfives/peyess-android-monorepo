@@ -187,6 +187,13 @@ interface EditPrescriptionDao {
     suspend fun updatePrismPositionRight(id: String, prismPositionRight: PrismPosition)
 
     @Query("""
+        UPDATE ${EditPrescriptionEntity.tableName}
+        SET observation = :observation
+        WHERE id = :id
+    """)
+    suspend fun updateObservation(id: String, observation: String)
+
+    @Query("""
         DELETE FROM ${EditPrescriptionEntity.tableName}
         WHERE so_id = :serviceOrderId
     """)

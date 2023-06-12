@@ -414,6 +414,7 @@ class ServiceOrderFetcher @Inject constructor(
             prismAxisRight = prescriptionDocument.rPrismAxis,
             prismPositionLeft = prescriptionDocument.lPrismPos,
             prismPositionRight = prescriptionDocument.rPrismPos,
+            observation = prescriptionDocument.observation,
         )
     }
 
@@ -758,7 +759,7 @@ class ServiceOrderFetcher @Inject constructor(
     suspend fun fetchFullSale(
         serviceOrderId: String,
         purchaseId: String,
-        forceReload: Boolean = false,
+        forceReload: Boolean = true,
     ): ServiceOrderFetchResponse = either {
         val saleExists = saleExistsLocally(purchaseId).bind()
 

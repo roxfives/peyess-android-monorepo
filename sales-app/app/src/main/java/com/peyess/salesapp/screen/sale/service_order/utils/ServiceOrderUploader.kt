@@ -517,7 +517,12 @@ class ServiceOrderUploader constructor(
             fullPrice = total,
             hasOwnFrames = !frames.areFramesNew,
             leftProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,
@@ -528,7 +533,12 @@ class ServiceOrderUploader constructor(
                 ),
             ),
             rightProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,

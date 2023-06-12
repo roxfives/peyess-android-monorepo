@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.sale.service_order.products_sold
 import androidx.annotation.Keep
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
+import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSLensSoldDescription
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
 
 @Keep
@@ -11,7 +12,7 @@ data class FSProductSoldEyeSet(
     @Keep
     @JvmField
     @PropertyName("lenses")
-    val lenses: FSProductSoldDescription = FSProductSoldDescription(),
+    val lenses: FSLensSoldDescription = FSLensSoldDescription(),
 
     @Keep
     @JvmField

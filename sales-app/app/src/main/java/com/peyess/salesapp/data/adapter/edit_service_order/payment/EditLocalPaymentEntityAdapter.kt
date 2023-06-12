@@ -9,19 +9,25 @@ fun EditLocalPaymentEntity.toLocalPaymentDocument(
     clientAddress: String,
 ): LocalPaymentDocument {
     return LocalPaymentDocument(
+        uuid = uuid,
+
         id = id,
         saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
         clientName = clientName,
         clientAddress = clientAddress,
+
         methodId = methodId,
         methodName = methodName,
+
         methodType = methodType,
         value = value,
         installments = installments,
         document = document,
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
     )
 }

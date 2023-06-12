@@ -5,6 +5,8 @@ import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 
 fun PaymentDocument.toFSPayment(): FSPayment {
     return FSPayment(
+        uuid = uuid,
+
         method = methodName.toName(),
         methodId = methodId,
         amount = amount,
@@ -12,8 +14,11 @@ fun PaymentDocument.toFSPayment(): FSPayment {
         currency = currency,
         document = document,
         financialInst = financialInst.toName(),
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
+
         payerUid = payerUid,
         payerDocument = payerDocument,
         payerName = payerName,

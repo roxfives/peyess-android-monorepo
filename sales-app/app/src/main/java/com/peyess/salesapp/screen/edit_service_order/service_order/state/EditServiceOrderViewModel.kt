@@ -61,6 +61,7 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
+import java.util.UUID
 
 private typealias EditServiceOrderFactory =
         AssistedViewModelFactory<EditServiceOrderViewModel, EditServiceOrderState>
@@ -575,6 +576,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     fun createPayment(onAdded: (id: Long) -> Unit) = withState {
         viewModelScope.launch(Dispatchers.IO) {
             val payment = Payment(
+                uuid = UUID.randomUUID().toString(),
                 saleId = it.saleId,
             )
 

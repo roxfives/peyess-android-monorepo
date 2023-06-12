@@ -7,6 +7,8 @@ import com.peyess.salesapp.typing.sale.PaymentMethodType
 
 fun FSPayment.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
+        uuid = uuid,
+
         methodName = PaymentMethodType.fromName(method),
         methodId = methodId,
         amount = amount,
@@ -14,8 +16,11 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
         currency = currency,
         document = document,
         financialInst = FinancialInstitutionType.fromName(financialInst),
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
+
         payerUid = payerUid,
         payerDocument = payerDocument,
         payerName = payerName,

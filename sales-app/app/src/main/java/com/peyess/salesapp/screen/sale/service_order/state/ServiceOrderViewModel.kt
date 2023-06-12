@@ -83,6 +83,7 @@ import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -844,6 +845,7 @@ class ServiceOrderViewModel @AssistedInject constructor(
     fun createPayment(onAdded: (id: Long) -> Unit) = withState {
         suspend {
             val payment = Payment(
+                uuid = UUID.randomUUID().toString(),
                 saleId = it.saleId,
             )
 

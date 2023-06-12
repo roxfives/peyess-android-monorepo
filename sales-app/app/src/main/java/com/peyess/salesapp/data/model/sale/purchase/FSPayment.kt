@@ -10,6 +10,11 @@ import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 data class FSPayment(
     @Keep
     @JvmField
+    @PropertyName("uuid")
+    val uuid: String = "",
+
+    @Keep
+    @JvmField
     @PropertyName("method")
     val method: String = "", // PaymentMethodType
     @Keep
@@ -36,6 +41,11 @@ data class FSPayment(
     @JvmField
     @PropertyName("financial_inst")
     val financialInst: String = FinancialInstitutionType.None.toName(), // FinantialInstitutionType
+
+    @Keep
+    @JvmField
+    @PropertyName("card_nsu")
+    val cardNsu: String = "",
     @Keep
     @JvmField
     @PropertyName("card_flag_name")

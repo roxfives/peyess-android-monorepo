@@ -52,7 +52,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditClientPickedEntity::class,
     ],
 
-    version = 11,
+    version = 12,
 )
 @TypeConverters(
     ConverterUri::class,

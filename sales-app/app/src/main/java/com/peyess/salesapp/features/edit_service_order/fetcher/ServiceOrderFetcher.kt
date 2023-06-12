@@ -306,6 +306,7 @@ class ServiceOrderFetcher @Inject constructor(
     ): List<LocalPaymentDocument> {
         return purchaseDocument.payments.map {
             LocalPaymentDocument(
+                uuid = it.uuid,
                 saleId = purchaseDocument.id,
                 value = it.amount,
                 clientId = it.payerUid,
@@ -316,6 +317,7 @@ class ServiceOrderFetcher @Inject constructor(
                 document = it.document,
                 cardFlagName = it.cardFlagName,
                 cardFlagIcon = Uri.parse(it.cardFlagIcon),
+                cardNsu = it.cardNsu,
             )
         }
     }

@@ -23,6 +23,9 @@ data class LocalPaymentEntity(
     @ColumnInfo(name = "sale_id")
     val saleId: String = "",
 
+    @ColumnInfo(name = "uuid")
+    val uuid: String = "",
+
     // TODO: Normalize data for clients and (maybe) payment method
     @ColumnInfo(name = "client_id")
     val clientId: String = "",
@@ -52,6 +55,8 @@ data class LocalPaymentEntity(
     val cardFlagName: String = "",
     @ColumnInfo(name = "card_flag_icon")
     val cardFlagIcon: Uri = Uri.EMPTY,
+    @ColumnInfo(name = "card_nsu")
+    val cardNsu: String = "",
 ) {
     companion object {
         const val tableName = "payments"

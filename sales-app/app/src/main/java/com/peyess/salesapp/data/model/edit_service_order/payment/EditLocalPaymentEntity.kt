@@ -23,6 +23,9 @@ data class EditLocalPaymentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
 
+    @ColumnInfo(name = "uuid")
+    val uuid: String = "",
+
     @ColumnInfo(name = "sale_id")
     val saleId: String = "",
 
@@ -57,6 +60,8 @@ data class EditLocalPaymentEntity(
     val cardFlagName: String = "",
     @ColumnInfo(name = "card_flag_icon")
     val cardFlagIcon: Uri = Uri.EMPTY,
+    @ColumnInfo(name = "card_nsu")
+    val cardNsu: String = "",
 ) {
     companion object {
         const val tableName = "edit_sale_payment"

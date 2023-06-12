@@ -5,6 +5,8 @@ import com.peyess.salesapp.typing.sale.PaymentMethodType
 
 
 data class PaymentDocument(
+    val uuid: String = "",
+
     val methodName: PaymentMethodType = PaymentMethodType.Unknown,
     val methodId: String = "",
     val amount: Double = 0.0,
@@ -12,6 +14,8 @@ data class PaymentDocument(
     val currency: String = "BRL",
     val document: String = "",
     val financialInst: FinancialInstitutionType = FinancialInstitutionType.None,
+
+    val cardNsu: String = "",
     val cardFlagName: String = "",
     val cardFlagIcon: String = "",
 

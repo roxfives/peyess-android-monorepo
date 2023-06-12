@@ -6,6 +6,7 @@ import com.peyess.salesapp.feature.payment.model.Payment
 fun LocalPaymentDocument.toPayment(): Payment {
     return Payment(
         id = id,
+        uuid = uuid,
         saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
@@ -19,5 +20,6 @@ fun LocalPaymentDocument.toPayment(): Payment {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
     )
 }

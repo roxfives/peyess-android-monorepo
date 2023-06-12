@@ -6,6 +6,7 @@ import com.peyess.salesapp.feature.service_order.model.Payment
 fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
     return LocalPaymentDocument(
         id = id,
+        uuid = uuid,
         saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
@@ -19,5 +20,6 @@ fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
     )
 }

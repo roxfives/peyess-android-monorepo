@@ -3,6 +3,8 @@ package com.peyess.salesapp.data.model.local_sale.payment
 import android.net.Uri
 
 data class LocalPaymentDocument(
+    val uuid: String = "",
+
     val id: Long = 0L,
     val saleId: String = "",
 
@@ -20,4 +22,5 @@ data class LocalPaymentDocument(
     val document: String = "",
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
+    val cardNsu: String = "",
 )

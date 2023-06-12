@@ -4,6 +4,7 @@ import android.net.Uri
 
 data class Payment(
     val id: Long = 0L,
+    val uuid: String = "",
     val saleId: String = "",
 
     val clientId: String = "",
@@ -20,4 +21,5 @@ data class Payment(
     val document: String = "",
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
+    val cardNsu: String = "",
 )

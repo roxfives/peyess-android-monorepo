@@ -30,14 +30,19 @@ fun LocalPaymentDocument.toPayment(): Payment {
 
 fun LocalPaymentDocument.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
+        uuid = uuid,
+
         methodName = PaymentMethodType.fromName(methodType),
         methodId = methodId,
         amount = value,
         installments = installments,
         document = document,
         financialInst = FinancialInstitutionType.fromName("bank"),
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon.toString(),
+        cardNsu = cardNsu,
+
         payerUid = clientId,
         payerDocument = clientDocument,
         payerName = clientName,

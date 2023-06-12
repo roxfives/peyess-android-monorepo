@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
 fun LocalPaymentDocument.toLocalPaymentEntity(): LocalPaymentEntity {
     return LocalPaymentEntity(
         id = id,
+        uuid = uuid,
         saleId = saleId,
         clientId = clientId,
         clientDocument = clientDocument,
@@ -19,5 +20,6 @@ fun LocalPaymentDocument.toLocalPaymentEntity(): LocalPaymentEntity {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
     )
 }

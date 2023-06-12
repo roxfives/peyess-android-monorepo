@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 fun LocalPaymentDocument.toEditLocalPaymentEntity(): EditLocalPaymentEntity {
     return EditLocalPaymentEntity(
         id = id,
+        uuid = uuid,
         saleId = saleId,
         clientId = clientId,
         methodId = methodId,
@@ -16,5 +17,6 @@ fun LocalPaymentDocument.toEditLocalPaymentEntity(): EditLocalPaymentEntity {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        cardNsu = cardNsu,
     )
 }

@@ -33,6 +33,7 @@ fun PrescriptionUpdateDocument.toFSPrescriptionUpdate(): FSPrescriptionUpdate {
         rPrismAxis = rPrismAxis,
         rPrismDegree = rPrismDegree,
         rPrismPos = rPrismPos,
+        observation = observation,
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,

@@ -156,6 +156,11 @@ data class FSPrescription(
     @PropertyName("r_prism_pos")
     val rPrismPos: String = "",
 
+    @JvmField
+    @Keep
+    @PropertyName("observation")
+    val observation: String = "",
+
     @Keep
     @JvmField
     @PropertyName("doc_version")

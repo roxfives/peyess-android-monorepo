@@ -40,6 +40,8 @@ data class FSPrescriptionUpdate(
     val rPrismDegree: Double = 0.0,
     val rPrismPos: String = "",
 
+    val observation: String = "",
+
     val updated: Timestamp = Timestamp.now(),
     val updatedBy: String = "",
     val updateAllowedBy: String = "",

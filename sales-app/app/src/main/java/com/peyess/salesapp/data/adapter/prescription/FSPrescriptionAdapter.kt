@@ -55,6 +55,8 @@ fun prescriptionFrom(
         rPrismDegree = prescriptionEntity.prismDegreeRight,
         rPrismPos = prescriptionEntity.prismPositionRight,
 
+        observation = prescriptionEntity.observation,
+
         createdBy = salespersonUid,
         createAllowedBy = salespersonUid,
         updatedBy = salespersonUid,

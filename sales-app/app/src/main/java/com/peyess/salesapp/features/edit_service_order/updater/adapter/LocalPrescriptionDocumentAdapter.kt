@@ -38,6 +38,7 @@ fun LocalPrescriptionDocument.toPrescriptionUpdateDocument(
         rPrismAxis = prismAxisRight,
         rPrismDegree = prismDegreeRight,
         rPrismPos = prismPositionRight.toName(),
+        observation = observation,
         updated = updated,
         updatedBy = collaboratorUid,
         updateAllowedBy = collaboratorUid,

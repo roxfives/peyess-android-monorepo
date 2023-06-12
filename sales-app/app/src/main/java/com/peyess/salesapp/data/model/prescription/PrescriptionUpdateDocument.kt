@@ -1,6 +1,5 @@
 package com.peyess.salesapp.data.model.prescription
 
-import com.peyess.salesapp.features.disponibility.contants.LensType
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import java.time.ZonedDateTime
 
@@ -41,6 +40,8 @@ data class PrescriptionUpdateDocument(
     val rPrismAxis: Double = 0.0,
     val rPrismDegree: Double = 0.0,
     val rPrismPos: String = "",
+
+    val observation: String = "",
 
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",

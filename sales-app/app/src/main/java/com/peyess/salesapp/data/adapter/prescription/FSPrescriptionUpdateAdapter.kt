@@ -31,6 +31,7 @@ fun FSPrescriptionUpdate.toUpdateMap(): Map<String, Any> {
         "r_prism_axis" to rPrismAxis,
         "r_prism_degree" to rPrismDegree,
         "r_prism_pos" to rPrismPos,
+        "observation" to observation,
         "updated" to updated,
         "updated_by" to updatedBy,
         "update_allowed_by" to updateAllowedBy,

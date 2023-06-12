@@ -58,6 +58,10 @@ class PrescriptionDataViewModel @AssistedInject constructor(
 
         onEach(PrescriptionDataState::lensTypeCategoryName) { loadMessage(it) }
 
+        onEach(PrescriptionDataState::prescriptionObservation) {
+            updatePrescriptionObservation(it)
+        }
+
         onAsync(PrescriptionDataState::activeServiceOrderResponseAsync) {
             processServiceOrderDataResponse(it)
         }
@@ -232,6 +236,18 @@ class PrescriptionDataViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             localPrescriptionRepository
                 .updatePrescription(prescription.toLocalPrescriptionDocument())
+        }
+    }
+
+    private fun updatePrescriptionObservation(observation: String) = withState {
+        val serviceOrderId = it.prescriptionResponse.soId
+        val prescriptionId = it.prescriptionResponse.id
+
+        if (prescriptionId.isNotBlank() && serviceOrderId.isNotBlank()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                localPrescriptionRepository
+                    .updatePrescriptionObservation(serviceOrderId, observation)
+            }
         }
     }
 
@@ -557,12 +573,10 @@ class PrescriptionDataViewModel @AssistedInject constructor(
     }
 
     fun updateObservation(observation: String) = withState {
-        val prescriptionData = it.prescriptionResponse
-
-        if (prescriptionData.id.isNotBlank()) {
-            val prescription = it.prescriptionResponse.copy(observation = observation)
-
-            updatePrescription(prescription)
+        if (it.prescriptionResponse.soId.isNotBlank()) {
+            setState {
+                copy(prescriptionObservation = observation)
+            }
         }
     }
 

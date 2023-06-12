@@ -52,6 +52,8 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
         rPrismDegree = rPrismDegree,
         rPrismPos = rPrismPos.toName(),
 
+        observation = observation,
+
         docVersion = docVersion,
         isEditable = isEditable,
 

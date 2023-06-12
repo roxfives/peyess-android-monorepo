@@ -27,6 +27,8 @@ data class PrescriptionDataState(
     val animationId: Int = 0,
     val generalMessage: String = "",
 
+    val prescriptionObservation: String = "",
+
     val isLoading: Boolean = false,
 ): MavericksState {
     val saleId = activeServiceOrderResponse.saleId
@@ -77,6 +79,4 @@ data class PrescriptionDataState(
     val hasAstigmatismRight = cylindricalRight < 0;
     val hasPresbyopiaRight = lensTypeCategoryName is LensTypeCategoryName.Near
             || lensTypeCategoryName is LensTypeCategoryName.Multi
-
-    val observation = prescriptionResponse.observation
 }

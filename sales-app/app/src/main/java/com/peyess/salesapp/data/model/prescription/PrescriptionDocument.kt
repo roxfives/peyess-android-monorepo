@@ -51,6 +51,8 @@ data class PrescriptionDocument(
     val rPrismDegree: Double = 0.0,
     val rPrismPos: PrismPosition = PrismPosition.None,
 
+    val observation: String = "",
+
     val docVersion: Int = 0,
     val isEditable: Boolean = false,
 

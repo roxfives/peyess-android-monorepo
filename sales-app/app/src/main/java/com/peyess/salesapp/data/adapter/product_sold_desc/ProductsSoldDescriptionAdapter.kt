@@ -16,6 +16,9 @@ fun ProductSoldDescriptionDocument.toFSSoldProductDescription(): FSProductSoldDe
         isDiscounted = isDiscounted,
         isIncluded = isIncluded,
 
-        accessoryPerUnit = accessoryPerUnit.map { it.toFSAccessoryItem() }
+        accessoryPerUnit = accessoryPerUnit.map { it.toFSAccessoryItem() },
+
+        supplierId = supplierId,
+        supplierName = supplierName,
     )
 }

@@ -5,6 +5,7 @@ import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 
 fun FSLensTreatment.toStoreLensTreatmentDocument(
     id: String,
+    supplierId: String,
 ): StoreLensTreatmentDocument {
     return StoreLensTreatmentDocument(
         id = id,
@@ -21,6 +22,7 @@ fun FSLensTreatment.toStoreLensTreatmentDocument(
         shippingTime = shippingTime,
         specialty = specialty,
         suggestedPrice = suggestedPrice,
+        supplierId = supplierId,
         supplier = supplier,
         warning = warning,
     )

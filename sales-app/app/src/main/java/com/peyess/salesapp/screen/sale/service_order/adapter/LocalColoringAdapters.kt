@@ -26,5 +26,8 @@ fun LocalLensColoringDocument.toDescription(
         isDiscounted = isDiscounted,
 
         accessoryPerUnit = emptyList(),
+
+        supplierId = supplierId,
+        supplierName = supplier,
     )
 }

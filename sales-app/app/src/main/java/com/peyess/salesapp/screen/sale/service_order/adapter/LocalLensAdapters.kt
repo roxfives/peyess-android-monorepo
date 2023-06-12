@@ -14,5 +14,8 @@ fun StoreLensWithDetailsDocument.toDescription(): ProductSoldDescriptionDocument
         discount = DiscountDescriptionDocument(),
 
         accessoryPerUnit = emptyList(),
+
+        supplierId = supplierId,
+        supplierName = supplierName,
     )
 }

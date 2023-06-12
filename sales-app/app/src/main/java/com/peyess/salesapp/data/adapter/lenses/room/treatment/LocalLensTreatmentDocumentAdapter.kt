@@ -15,6 +15,7 @@ fun LocalLensTreatmentDocument.toLocalLensTreatmentEntity(): LocalLensTreatmentE
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         warning = warning,
     )

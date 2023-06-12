@@ -12,6 +12,7 @@ data class LocalLensTreatmentDocument(
     val priority: Double = 0.0,
     val shippingTime: Double = 0.0,
     val specialty: String = "",
+    val supplierId: String = "",
     val supplier: String = "",
     val warning: String = "",
     val explanations: List<String> = emptyList(),

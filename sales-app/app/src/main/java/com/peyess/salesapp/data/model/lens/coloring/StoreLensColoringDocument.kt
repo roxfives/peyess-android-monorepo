@@ -18,6 +18,7 @@ data class StoreLensColoringDocument(
     val shippingTime: Double = 0.0,
     val specialty: String = "",
     val suggestedPrice: Double = 0.0,
+    val supplierId: String = "",
     val supplier: String = "",
     val type: String = "",
     val warning: String = "",

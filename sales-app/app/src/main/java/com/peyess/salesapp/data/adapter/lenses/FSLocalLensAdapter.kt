@@ -86,9 +86,9 @@ fun FSStoreLocalLens.toStoreLensDocument(): StoreLensDocument {
         altHeights = altHeights.map { it.value.toStoreLensAltHeightDocument(it.key) },
 
         defaultTreatment = defaultTreatment,
-        treatments = treatments.map { it.value.toStoreLensTreatmentDocument(it.key) },
+        treatments = treatments.map { it.value.toStoreLensTreatmentDocument(it.key, supplierId) },
 
-        colorings = colorings.map { it.value.toStoreColoringAdapter(it.key) },
+        colorings = colorings.map { it.value.toStoreColoringAdapter(it.key, supplierId) },
 
         costAddColoring = costAddColoring,
         costAddTreatment = costAddTreatment,

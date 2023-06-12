@@ -17,4 +17,7 @@ data class ProductSoldDescriptionDocument(
     val isIncluded: Boolean = false,
 
     val accessoryPerUnit: List<AccessoryItemDocument> = emptyList(),
+
+    val supplierId: String = "",
+    val supplierName: String = "",
 )

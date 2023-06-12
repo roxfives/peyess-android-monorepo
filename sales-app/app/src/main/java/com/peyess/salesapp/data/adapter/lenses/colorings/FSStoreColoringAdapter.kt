@@ -5,6 +5,7 @@ import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 
 fun FSStoreLensColoring.toStoreColoringAdapter(
     id: String,
+    supplierId: String,
 ): StoreLensColoringDocument {
     return StoreLensColoringDocument(
         id = id,
@@ -23,6 +24,7 @@ fun FSStoreLensColoring.toStoreColoringAdapter(
         shippingTime = shippingTime,
         specialty = specialty,
         suggestedPrice = suggestedPrice,
+        supplierId = supplierId,
         supplier = supplier,
         type = type,
         warning = warning,

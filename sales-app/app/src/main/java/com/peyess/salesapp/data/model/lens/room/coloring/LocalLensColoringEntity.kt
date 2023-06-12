@@ -43,6 +43,9 @@ data class LocalLensColoringEntity(
     @ColumnInfo(name = "specialty")
     val specialty: String = "",
 
+    @ColumnInfo(name = "supplier_id")
+    val supplierId: String = "",
+
     @ColumnInfo(name = "supplier")
     val supplier: String = "",
 

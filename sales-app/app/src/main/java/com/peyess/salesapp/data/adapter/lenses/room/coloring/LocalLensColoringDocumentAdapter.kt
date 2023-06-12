@@ -17,6 +17,7 @@ fun LocalLensColoringDocument.toLocalLensColoringEntity(): LocalLensColoringEnti
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         type = type,
         warning = warning,

@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.service_order.utils.adapter
+package com.peyess.salesapp.screen.sale.service_order.adapter
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument

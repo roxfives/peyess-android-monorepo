@@ -58,7 +58,7 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
-import com.peyess.salesapp.screen.sale.service_order.utils.adapter.toDescription
+import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole

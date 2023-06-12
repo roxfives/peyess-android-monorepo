@@ -16,7 +16,7 @@ import com.peyess.salesapp.data.adapter.measuring.toMeasuringDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
-import com.peyess.salesapp.screen.sale.service_order.utils.adapter.toDescription
+import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument

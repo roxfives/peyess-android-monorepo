@@ -139,6 +139,11 @@
     <string name="btn_open_pdf">Abrir PDF</string>
     <string name="btn_edit_service_order">Editar Ordem de Serviço</string>
 
+    <string name="dialog_finish_sale_title">Tem certeza que deseja finalizar a venda?</string>
+    <string name="dialog_finish_sale_content">Após a finalização da venda, não será mais possível editá-la. Tem certeza que deseja finalizá-la?</string>
+    <string name="dialog_finish_sale_confirm">Finalizar venda</string>
+    <string name="dialog_finish_sale_cancel">Voltar</string>
+
     <!--    UI Component: Clients -->
     <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
     <string name="clients_screen_btn_clear_search">Limpar pesquisa</string>

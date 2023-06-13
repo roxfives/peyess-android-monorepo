@@ -69,6 +69,7 @@ import com.peyess.salesapp.app.state.PurchaseStream
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.screen.home.dialog.ConfirmFinishSaleDialog
 import com.peyess.salesapp.screen.home.utils.PurchaseBadge
 import com.peyess.salesapp.screen.home.utils.actionButtonTitle
 import com.peyess.salesapp.screen.home.utils.displayName
@@ -80,6 +81,7 @@ import com.peyess.salesapp.screen.sale.anamnesis.sixth_step_time.state.SixthStep
 import com.peyess.salesapp.screen.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -419,12 +421,20 @@ private fun ServiceOrderCard(
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+//                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+                        val dialogState = rememberMaterialDialogState()
+                        ConfirmFinishSaleDialog(
+                            dialogState = dialogState,
+                            onConfirmFinish = { dialogState.hide() },
+                            onCancelFinish = { dialogState.hide() }
+                        )
+
                         IconButton(
                             modifier = Modifier.background(
                                 color = MaterialTheme.colors.primary,
                                 shape = CircleShape,
                             ),
-                            onClick = {},
+                            onClick = { dialogState.show() },
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Done,
@@ -442,7 +452,7 @@ private fun ServiceOrderCard(
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -454,7 +464,6 @@ private fun ServiceOrderCard(
                             ),
                             onClick = {
                                 val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
-
                                 onEditServiceOrder(purchase.id, serviceOrderId)
                             },
                         ) {
@@ -468,7 +477,7 @@ private fun ServiceOrderCard(
                         Spacer(modifier = Modifier.height(2.dp))
 
                         Text(
-                            text = stringResource(id = R.string.sales_finish_sale),
+                            text = stringResource(id = R.string.sales_edit_sale),
                             style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
                         )
                     }

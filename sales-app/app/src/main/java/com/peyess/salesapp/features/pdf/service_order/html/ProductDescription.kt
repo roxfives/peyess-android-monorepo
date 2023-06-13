@@ -128,15 +128,23 @@ private fun buildProductList(
     val sets: MutableList<String> = mutableListOf()
 
     var lensDiscount: DiscountDescriptionDocument
+    var lensAccessoryDiscount: DiscountDescriptionDocument
     var coloringsDiscount: DiscountDescriptionDocument
+    var coloringAccessoryDiscount: DiscountDescriptionDocument
     var treatmentsDiscount: DiscountDescriptionDocument
+    var treatmentAccessoryDiscount: DiscountDescriptionDocument
     var framesDiscount: DiscountDescriptionDocument
+    var framesAccessoryDiscount: DiscountDescriptionDocument
     var miscDiscount: DiscountDescriptionDocument
 
     var lensFee: PaymentFeeDocument
+    var lensAccessoryFee: PaymentFeeDocument
     var coloringsFee: PaymentFeeDocument
+    var coloringAccessoryFee: PaymentFeeDocument
     var treatmentsFee: PaymentFeeDocument
+    var treatmentAccessoryFee: PaymentFeeDocument
     var framesFee: PaymentFeeDocument
+    var framesAccessoryFee: PaymentFeeDocument
     var miscFee: PaymentFeeDocument
 
     eyeSets.forEach { set ->
@@ -189,6 +197,34 @@ private fun buildProductList(
             ),
         )
 
+        set.lenses.accessoryPerUnit.forEach {
+            lensAccessoryDiscount = if (isOverallDiscount) {
+                generalDiscount
+            } else {
+                it.discount
+            }
+            lensAccessoryFee = if (isOverallDiscount) {
+                generalFee
+            } else {
+                PaymentFeeDocument()
+            }
+
+            sets.add(
+                productUnitDescription(
+                    context = context,
+                    productCode = "",
+                    quantity = set.lenses.units,
+                    priceWithoutDiscount = it.price,
+                    discount = discountAsPercentage(lensAccessoryDiscount, it.price),
+                    description = it.nameDisplay,
+                    fee = feeAsPercentage(
+                        lensAccessoryFee,
+                        it.price * (1 - discountAsPercentage(lensAccessoryDiscount, it.price)),
+                    ),
+                ),
+            )
+        }
+
         // TODO: Refactor this set to have the data about being a placeholder only
         if (
             set.colorings.nameDisplay.trim() != "Indisponível"
@@ -209,6 +245,34 @@ private fun buildProductList(
                     ),
                 ),
             )
+
+            set.colorings.accessoryPerUnit.forEach {
+                coloringAccessoryDiscount = if (isOverallDiscount) {
+                    generalDiscount
+                } else {
+                    it.discount
+                }
+                coloringAccessoryFee = if (isOverallDiscount) {
+                    generalFee
+                } else {
+                    PaymentFeeDocument()
+                }
+
+                sets.add(
+                    productUnitDescription(
+                        context = context,
+                        productCode = "",
+                        quantity = set.colorings.units,
+                        priceWithoutDiscount = it.price,
+                        discount = discountAsPercentage(coloringAccessoryDiscount, it.price),
+                        description = it.nameDisplay,
+                        fee = feeAsPercentage(
+                            coloringAccessoryFee,
+                            it.price * (1 - discountAsPercentage(coloringAccessoryDiscount, it.price)),
+                        ),
+                    ),
+                )
+            }
         }
 
         if (
@@ -230,14 +294,42 @@ private fun buildProductList(
                     ),
                 ),
             )
+
+            set.treatments.accessoryPerUnit.forEach {
+                treatmentAccessoryDiscount = if (isOverallDiscount) {
+                    generalDiscount
+                } else {
+                    it.discount
+                }
+                treatmentAccessoryFee = if (isOverallDiscount) {
+                    generalFee
+                } else {
+                    PaymentFeeDocument()
+                }
+
+                sets.add(
+                    productUnitDescription(
+                        context = context,
+                        productCode = "",
+                        quantity = set.treatments.units,
+                        priceWithoutDiscount = it.price,
+                        discount = discountAsPercentage(treatmentAccessoryDiscount, it.price),
+                        description = it.nameDisplay,
+                        fee = feeAsPercentage(
+                            treatmentAccessoryFee,
+                            it.price * (1 - discountAsPercentage(treatmentAccessoryDiscount, it.price)),
+                        ),
+                    ),
+                )
+            }
         }
     }
 
-    frames.forEach {
+    frames.forEach { framesItem ->
         framesDiscount = if (isOverallDiscount) {
             generalDiscount
         } else {
-            it.discount
+            framesItem.discount
         }
         framesFee = if (isOverallDiscount) {
             generalFee
@@ -249,16 +341,44 @@ private fun buildProductList(
             productUnitDescription(
                 context = context,
                 productCode = "",
-                quantity = it.units,
-                priceWithoutDiscount = it.price,
-                discount = discountAsPercentage(framesDiscount, it.price),
-                description = it.nameDisplay,
+                quantity = framesItem.units,
+                priceWithoutDiscount = framesItem.price,
+                discount = discountAsPercentage(framesDiscount, framesItem.price),
+                description = framesItem.nameDisplay,
                 fee = feeAsPercentage(
                     framesFee,
-                    it.price * (1 - discountAsPercentage(framesDiscount, it.price)),
+                    framesItem.price * (1 - discountAsPercentage(framesDiscount, framesItem.price)),
                 ),
             ),
         )
+
+        framesItem.accessoriesPerUnit.forEach { framesAccessory ->
+            coloringAccessoryDiscount = if (isOverallDiscount) {
+                generalDiscount
+            } else {
+                framesAccessory.discount
+            }
+            coloringAccessoryFee = if (isOverallDiscount) {
+                generalFee
+            } else {
+                PaymentFeeDocument()
+            }
+
+            sets.add(
+                productUnitDescription(
+                    context = context,
+                    productCode = "",
+                    quantity = framesItem.units,
+                    priceWithoutDiscount = framesAccessory.price,
+                    discount = discountAsPercentage(coloringAccessoryDiscount, framesAccessory.price),
+                    description = framesAccessory.nameDisplay,
+                    fee = feeAsPercentage(
+                        coloringAccessoryFee,
+                        framesAccessory.price * (1 - discountAsPercentage(coloringAccessoryDiscount, framesAccessory.price)),
+                    ),
+                ),
+            )
+        }
     }
 
     misc.forEach {

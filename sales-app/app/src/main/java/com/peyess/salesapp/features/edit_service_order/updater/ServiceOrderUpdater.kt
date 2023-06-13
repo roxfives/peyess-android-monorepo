@@ -18,6 +18,7 @@ import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
+import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
@@ -319,7 +320,7 @@ class ServiceOrderUpdater @Inject constructor(
                 )
             }.bind()
 
-        val misc = mutableListOf<ProductSoldDescriptionDocument>()
+        val lensAccessories = mutableListOf<AccessoryItemDocument>()
 
         val framesValue = if (frames.areFramesNew) {
             frames.value
@@ -340,11 +341,12 @@ class ServiceOrderUpdater @Inject constructor(
             ) {
                 total += lens.priceAddColoring
 
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
+                lensAccessories.add(
+                    AccessoryItemDocument(
                         nameDisplay = "Adicional por coloração",
-                        price = lens.priceAddColoring,
+                        price = BigDecimal(lens.priceAddColoring).divide(
+                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+                        ).toDouble()
                     )
                 )
             }
@@ -361,11 +363,12 @@ class ServiceOrderUpdater @Inject constructor(
             ) {
                 total += lens.priceAddTreatment
 
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
+                lensAccessories.add(
+                    AccessoryItemDocument(
                         nameDisplay = "Adicional por tratamento",
-                        price = lens.priceAddTreatment,
+                        price = BigDecimal(lens.priceAddTreatment).divide(
+                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+                        ).toDouble(),
                     )
                 )
             }
@@ -383,6 +386,7 @@ class ServiceOrderUpdater @Inject constructor(
                             && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = lensAccessories,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -400,6 +404,7 @@ class ServiceOrderUpdater @Inject constructor(
                             && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = lensAccessories,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -412,7 +417,7 @@ class ServiceOrderUpdater @Inject constructor(
             ),
 
             framesProducts = frames.toDescription(),
-            miscProducts = misc,
+            miscProducts = emptyList(),
         )
     }
 

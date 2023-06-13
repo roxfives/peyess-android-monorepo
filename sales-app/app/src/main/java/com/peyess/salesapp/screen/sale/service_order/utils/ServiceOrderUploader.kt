@@ -445,12 +445,12 @@ class ServiceOrderUploader constructor(
             .mapLeft { LensNotFound(it.description, it.error) }
             .bind()
 
-        val coloring = localLensesRepository
+        var coloring = localLensesRepository
             .getColoringById(productPicked.coloringId)
             .mapLeft { ColoringNotFound(it.description, it.error) }
             .bind()
 
-        val treatment = localLensesRepository
+        var treatment = localLensesRepository
             .getTreatmentById(productPicked.treatmentId)
             .mapLeft { TreatmentNotFound(it.description, it.error) }
             .bind()
@@ -460,7 +460,7 @@ class ServiceOrderUploader constructor(
             .mapLeft { FramesNotFound(it.description, it.error) }
             .bind()
 
-        val lensAccessories = mutableListOf<AccessoryItemDocument>()
+//        val lensAccessories = mutableListOf<AccessoryItemDocument>()
 
         val framesValue = if (frames.areFramesNew) {
             frames.value
@@ -480,21 +480,22 @@ class ServiceOrderUploader constructor(
                 && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
                 total += lens.priceAddColoring
-
-                lensAccessories.add(
-                    AccessoryItemDocument(
-                        nameDisplay = "Adicional por coloração",
-                        price = BigDecimal(lens.priceAddColoring).divide(
-                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
-                        ).toDouble(),
-                    )
-                )
+                coloring = coloring.copy(price = coloring.price + lens.priceAddColoring)
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por coloração",
+//                        price = BigDecimal(lens.priceAddColoring).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble(),
+//                    )
+//                )
             }
         }
 
         // TODO: refactor to remove identification by name
         if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
             total += treatment.price
+            treatment = treatment.copy(price = treatment.price + lens.priceAddTreatment)
 
             if (
                 lens.priceAddTreatment > 0
@@ -503,14 +504,15 @@ class ServiceOrderUploader constructor(
             ) {
                 total += lens.priceAddTreatment
 
-                lensAccessories.add(
-                    AccessoryItemDocument(
-                        nameDisplay = "Adicional por tratamento",
-                        price = BigDecimal(lens.priceAddTreatment).divide(
-                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
-                        ).toDouble(),
-                    )
-                )
+
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por tratamento",
+//                        price = BigDecimal(lens.priceAddTreatment).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble(),
+//                    )
+//                )
             }
         }
 
@@ -525,7 +527,7 @@ class ServiceOrderUploader constructor(
                             && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
-                    accessoriesPerUnit = lensAccessories,
+                    accessoriesPerUnit = emptyList(),
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -542,7 +544,7 @@ class ServiceOrderUploader constructor(
                             && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
-                    accessoriesPerUnit = lensAccessories,
+                    accessoriesPerUnit = emptyList(),
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,

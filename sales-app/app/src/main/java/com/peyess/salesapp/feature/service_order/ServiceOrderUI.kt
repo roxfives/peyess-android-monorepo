@@ -1411,12 +1411,20 @@ private fun ProductsSection(
 
         val coloringPrice = if (lens.isColoringDiscounted || lens.isColoringIncluded) {
             0.0
+        } else if (lens.priceAddColoring > 0
+            && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel") {
+            coloring.price + lens.priceAddColoring
         } else {
             coloring.price
         }
 
         val treatmentPrice = if (lens.isTreatmentDiscounted || lens.isTreatmentIncluded) {
             0.0
+        } else if (lens.priceAddTreatment > 0
+            && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel") {
+            treatment.price + lens.priceAddTreatment
         } else {
             treatment.price
         }
@@ -1472,7 +1480,7 @@ private fun ProductsSection(
             Spacer(modifier = Modifier.size(productSpacerSize))
 
             ColoringCard(
-                coloringEntity = coloring,
+                coloringEntity = coloring.copy(price = coloringPrice),
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
@@ -1480,8 +1488,9 @@ private fun ProductsSection(
 
         if (!lens.isTreatmentIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
+
             TreatmentCard(
-                treatmentEntity = treatment,
+                treatmentEntity = treatment.copy(price = treatmentPrice),
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
@@ -1501,7 +1510,7 @@ private fun ProductsSection(
         if (!lens.isColoringIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
             ColoringCard(
-                coloringEntity = coloring,
+                coloringEntity = coloring.copy(price = coloringPrice),
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
@@ -1510,7 +1519,7 @@ private fun ProductsSection(
         if (!lens.isTreatmentIncluded) {
             Spacer(modifier = Modifier.size(productSpacerSize))
             TreatmentCard(
-                treatmentEntity = treatment,
+                treatmentEntity = treatment.copy(price = treatmentPrice),
                 minPriceModifier = minimumPriceModifier,
                 minTitleModifier = minimumTitleModifier,
             )
@@ -1524,40 +1533,40 @@ private fun ProductsSection(
             FramesCard(frames = frames)
         }
 
-        if (
-            (lens.priceAddColoring > 0 && coloringPrice > 0)
-            || (lens.priceAddTreatment > 0 && treatmentPrice > 0)
-        ) {
-            Spacer(modifier = Modifier.size(subsectionSpacerSize))
-
-            // TODO: use string resource
-            SubSectionTitle(title = "Outros")
-
-            if (
-                lens.priceAddColoring > 0
-                && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
-                && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
-            ) {
-                MiscCard(
-                    miscProduct = ProductSoldDescriptionDocument(
-                        nameDisplay = "Adicional por coloração",
-                        price = lens.priceAddColoring,
-                    )
-                )
-            }
-            if (
-                lens.priceAddTreatment > 0
-                && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
-                && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
-            ) {
-                MiscCard(
-                    miscProduct = ProductSoldDescriptionDocument(
-                        nameDisplay = "Adicional por tratamento",
-                        price = lens.priceAddTreatment,
-                    )
-                )
-            }
-        }
+//        if (
+//            (lens.priceAddColoring > 0 && coloringPrice > 0)
+//            || (lens.priceAddTreatment > 0 && treatmentPrice > 0)
+//        ) {
+//            Spacer(modifier = Modifier.size(subsectionSpacerSize))
+//
+//            // TODO: use string resource
+//            SubSectionTitle(title = "Outros")
+//
+//            if (
+//                lens.priceAddColoring > 0
+//                && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+//                && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
+//            ) {
+//                MiscCard(
+//                    miscProduct = ProductSoldDescriptionDocument(
+//                        nameDisplay = "Adicional por coloração",
+//                        price = lens.priceAddColoring,
+//                    )
+//                )
+//            }
+//            if (
+//                lens.priceAddTreatment > 0
+//                && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+//                && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
+//            ) {
+//                MiscCard(
+//                    miscProduct = ProductSoldDescriptionDocument(
+//                        nameDisplay = "Adicional por tratamento",
+//                        price = lens.priceAddTreatment,
+//                    )
+//                )
+//            }
+//        }
     }
 }
 

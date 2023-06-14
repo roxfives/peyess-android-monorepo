@@ -484,6 +484,27 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
+    private fun streamUnfinishedSales() {
+        authenticationRepository.currentUser()
+            .filterNotNull()
+            .map { saleRepository.unfinishedSalesStreamFor(it.id) }
+            .execute(Dispatchers.IO) {
+                copy(unfinishedSalesStreamAsync = it)
+            }
+    }
+
+    private fun processCreateSaleResponse(response: CreateSaleResponse) = setState {
+        response.fold(
+            ifLeft = {
+                copy(createSaleResponseAsync = Fail(it.error ?: Throwable(it.description)))
+            },
+
+            ifRight = {
+                copy(hasCreatedSale = true)
+            }
+        )
+    }
+
     fun clearClientSearch() = setState {
         copy(clientSearchQuery = "")
     }
@@ -615,26 +636,6 @@ class MainViewModel @AssistedInject constructor(
         }
     }
 
-    private fun streamUnfinishedSales() {
-        authenticationRepository.currentUser()
-            .filterNotNull()
-            .map { saleRepository.unfinishedSalesStreamFor(it.id) }
-            .execute(Dispatchers.IO) {
-                copy(unfinishedSalesStreamAsync = it)
-            }
-    }
-
-    private fun processCreateSaleResponse(response: CreateSaleResponse) = setState {
-        response.fold(
-            ifLeft = {
-                copy(createSaleResponseAsync = Fail(it.error ?: Throwable(it.description)))
-            },
-
-            ifRight = {
-                copy(hasCreatedSale = true)
-            }
-        )
-    }
 
     fun startNewSale() = withState {
         suspend {

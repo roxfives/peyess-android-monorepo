@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.dao.purchase.error.UpdatePurchaseDaoError
 import com.peyess.salesapp.data.dao.purchase.utils.PurchasePagingSource
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseUpdate
+import com.peyess.salesapp.typing.sale.PurchaseState
 
 typealias UpdatePurchaseResponse = Either<UpdatePurchaseDaoError, Unit>
 
@@ -19,5 +20,11 @@ interface PurchaseDao {
     suspend fun updatePurchase(
         purchaseId: String,
         purchaseUpdate: FSPurchaseUpdate,
+    ): UpdatePurchaseResponse
+
+    suspend fun updatePurchaseState(
+        purchaseId: String,
+        state: PurchaseState,
+        updatedBy: String,
     ): UpdatePurchaseResponse
 }

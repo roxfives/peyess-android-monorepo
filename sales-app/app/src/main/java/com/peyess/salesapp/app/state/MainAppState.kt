@@ -18,6 +18,8 @@ import com.peyess.salesapp.data.repository.cache.CacheCreateClientInsertResponse
 import com.peyess.salesapp.data.repository.client.ClientAndLegalResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientTotalResponse
 import com.peyess.salesapp.data.repository.local_client.error.LocalClientRepositoryPagingError
+import com.peyess.salesapp.data.repository.payment.UpdatePurchaseResponse
+import com.peyess.salesapp.data.repository.payment.UpdatePurchaseStateResponse
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
 import com.peyess.salesapp.model.store.OpticalStore
 import com.peyess.salesapp.model.users.CollaboratorDocument
@@ -96,7 +98,13 @@ data class MainAppState(
 
     val editClientResponseAsync: Async<ClientAndLegalResponse> = Uninitialized,
     val cacheCreateClientInsertResponseAsync: Async<CacheCreateClientInsertResponse> = Uninitialized,
+
+    val finishingSalesAsync: Map<String, Async<UpdatePurchaseStateResponse>> = emptyMap(),
 ): MavericksState {
+    val finishingSales: List<String> = finishingSalesAsync.mapValues { it.value is Loading }
+        .filter { it.value }
+        .keys.toList()
+
     val isLoadingClientToEdit = editClientResponseAsync is Loading
             || cacheCreateClientInsertResponseAsync is Loading
 

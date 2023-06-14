@@ -16,6 +16,7 @@ import com.peyess.salesapp.data.repository.payment.error.UpdatePurchaseRepositor
 import com.peyess.salesapp.data.utils.query.PeyessQuery
 import com.peyess.salesapp.data.utils.query.adapter.toFirestoreCollectionQuery
 import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import javax.inject.Inject
 
@@ -76,6 +77,21 @@ class PurchaseRepositoryImpl @Inject constructor(
         purchaseUpdate: PurchaseUpdateDocument
     ): UpdatePurchaseResponse = either {
         purchaseDao.updatePurchase(purchaseId, purchaseUpdate.toFSPurchaseUpdate())
+            .mapLeft {
+                UpdatePurchaseRepositoryError.Unexpected(
+                    description = "Purchase with id $purchaseId not found",
+                    throwable = null,
+                )
+            }.bind()
+    }
+
+    override suspend fun updatePurchaseStatus(
+        purchaseId: String,
+        status: PurchaseState,
+        updatedBy: String
+    ): UpdatePurchaseStateResponse = either {
+        purchaseDao.updatePurchaseState(purchaseId, status, updatedBy)
+            .map { purchaseId }
             .mapLeft {
                 UpdatePurchaseRepositoryError.Unexpected(
                     description = "Purchase with id $purchaseId not found",

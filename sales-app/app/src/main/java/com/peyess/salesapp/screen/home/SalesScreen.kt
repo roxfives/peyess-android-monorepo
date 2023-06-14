@@ -65,6 +65,7 @@ import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.screen.home.dialog.ConfirmFinishSaleDialog
 import com.peyess.salesapp.screen.home.utils.PurchaseBadge
+import com.peyess.salesapp.screen.home.utils.canFinishFromState
 import com.peyess.salesapp.screen.home.utils.displayName
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -115,6 +116,8 @@ fun SalesScreen(
     val serviceOrderList by viewModel.collectAsState(MainAppState::purchaseListStream)
 
     val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
+
+    val finishingSales by viewModel.collectAsState(MainAppState::finishingSales)
 
     if (hasCreatedSale) {
         LaunchedEffect(Unit) {
@@ -171,6 +174,9 @@ fun SalesScreen(
                 )
             },
 
+            finishingSales = finishingSales,
+            onFinishingSale = viewModel::finishSale,
+
             onEditServiceOrder = { saleId, serviceOrderId ->
                 onEditServiceOrder(saleId, serviceOrderId)
             }
@@ -194,6 +200,9 @@ fun SaleList(
 
     onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
+    finishingSales: List<String> = emptyList(),
+    onFinishingSale: (saleId: String) -> Unit = {},
+
     onStartNewSale: () -> Unit = {},
 ) {
     val serviceOrders = serviceOrderList.collectAsLazyPagingItems()
@@ -202,40 +211,6 @@ fun SaleList(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-//        item {
-//            OutlinedButton(
-//                modifier = Modifier
-//                    .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-//                    .fillMaxWidth()
-//                    .height(buttonHeight),
-//                shape = MaterialTheme.shapes.large,
-//                enabled = !isUpdatingProducts,
-//                onClick = onStartNewSale,
-//            ) {
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.Start,
-//                    verticalAlignment = Alignment.CenterVertically,
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .padding(horizontal = SalesAppTheme.dimensions.grid_3)
-//                            .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Add,
-//                            tint = MaterialTheme.colors.onPrimary,
-//                            contentDescription = "",
-//                        )
-//                    }
-//
-//                    Text(
-//                        text = stringResource(id = R.string.btn_make_new_sale),
-//                        style = MaterialTheme.typography.body1,
-//                    )
-//                }
-//            }
-//        }
 
         item {
             if (isServiceOrderListLoading) {
@@ -247,7 +222,7 @@ fun SaleList(
 
         items(serviceOrders.itemCount) { index ->
             serviceOrders[index]?.let {
-                ServiceOrderCard(
+                PurchaseCard(
                     modifier = Modifier
                         .padding(SalesAppTheme.dimensions.grid_1_5)
                         .fillMaxWidth(),
@@ -258,8 +233,10 @@ fun SaleList(
                             && isGeneratingPdfFor.second == it.id,
                     onGenerateSalePdf = onGenerateSalePdf,
 
-                    canEditServiceOrder = !isUpdatingProducts,
-                    onEditServiceOrder = onEditServiceOrder,
+                    canEditSSale = !isUpdatingProducts && !finishingSales.contains(it.id),
+                    isFinishingSale = finishingSales.contains(it.id),
+                    onFinishingSale = onFinishingSale,
+                    onEditSale = onEditServiceOrder,
                 )
             }
         }
@@ -271,15 +248,17 @@ fun SaleList(
 }
 
 @Composable
-private fun ServiceOrderCard(
+private fun PurchaseCard(
     modifier: Modifier = Modifier,
     purchase: PurchaseDocument = PurchaseDocument(),
 
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
-    canEditServiceOrder: Boolean = true,
-    onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    canEditSSale: Boolean = true,
+    isFinishingSale: Boolean = false,
+    onEditSale: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onFinishingSale: (saleId: String) -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -387,7 +366,15 @@ private fun ServiceOrderCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
-                visible = canEditServiceOrder,
+                visible = isFinishingSale,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                CircularProgressIndicator()
+            }
+
+            AnimatedVisibility(
+                visible = purchase.state.canFinishFromState(),
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -401,19 +388,21 @@ private fun ServiceOrderCard(
                         val dialogState = rememberMaterialDialogState()
                         ConfirmFinishSaleDialog(
                             dialogState = dialogState,
-                            onConfirmFinish = { dialogState.hide() },
+                            onConfirmFinish = { onFinishingSale(purchase.id) },
                             onCancelFinish = { dialogState.hide() }
                         )
 
                         IconButton(
-                            modifier = Modifier.background(
-                                color = Color.Transparent,
-                                shape = CircleShape,
-                            ).border(
-                                width = 2.dp,
-                                color = MaterialTheme.colors.primary,
-                                shape = CircleShape,
-                            ),
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
                             onClick = { dialogState.show() },
                         ) {
                             Icon(
@@ -438,17 +427,19 @@ private fun ServiceOrderCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         IconButton(
-                            modifier = Modifier.background(
-                                color = MaterialTheme.colors.primary,
-                                shape = CircleShape,
-                            ).border(
-                                width = 2.dp,
-                                color = MaterialTheme.colors.primary,
-                                shape = CircleShape,
-                            ),
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
                             onClick = {
                                 val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
-                                onEditServiceOrder(purchase.id, serviceOrderId)
+                                onEditSale(purchase.id, serviceOrderId)
                             },
                         ) {
                             Icon(
@@ -505,7 +496,7 @@ private fun SalesPreview() {
 @Composable
 private fun ServiceOrderCardPreview() {
     SalesAppTheme {
-        ServiceOrderCard(
+        PurchaseCard(
             modifier = Modifier.fillMaxWidth(),
             purchase = PurchaseDocument()
         )

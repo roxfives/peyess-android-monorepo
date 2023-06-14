@@ -8,12 +8,14 @@ import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
 import com.peyess.salesapp.data.repository.payment.error.PurchaseRepositoryPaginationError
 import com.peyess.salesapp.data.repository.payment.error.UpdatePurchaseRepositoryError
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import com.peyess.salesapp.typing.sale.PurchaseState
 
 typealias PurchasePagingSourceFactory = () -> PagingSource<DocumentSnapshot, PurchaseDocument>
 typealias PurchasePaginationResponse =
         Either<PurchaseRepositoryPaginationError, PurchasePagingSourceFactory>
 
 typealias UpdatePurchaseResponse = Either<UpdatePurchaseRepositoryError, Unit>
+typealias UpdatePurchaseStateResponse = Either<UpdatePurchaseRepositoryError, String>
 
 interface PurchaseRepository {
     suspend fun add(purchase: PurchaseDocument)
@@ -26,4 +28,10 @@ interface PurchaseRepository {
         purchaseId: String,
         purchaseUpdate: PurchaseUpdateDocument,
     ): UpdatePurchaseResponse
+
+    suspend fun updatePurchaseStatus(
+        purchaseId: String,
+        status: PurchaseState,
+        updatedBy: String,
+    ): UpdatePurchaseStateResponse
 }

@@ -8,9 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,10 +28,8 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -42,7 +38,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,10 +63,8 @@ import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.app.state.PurchaseStream
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.screen.home.dialog.ConfirmFinishSaleDialog
 import com.peyess.salesapp.screen.home.utils.PurchaseBadge
-import com.peyess.salesapp.screen.home.utils.actionButtonTitle
 import com.peyess.salesapp.screen.home.utils.displayName
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -367,24 +360,7 @@ private fun ServiceOrderCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-//                    if (finishedSales.contains(purchase.id)) {
-//                        Box(
-//                            modifier = Modifier
-//                                .size(8.dp)
-//                                .border(
-//                                    shape = RoundedCornerShape(100),
-//                                    border = BorderStroke(
-//                                        width = 1.dp,
-//                                        color = Color.Green,
-//                                    ),
-//                                )
-//                                .background(color = Color.Green)
-//                        )
-//                    } else {
-//
-//                    }
                     purchase.state.PurchaseBadge()
-
 
                     Spacer(modifier = Modifier.width(4.dp))
 
@@ -431,6 +407,10 @@ private fun ServiceOrderCard(
 
                         IconButton(
                             modifier = Modifier.background(
+                                color = Color.Transparent,
+                                shape = CircleShape,
+                            ).border(
+                                width = 2.dp,
                                 color = MaterialTheme.colors.primary,
                                 shape = CircleShape,
                             ),
@@ -439,7 +419,7 @@ private fun ServiceOrderCard(
                             Icon(
                                 imageVector = Icons.Filled.Done,
                                 contentDescription = "",
-                                tint = MaterialTheme.colors.onPrimary,
+                                tint = MaterialTheme.colors.primary,
                             )
                         }
 
@@ -459,6 +439,10 @@ private fun ServiceOrderCard(
                     ) {
                         IconButton(
                             modifier = Modifier.background(
+                                color = MaterialTheme.colors.primary,
+                                shape = CircleShape,
+                            ).border(
+                                width = 2.dp,
                                 color = MaterialTheme.colors.primary,
                                 shape = CircleShape,
                             ),

@@ -67,8 +67,8 @@ fun PurchaseState.PurchaseBadge() {
     return when (this) {
         is PurchaseState.PendingConfirmation ->
             PurchaseBadgeImpl(
-                borderColor = Color(79, 85, 10),
-                backgroundColor = Color(79, 85, 10),
+                borderColor = Color(0, 150, 136),
+                backgroundColor = Color(0, 150, 136),
             )
 
         is PurchaseState.Confirmed ->

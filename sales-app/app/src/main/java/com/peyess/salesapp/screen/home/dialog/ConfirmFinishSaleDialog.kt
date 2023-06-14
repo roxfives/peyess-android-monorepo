@@ -7,9 +7,14 @@ import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.SquareFoot
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.window.DialogProperties
+import com.google.common.io.Files.append
 import com.peyess.salesapp.R
 import com.peyess.salesapp.utils.screen.isHighResolution
 import com.peyess.salesapp.utils.screen.isScreenSizeLarge
@@ -46,6 +51,17 @@ fun ConfirmFinishSaleDialog(
             Icon(imageVector = Icons.Filled.Sell, contentDescription = "")
         }
 
-        message(stringResource(id = R.string.dialog_finish_sale_content))
+        val content = buildAnnotatedString {
+            append(stringResource(id = R.string.dialog_finish_sale_content_prefix))
+            withStyle(style = SpanStyle(Color.Red)) {
+                append(" ")
+                append(stringResource(id = R.string.dialog_finish_sale_content))
+                append(" ")
+            }
+            append(stringResource(id = R.string.dialog_finish_sale_content_suffix))
+        }
+
+        // TODO: add when there's support for annotated strings
+        message(content.toString())
     }
 }

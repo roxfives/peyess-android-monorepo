@@ -39,7 +39,6 @@ import com.peyess.salesapp.data.repository.payment.PurchaseRepository
 import com.peyess.salesapp.data.repository.products_table_state.ProductsTableStateRepository
 import com.peyess.salesapp.data.utils.query.PeyessOrderBy
 import com.peyess.salesapp.data.utils.query.PeyessQuery
-import com.peyess.salesapp.data.utils.query.PeyessQueryField
 import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
@@ -57,12 +56,9 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.cancellable
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -124,7 +120,7 @@ class MainViewModel @AssistedInject constructor(
         onEach(MainAppState::clientSearchQuery) { clientSearchState.value = it }
 
         onAsync(MainAppState::purchaseListResponseAsync) {
-            processServiceOrderListResponse(it)
+            processPurchaseResponse(it)
         }
 
         onAsync(MainAppState::existingCreateClientAsync) { processActiveCreatingClientResponse(it) }
@@ -311,7 +307,7 @@ class MainViewModel @AssistedInject constructor(
         }.bind()
     }
 
-    private fun processServiceOrderListResponse(response: PurchaseListResponse) = setState {
+    private fun processPurchaseResponse(response: PurchaseListResponse) = setState {
         response.fold(
             ifLeft = {
                 copy(purchaseListResponseAsync = Fail(it.error))

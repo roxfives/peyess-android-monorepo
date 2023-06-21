@@ -68,11 +68,11 @@ data class FSPrescription(
 
     @JvmField
     @Keep
-    @PropertyName("lens_type_category_id")
+    @PropertyName("lens_category_id")
     val lensTypeCategoryId: String = "",
     @JvmField
     @Keep
-    @PropertyName("lens_type_category")
+    @PropertyName("lens_category")
     val lensTypeCategory: String = LensTypeCategoryName.None.toName(),
 
     @JvmField

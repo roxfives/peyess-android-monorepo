@@ -524,9 +524,13 @@ class ServiceOrderUploader constructor(
             leftProducts = ProductSoldEyeSetDocument(
                 lenses = lens.toDescription(
                     withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
-                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
+                            && !lens.isTreatmentIncluded
+                            && !lens.isTreatmentDiscounted,
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
-                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
+                            && !lens.isColoringIncluded
+                            && !lens.isColoringDiscounted,
                     accessoriesPerUnit = emptyList(),
                 ),
                 colorings = coloring.toDescription(

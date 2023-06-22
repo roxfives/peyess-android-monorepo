@@ -299,14 +299,20 @@ class ServiceOrderUpdater @Inject constructor(
                 )
             }.bind()
 
-        var coloring = localLensesRepository.getColoringById(productPicked.coloringId).mapLeft {
+        var coloring = localLensesRepository.getColoringById(
+            productPicked.lensId,
+            productPicked.coloringId,
+        ).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
 
-        var treatment = localLensesRepository.getTreatmentById(productPicked.treatmentId).mapLeft {
+        var treatment = localLensesRepository.getTreatmentById(
+            productPicked.lensId,
+            productPicked.treatmentId,
+        ).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,

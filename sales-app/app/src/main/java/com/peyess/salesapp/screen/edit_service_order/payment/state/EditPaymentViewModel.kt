@@ -245,8 +245,8 @@ class EditPaymentViewModel @AssistedInject constructor(
 
     private fun loadProducts(productsPicked: ProductPickedDocument) {
         loadLensPicked(productsPicked.lensId)
-        loadColoringPicked(productsPicked.coloringId)
-        loadTreatmentPicked(productsPicked.treatmentId)
+        loadColoringPicked(productsPicked.lensId, productsPicked.coloringId)
+        loadTreatmentPicked(productsPicked.lensId, productsPicked.treatmentId)
     }
 
     private fun loadLensPicked(lensId: String) {
@@ -271,9 +271,9 @@ class EditPaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadColoringPicked(coloringId: String) {
+    private fun loadColoringPicked(lensId: String, coloringId: String) {
         suspend {
-            localLensesRepository.getColoringById(coloringId)
+            localLensesRepository.getColoringById(lensId, coloringId)
         }.execute(Dispatchers.IO) {
             copy(coloringResponseAsync = it)
         }
@@ -293,9 +293,9 @@ class EditPaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadTreatmentPicked(treatmentId: String) {
+    private fun loadTreatmentPicked(lensId: String, treatmentId: String) {
         suspend {
-            localLensesRepository.getTreatmentById(treatmentId)
+            localLensesRepository.getTreatmentById(lensId, treatmentId)
         }.execute(Dispatchers.IO) {
             copy(treatmentResponseAsync = it)
         }

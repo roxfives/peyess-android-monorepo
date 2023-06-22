@@ -58,6 +58,7 @@ import com.peyess.salesapp.data.dao.products_table_state.ProductsTableStateDao
 import com.peyess.salesapp.data.dao.products_table_state.ProductTableStateEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringPriceDBView
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensCategoryEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensDescriptionEntity
@@ -94,6 +95,7 @@ import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesSup
 import com.peyess.salesapp.data.model.lens.room.dao.database_view.LocalLensesTypeDBView
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentPriceDBView
 import com.peyess.salesapp.data.room.converter.ConverterLocalDate
 import com.peyess.salesapp.data.room.converter.ConverterUri
 import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
@@ -181,8 +183,10 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalLensWithDisponibilitiesAndAltHeightDBView::class,
         LocalLensFullUnionDBView::class,
         LocalLensFullUnionWithHeightAndLensTypeDBView::class,
+        LocalLensTreatmentPriceDBView::class,
+        LocalLensColoringPriceDBView::class,
     ],
-    version = 101,
+    version = 103,
 )
 @TypeConverters(
     ConverterUri::class,

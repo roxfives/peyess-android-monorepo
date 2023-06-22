@@ -118,7 +118,7 @@ interface LocalLensesRepository {
 
     suspend fun getColoringsForLens(lensId: String): ColoringsResponse
 
-    suspend fun getColoringById(coloringId: String): SingleColoringResponse
+    suspend fun getColoringById(lensId: String, coloringId: String): SingleColoringResponse
 
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
@@ -126,7 +126,7 @@ interface LocalLensesRepository {
 
     suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse
 
-    suspend fun getTreatmentById(treatmentId: String): SingleTreatmentResponse
+    suspend fun getTreatmentById(lensId: String, treatmentId: String): SingleTreatmentResponse
 
     suspend fun addAlternativeHeight(alternativeHeight: StoreLensAltHeightDocument)
 

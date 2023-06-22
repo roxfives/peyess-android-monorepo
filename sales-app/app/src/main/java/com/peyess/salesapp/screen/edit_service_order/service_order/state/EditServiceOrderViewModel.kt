@@ -132,8 +132,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
         onEach(EditServiceOrderState::productPicked) {
             loadLens(it.lensId)
-            loadColoring(it.coloringId)
-            loadTreatment(it.treatmentId)
+            loadColoring(it.lensId, it.coloringId)
+            loadTreatment(it.lensId, it.treatmentId)
         }
 
         onEach(EditServiceOrderState::hasSaleDataUpdateFailed) { updateSaleFailureStatus(it) }
@@ -401,9 +401,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadColoring(coloringId: String) {
+    private fun loadColoring(lensId: String, coloringId: String) {
         suspend {
-            localLensesRepository.getColoringById(coloringId)
+            localLensesRepository.getColoringById(lensId, coloringId)
         }.execute(Dispatchers.IO) {
             copy(coloringResponseAsync = it)
         }
@@ -421,9 +421,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadTreatment(treatmentId: String) {
+    private fun loadTreatment(lensId: String, treatmentId: String) {
         suspend {
-            localLensesRepository.getTreatmentById(treatmentId)
+            localLensesRepository.getTreatmentById(lensId, treatmentId)
         }.execute(Dispatchers.IO) {
             copy(treatmentResponseAsync = it)
         }

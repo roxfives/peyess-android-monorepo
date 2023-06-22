@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringExplanationEntity
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringPriceDBView
 import com.peyess.salesapp.data.model.lens.room.coloring.embedded.LocalLensColoringWithExplanationsEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensAltHeightEntity
 import com.peyess.salesapp.data.model.lens.room.dao.LocalLensBaseEntity
@@ -57,12 +58,13 @@ import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTechSi
 import com.peyess.salesapp.data.model.lens.room.dao.simplified.LocalLensesTypeSimplified
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentExplanationEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentPriceDBView
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentWithExplanationsEntity
 
-private const val coloringsTable = LocalLensColoringEntity.tableName
+private const val coloringsTable = LocalLensColoringPriceDBView.viewName
 private const val lensColoringJunction = LocalLensColoringCrossRef.tableName
 
-private const val treatmentsTable = LocalLensTreatmentEntity.tableName
+private const val treatmentsTable = LocalLensTreatmentPriceDBView.viewName
 private const val lensTreatmentJunction = LocalLensTreatmentCrossRef.tableName
 
 @Dao
@@ -215,8 +217,7 @@ interface LocalLensDao {
     @Query(
         """
             SELECT * FROM $coloringsTable AS colorings
-                JOIN $lensColoringJunction AS _junction ON colorings.id = _junction.coloring_id
-            WHERE _junction.lens_id = :lensId
+            WHERE colorings.lensId = :lensId
             ORDER BY colorings.priority
         """
     )
@@ -224,23 +225,28 @@ interface LocalLensDao {
 
 
     @Transaction
-    @Query("SELECT * FROM $coloringsTable WHERE id = :coloringId")
-    suspend fun getColoringById(coloringId: String): LocalLensColoringWithExplanationsEntity?
+    @Query("SELECT * FROM $coloringsTable WHERE lensId = :lensId AND id = :coloringId")
+    suspend fun getColoringById(
+        lensId: String,
+        coloringId: String,
+    ): LocalLensColoringWithExplanationsEntity?
 
     @Transaction
     @Query(
         """
             SELECT * FROM $treatmentsTable AS treatments
-                JOIN $lensTreatmentJunction AS _junction ON treatments.id = _junction.treatment_id
-            WHERE _junction.lens_id = :lensId
+            WHERE treatments.lensId = :lensId
             ORDER BY treatments.priority
         """
     )
     suspend fun getTreatmentsForLens(lensId: String): List<LocalLensTreatmentWithExplanationsEntity>
 
     @Transaction
-    @Query("SELECT * FROM $treatmentsTable WHERE id = :treatmentId")
-    suspend fun getTreatmentById(treatmentId: String): LocalLensTreatmentWithExplanationsEntity?
+    @Query("SELECT * FROM $treatmentsTable WHERE lensId = :lensId AND id = :treatmentId")
+    suspend fun getTreatmentById(
+        lensId: String,
+        treatmentId: String,
+    ): LocalLensTreatmentWithExplanationsEntity?
 
     @Transaction
     @RawQuery(observedEntities = [LocalLensFullUnionWithHeightAndLensTypeDBView::class])

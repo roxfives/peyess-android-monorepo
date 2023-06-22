@@ -216,8 +216,11 @@ class LocalLensesRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getColoringById(coloringId: String): SingleColoringResponse = Either.catch {
-        val entity = localLensDao.getColoringById(coloringId)
+    override suspend fun getColoringById(
+        lensId: String,
+        coloringId: String,
+    ): SingleColoringResponse = Either.catch {
+        val entity = localLensDao.getColoringById(lensId, coloringId)
 
         entity?.coloring
             ?.toLocalLensColoringDocument(
@@ -276,9 +279,10 @@ class LocalLensesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTreatmentById(
+        lensId: String,
         treatmentId: String,
     ): SingleTreatmentResponse = Either.catch {
-        val entity = localLensDao.getTreatmentById(treatmentId)
+        val entity = localLensDao.getTreatmentById(lensId, treatmentId)
 
         entity?.treatment
             ?.toLocalLensTreatmentDocument(

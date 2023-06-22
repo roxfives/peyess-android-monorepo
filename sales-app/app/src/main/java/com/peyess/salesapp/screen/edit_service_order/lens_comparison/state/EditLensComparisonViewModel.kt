@@ -241,17 +241,17 @@ class EditLensComparisonViewModel @AssistedInject constructor(
             .bind()
 
         val originalColoring = localLensesRepository
-            .getColoringById(comparison.originalColoringId)
+            .getColoringById(comparison.originalLensId, comparison.originalColoringId)
             .bind()
         val comparisonColoring = localLensesRepository
-            .getColoringById(comparison.comparisonColoringId)
+            .getColoringById(comparison.comparisonLensId, comparison.comparisonColoringId)
             .bind()
 
         val originalTreatment = localLensesRepository
-            .getTreatmentById(comparison.originalTreatmentId)
+            .getTreatmentById(comparison.originalLensId, comparison.originalTreatmentId)
             .bind()
         val comparisonTreatment = localLensesRepository
-            .getTreatmentById(comparison.comparisonTreatmentId)
+            .getTreatmentById(comparison.comparisonLensId, comparison.comparisonTreatmentId)
             .bind()
 
         val lensComparison = LensComparison(
@@ -641,7 +641,7 @@ class EditLensComparisonViewModel @AssistedInject constructor(
     fun onPickTreatment(treatmentId: String, lensComparison: IndividualComparison) {
         suspend {
             localLensesRepository
-                .getTreatmentById(treatmentId)
+                .getTreatmentById(lensComparison.lensComparison.pickedLens.id, treatmentId)
                 .map {
                     TreatmentPickResponse(
                         lensComparison = lensComparison,
@@ -656,7 +656,7 @@ class EditLensComparisonViewModel @AssistedInject constructor(
     fun onPickColoring(coloringId: String, lensComparison: IndividualComparison) {
         suspend {
             localLensesRepository
-                .getColoringById(coloringId)
+                .getColoringById(lensComparison.lensComparison.pickedLens.id, coloringId)
                 .map {
                     ColoringPickResponse(
                         lensComparison = lensComparison,

@@ -446,12 +446,12 @@ class ServiceOrderUploader constructor(
             .bind()
 
         var coloring = localLensesRepository
-            .getColoringById(productPicked.coloringId)
+            .getColoringById(productPicked.lensId, productPicked.coloringId)
             .mapLeft { ColoringNotFound(it.description, it.error) }
             .bind()
 
         var treatment = localLensesRepository
-            .getTreatmentById(productPicked.treatmentId)
+            .getTreatmentById(productPicked.lensId, productPicked.treatmentId)
             .mapLeft { TreatmentNotFound(it.description, it.error) }
             .bind()
 

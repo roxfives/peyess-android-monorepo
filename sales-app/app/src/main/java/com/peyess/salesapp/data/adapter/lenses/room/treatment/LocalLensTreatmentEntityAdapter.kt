@@ -1,9 +1,9 @@
 package com.peyess.salesapp.data.adapter.lenses.room.treatment
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentPriceDBView
 
-fun LocalLensTreatmentEntity.toLocalLensTreatmentDocument(
+fun LocalLensTreatmentPriceDBView.toLocalLensTreatmentDocument(
     explanations: List<String>,
 ): LocalLensTreatmentDocument {
     return LocalLensTreatmentDocument(
@@ -20,6 +20,8 @@ fun LocalLensTreatmentEntity.toLocalLensTreatmentDocument(
         supplierId = supplierId,
         supplier = supplier,
         warning = warning,
+
+        price = price,
 
         explanations = explanations,
     )

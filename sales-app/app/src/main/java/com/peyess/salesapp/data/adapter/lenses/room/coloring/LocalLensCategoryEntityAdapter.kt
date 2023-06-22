@@ -10,7 +10,6 @@ fun LocalLensColoringEntity.toLocalLensColoringDocument(
     return LocalLensColoringDocument(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         hasMedical = hasMedical,
         isEnabled = isEnabled,

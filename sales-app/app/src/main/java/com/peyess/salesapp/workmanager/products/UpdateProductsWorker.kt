@@ -174,6 +174,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addColoringToLens(
                 lensId = lensId,
                 coloringId = it.id,
+                price = it.price,
             )
         }
     }
@@ -191,6 +192,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
+                price = it.price,
             )
         }
     }
@@ -207,6 +209,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
+                price = it.price,
             )
         }
     }

@@ -206,11 +206,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addColoringToLens(coloringId: String, lensId: String) {
+    override suspend fun addColoringToLens(coloringId: String, lensId: String, price: Double) {
         localLensDao.addLensColoringCrossRef(
             LocalLensColoringCrossRef(
                 lensId = lensId,
                 coloringId = coloringId,
+                price = price,
             )
         )
     }
@@ -247,11 +248,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String) {
+    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: Double) {
         localLensDao.addLensTreatmentCrossRef(
             LocalLensTreatmentCrossRef(
                 lensId = lensId,
                 treatmentId = treatmentId,
+                price = price,
             )
         )
     }

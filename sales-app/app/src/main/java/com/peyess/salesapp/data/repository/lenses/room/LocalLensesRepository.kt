@@ -114,7 +114,7 @@ interface LocalLensesRepository {
 
     suspend fun addColoring(coloring: LocalLensColoringDocument)
 
-    suspend fun addColoringToLens(coloringId: String, lensId: String)
+    suspend fun addColoringToLens(coloringId: String, lensId: String, price: Double)
 
     suspend fun getColoringsForLens(lensId: String): ColoringsResponse
 
@@ -122,7 +122,7 @@ interface LocalLensesRepository {
 
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
-    suspend fun addTreatmentToLens(treatmentId: String, lensId: String)
+    suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: Double)
 
     suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse
 

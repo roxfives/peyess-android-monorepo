@@ -7,7 +7,6 @@ fun LocalLensTreatmentDocument.toLocalLensTreatmentEntity(): LocalLensTreatmentE
     return LocalLensTreatmentEntity(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         isEnabled = isEnabled,
         isLocalEnabled = isLocalEnabled,

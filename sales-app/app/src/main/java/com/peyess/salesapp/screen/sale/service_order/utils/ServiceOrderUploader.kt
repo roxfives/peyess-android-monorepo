@@ -65,6 +65,7 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import com.peyess.salesapp.utils.string.removeDiacritics
 import kotlinx.coroutines.flow.filterNotNull
@@ -714,6 +715,9 @@ class ServiceOrderUploader constructor(
             totalFee = fee,
 
             state = PurchaseState.PendingConfirmation,
+
+            syncState = PurchaseSyncState.NotSynced,
+            reasonSyncFailed = "",
 
             payerUids = payments.map { it.clientId }.distinct(),
             payerDocuments = payments.map { it.clientDocument }.distinct(),

@@ -9,6 +9,7 @@ import com.peyess.salesapp.data.adapter.service_order.toDenormalizedServiceOrder
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import com.peyess.salesapp.utils.time.toZonedDateTime
 
@@ -69,6 +70,10 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         totalFee = totalFee,
 
         state = PurchaseState.fromName(state),
+
+        syncState = PurchaseSyncState.fromName(syncState),
+        reasonSyncFailed = reasonSyncFailed,
+
         payerUids = payerUids,
         payerDocuments = payerDocuments,
         payments = payments.map { it.toPaymentDocument() },

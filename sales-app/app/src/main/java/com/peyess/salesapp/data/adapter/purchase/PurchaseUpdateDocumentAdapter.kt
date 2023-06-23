@@ -58,6 +58,12 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
         isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
+
+        state = state.toName(),
+
+        syncState = syncState.toName(),
+        reasonSyncFailed = reasonSyncFailed,
+
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,

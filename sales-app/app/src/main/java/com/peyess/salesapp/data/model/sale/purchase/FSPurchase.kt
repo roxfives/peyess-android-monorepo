@@ -7,6 +7,7 @@ import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 
 @Keep
 @IgnoreExtraProperties
@@ -200,6 +201,15 @@ data class FSPurchase(
     @JvmField
     @PropertyName("state")
     val state: String = PurchaseState.Unknown.toName(),
+
+    @Keep
+    @JvmField
+    @PropertyName("sync_state")
+    val syncState: String = PurchaseSyncState.Unknown.toName(),
+    @Keep
+    @JvmField
+    @PropertyName("reason_sync_failed")
+    val reasonSyncFailed: String = "",
 
     @Keep
     @JvmField

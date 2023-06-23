@@ -2,6 +2,8 @@ package com.peyess.salesapp.data.model.sale.purchase
 
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
+import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import java.time.ZonedDateTime
 
 data class PurchaseUpdateDocument(
@@ -55,6 +57,11 @@ data class PurchaseUpdateDocument(
     val isLegalCustom: Boolean = false,
     val legalText: String = "",
     val legalVersion: String = "",
+
+    val state: PurchaseState = PurchaseState.PendingConfirmation,
+
+    val syncState: PurchaseSyncState = PurchaseSyncState.NotSynced,
+    val reasonSyncFailed: String = "",
 
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",

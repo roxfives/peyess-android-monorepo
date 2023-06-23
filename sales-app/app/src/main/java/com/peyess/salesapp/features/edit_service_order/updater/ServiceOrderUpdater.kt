@@ -63,6 +63,8 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.utils.string.removeDiacritics
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import java.math.BigDecimal
@@ -474,8 +476,6 @@ class ServiceOrderUpdater @Inject constructor(
         fee: Double,
         serviceOrder: ServiceOrderUpdateDocument,
     ): UpdatePurchaseResponse = either {
-        val id = saleId
-
         val discountDocument = discountRepository.discountForSale(saleId).mapLeft {
             GenerateSaleDataError.Unexpected(
                 description = it.description,
@@ -571,6 +571,11 @@ class ServiceOrderUpdater @Inject constructor(
             soPreviews = mapOf(
                 serviceOrderId to serviceOrder.toPreview()
             ),
+
+            state = PurchaseState.PendingConfirmation,
+
+            syncState = PurchaseSyncState.NotSynced,
+            reasonSyncFailed = "",
 
             updated = serviceOrder.updated,
             updatedBy = serviceOrder.updatedBy,

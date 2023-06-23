@@ -66,7 +66,11 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         totalPaid = totalPaid,
         totalDiscount = totalDiscount,
         totalFee = totalFee,
+
         state = state.toName(),
+
+        syncState = syncState.toName(),
+        reasonSyncFailed = reasonSyncFailed,
 
         payerUids = payerUids,
         payerDocuments = payerDocuments,

@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.sale.purchase
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import java.time.ZonedDateTime
 
@@ -59,6 +60,9 @@ data class PurchaseDocument(
     val totalFee: Double = 0.0,
 
     val state: PurchaseState = PurchaseState.Unknown,
+
+    val syncState: PurchaseSyncState = PurchaseSyncState.Unknown,
+    val reasonSyncFailed: String = "",
 
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),

@@ -63,6 +63,7 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.utils.string.removeDiacritics
@@ -575,7 +576,7 @@ class ServiceOrderUpdater @Inject constructor(
             state = PurchaseState.PendingConfirmation,
 
             syncState = PurchaseSyncState.NotSynced,
-            reasonSyncFailed = "",
+            reasonSyncFailed = PurchaseReasonSyncFailure.None,
 
             updated = serviceOrder.updated,
             updatedBy = serviceOrder.updatedBy,

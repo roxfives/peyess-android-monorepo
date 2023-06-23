@@ -64,6 +64,7 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
 import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
@@ -717,7 +718,7 @@ class ServiceOrderUploader constructor(
             state = PurchaseState.PendingConfirmation,
 
             syncState = PurchaseSyncState.NotSynced,
-            reasonSyncFailed = "",
+            reasonSyncFailed = PurchaseReasonSyncFailure.None,
 
             payerUids = payments.map { it.clientId }.distinct(),
             payerDocuments = payments.map { it.clientDocument }.distinct(),

@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.adapter.purchase.fee.toFeeDescriptionDocument
 import com.peyess.salesapp.data.adapter.service_order.toDenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
@@ -72,7 +73,7 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         state = PurchaseState.fromName(state),
 
         syncState = PurchaseSyncState.fromName(syncState),
-        reasonSyncFailed = reasonSyncFailed,
+        reasonSyncFailed = PurchaseReasonSyncFailure.fromName(reasonSyncFailed),
 
         payerUids = payerUids,
         payerDocuments = payerDocuments,

@@ -70,7 +70,7 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         state = state.toName(),
 
         syncState = syncState.toName(),
-        reasonSyncFailed = reasonSyncFailed,
+        reasonSyncFailed = reasonSyncFailed.toName(),
 
         payerUids = payerUids,
         payerDocuments = payerDocuments,

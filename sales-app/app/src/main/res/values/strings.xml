@@ -146,6 +146,10 @@
     <string name="dialog_finish_sale_confirm">Finalizar venda</string>
     <string name="dialog_finish_sale_cancel">Voltar</string>
 
+    <string name="purchase_sync_status_syncing">Enviando para o seu sistema de ERP…</string>
+    <string name="purchase_sync_status_sync_successful">Essa venda já está sistema no seu sistema de ERP</string>
+    <string name="purchase_sync_status_sync_failed">Infelizmente houve uma falha ao enviar essa venda para o seu sistema de ERP</string>
+
     <!--    UI Component: Clients -->
     <string name="clients_screen_btn_sync">Tentar procurar meus clientes novamente</string>
     <string name="clients_screen_btn_clear_search">Limpar pesquisa</string>

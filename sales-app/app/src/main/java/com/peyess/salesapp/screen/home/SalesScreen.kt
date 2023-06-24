@@ -30,6 +30,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -73,6 +75,7 @@ import com.peyess.salesapp.screen.sale.anamnesis.fourth_step_pain.state.FourthSt
 import com.peyess.salesapp.screen.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
@@ -371,6 +374,79 @@ private fun PurchaseCard(
                 exit = fadeOut(),
             ) {
                 CircularProgressIndicator()
+            }
+
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.Syncing,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.purchase_sync_status_syncing),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.SyncSuccessful,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = Icons.Filled.CheckCircle,
+                        tint = Color.hsl(116f, 0.46f, 0.486f),
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.purchase_sync_status_sync_successful),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.SyncFailed,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = Icons.Filled.Cancel,
+                        tint = MaterialTheme.colors.error,
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.purchase_sync_status_sync_failed),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
             }
 
             AnimatedVisibility(

@@ -4,6 +4,7 @@ sealed class PurchaseSyncState {
     object NotSynced: PurchaseSyncState()
     object Syncing: PurchaseSyncState()
     object SyncFailed: PurchaseSyncState()
+    object SyncSuccessful: PurchaseSyncState()
     object Unknown: PurchaseSyncState()
 
     fun toName() = toName(this)
@@ -13,6 +14,7 @@ sealed class PurchaseSyncState {
             return when (state) {
                 is NotSynced -> "not-synced"
                 is SyncFailed -> "sync-failed"
+                is SyncSuccessful -> "sync-successful"
                 is Syncing -> "syncing"
                 is Unknown -> "unknown"
             }
@@ -22,6 +24,7 @@ sealed class PurchaseSyncState {
             return when (state) {
                 "not-synced" -> NotSynced
                 "sync-failed" -> SyncFailed
+                "sync-successful" -> SyncSuccessful
                 "syncing" -> Syncing
                 else -> Unknown
             }

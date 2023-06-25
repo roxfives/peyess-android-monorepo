@@ -4,6 +4,7 @@ sealed class PurchaseSyncState {
     object NotSynced: PurchaseSyncState()
     object Syncing: PurchaseSyncState()
     object SyncFailed: PurchaseSyncState()
+    object SyncRetry: PurchaseSyncState()
     object SyncSuccessful: PurchaseSyncState()
     object Unknown: PurchaseSyncState()
 
@@ -14,6 +15,7 @@ sealed class PurchaseSyncState {
             return when (state) {
                 is NotSynced -> "not-synced"
                 is SyncFailed -> "sync-failed"
+                is SyncRetry -> "sync-retry"
                 is SyncSuccessful -> "sync-successful"
                 is Syncing -> "syncing"
                 is Unknown -> "unknown"
@@ -24,6 +26,7 @@ sealed class PurchaseSyncState {
             return when (state) {
                 "not-synced" -> NotSynced
                 "sync-failed" -> SyncFailed
+                "sync-retry" -> SyncRetry
                 "sync-successful" -> SyncSuccessful
                 "syncing" -> Syncing
                 else -> Unknown

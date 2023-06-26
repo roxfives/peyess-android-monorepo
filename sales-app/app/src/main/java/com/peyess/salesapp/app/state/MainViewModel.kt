@@ -49,6 +49,7 @@ import com.peyess.salesapp.repository.sale.CreateSaleResponse
 import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.screen.home.model.UnfinishedSale
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.utils.file.createPrintFile
 import com.peyess.salesapp.utils.string.removeDiacritics
 import com.peyess.salesapp.utils.string.removePonctuation
@@ -689,7 +690,28 @@ class MainViewModel @AssistedInject constructor(
         suspend {
             val currentUser = authenticationRepository.fetchCurrentUserId()
 
-            purchaseRepository.updatePurchaseStatus(saleId, PurchaseState.Confirmed, currentUser)
+            purchaseRepository.updatePurchaseStatus(
+                saleId,
+                PurchaseState.Confirmed,
+                currentUser,
+            )
+        }.execute(Dispatchers.IO) {
+            val update = finishingSalesAsync.toMutableMap()
+            update[saleId] = it
+
+            copy(finishingSalesAsync = update)
+        }
+    }
+
+    fun retrySyncSale(saleId: String) {
+        suspend {
+            val currentUser = authenticationRepository.fetchCurrentUserId()
+
+            purchaseRepository.updatePurchaseSyncStatus(
+                saleId,
+                PurchaseSyncState.SyncRetry,
+                currentUser,
+            )
         }.execute(Dispatchers.IO) {
             val update = finishingSalesAsync.toMutableMap()
             update[saleId] = it

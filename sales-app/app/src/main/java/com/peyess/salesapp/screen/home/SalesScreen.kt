@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -180,6 +181,8 @@ fun SalesScreen(
             finishingSales = finishingSales,
             onFinishingSale = viewModel::finishSale,
 
+            onSyncRetry = viewModel::retrySyncSale,
+
             onEditServiceOrder = { saleId, serviceOrderId ->
                 onEditServiceOrder(saleId, serviceOrderId)
             }
@@ -205,6 +208,8 @@ fun SaleList(
 
     finishingSales: List<String> = emptyList(),
     onFinishingSale: (saleId: String) -> Unit = {},
+
+    onSyncRetry: (saleId: String) -> Unit = {},
 
     onStartNewSale: () -> Unit = {},
 ) {
@@ -240,6 +245,7 @@ fun SaleList(
                     isFinishingSale = finishingSales.contains(it.id),
                     onFinishingSale = onFinishingSale,
                     onEditSale = onEditServiceOrder,
+                    onSyncRetry = onSyncRetry,
                 )
             }
         }
@@ -262,6 +268,7 @@ private fun PurchaseCard(
     isFinishingSale: Boolean = false,
     onEditSale: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onFinishingSale: (saleId: String) -> Unit = {},
+    onSyncRetry: (saleId: String) -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
@@ -428,24 +435,63 @@ private fun PurchaseCard(
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically,
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        imageVector = Icons.Filled.Cancel,
-                        tint = MaterialTheme.colors.error,
-                        contentDescription = "",
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = Icons.Filled.Cancel,
+                            tint = MaterialTheme.colors.error,
+                            contentDescription = "",
+                        )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                    Text(
-                        text = stringResource(id = R.string.purchase_sync_status_sync_failed),
-                        style = MaterialTheme.typography.caption
-                            .copy(fontWeight = FontWeight.Bold),
-                    )
+                        Text(
+                            text = stringResource(id = R.string.purchase_sync_status_sync_failed),
+                            style = MaterialTheme.typography.caption
+                                .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
+                            onClick = { onSyncRetry(purchase.id) },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Sync,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.primary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_sync_retry),
+                            style = MaterialTheme.typography.caption
+                                .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
                 }
             }
 

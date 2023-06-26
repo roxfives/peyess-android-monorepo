@@ -240,8 +240,7 @@ fun SaleList(
                     isGeneratingPdf = isGeneratingPdfFor.first
                             && isGeneratingPdfFor.second == it.id,
                     onGenerateSalePdf = onGenerateSalePdf,
-
-                    canEditSSale = !isUpdatingProducts && !finishingSales.contains(it.id),
+                    
                     isFinishingSale = finishingSales.contains(it.id),
                     onFinishingSale = onFinishingSale,
                     onEditSale = onEditServiceOrder,
@@ -264,7 +263,6 @@ private fun PurchaseCard(
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
-    canEditSSale: Boolean = true,
     isFinishingSale: Boolean = false,
     onEditSale: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
     onFinishingSale: (saleId: String) -> Unit = {},

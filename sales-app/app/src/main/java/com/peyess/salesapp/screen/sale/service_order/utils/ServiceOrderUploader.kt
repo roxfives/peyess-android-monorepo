@@ -673,6 +673,12 @@ class ServiceOrderUploader constructor(
             )
         }.bind()
 
+        val daysToTakeFromStore = if (lens.needsCheck) {
+            store.daysToTakeFromStore + store.additionalCheckDays
+        } else {
+            store.daysToTakeFromStore
+        }
+
         PurchaseDocument(
             id = id,
             hid = purchaseHid.ifBlank { createHid() },
@@ -760,7 +766,7 @@ class ServiceOrderUploader constructor(
             legalVersion = "", // serviceOrder.legal_version,
 
             finishedAt = serviceOrder.updated,
-            daysToTakeFromStore = store.daysToTakeFromStore,
+            daysToTakeFromStore = daysToTakeFromStore,
             hasProductWithPendingCheck = lens.needsCheck,
 
             created = serviceOrder.created,

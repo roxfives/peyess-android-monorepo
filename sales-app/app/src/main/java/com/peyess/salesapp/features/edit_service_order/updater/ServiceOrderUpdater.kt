@@ -532,6 +532,12 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }.bind()
 
+        val daysToTakeFromStore = if (lens.needsCheck) {
+            store.daysToTakeFromStore + store.additionalCheckDays
+        } else {
+            store.daysToTakeFromStore
+        }
+
         PurchaseUpdateDocument(
             clientUids = listOf(serviceOrderId),
             clients = listOf(
@@ -603,7 +609,7 @@ class ServiceOrderUpdater @Inject constructor(
             reasonSyncFailed = PurchaseReasonSyncFailure.None,
 
             finishedAt = serviceOrder.updated,
-            daysToTakeFromStore = store.daysToTakeFromStore,
+            daysToTakeFromStore = daysToTakeFromStore,
             hasProductWithPendingCheck = lens.needsCheck,
 
             updated = serviceOrder.updated,

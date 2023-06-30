@@ -651,6 +651,13 @@ class ServiceOrderUploader constructor(
             .setScale(2, RoundingMode.HALF_EVEN)
             .toDouble()
 
+        val store = authenticationRepository.loadCurrentStore().mapLeft {
+            PurchaseCreationFailed(
+                description = "Store not found",
+                error = it.error,
+            )
+        }.bind()
+
         PurchaseDocument(
             id = id,
             hid = purchaseHid.ifBlank { createHid() },
@@ -736,6 +743,9 @@ class ServiceOrderUploader constructor(
             // TODO: load legal text + version and add it here
             legalText = "", // serviceOrder.legal_text,
             legalVersion = "", // serviceOrder.legal_version,
+
+            finishedAt = serviceOrder.updated,
+            daysToTakeFromStore = store.daysToTakeFromStore,
 
             created = serviceOrder.created,
             createdBy = serviceOrder.createdBy,

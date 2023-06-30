@@ -60,6 +60,7 @@ import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
+import com.peyess.salesapp.screen.sale.service_order.utils.error.PurchaseCreationFailed
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -509,6 +510,13 @@ class ServiceOrderUpdater @Inject constructor(
         val totalLeft =
             BigDecimal(abs((finalPrice - totalPaid))).setScale(2, RoundingMode.HALF_EVEN).toDouble()
 
+        val store = authenticationRepository.loadCurrentStore().mapLeft {
+            GenerateSaleDataError.Unexpected(
+                description = "Store not found",
+                throwable = it.error,
+            )
+        }.bind()
+
         PurchaseUpdateDocument(
             clientUids = listOf(serviceOrderId),
             clients = listOf(
@@ -578,6 +586,9 @@ class ServiceOrderUpdater @Inject constructor(
 
             syncState = PurchaseSyncState.NotSynced,
             reasonSyncFailed = PurchaseReasonSyncFailure.None,
+
+            finishedAt = serviceOrder.updated,
+            daysToTakeFromStore = store.daysToTakeFromStore,
 
             updated = serviceOrder.updated,
             updatedBy = serviceOrder.updatedBy,

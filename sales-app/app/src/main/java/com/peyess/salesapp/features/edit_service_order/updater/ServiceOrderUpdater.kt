@@ -517,6 +517,21 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }.bind()
 
+        val productPicked =
+            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId).mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+        val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
+            GenerateSaleDataError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+
         PurchaseUpdateDocument(
             clientUids = listOf(serviceOrderId),
             clients = listOf(
@@ -589,6 +604,7 @@ class ServiceOrderUpdater @Inject constructor(
 
             finishedAt = serviceOrder.updated,
             daysToTakeFromStore = store.daysToTakeFromStore,
+            hasProductWithPendingCheck = lens.needsCheck,
 
             updated = serviceOrder.updated,
             updatedBy = serviceOrder.updatedBy,

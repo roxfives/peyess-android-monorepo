@@ -40,6 +40,7 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.lens_suggestion.model.toMeasuring
+import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddClientError
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddProductError
@@ -658,6 +659,20 @@ class ServiceOrderUploader constructor(
             )
         }.bind()
 
+        val productPicked = saleRepository.productPicked(serviceOrder.id).mapLeft {
+            PurchaseCreationFailed(
+                description = "Product picked not found",
+                error = it.error,
+            )
+        }.bind()
+
+        val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
+            PurchaseCreationFailed(
+                description = "Store not found",
+                error = it.error,
+            )
+        }.bind()
+
         PurchaseDocument(
             id = id,
             hid = purchaseHid.ifBlank { createHid() },
@@ -746,6 +761,7 @@ class ServiceOrderUploader constructor(
 
             finishedAt = serviceOrder.updated,
             daysToTakeFromStore = store.daysToTakeFromStore,
+            hasProductWithPendingCheck = lens.needsCheck,
 
             created = serviceOrder.created,
             createdBy = serviceOrder.createdBy,

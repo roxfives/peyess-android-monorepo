@@ -66,6 +66,7 @@ import com.peyess.salesapp.typing.sale.ClientRole
 import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
+import com.peyess.salesapp.utils.file.isLocalFile
 import com.peyess.salesapp.utils.string.removeDiacritics
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import java.math.BigDecimal
@@ -1024,15 +1025,4 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }
     }
-}
-
-fun Uri.isLocalFile(): Boolean {
-    val asString = this.toString()
-
-    return URLUtil.isValidUrl(asString)
-            && (URLUtil.isFileUrl(asString) || URLUtil.isContentUrl(asString))
-}
-
-fun Uri.isNotLocalFile(): Boolean {
-    return !isLocalFile()
 }

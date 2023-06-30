@@ -1,8 +1,6 @@
 package com.peyess.salesapp.features.pdf.service_order
 
 import android.content.Context
-import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
@@ -216,7 +214,10 @@ fun buildHtml(
         serviceOrder = serviceOrder,
     )
 
-    val deliverySection = buildDeliveryDateSection()
+    val deliverySection = buildDeliveryDateSection(
+        hasDeliveryDate = false,
+        daysToTakeFromStore = 30,
+    )
 
     val takeAwayAuthorizationSection = if (serviceOrder.hasTakeaway) {
         buildTakeAwaySection(

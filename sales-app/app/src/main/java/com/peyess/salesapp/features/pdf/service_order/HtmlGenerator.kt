@@ -215,8 +215,8 @@ fun buildHtml(
     )
 
     val deliverySection = buildDeliveryDateSection(
-        hasDeliveryDate = false,
-        daysToTakeFromStore = 30,
+        hasDeliveryDate = !purchase.hasProductWithPendingCheck,
+        daysToTakeFromStore = purchase.daysToTakeFromStore,
     )
 
     val takeAwayAuthorizationSection = if (serviceOrder.hasTakeaway) {

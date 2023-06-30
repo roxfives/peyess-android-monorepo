@@ -66,6 +66,7 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
 
         finishedAt = finishedAt.toTimestamp(),
         daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
 
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,

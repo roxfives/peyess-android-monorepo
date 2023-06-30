@@ -205,6 +205,11 @@ data class FSPurchaseUpdate(
 
     @Keep
     @JvmField
+    @PropertyName("has_product_with_pending_check")
+    val hasProductWithPendingCheck: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("state")
     val state: String = PurchaseState.Unknown.toName(),
 

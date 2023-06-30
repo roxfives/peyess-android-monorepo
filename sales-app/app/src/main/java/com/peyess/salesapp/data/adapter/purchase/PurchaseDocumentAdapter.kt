@@ -86,6 +86,7 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
 
         finishedAt = finishedAt.toTimestamp(),
         daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
 
         created = created.toTimestamp(),
         createdBy = createdBy,

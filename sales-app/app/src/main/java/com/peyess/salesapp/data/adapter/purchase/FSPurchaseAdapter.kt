@@ -90,7 +90,8 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         legalVersion = legalVersion,
 
         finishedAt = finishedAt.toZonedDateTime(),
-        daysToTakeFromStore = daysToTakeFromStore.toZonedDateTime(),
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
 
         created = created.toZonedDateTime(),
         createdBy = createdBy,

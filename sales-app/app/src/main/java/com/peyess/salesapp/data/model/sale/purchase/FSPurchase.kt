@@ -271,6 +271,11 @@ data class FSPurchase(
 
     @Keep
     @JvmField
+    @PropertyName("has_product_with_pending_check")
+    val hasProductWithPendingCheck: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("created")
     val created: Timestamp = Timestamp.now(),
 

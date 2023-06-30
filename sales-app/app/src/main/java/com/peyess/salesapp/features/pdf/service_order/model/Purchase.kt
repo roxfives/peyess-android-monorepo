@@ -64,6 +64,9 @@ data class Purchase(
     val legalText: String = "",
     val legalVersion: String = "",
 
+    val hasProductWithPendingCheck: Boolean = false,
+    val daysToTakeFromStore: Int = 0,
+
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",
     val updateAllowedBy: String = "",

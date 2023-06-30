@@ -66,6 +66,7 @@ data class PurchaseUpdateDocument(
 
     val finishedAt: ZonedDateTime = ZonedDateTime.now(),
     val daysToTakeFromStore: Int = 0,
+    val hasProductWithPendingCheck: Boolean = false,
 
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",

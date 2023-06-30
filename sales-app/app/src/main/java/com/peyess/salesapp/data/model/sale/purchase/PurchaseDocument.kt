@@ -81,6 +81,7 @@ data class PurchaseDocument(
 
     val finishedAt: ZonedDateTime = ZonedDateTime.now(),
     val daysToTakeFromStore: Int = 0,
+    val hasProductWithPendingCheck: Boolean = false,
 
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy: String = "",

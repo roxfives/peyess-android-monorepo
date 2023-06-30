@@ -85,7 +85,7 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         legalVersion = legalVersion,
 
         finishedAt = finishedAt.toTimestamp(),
-        daysToTakeFromStore = daysToTakeFromStore.toTimestamp(),
+        daysToTakeFromStore = daysToTakeFromStore,
 
         created = created.toTimestamp(),
         createdBy = createdBy,

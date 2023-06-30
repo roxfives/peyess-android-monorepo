@@ -65,7 +65,7 @@ data class PurchaseUpdateDocument(
     val reasonSyncFailed: PurchaseReasonSyncFailure = PurchaseReasonSyncFailure.None,
 
     val finishedAt: ZonedDateTime = ZonedDateTime.now(),
-    val daysToTakeFromStore: ZonedDateTime = ZonedDateTime.now(),
+    val daysToTakeFromStore: Int = 0,
 
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",

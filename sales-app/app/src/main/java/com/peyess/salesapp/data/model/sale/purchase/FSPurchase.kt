@@ -267,7 +267,7 @@ data class FSPurchase(
     @Keep
     @JvmField
     @PropertyName("days_to_take_from_store")
-    val daysToTakeFromStore: Timestamp = Timestamp.now(),
+    val daysToTakeFromStore: Int = 0,
 
     @Keep
     @JvmField

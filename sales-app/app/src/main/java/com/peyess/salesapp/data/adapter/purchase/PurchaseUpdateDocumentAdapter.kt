@@ -65,7 +65,7 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
         reasonSyncFailed = reasonSyncFailed.toName(),
 
         finishedAt = finishedAt.toTimestamp(),
-        daysToTakeFromStore = daysToTakeFromStore.toTimestamp(),
+        daysToTakeFromStore = daysToTakeFromStore,
 
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,

@@ -140,6 +140,47 @@ class PurchaseDaoImpl @Inject constructor(
         }
     }
 
+    override suspend fun updatePurchaseStateAndFinish(
+        purchaseId: String,
+        state: PurchaseState,
+        updatedBy: String
+    ): UpdatePurchaseResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            UpdatePurchaseDaoError.Unexpected(
+                description = "Firestore instance is uninitialized",
+            )
+        }
+
+        val storeId = firebaseManager.currentStore?.uid
+        ensureNotNull(storeId) {
+            UpdatePurchaseDaoError.Unexpected(
+                description = "Store user is not authenticated",
+            )
+        }
+
+        val purchasePath = salesApplication
+            .stringResource(R.string.fs_doc_purchase)
+            .format(storeId, purchaseId)
+
+        val update = mapOf(
+            "state" to state.toName(),
+            "has_product_with_pending_check" to Timestamp.now(),
+            "updated" to Timestamp.now(),
+            "updated_by" to updatedBy,
+            "update_allowed_by" to updatedBy,
+        )
+        Either.catch {
+            firestore.document(purchasePath)
+                .update(update)
+                .await()
+        }.mapLeft {
+            UpdatePurchaseDaoError.Unexpected(
+                description = it.message ?: "Unknown error",
+            )
+        }
+    }
+
     override suspend fun updatePurchaseSyncState(
         purchaseId: String,
         state: PurchaseSyncState,

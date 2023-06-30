@@ -36,6 +36,12 @@ interface PurchaseRepository {
         updatedBy: String,
     ): UpdatePurchaseStateResponse
 
+    suspend fun updatePurchaseStatusAndFinish(
+        purchaseId: String,
+        status: PurchaseState,
+        updatedBy: String,
+    ): UpdatePurchaseStateResponse
+
     suspend fun updatePurchaseSyncStatus(
         purchaseId: String,
         status: PurchaseSyncState,

@@ -101,6 +101,21 @@ class PurchaseRepositoryImpl @Inject constructor(
             }.bind()
     }
 
+    override suspend fun updatePurchaseStatusAndFinish(
+        purchaseId: String,
+        status: PurchaseState,
+        updatedBy: String
+    ): UpdatePurchaseStateResponse = either {
+        purchaseDao.updatePurchaseStateAndFinish(purchaseId, status, updatedBy)
+            .map { purchaseId }
+            .mapLeft {
+                UpdatePurchaseRepositoryError.Unexpected(
+                    description = "Purchase with id $purchaseId not found",
+                    throwable = null,
+                )
+            }.bind()
+    }
+
     override suspend fun updatePurchaseSyncStatus(
         purchaseId: String,
         status: PurchaseSyncState,

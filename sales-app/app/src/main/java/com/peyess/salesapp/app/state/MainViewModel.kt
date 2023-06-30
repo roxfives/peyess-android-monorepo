@@ -690,7 +690,7 @@ class MainViewModel @AssistedInject constructor(
         suspend {
             val currentUser = authenticationRepository.fetchCurrentUserId()
 
-            purchaseRepository.updatePurchaseStatus(
+            purchaseRepository.updatePurchaseStatusAndFinish(
                 saleId,
                 PurchaseState.Confirmed,
                 currentUser,

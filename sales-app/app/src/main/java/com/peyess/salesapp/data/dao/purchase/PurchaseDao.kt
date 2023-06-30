@@ -29,6 +29,12 @@ interface PurchaseDao {
         updatedBy: String,
     ): UpdatePurchaseResponse
 
+    suspend fun updatePurchaseStateAndFinish(
+        purchaseId: String,
+        state: PurchaseState,
+        updatedBy: String,
+    ): UpdatePurchaseResponse
+
     suspend fun updatePurchaseSyncState(
         purchaseId: String,
         state: PurchaseSyncState,

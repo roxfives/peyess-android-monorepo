@@ -54,5 +54,7 @@ fun FSPurchaseUpdate.toMappingUpdate(): Map<String, Any> {
         "updated" to updated,
         "updated_by" to updatedBy,
         "update_allowed_by" to updateAllowedBy,
+        "finished_at" to finishedAt,
+        "days_to_take_from_store" to daysToTakeFromStore,
     )
 }

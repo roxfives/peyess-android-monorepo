@@ -193,7 +193,15 @@ data class FSPurchaseUpdate(
     @PropertyName("legal_version")
     val legalVersion: String = "",
 
+    @Keep
+    @JvmField
+    @PropertyName("finished_at")
+    val finishedAt: Timestamp = Timestamp.now(),
 
+    @Keep
+    @JvmField
+    @PropertyName("days_to_take_from_store")
+    val daysToTakeFromStore: Timestamp = Timestamp.now(),
 
     @Keep
     @JvmField

@@ -8,8 +8,6 @@ import com.peyess.salesapp.data.adapter.purchase.fee.toFSFeeDescription
 import com.peyess.salesapp.data.adapter.service_order.toFSDenormalizedServiceOrderDesc
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
-import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun PurchaseDocument.toFSPurchase(): FSPurchase {
@@ -85,6 +83,9 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
+
+        finishedAt = finishedAt.toTimestamp(),
+        daysToTakeFromStore = daysToTakeFromStore.toTimestamp(),
 
         created = created.toTimestamp(),
         createdBy = createdBy,

@@ -79,6 +79,9 @@ data class PurchaseDocument(
     val legalText: String = "",
     val legalVersion: String = "",
 
+    val finishedAt: ZonedDateTime = ZonedDateTime.now(),
+    val daysToTakeFromStore: ZonedDateTime = ZonedDateTime.now(),
+
     val created: ZonedDateTime = ZonedDateTime.now(),
     val createdBy: String = "",
     val createAllowedBy: String = "",

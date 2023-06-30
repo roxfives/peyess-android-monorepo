@@ -75,7 +75,7 @@ data class FSOpticalStore(
     @Keep
     @JvmField
     @PropertyName("days_to_take_from_store")
-    val daysToTakeFromStore: Float = 0f,
+    val daysToTakeFromStore: Int = 0,
 
     @Keep
     @JvmField

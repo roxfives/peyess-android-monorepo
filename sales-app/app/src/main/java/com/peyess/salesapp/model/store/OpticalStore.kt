@@ -31,7 +31,7 @@ data class OpticalStore(
 
     val paymentTotalReceived: Float = 0f,
 
-    val daysToTakeFromStore: Float = 0f,
+    val daysToTakeFromStore: Int = 0,
 
     val hasCustomLegalText: Boolean = false,
 

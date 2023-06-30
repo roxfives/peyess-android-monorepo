@@ -79,6 +79,11 @@ data class FSOpticalStore(
 
     @Keep
     @JvmField
+    @PropertyName("additional_check_days")
+    val additionalCheckDays: Int = 0,
+
+    @Keep
+    @JvmField
     @PropertyName("has_custom_legal_text")
     val hasCustomLegalText: Boolean = false,
 
@@ -195,6 +200,7 @@ fun FSOpticalStore.toDocument(id: String): OpticalStore {
         paymentMinSet = paymentMinSet,
         paymentTotalReceived = paymentTotalReceived,
         daysToTakeFromStore = daysToTakeFromStore,
+        additionalCheckDays = additionalCheckDays,
         hasCustomLegalText = hasCustomLegalText,
         isEnabled = isEnabled,
 

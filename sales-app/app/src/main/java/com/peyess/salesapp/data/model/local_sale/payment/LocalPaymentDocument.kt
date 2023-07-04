@@ -24,5 +24,7 @@ data class LocalPaymentDocument(
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
+
+    val daysToDueDate: Int = 0,
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

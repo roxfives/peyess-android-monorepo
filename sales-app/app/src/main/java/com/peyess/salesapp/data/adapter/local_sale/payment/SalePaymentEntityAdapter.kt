@@ -2,6 +2,8 @@ package com.peyess.salesapp.data.adapter.local_sale.payment
 
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentEntity
+import java.time.LocalTime
+import java.time.ZonedDateTime
 
 fun LocalPaymentEntity.toLocalPaymentDocument(): LocalPaymentDocument {
     return LocalPaymentDocument(
@@ -21,6 +23,6 @@ fun LocalPaymentEntity.toLocalPaymentDocument(): LocalPaymentDocument {
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
-        dueDate = dueDate,
+        daysToDueDate = daysToDueDate,
     )
 }

@@ -22,6 +22,7 @@ fun LocalPaymentDocument.toLocalPaymentEntity(): LocalPaymentEntity {
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
 
+        daysToDueDate = daysToDueDate,
         dueDate = dueDate,
     )
 }

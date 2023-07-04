@@ -122,6 +122,13 @@ interface EditLocalPaymentDao {
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri)
 
     @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET days_to_due_date = :daysToDueDate
+        WHERE id = :paymentId
+    """)
+    suspend fun updateDaysToDueDate(paymentId: Long, daysToDueDate: Int)
+
+    @Query("""
         DELETE FROM ${EditLocalPaymentEntity.tableName}
         WHERE sale_id = :saleId
     """)

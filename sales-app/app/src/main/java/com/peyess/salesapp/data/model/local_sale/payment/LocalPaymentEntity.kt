@@ -58,9 +58,11 @@ data class LocalPaymentEntity(
     val cardFlagIcon: Uri = Uri.EMPTY,
     @ColumnInfo(name = "card_nsu")
     val cardNsu: String = "",
-    
+
     @ColumnInfo(name = "due_date")
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
+    @ColumnInfo(name = "days_to_due_date")
+    val daysToDueDate: Int = 0,
 ) {
     companion object {
         const val tableName = "payments"

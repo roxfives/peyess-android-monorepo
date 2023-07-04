@@ -69,7 +69,11 @@ data class FSPayment(
     @JvmField
     @PropertyName("payer_name")
     val payerName: String = "",
-    
+
+    @Keep
+    @JvmField
+    @PropertyName("days_to_due_date")
+    val daysToDueDate: Int = 0,
     @Keep
     @JvmField
     @PropertyName("due_date")

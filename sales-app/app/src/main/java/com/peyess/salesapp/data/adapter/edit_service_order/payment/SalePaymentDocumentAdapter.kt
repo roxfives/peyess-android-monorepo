@@ -18,6 +18,6 @@ fun LocalPaymentDocument.toEditLocalPaymentEntity(): EditLocalPaymentEntity {
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
-        dueDate = dueDate,
+        daysToDueDate = daysToDueDate,
     )
 }

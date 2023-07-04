@@ -26,6 +26,7 @@ fun LocalPaymentDocument.toPayment(): Payment {
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
 
+        daysToDueDate = daysToDueDate,
         dueDate = dueDate,
     )
 }
@@ -49,6 +50,7 @@ fun LocalPaymentDocument.toPaymentDocument(): PaymentDocument {
         payerDocument = clientDocument,
         payerName = clientName,
 
+        daysToDueDate = daysToDueDate,
         dueDate = dueDate,
     )
 }

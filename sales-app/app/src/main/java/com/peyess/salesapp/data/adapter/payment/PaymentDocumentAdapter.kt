@@ -24,6 +24,7 @@ fun PaymentDocument.toFSPayment(): FSPayment {
         payerDocument = payerDocument,
         payerName = payerName,
 
-        dueDate = dueDate.toTimestamp()
+        dueDate = dueDate.toTimestamp(),
+        daysToDueDate = daysToDueDate,
     )
 }

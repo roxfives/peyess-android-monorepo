@@ -264,6 +264,18 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun updateDaysToDueDate(
+        paymentId: Long,
+        daysToDueDate: Int
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        editLocalPaymentDao.updateDaysToDueDate(paymentId, daysToDueDate)
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment days to due date for sale $paymentId",
+            throwable = it,
+        )
+    }
+
     override suspend fun deletePaymentsForSale(
         saleId: String,
     ): EditLocalPaymentDeleteResponse = Either.catch {

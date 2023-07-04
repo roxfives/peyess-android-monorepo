@@ -24,5 +24,6 @@ data class Payment(
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
     
+    val daysToDueDate: Int = 0,
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

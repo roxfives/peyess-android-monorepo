@@ -19,5 +19,8 @@ fun FSPaymentMethod.toPaymentMethodDocument(id: String): PaymentMethodDocument {
         hasDocumentPicture = hasDocumentPicture,
         hasDocument = hasDocument,
         cardFlags = cardFlags,
+        canEditDueDate = canEditDueDate,
+        maxDueDate = maxDueDate,
+        defaultDueDate = defaultDueDate,
     )
 }

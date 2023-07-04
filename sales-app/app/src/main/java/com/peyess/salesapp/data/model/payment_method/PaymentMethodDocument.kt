@@ -22,4 +22,8 @@ data class PaymentMethodDocument(
     val hasDocument: Boolean = false,
 
     val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
+
+    val canEditDueDate: Boolean = false,
+    val maxDueDate: Int = 0,
+    val defaultDueDate: Int = 0,
 )

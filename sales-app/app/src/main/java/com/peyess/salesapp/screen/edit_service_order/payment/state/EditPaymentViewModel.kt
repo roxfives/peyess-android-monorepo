@@ -521,6 +521,8 @@ class EditPaymentViewModel @AssistedInject constructor(
             methodType = method.type,
             methodName = method.name,
             installments = maxInstallments,
+
+            daysToDueDate = method.defaultDueDate,
         )
 
         viewModelScope.launch(Dispatchers.IO) {

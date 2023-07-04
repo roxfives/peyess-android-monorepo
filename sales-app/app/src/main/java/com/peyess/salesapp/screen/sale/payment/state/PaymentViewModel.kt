@@ -592,6 +592,8 @@ class PaymentViewModel @AssistedInject constructor(
             methodType = method.type,
             methodName = method.name,
             installments = maxInstallments,
+
+            daysToDueDate = method.defaultDueDate,
         )
 
         copy(paymentInput = update)

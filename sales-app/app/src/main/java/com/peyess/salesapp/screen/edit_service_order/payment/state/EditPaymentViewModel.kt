@@ -27,7 +27,6 @@ import com.peyess.salesapp.data.repository.lenses.room.SingleLensResponse
 import com.peyess.salesapp.data.repository.lenses.room.SingleTreatmentResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientReadSingleResponse
 import com.peyess.salesapp.data.repository.local_client.LocalClientRepository
-import com.peyess.salesapp.feature.payment.model.Client
 import com.peyess.salesapp.feature.payment.model.Coloring
 import com.peyess.salesapp.feature.payment.model.Frames
 import com.peyess.salesapp.feature.payment.model.Lens
@@ -469,7 +468,7 @@ class EditPaymentViewModel @AssistedInject constructor(
         copy(paymentInput = update)
     }
 
-    fun onMethodPaymentChanged(document: String) = setState {
+    fun onDocumentChanged(document: String) = setState {
         val update = paymentInput.copy(document = document)
 
         viewModelScope.launch(Dispatchers.IO) {

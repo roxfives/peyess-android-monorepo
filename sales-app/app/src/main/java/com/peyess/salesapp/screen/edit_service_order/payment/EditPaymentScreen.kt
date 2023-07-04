@@ -65,7 +65,7 @@ fun EditPaymentScreen(
         methodDocument = payment.document,
 
         onTotalPaidChanged = viewModel::onTotalPaidChange,
-        onMethodDocumentUpdate = viewModel::onMethodPaymentChanged,
+        onMethodDocumentUpdate = viewModel::onDocumentChanged,
         onCardFlagChanged = viewModel::onCardFlagChanged,
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,

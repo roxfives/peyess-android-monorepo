@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.ZonedDateTime
 
 @Entity(
     tableName = LocalPaymentEntity.tableName,
@@ -57,6 +58,11 @@ data class LocalPaymentEntity(
     val cardFlagIcon: Uri = Uri.EMPTY,
     @ColumnInfo(name = "card_nsu")
     val cardNsu: String = "",
+
+    @ColumnInfo(name = "has_due_date")
+    val hasDueDate: Boolean = false,
+    @ColumnInfo(name = "due_date")
+    val dueDate: ZonedDateTime = ZonedDateTime.now(),
 ) {
     companion object {
         const val tableName = "payments"

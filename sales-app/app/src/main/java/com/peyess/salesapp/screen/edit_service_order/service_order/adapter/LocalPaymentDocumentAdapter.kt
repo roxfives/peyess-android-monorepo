@@ -19,5 +19,7 @@ fun LocalPaymentDocument.toPayment(): Payment {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+        hasDueDate = hasDueDate,
+        dueDate = dueDate,
     )
 }

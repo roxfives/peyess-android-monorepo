@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.service_order.model
 
 import android.net.Uri
+import java.time.ZonedDateTime
 
 data class Payment(
     val id: Long = 0L,
@@ -22,4 +23,7 @@ data class Payment(
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
+
+    val hasDueDate: Boolean = false,
+    val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

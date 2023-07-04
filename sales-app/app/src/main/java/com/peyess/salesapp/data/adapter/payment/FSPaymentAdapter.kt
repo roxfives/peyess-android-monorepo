@@ -4,6 +4,8 @@ import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 import com.peyess.salesapp.typing.sale.PaymentMethodType
+import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.time.ZonedDateTime
 
 fun FSPayment.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
@@ -24,5 +26,8 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
         payerUid = payerUid,
         payerDocument = payerDocument,
         payerName = payerName,
+
+        hasDueDate = hasDueDate,
+        dueDate = dueDate.toZonedDateTime(),
     )
 }

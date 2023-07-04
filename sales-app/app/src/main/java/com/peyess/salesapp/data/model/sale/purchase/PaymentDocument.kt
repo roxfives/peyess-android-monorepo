@@ -2,7 +2,7 @@ package com.peyess.salesapp.data.model.sale.purchase
 
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 import com.peyess.salesapp.typing.sale.PaymentMethodType
-
+import java.time.ZonedDateTime
 
 data class PaymentDocument(
     val uuid: String = "",
@@ -22,4 +22,7 @@ data class PaymentDocument(
     val payerUid: String = "",
     val payerDocument: String = "",
     val payerName: String = "",
+
+    val hasDueDate: Boolean = false,
+    val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

@@ -165,7 +165,6 @@ class PurchaseDaoImpl @Inject constructor(
 
         val update = mapOf(
             "state" to state.toName(),
-            "has_product_with_pending_check" to Timestamp.now(),
             "updated" to Timestamp.now(),
             "updated_by" to updatedBy,
             "update_allowed_by" to updatedBy,

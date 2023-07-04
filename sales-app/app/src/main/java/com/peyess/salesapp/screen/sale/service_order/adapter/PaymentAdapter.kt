@@ -21,5 +21,7 @@ fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
+        hasDueDate = hasDueDate,
+        dueDate = dueDate,
     )
 }

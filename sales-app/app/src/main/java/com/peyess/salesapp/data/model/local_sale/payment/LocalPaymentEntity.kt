@@ -58,9 +58,7 @@ data class LocalPaymentEntity(
     val cardFlagIcon: Uri = Uri.EMPTY,
     @ColumnInfo(name = "card_nsu")
     val cardNsu: String = "",
-
-    @ColumnInfo(name = "has_due_date")
-    val hasDueDate: Boolean = false,
+    
     @ColumnInfo(name = "due_date")
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 ) {

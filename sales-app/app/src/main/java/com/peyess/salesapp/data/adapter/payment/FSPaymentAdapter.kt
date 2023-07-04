@@ -27,7 +27,6 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
         payerDocument = payerDocument,
         payerName = payerName,
 
-        hasDueDate = hasDueDate,
         dueDate = dueDate.toZonedDateTime(),
     )
 }

@@ -22,7 +22,6 @@ data class PaymentDocument(
     val payerUid: String = "",
     val payerDocument: String = "",
     val payerName: String = "",
-
-    val hasDueDate: Boolean = false,
+    
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

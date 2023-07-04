@@ -30,7 +30,6 @@ fun EditLocalPaymentEntity.toLocalPaymentDocument(
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
 
-        hasDueDate = hasDueDate,
         dueDate = dueDate,
     )
 }

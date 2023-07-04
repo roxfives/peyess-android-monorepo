@@ -23,7 +23,5 @@ data class Payment(
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
-
-    val hasDueDate: Boolean = false,
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

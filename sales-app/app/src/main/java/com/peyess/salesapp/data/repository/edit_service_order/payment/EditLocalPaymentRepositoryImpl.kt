@@ -15,9 +15,11 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.error.Inse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
 import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import timber.log.Timber
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 private const val attemptThreshold = 10L
@@ -264,11 +266,18 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun updateDaysToDueDate(
+    override suspend fun updateDueDateData(
         paymentId: Long,
-        daysToDueDate: Int
+        dueDateMode: PaymentDueDateMode,
+        dueDatePeriod: Int,
+        dueDate: ZonedDateTime,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateDaysToDueDate(paymentId, daysToDueDate)
+        editLocalPaymentDao.updateDaysToDueDate(
+            paymentId,
+            dueDateMode,
+            dueDatePeriod,
+            dueDate,
+        )
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
             description = "Error while updating payment days to due date for sale $paymentId",

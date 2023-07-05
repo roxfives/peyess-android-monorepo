@@ -583,6 +583,28 @@ class PaymentViewModel @AssistedInject constructor(
         copy(paymentInput = payment)
     }
 
+    fun onIncreasePeriodDueDate(value: Int) = setState {
+        val maxPeriod = this.activePaymentMethod.dueDateMax
+        val newValue = (value + 1).coerceAtMost(maxPeriod)
+        val payment = paymentInput.copy(
+            dueDatePeriod = newValue,
+            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+        )
+
+        copy(paymentInput = payment)
+    }
+
+    fun onDecreasePeriodDueDate(value: Int) = setState {
+        val minPeriod = this.activePaymentMethod.dueDateDefault
+        val newValue = (value - 1).coerceAtLeast(minPeriod)
+        val payment = paymentInput.copy(
+            dueDatePeriod = newValue,
+            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+        )
+
+        copy(paymentInput = payment)
+    }
+
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
         val maxInstallments = paymentInput.installments
             .coerceAtMost(method.maxInstallments)

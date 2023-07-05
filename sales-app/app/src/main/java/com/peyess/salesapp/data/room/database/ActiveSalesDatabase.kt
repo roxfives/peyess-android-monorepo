@@ -51,7 +51,6 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalPaymentEntity::class,
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
-        ConverterPaymentDueDateMode::class,
     ],
     views = [
         ServiceOrderDBView::class,
@@ -69,6 +68,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     ConverterOverallDiscountCalcMethod::class,
     ConverterPaymentFeeMethod::class,
     ConverterZonedDateTime::class,
+    ConverterPaymentDueDateMode::class,
 )
 abstract class ActiveSalesDatabase: RoomDatabase() {
     abstract fun activeSalesDao(): ActiveSalesDao

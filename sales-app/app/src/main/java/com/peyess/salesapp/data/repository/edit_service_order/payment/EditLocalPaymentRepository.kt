@@ -7,7 +7,9 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.error.Dele
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.InsertLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import kotlinx.coroutines.flow.Flow
+import java.time.ZonedDateTime
 
 typealias EditLocalPaymentInsertResponse = Either<InsertLocalPaymentError, Long>
 typealias EditLocalPaymentDeleteResponse = Either<DeleteLocalPaymentError, Unit>
@@ -46,7 +48,12 @@ interface EditLocalPaymentRepository {
     suspend fun updateCardFlagName(paymentId: Long, cardFlagName: String): EditLocalPaymentUpdateResponse
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri): EditLocalPaymentUpdateResponse
 
-    suspend fun updateDaysToDueDate(paymentId: Long, daysToDueDate: Int): EditLocalPaymentUpdateResponse
+    suspend fun updateDueDateData(
+        paymentId: Long,
+        dueDateMode: PaymentDueDateMode,
+        dueDatePeriod: Int,
+        dueDate: ZonedDateTime,
+    ): EditLocalPaymentUpdateResponse
 
     suspend fun deletePaymentsForSale(saleId: String): EditLocalPaymentDeleteResponse
 }

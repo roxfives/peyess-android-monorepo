@@ -507,13 +507,50 @@ class EditPaymentViewModel @AssistedInject constructor(
     fun onDecreaseInstallments(value: Int) = setState {
         val minInstallments = 1
         val newValue = (value - 1).coerceAtLeast(minInstallments)
-        val payment = paymentInput.copy(installments = newValue)
+        val payment = paymentInput.copy(
+            dueDatePeriod = newValue,
+            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+        )
 
         viewModelScope.launch(Dispatchers.IO) {
-            localPaymentRepository.updateInstallments(paymentId, newValue)
+            localPaymentRepository.updateDueDateData(
+                paymentId = paymentId,
+                dueDateMode = payment.dueDateMode,
+                dueDatePeriod = payment.dueDatePeriod,
+                dueDate = payment.dueDate,
+            )
         }
         copy(paymentInput = payment)
     }
+
+    fun onIncreasePeriodDueDate(value: Int) = setState {
+        val maxPeriod = this.activePaymentMethod.dueDateMax
+        val newValue = (value + 1).coerceAtMost(maxPeriod)
+        val payment = paymentInput.copy(
+            dueDatePeriod = newValue,
+            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateDueDateData(
+                paymentId = paymentId,
+                dueDateMode = payment.dueDateMode,
+                dueDatePeriod = payment.dueDatePeriod,
+                dueDate = payment.dueDate,
+            )
+        }
+        copy(paymentInput = payment)
+    }
+
+    fun onDecreasePeriodDueDate(value: Int) = setState {
+        val minPeriod = this.activePaymentMethod.dueDateDefault
+        val newValue = (value - 1).coerceAtLeast(minPeriod)
+        val payment = paymentInput.copy(dueDatePeriod = newValue)
+
+        copy(paymentInput = payment)
+    }
+
+
 
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
         val maxInstallments = paymentInput.installments
@@ -535,6 +572,12 @@ class EditPaymentViewModel @AssistedInject constructor(
             localPaymentRepository.updateMethodType(paymentId, update.methodType)
             localPaymentRepository.updateMethodName(paymentId, update.methodName)
             localPaymentRepository.updateInstallments(paymentId, update.installments)
+            localPaymentRepository.updateDueDateData(
+                paymentId = paymentId,
+                dueDateMode = update.dueDateMode,
+                dueDatePeriod = update.dueDatePeriod,
+                dueDate = update.dueDateMode.dueDateAfter(update.dueDatePeriod),
+            )
         }
         copy(paymentInput = update)
     }

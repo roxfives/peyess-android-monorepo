@@ -73,6 +73,7 @@ import com.peyess.salesapp.feature.payment.model.Payment
 import com.peyess.salesapp.feature.payment.model.PaymentMethod
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentPlaceholder
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentTitle
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
@@ -138,6 +139,10 @@ fun PaymentUI(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
+    periodToDueDate: Int = 0,
+    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
+    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
+
     activePaymentMethod: PaymentMethod? = null,
     payment: Payment = Payment(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
@@ -183,6 +188,10 @@ fun PaymentUI(
             installments = installments,
             onIncreaseInstallments = onIncreaseInstallments,
             onDecreaseInstallments = onDecreaseInstallments,
+
+            periodToDueDate = periodToDueDate,
+            onIncreasePeriodDueDate = onIncreasePeriodDueDate,
+            onDecreasePeriodDueDate = onDecreasePeriodDueDate,
 
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
@@ -318,6 +327,10 @@ private fun PaymentView(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
+    periodToDueDate: Int = 0,
+    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
+    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
+
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
 
@@ -421,6 +434,10 @@ private fun PaymentView(
                 installments = installments,
                 onIncreaseInstallments = onIncreaseInstallments,
                 onDecreaseInstallments = onDecreaseInstallments,
+
+                periodToDueDate = periodToDueDate,
+                onIncreasePeriodDueDate = onIncreasePeriodDueDate,
+                onDecreasePeriodDueDate = onDecreasePeriodDueDate,
             )
         }
     }
@@ -445,6 +462,10 @@ private fun PaymentCard(
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
+
+    periodToDueDate: Int = 0,
+    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
+    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
 
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
@@ -516,6 +537,35 @@ private fun PaymentCard(
                         value = installments,
                         onIncrease = onIncreaseInstallments,
                         onDecrease = onDecreaseInstallments,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = paymentMethod?.dueDateCanEdit ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (paymentMethod?.dueDateMode is PaymentDueDateMode.Month) {
+                        Text(stringResource(id = R.string.payment_due_period_months))
+                    } else {
+                        Text(stringResource(id = R.string.payment_due_period_days))
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    DueDatePeriodInput(
+                        value = periodToDueDate,
+                        onIncrease = onIncreasePeriodDueDate,
+                        onDecrease = onDecreasePeriodDueDate,
                     )
                 }
             }
@@ -836,6 +886,108 @@ private fun InstallmentsInput(
                 },
             )
         }
+    }
+}
+
+
+@Composable
+private fun DueDatePeriodInput(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    value: Int = 0,
+    mode: PaymentDueDateMode = PaymentDueDateMode.None,
+    onIncrease: (value: Int) -> Unit = {},
+    onDecrease: (value: Int) -> Unit = {},
+) {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Row(
+            modifier = modifier
+                .padding(8.dp)
+                .border(
+                    BorderStroke(
+                        2.dp, if (enabled) {
+                            MaterialTheme.colors.primary
+                        } else {
+                            Color.Gray.copy(alpha = 0.5f)
+                        }
+                    ),
+                    RoundedCornerShape(36.dp),
+                ),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                modifier = Modifier
+                    .height(SalesAppTheme.dimensions.minimum_touch_target)
+                    .width(SalesAppTheme.dimensions.minimum_touch_target)
+                    .holdable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        enabled = enabled,
+                        onClick = { onDecrease(value) },
+                    ),
+                enabled = enabled,
+                onClick = {},
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Remove,
+                    contentDescription = "",
+                    tint = if (enabled) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    },
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .height(IntrinsicSize.Max)
+                    .width(installmentsButtonSize),
+                text = "%02d".format(value),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+                color = if (enabled) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                },
+            )
+
+            IconButton(
+                modifier = Modifier
+                    .holdable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        enabled = enabled,
+                        onClick = { onIncrease(value) }
+                    ),
+                enabled = enabled,
+                onClick = {}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "",
+                    tint = if (enabled) {
+                        MaterialTheme.colors.primary
+                    } else {
+                        Color.Gray.copy(alpha = 0.5f)
+                    },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = when (mode) {
+                PaymentDueDateMode.Day -> stringResource(id = R.string.payment_due_mode_day)
+                PaymentDueDateMode.Month -> stringResource(id = R.string.payment_due_mode_month)
+                PaymentDueDateMode.None -> stringResource(id = R.string.empty_string)
+            },
+            style = MaterialTheme.typography.caption
+        )
     }
 }
 

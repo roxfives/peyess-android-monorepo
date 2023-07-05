@@ -49,12 +49,15 @@ import com.peyess.salesapp.screen.sale.payment.adapter.toPaymentMethod
 import com.peyess.salesapp.screen.sale.payment.adapter.toTreatment
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.LocalTime
+import java.time.ZonedDateTime
 
 private typealias ViewModelFactory =
         AssistedViewModelFactory<EditPaymentViewModel, EditPaymentState>
@@ -522,7 +525,9 @@ class EditPaymentViewModel @AssistedInject constructor(
             methodName = method.name,
             installments = maxInstallments,
 
-            daysToDueDate = method.defaultDueDate,
+            dueDateMode = method.dueDateMode,
+            dueDatePeriod = method.dueDateDefault,
+            dueDate = method.dueDateMode.dueDateAfter(period = method.dueDateDefault),
         )
 
         viewModelScope.launch(Dispatchers.IO) {

@@ -18,6 +18,7 @@ fun PaymentMethodDocument.toPaymentMethod(): PaymentMethod {
         hasDocumentPicture = hasDocumentPicture,
         hasDocument = hasDocument,
         cardFlags = cardFlags,
+        dueDateCanEdit = dueDateCanEdit,
         dueDateMode = dueDateMode,
         dueDateDefault = dueDateDefault,
         dueDateMax = dueDateMax,

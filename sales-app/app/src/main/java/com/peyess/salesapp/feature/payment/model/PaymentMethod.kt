@@ -26,6 +26,7 @@ data class PaymentMethod(
 
     val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
 
+    val dueDateCanEdit: Boolean = false,
     val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
     val dueDateDefault: Int = 0,
     val dueDateMax: Int = 0,

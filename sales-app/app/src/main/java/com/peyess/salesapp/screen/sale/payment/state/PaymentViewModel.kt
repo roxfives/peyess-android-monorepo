@@ -593,7 +593,9 @@ class PaymentViewModel @AssistedInject constructor(
             methodName = method.name,
             installments = maxInstallments,
 
-            daysToDueDate = method.defaultDueDate,
+            dueDateMode = method.dueDateMode,
+            dueDatePeriod = method.dueDateDefault,
+            dueDate = method.dueDateMode.dueDateAfter(period = method.dueDateDefault),
         )
 
         copy(paymentInput = update)

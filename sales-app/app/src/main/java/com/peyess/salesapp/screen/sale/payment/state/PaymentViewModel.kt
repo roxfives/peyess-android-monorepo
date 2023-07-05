@@ -509,6 +509,10 @@ class PaymentViewModel @AssistedInject constructor(
                 methodId = methodId,
                 methodType = methodType,
                 methodName = methodName,
+
+                dueDatePeriod = defaultMethod.dueDateDefault,
+                dueDateMode = defaultMethod.dueDateMode,
+                dueDate = defaultMethod.dueDateMode.dueDateAfter(defaultMethod.dueDateDefault),
             )
 
             setState {

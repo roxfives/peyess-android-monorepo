@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.payment.model
 
 import android.net.Uri
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import java.time.ZonedDateTime
 
 data class Payment(
@@ -24,6 +25,7 @@ data class Payment(
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
 
+    val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
+    val dueDatePeriod: Int = 0,
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
-    val daysToDueDate: Int = 0,
 )

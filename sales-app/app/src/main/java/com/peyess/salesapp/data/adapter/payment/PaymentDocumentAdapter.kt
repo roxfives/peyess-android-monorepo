@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.payment
 
 import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.utils.time.toTimestamp
 
 fun PaymentDocument.toFSPayment(): FSPayment {
@@ -24,7 +25,8 @@ fun PaymentDocument.toFSPayment(): FSPayment {
         payerDocument = payerDocument,
         payerName = payerName,
 
+        dueDateMode = dueDateMode.toName(),
+        dueDatePeriod = dueDatePeriod,
         dueDate = dueDate.toTimestamp(),
-        daysToDueDate = daysToDueDate,
     )
 }

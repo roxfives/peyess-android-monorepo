@@ -33,6 +33,7 @@ import com.peyess.salesapp.data.room.converter.ConverterEye
 import com.peyess.salesapp.data.room.converter.ConverterFramesType
 import com.peyess.salesapp.data.room.converter.ConverterLensTypeCategoryName
 import com.peyess.salesapp.data.room.converter.ConverterLocalDate
+import com.peyess.salesapp.data.room.converter.ConverterPaymentDueDateMode
 import com.peyess.salesapp.data.room.converter.ConverterPrismPosition
 import com.peyess.salesapp.data.room.converter.ConverterUri
 import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
@@ -50,11 +51,12 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         LocalPaymentEntity::class,
         OverallDiscountEntity::class,
         PaymentFeeEntity::class,
+        ConverterPaymentDueDateMode::class,
     ],
     views = [
         ServiceOrderDBView::class,
     ],
-    version = 69,
+    version = 70,
 )
 @TypeConverters(
     ConverterLocalDate::class,

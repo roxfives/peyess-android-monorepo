@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.adapter.payment
 import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.typing.sale.PaymentMethodType
 import com.peyess.salesapp.utils.time.toZonedDateTime
 import java.time.ZonedDateTime
@@ -27,7 +28,8 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
         payerDocument = payerDocument,
         payerName = payerName,
 
+        dueDatePeriod = dueDatePeriod,
+        dueDateMode = PaymentDueDateMode.fromName(dueDateMode),
         dueDate = dueDate.toZonedDateTime(),
-        daysToDueDate = daysToDueDate,
     )
 }

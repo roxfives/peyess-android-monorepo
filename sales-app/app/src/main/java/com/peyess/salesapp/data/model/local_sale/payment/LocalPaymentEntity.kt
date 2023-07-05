@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import java.time.ZonedDateTime
 
 @Entity(
@@ -61,8 +62,10 @@ data class LocalPaymentEntity(
 
     @ColumnInfo(name = "due_date")
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
-    @ColumnInfo(name = "days_to_due_date")
-    val daysToDueDate: Int = 0,
+    @ColumnInfo(name = "due_date_period")
+    val dueDatePeriod: Int = 0,
+    @ColumnInfo(name = "due_date_mode")
+    val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
 ) {
     companion object {
         const val tableName = "payments"

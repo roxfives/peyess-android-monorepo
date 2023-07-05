@@ -6,8 +6,6 @@ import java.time.LocalTime
 import java.time.ZonedDateTime
 
 fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
-    val dueDate = ZonedDateTime.now().plusDays(daysToDueDate.toLong())
-
     return LocalPaymentDocument(
         uuid = uuid,
         id = id,
@@ -25,6 +23,8 @@ fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
         cardNsu = cardNsu,
-        daysToDueDate = daysToDueDate,
+        dueDateMode = dueDateMode,
+        dueDatePeriod = dueDatePeriod,
+        dueDate = dueDate,
     )
 }

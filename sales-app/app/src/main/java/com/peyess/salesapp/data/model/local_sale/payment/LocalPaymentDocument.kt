@@ -1,6 +1,8 @@
 package com.peyess.salesapp.data.model.local_sale.payment
 
 import android.net.Uri
+import com.google.firebase.Timestamp
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import java.time.ZonedDateTime
 
 data class LocalPaymentDocument(
@@ -25,6 +27,7 @@ data class LocalPaymentDocument(
     val cardFlagIcon: Uri = Uri.EMPTY,
     val cardNsu: String = "",
 
-    val daysToDueDate: Int = 0,
+    val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
+    val dueDatePeriod: Int = 0,
     val dueDate: ZonedDateTime = ZonedDateTime.now(),
 )

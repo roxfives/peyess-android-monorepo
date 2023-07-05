@@ -1,11 +1,15 @@
 package com.peyess.salesapp.data.model.edit_service_order.payment
 
 import android.net.Uri
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.local_client.LocalClientEntity
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import java.time.ZonedDateTime
 
 @Entity(
@@ -63,9 +67,13 @@ data class EditLocalPaymentEntity(
     val cardFlagIcon: Uri = Uri.EMPTY,
     @ColumnInfo(name = "card_nsu")
     val cardNsu: String = "",
-    
-    @ColumnInfo(name = "days_to_due_date")
-    val daysToDueDate: Int = 0,
+
+    @ColumnInfo(name = "due_date_mode")
+    val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
+    @ColumnInfo(name = "due_date_period")
+    val dueDatePeriod: Int = 0,
+    @ColumnInfo(name = "due_date")
+    val dueDate: ZonedDateTime = ZonedDateTime.now(),
 ) {
     companion object {
         const val tableName = "edit_sale_payment"

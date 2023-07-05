@@ -31,6 +31,7 @@ import com.peyess.salesapp.data.room.converter.ConverterEye
 import com.peyess.salesapp.data.room.converter.ConverterFramesType
 import com.peyess.salesapp.data.room.converter.ConverterLensTypeCategoryName
 import com.peyess.salesapp.data.room.converter.ConverterOverallDiscountCalcMethod
+import com.peyess.salesapp.data.room.converter.ConverterPaymentDueDateMode
 import com.peyess.salesapp.data.room.converter.ConverterPaymentFeeMethod
 import com.peyess.salesapp.data.room.converter.ConverterPrismPosition
 import com.peyess.salesapp.data.room.converter.ConverterSex
@@ -52,7 +53,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditClientPickedEntity::class,
     ],
 
-    version = 15,
+    version = 16,
 )
 @TypeConverters(
     ConverterUri::class,
@@ -65,6 +66,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
     ConverterPaymentFeeMethod::class,
     ConverterZonedDateTime::class,
     ConverterSex::class,
+    ConverterPaymentDueDateMode::class,
 )
 abstract class EditSaleDatabase: RoomDatabase() {
     abstract fun editSaleDao(): EditSaleDao

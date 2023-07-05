@@ -318,6 +318,9 @@ class ServiceOrderFetcher @Inject constructor(
                 cardFlagName = it.cardFlagName,
                 cardFlagIcon = Uri.parse(it.cardFlagIcon),
                 cardNsu = it.cardNsu,
+                dueDate = it.dueDate,
+                dueDateMode = it.dueDateMode,
+                dueDatePeriod = it.dueDatePeriod,
             )
         }
     }

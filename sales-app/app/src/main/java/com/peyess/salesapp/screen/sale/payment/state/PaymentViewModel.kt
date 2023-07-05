@@ -52,12 +52,15 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 private typealias ViewModelFactory = AssistedViewModelFactory<PaymentViewModel, PaymentState>
 private typealias MavericksVMFactory = MavericksViewModelFactory<PaymentViewModel, PaymentState>
@@ -587,23 +590,12 @@ class PaymentViewModel @AssistedInject constructor(
         copy(paymentInput = payment)
     }
 
-    fun onIncreasePeriodDueDate(value: Int) = setState {
-        val maxPeriod = this.activePaymentMethod.dueDateMax
-        val newValue = (value + 1).coerceAtMost(maxPeriod)
+    fun onDueDateChanged(date: ZonedDateTime) = setState {
+        val totalDays = ChronoUnit.DAYS.between(date, ZonedDateTime.now()).toInt()
         val payment = paymentInput.copy(
-            dueDatePeriod = newValue,
-            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
-        )
-
-        copy(paymentInput = payment)
-    }
-
-    fun onDecreasePeriodDueDate(value: Int) = setState {
-        val minPeriod = this.activePaymentMethod.dueDateDefault
-        val newValue = (value - 1).coerceAtLeast(minPeriod)
-        val payment = paymentInput.copy(
-            dueDatePeriod = newValue,
-            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+            dueDateMode = PaymentDueDateMode.Day,
+            dueDatePeriod = totalDays,
+            dueDate = date,
         )
 
         copy(paymentInput = payment)

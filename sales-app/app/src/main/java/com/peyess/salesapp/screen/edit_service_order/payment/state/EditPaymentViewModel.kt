@@ -56,8 +56,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.time.LocalTime
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 private typealias ViewModelFactory =
         AssistedViewModelFactory<EditPaymentViewModel, EditPaymentState>
@@ -513,22 +513,17 @@ class EditPaymentViewModel @AssistedInject constructor(
         )
 
         viewModelScope.launch(Dispatchers.IO) {
-            localPaymentRepository.updateDueDateData(
-                paymentId = paymentId,
-                dueDateMode = payment.dueDateMode,
-                dueDatePeriod = payment.dueDatePeriod,
-                dueDate = payment.dueDate,
-            )
+            localPaymentRepository.updateInstallments(paymentId, newValue)
         }
         copy(paymentInput = payment)
     }
 
-    fun onIncreasePeriodDueDate(value: Int) = setState {
-        val maxPeriod = this.activePaymentMethod.dueDateMax
-        val newValue = (value + 1).coerceAtMost(maxPeriod)
+    fun onDueDateChanged(date: ZonedDateTime) = setState {
+        val totalDays = ChronoUnit.DAYS.between(date, ZonedDateTime.now()).toInt()
         val payment = paymentInput.copy(
-            dueDatePeriod = newValue,
-            dueDate = paymentInput.dueDateMode.dueDateAfter(newValue),
+            dueDateMode = PaymentDueDateMode.Day,
+            dueDatePeriod = totalDays,
+            dueDate = date,
         )
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -541,16 +536,6 @@ class EditPaymentViewModel @AssistedInject constructor(
         }
         copy(paymentInput = payment)
     }
-
-    fun onDecreasePeriodDueDate(value: Int) = setState {
-        val minPeriod = this.activePaymentMethod.dueDateDefault
-        val newValue = (value - 1).coerceAtLeast(minPeriod)
-        val payment = paymentInput.copy(dueDatePeriod = newValue)
-
-        copy(paymentInput = payment)
-    }
-
-
 
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
         val maxInstallments = paymentInput.installments

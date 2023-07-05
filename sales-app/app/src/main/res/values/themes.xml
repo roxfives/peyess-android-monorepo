@@ -10,5 +10,13 @@
 <!--    <style name="Theme.Launcher" parent="android:Theme.Material.Light.NoActionBar">-->
 <!--        <item name="android:statusBarColor">@color/primary</item>-->
 <!--        <item name="android:windowBackground">@drawable/ic_landing</item>-->
+
 <!--    </style>-->
+
+<style name="Theme.SalesApp.DatePicker" parent="Theme.Material3.Light.Dialog">
+        <item name="colorAccent">@color/primary</item>
+        <item name="colorControlActivated">@color/primary</item>
+        <item name="android:selectableItemBackgroundBorderless">@color/white</item>
+        <item name="colorControlHighlight">@color/primary</item>
+    </style>
 </resources>

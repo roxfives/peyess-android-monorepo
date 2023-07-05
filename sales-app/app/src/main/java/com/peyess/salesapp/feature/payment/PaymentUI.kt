@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.payment
 
+import android.app.DatePickerDialog
 import androidx.compose.ui.unit.dp
 
 import android.net.Uri
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -85,8 +87,11 @@ import com.peyess.salesapp.ui.component.text.utils.currencyDigitsOnlyOrEmpty
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.peyess.salesapp.utils.screen.isHighResolution
+import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
@@ -95,6 +100,10 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 private val pictureSize = 220.dp
 private const val pictureSizePx = 220
@@ -139,9 +148,8 @@ fun PaymentUI(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
-    periodToDueDate: Int = 0,
-    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
-    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (date: ZonedDateTime) -> Unit = {},
 
     activePaymentMethod: PaymentMethod? = null,
     payment: Payment = Payment(),
@@ -189,9 +197,8 @@ fun PaymentUI(
             onIncreaseInstallments = onIncreaseInstallments,
             onDecreaseInstallments = onDecreaseInstallments,
 
-            periodToDueDate = periodToDueDate,
-            onIncreasePeriodDueDate = onIncreasePeriodDueDate,
-            onDecreasePeriodDueDate = onDecreasePeriodDueDate,
+            dueDate = dueDate,
+            onDueDateChanged = onDueDateChanged,
 
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
@@ -327,9 +334,8 @@ private fun PaymentView(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
-    periodToDueDate: Int = 0,
-    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
-    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (value: ZonedDateTime) -> Unit = {},
 
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
@@ -435,9 +441,8 @@ private fun PaymentView(
                 onIncreaseInstallments = onIncreaseInstallments,
                 onDecreaseInstallments = onDecreaseInstallments,
 
-                periodToDueDate = periodToDueDate,
-                onIncreasePeriodDueDate = onIncreasePeriodDueDate,
-                onDecreasePeriodDueDate = onDecreasePeriodDueDate,
+                dueDate = dueDate,
+                onDueDateChanged = onDueDateChanged,
             )
         }
     }
@@ -463,9 +468,8 @@ private fun PaymentCard(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
-    periodToDueDate: Int = 0,
-    onIncreasePeriodDueDate: (period: Int) -> Unit = {},
-    onDecreasePeriodDueDate: (period: Int) -> Unit = {},
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (value: ZonedDateTime) -> Unit = {},
 
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
@@ -474,7 +478,6 @@ private fun PaymentCard(
 
     val curPriceInput = BigDecimal(total)
         .setScale(2, RoundingMode.HALF_EVEN)
-//        .multiply(BigDecimal(100))
 
     Column(
         modifier = modifier,
@@ -503,8 +506,6 @@ private fun PaymentCard(
 
                 onTotalChanged(value)
             },
-//            label = { Text(stringResource(id = R.string.frames_value)) },
-//            placeholder = { Text(stringResource(id = R.string.frames_value)) },
             visualTransformation = CurrencyVisualTransformation(fixedCursorAtTheEnd = false),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -554,18 +555,15 @@ private fun PaymentCard(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (paymentMethod?.dueDateMode is PaymentDueDateMode.Month) {
-                        Text(stringResource(id = R.string.payment_due_period_months))
-                    } else {
-                        Text(stringResource(id = R.string.payment_due_period_days))
-                    }
+                    Text(stringResource(id = R.string.payment_due_period))
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     DueDatePeriodInput(
-                        value = periodToDueDate,
-                        onIncrease = onIncreasePeriodDueDate,
-                        onDecrease = onDecreasePeriodDueDate,
+                        mode = paymentMethod?.dueDateMode ?: PaymentDueDateMode.Month,
+                        maxDuePeriod = paymentMethod?.dueDateMax ?: 1,
+                        dueDate = dueDate,
+                        onSetDueDate = onDueDateChanged,
                     )
                 }
             }
@@ -889,107 +887,220 @@ private fun InstallmentsInput(
     }
 }
 
-
 @Composable
-private fun DueDatePeriodInput(
+fun DueDatePeriodInput(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    value: Int = 0,
     mode: PaymentDueDateMode = PaymentDueDateMode.None,
-    onIncrease: (value: Int) -> Unit = {},
-    onDecrease: (value: Int) -> Unit = {},
+    maxDuePeriod: Int = 1,
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onSetDueDate: (date: ZonedDateTime) -> Unit = {},
 ) {
-    Column(
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Row(
-            modifier = modifier
-                .padding(8.dp)
-                .border(
-                    BorderStroke(
-                        2.dp, if (enabled) {
-                            MaterialTheme.colors.primary
-                        } else {
-                            Color.Gray.copy(alpha = 0.5f)
-                        }
-                    ),
-                    RoundedCornerShape(36.dp),
-                ),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(
-                modifier = Modifier
-                    .height(SalesAppTheme.dimensions.minimum_touch_target)
-                    .width(SalesAppTheme.dimensions.minimum_touch_target)
-                    .holdable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        enabled = enabled,
-                        onClick = { onDecrease(value) },
-                    ),
-                enabled = enabled,
-                onClick = {},
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Remove,
-                    contentDescription = "",
-                    tint = if (enabled) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray.copy(alpha = 0.5f)
-                    },
-                )
-            }
+    val context = LocalContext.current
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            R.style.Theme_SalesApp_DatePicker,
+            { _, year, month, dayOfMonth ->
+                onSetDueDate(
+                    ZonedDateTime.of(
+                        year,
+                        month + 1,
+                        dayOfMonth,
+                        23,
+                        59,
+                        59,
+                        999999999,
+                        ZoneId.systemDefault(),
+                    ))
+            },
+            dueDate.year,
+            dueDate.monthValue - 1,
+            dueDate.dayOfMonth,
+        )
+    }
 
-            Text(
-                modifier = Modifier
-                    .height(IntrinsicSize.Max)
-                    .width(installmentsButtonSize),
-                text = "%02d".format(value),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+    datePickerDialog.datePicker.minDate = ZonedDateTime.now().toInstant().toEpochMilli()
+    datePickerDialog.datePicker.maxDate = if (mode is PaymentDueDateMode.Day) {
+        ZonedDateTime.now().plusDays(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+    } else {
+        ZonedDateTime.now().plusMonths(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+    }
+
+    Row(
+        modifier = modifier
+            .border(
+                width = 1.dp,
                 color = if (enabled) {
-                    MaterialTheme.colors.primary
+                    MaterialTheme.colors.primary.copy(alpha = 0.5f)
                 } else {
                     Color.Gray.copy(alpha = 0.5f)
                 },
+                shape = RoundedCornerShape(8.dp),
             )
-
-            IconButton(
-                modifier = Modifier
-                    .holdable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        enabled = enabled,
-                        onClick = { onIncrease(value) }
-                    ),
-                enabled = enabled,
-                onClick = {}
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "",
-                    tint = if (enabled) {
-                        MaterialTheme.colors.primary
-                    } else {
-                        Color.Gray.copy(alpha = 0.5f)
-                    },
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(4.dp))
+            .padding(2.dp)
+            .clickable(enabled = enabled) { datePickerDialog.show() },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.size(16.dp))
 
         Text(
-            text = when (mode) {
-                PaymentDueDateMode.Day -> stringResource(id = R.string.payment_due_mode_day)
-                PaymentDueDateMode.Month -> stringResource(id = R.string.payment_due_mode_month)
-                PaymentDueDateMode.None -> stringResource(id = R.string.empty_string)
-            },
-            style = MaterialTheme.typography.caption
+            text = dueDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            color = if (enabled) {
+                MaterialTheme.colors.primary.copy(alpha = 0.5f)
+            } else {
+                Color.Gray.copy(alpha = 0.5f)
+            }
         )
+
+        Spacer(modifier = Modifier.size(16.dp))
+
+        IconButton(
+            enabled = enabled,
+            onClick = { datePickerDialog.show() }
+        ) {
+            Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+        }
     }
 }
+
+//@Composable
+//private fun DueDatePeriodInputOld(
+//    modifier: Modifier = Modifier,
+//    enabled: Boolean = true,
+//    value: Int = 0,
+//    mode: PaymentDueDateMode = PaymentDueDateMode.None,
+//    maxDuePeriod: Int = 1,
+//    onSetDueDate: (date: ZonedDateTime) -> Unit = {},
+//) {
+//    val context = LocalContext.current
+//    val today = remember { ZonedDateTime.now() }
+//    val datePickerDialog = DatePickerDialog(
+//        context,
+//        R.style.Theme_SalesApp_DatePicker,
+//        { _, year, month, dayOfMonth ->
+//            onSetDueDate(
+//                ZonedDateTime.of(
+//                    year,
+//                    month + 1,
+//                    dayOfMonth,
+//                    23,
+//                    59,
+//                    59,
+//                    999999999,
+//                    ZoneId.systemDefault(),
+//                ))
+//        },
+//        today.year,
+//        today.monthValue - 1,
+//        today.dayOfMonth,
+//    )
+//
+//    datePickerDialog.datePicker.minDate = ZonedDateTime.now().toInstant().toEpochMilli()
+//    datePickerDialog.datePicker.maxDate = if (mode is PaymentDueDateMode.Day) {
+//        ZonedDateTime.now().plusDays(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+//    } else {
+//        ZonedDateTime.now().plusMonths(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+//    }
+//
+//    Column(
+//        horizontalAlignment = Alignment.Start,
+//        verticalArrangement = Arrangement.Center,
+//    ) {
+//        Row(
+//            modifier = modifier
+//                .padding(8.dp)
+//                .border(
+//                    BorderStroke(
+//                        2.dp, if (enabled) {
+//                            MaterialTheme.colors.primary
+//                        } else {
+//                            Color.Gray.copy(alpha = 0.5f)
+//                        }
+//                    ),
+//                    RoundedCornerShape(36.dp),
+//                ),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically,
+//        ) {
+//            IconButton(
+//                modifier = Modifier
+//                    .height(SalesAppTheme.dimensions.minimum_touch_target)
+//                    .width(SalesAppTheme.dimensions.minimum_touch_target)
+//                    .holdable(
+//                        interactionSource = remember { MutableInteractionSource() },
+//                        enabled = enabled,
+//                        onClick = {
+//                            datePickerDialog.show()
+//                            onDecrease(value)
+//                        },
+//                    ),
+//                enabled = enabled,
+//                onClick = {},
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Filled.Remove,
+//                    contentDescription = "",
+//                    tint = if (enabled) {
+//                        MaterialTheme.colors.primary
+//                    } else {
+//                        Color.Gray.copy(alpha = 0.5f)
+//                    },
+//                )
+//            }
+//
+//            Text(
+//                modifier = Modifier
+//                    .height(IntrinsicSize.Max)
+//                    .width(installmentsButtonSize),
+//                text = "%02d".format(value),
+//                textAlign = TextAlign.Center,
+//                style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
+//                color = if (enabled) {
+//                    MaterialTheme.colors.primary
+//                } else {
+//                    Color.Gray.copy(alpha = 0.5f)
+//                },
+//            )
+//
+//            IconButton(
+//                modifier = Modifier
+//                    .holdable(
+//                        interactionSource = remember { MutableInteractionSource() },
+//                        enabled = enabled,
+//                        onClick = {
+//                            datePickerDialog.hide()
+//                            onIncrease(value)
+//                        }
+//                    ),
+//                enabled = enabled,
+//                onClick = {}
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Filled.Add,
+//                    contentDescription = "",
+//                    tint = if (enabled) {
+//                        MaterialTheme.colors.primary
+//                    } else {
+//                        Color.Gray.copy(alpha = 0.5f)
+//                    },
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(4.dp))
+//
+//        Text(
+//            text = when (mode) {
+//                PaymentDueDateMode.Day -> stringResource(id = R.string.payment_due_mode_day)
+//                PaymentDueDateMode.Month -> stringResource(id = R.string.payment_due_mode_month)
+//                PaymentDueDateMode.None -> stringResource(id = R.string.empty_string)
+//            },
+//            style = MaterialTheme.typography.caption
+//        )
+//    }
+//}
 
 @Preview
 @Composable

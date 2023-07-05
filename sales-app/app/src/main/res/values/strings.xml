@@ -485,10 +485,7 @@
     <string name="payment_document_deposit_placeholder">Número da transferência</string>
     <string name="payment_card">Bandeira do cartão: </string>
 
-    <string name="payment_due_period_months">Meses para o vencimento: </string>
-    <string name="payment_due_period_days">Dias para o vencimento: </string>
-    <string name="payment_due_mode_month">Em meses</string>
-    <string name="payment_due_mode_day">Em dias</string>
+    <string name="payment_due_period">Data para o vencimento da primeira parcela: </string>
 
     <!-- UI Component: Anamnesis   -->
     <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>

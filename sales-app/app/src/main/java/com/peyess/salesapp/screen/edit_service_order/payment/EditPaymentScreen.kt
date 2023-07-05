@@ -52,7 +52,7 @@ fun EditPaymentScreen(
         toBePaid = totalLeftToPay,
 
         installments = payment.installments,
-        periodToDueDate = payment.dueDatePeriod,
+        dueDate = payment.dueDate,
 
         arePaymentMethodsLoading = arePaymentMethodsLoading,
         paymentMethods = paymentMethods,
@@ -65,13 +65,12 @@ fun EditPaymentScreen(
 
         methodDocument = payment.document,
 
+        onDueDateChanged = viewModel::onDueDateChanged,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
         onMethodDocumentUpdate = viewModel::onDocumentChanged,
         onCardFlagChanged = viewModel::onCardFlagChanged,
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,
-        onIncreasePeriodDueDate = viewModel::onIncreasePeriodDueDate,
-        onDecreasePeriodDueDate = viewModel::onDecreasePeriodDueDate,
         onPaymentMethodChanged = viewModel::onPaymentMethodChanged,
         onDone = {
             viewModel.checkPaymentForMissingClient()

@@ -80,9 +80,8 @@ fun PaymentScreen(
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,
 
-        periodToDueDate = payment.dueDatePeriod,
-        onIncreasePeriodDueDate = viewModel::onIncreasePeriodDueDate,
-        onDecreasePeriodDueDate = viewModel::onDecreasePeriodDueDate,
+        dueDate = payment.dueDate,
+        onDueDateChanged = viewModel::onDueDateChanged,
 
         activePaymentMethod = activePaymentMethod,
         payment = payment,

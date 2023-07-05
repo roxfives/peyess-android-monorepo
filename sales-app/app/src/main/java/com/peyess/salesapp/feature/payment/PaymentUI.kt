@@ -555,7 +555,11 @@ private fun PaymentCard(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(stringResource(id = R.string.payment_due_period))
+                    if (installments > 1) {
+                        Text(stringResource(id = R.string.payment_due_period_installment))
+                    } else {
+                        Text(stringResource(id = R.string.payment_due_period_single_pay))
+                    }
 
                     Spacer(modifier = Modifier.width(16.dp))
 

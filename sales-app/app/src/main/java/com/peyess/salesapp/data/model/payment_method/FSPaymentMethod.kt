@@ -65,17 +65,21 @@ data class FSPaymentMethod(
     val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
 
     @Keep
-    @PropertyName("can_edit_due_date")
     @JvmField
-    val canEditDueDate: Boolean = false,
+    @PropertyName("due_date_can_edit")
+    val dueDateCanEdit: Boolean = false,
     @Keep
-    @PropertyName("max_due_date")
     @JvmField
-    val maxDueDate: Int = 0,
+    @PropertyName("due_date_mode")
+    val dueDateMode: String = "",
     @Keep
-    @PropertyName("default_due_date")
     @JvmField
-    val defaultDueDate: Int = 0,
+    @PropertyName("due_date_default")
+    val dueDateDefault: Int = 0,
+    @Keep
+    @JvmField
+    @PropertyName("due_date_max")
+    val dueDateMax: Int = 0,
 
     @Keep
     @JvmField

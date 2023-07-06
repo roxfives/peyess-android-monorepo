@@ -64,7 +64,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -87,11 +86,8 @@ import com.peyess.salesapp.ui.component.text.utils.currencyDigitsOnlyOrEmpty
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.text_transformation.CurrencyVisualTransformation
 import com.peyess.salesapp.ui.theme.SalesAppTheme
-import com.peyess.salesapp.utils.screen.isHighResolution
-import com.peyess.salesapp.utils.screen.isScreenSizeLarge
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.MaterialDialogState
-import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.listItems
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
@@ -968,143 +964,6 @@ fun DueDatePeriodInput(
         }
     }
 }
-
-//@Composable
-//private fun DueDatePeriodInputOld(
-//    modifier: Modifier = Modifier,
-//    enabled: Boolean = true,
-//    value: Int = 0,
-//    mode: PaymentDueDateMode = PaymentDueDateMode.None,
-//    maxDuePeriod: Int = 1,
-//    onSetDueDate: (date: ZonedDateTime) -> Unit = {},
-//) {
-//    val context = LocalContext.current
-//    val today = remember { ZonedDateTime.now() }
-//    val datePickerDialog = DatePickerDialog(
-//        context,
-//        R.style.Theme_SalesApp_DatePicker,
-//        { _, year, month, dayOfMonth ->
-//            onSetDueDate(
-//                ZonedDateTime.of(
-//                    year,
-//                    month + 1,
-//                    dayOfMonth,
-//                    23,
-//                    59,
-//                    59,
-//                    999999999,
-//                    ZoneId.systemDefault(),
-//                ))
-//        },
-//        today.year,
-//        today.monthValue - 1,
-//        today.dayOfMonth,
-//    )
-//
-//    datePickerDialog.datePicker.minDate = ZonedDateTime.now().toInstant().toEpochMilli()
-//    datePickerDialog.datePicker.maxDate = if (mode is PaymentDueDateMode.Day) {
-//        ZonedDateTime.now().plusDays(maxDuePeriod.toLong()).toInstant().toEpochMilli()
-//    } else {
-//        ZonedDateTime.now().plusMonths(maxDuePeriod.toLong()).toInstant().toEpochMilli()
-//    }
-//
-//    Column(
-//        horizontalAlignment = Alignment.Start,
-//        verticalArrangement = Arrangement.Center,
-//    ) {
-//        Row(
-//            modifier = modifier
-//                .padding(8.dp)
-//                .border(
-//                    BorderStroke(
-//                        2.dp, if (enabled) {
-//                            MaterialTheme.colors.primary
-//                        } else {
-//                            Color.Gray.copy(alpha = 0.5f)
-//                        }
-//                    ),
-//                    RoundedCornerShape(36.dp),
-//                ),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically,
-//        ) {
-//            IconButton(
-//                modifier = Modifier
-//                    .height(SalesAppTheme.dimensions.minimum_touch_target)
-//                    .width(SalesAppTheme.dimensions.minimum_touch_target)
-//                    .holdable(
-//                        interactionSource = remember { MutableInteractionSource() },
-//                        enabled = enabled,
-//                        onClick = {
-//                            datePickerDialog.show()
-//                            onDecrease(value)
-//                        },
-//                    ),
-//                enabled = enabled,
-//                onClick = {},
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Filled.Remove,
-//                    contentDescription = "",
-//                    tint = if (enabled) {
-//                        MaterialTheme.colors.primary
-//                    } else {
-//                        Color.Gray.copy(alpha = 0.5f)
-//                    },
-//                )
-//            }
-//
-//            Text(
-//                modifier = Modifier
-//                    .height(IntrinsicSize.Max)
-//                    .width(installmentsButtonSize),
-//                text = "%02d".format(value),
-//                textAlign = TextAlign.Center,
-//                style = MaterialTheme.typography.body1.copy(textAlign = TextAlign.Center),
-//                color = if (enabled) {
-//                    MaterialTheme.colors.primary
-//                } else {
-//                    Color.Gray.copy(alpha = 0.5f)
-//                },
-//            )
-//
-//            IconButton(
-//                modifier = Modifier
-//                    .holdable(
-//                        interactionSource = remember { MutableInteractionSource() },
-//                        enabled = enabled,
-//                        onClick = {
-//                            datePickerDialog.hide()
-//                            onIncrease(value)
-//                        }
-//                    ),
-//                enabled = enabled,
-//                onClick = {}
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Filled.Add,
-//                    contentDescription = "",
-//                    tint = if (enabled) {
-//                        MaterialTheme.colors.primary
-//                    } else {
-//                        Color.Gray.copy(alpha = 0.5f)
-//                    },
-//                )
-//            }
-//        }
-//
-//        Spacer(modifier = Modifier.height(4.dp))
-//
-//        Text(
-//            text = when (mode) {
-//                PaymentDueDateMode.Day -> stringResource(id = R.string.payment_due_mode_day)
-//                PaymentDueDateMode.Month -> stringResource(id = R.string.payment_due_mode_month)
-//                PaymentDueDateMode.None -> stringResource(id = R.string.empty_string)
-//            },
-//            style = MaterialTheme.typography.caption
-//        )
-//    }
-//}
 
 @Preview
 @Composable

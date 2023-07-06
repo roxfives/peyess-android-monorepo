@@ -315,9 +315,13 @@ class ServiceOrderFetcher @Inject constructor(
                 methodType = it.methodName.toName(),
                 installments = it.installments,
                 document = it.document,
+
+                hasLegalId = it.hasLegalId,
+                legalId = it.legalId,
+
                 cardFlagName = it.cardFlagName,
                 cardFlagIcon = Uri.parse(it.cardFlagIcon),
-                cardNsu = it.cardNsu,
+
                 dueDate = it.dueDate,
                 dueDateMode = it.dueDateMode,
                 dueDatePeriod = it.dueDatePeriod,

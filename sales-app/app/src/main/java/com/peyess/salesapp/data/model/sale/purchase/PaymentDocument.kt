@@ -16,7 +16,9 @@ data class PaymentDocument(
     val document: String = "",
     val financialInst: FinancialInstitutionType = FinancialInstitutionType.None,
 
-    val cardNsu: String = "",
+    val hasLegalId: Boolean = false,
+    val legalId: String = "",
+
     val cardFlagName: String = "",
     val cardFlagIcon: String = "",
 

@@ -21,9 +21,12 @@ data class Payment(
     val value: Double = 0.0,
     val installments: Int = 1,
     val document: String = "",
+
+    val hasLegalId: Boolean = false,
+    val legalId: String = "",
+
     val cardFlagName: String = "",
     val cardFlagIcon: Uri = Uri.EMPTY,
-    val cardNsu: String = "",
 
     val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
     val dueDatePeriod: Int = 0,

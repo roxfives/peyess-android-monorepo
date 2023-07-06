@@ -18,9 +18,13 @@ fun Payment.toLocalPaymentDocument(): LocalPaymentDocument {
         value = value,
         installments = installments,
         document = document,
+
+        hasLegalId = hasLegalId,
+        legalId = legalId,
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
-        cardNsu = cardNsu,
+
         dueDateMode = dueDateMode,
         dueDatePeriod = dueDatePeriod,
         dueDate = dueDate,

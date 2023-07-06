@@ -17,9 +17,11 @@ fun PaymentDocument.toFSPayment(): FSPayment {
         document = document,
         financialInst = financialInst.toName(),
 
+        hasLegalId = hasLegalId,
+        legalId = legalId,
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
-        cardNsu = cardNsu,
 
         payerUid = payerUid,
         payerDocument = payerDocument,

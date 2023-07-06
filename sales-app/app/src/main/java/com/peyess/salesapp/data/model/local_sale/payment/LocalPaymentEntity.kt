@@ -53,12 +53,15 @@ data class LocalPaymentEntity(
     @ColumnInfo(name = "document")
     val document: String = "",
 
+    @ColumnInfo(name = "has_legal_id")
+    val hasLegalId: Boolean = false,
+    @ColumnInfo(name = "legal_id")
+    val legalId: String = "",
+
     @ColumnInfo(name = "card_flag_name")
     val cardFlagName: String = "",
     @ColumnInfo(name = "card_flag_icon")
     val cardFlagIcon: Uri = Uri.EMPTY,
-    @ColumnInfo(name = "card_nsu")
-    val cardNsu: String = "",
 
     @ColumnInfo(name = "due_date")
     val dueDate: ZonedDateTime = ZonedDateTime.now(),

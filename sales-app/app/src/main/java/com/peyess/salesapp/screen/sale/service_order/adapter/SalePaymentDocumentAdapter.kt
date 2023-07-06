@@ -44,9 +44,11 @@ fun LocalPaymentDocument.toPaymentDocument(): PaymentDocument {
         document = document,
         financialInst = FinancialInstitutionType.fromName("bank"),
 
+        hasLegalId = hasLegalId,
+        legalId = legalId,
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon.toString(),
-        cardNsu = cardNsu,
 
         payerUid = clientId,
         payerDocument = clientDocument,

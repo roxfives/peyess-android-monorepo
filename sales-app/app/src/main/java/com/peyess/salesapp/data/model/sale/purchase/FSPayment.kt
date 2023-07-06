@@ -46,8 +46,13 @@ data class FSPayment(
 
     @Keep
     @JvmField
-    @PropertyName("card_nsu")
-    val cardNsu: String = "",
+    @PropertyName("has_legal_id")
+    val hasLegalId: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("legal_id")
+    val legalId: String = "",
+
     @Keep
     @JvmField
     @PropertyName("card_flag_name")

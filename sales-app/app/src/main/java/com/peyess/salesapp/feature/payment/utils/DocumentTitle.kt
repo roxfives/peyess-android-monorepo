@@ -11,6 +11,7 @@ fun methodDocumentTitle(type: String?): Int {
     return when (methodType) {
         PaymentMethodType.BankCheck -> R.string.payment_document_check
         PaymentMethodType.BankDeposit -> R.string.payment_document_deposit
+        PaymentMethodType.Pix -> R.string.payment_document_pix
         else -> R.string.empty_string
     }
 }
@@ -22,6 +23,7 @@ fun methodDocumentPlaceholder(type: String?): Int {
     return when (methodType) {
         PaymentMethodType.BankCheck -> R.string.payment_document_check
         PaymentMethodType.BankDeposit -> R.string.payment_document_deposit
+        PaymentMethodType.Pix -> R.string.payment_document_pix
         else -> R.string.empty_string
     }
 }

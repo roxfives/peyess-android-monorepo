@@ -481,6 +481,7 @@
     <string name="payment_installments">Número de parcelas: </string>
     <string name="payment_document_check">Número do cheque: </string>
     <string name="payment_document_deposit">Número da transferência: </string>
+    <string name="payment_document_pix">Identificador da transação: </string>
     <string name="payment_document_check_placeholder">Número do cheque</string>
     <string name="payment_document_deposit_placeholder">Número da transferência</string>
     <string name="payment_card">Bandeira do cartão: </string>

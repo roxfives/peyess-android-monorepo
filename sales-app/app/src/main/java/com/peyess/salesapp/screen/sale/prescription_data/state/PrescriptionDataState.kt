@@ -27,8 +27,6 @@ data class PrescriptionDataState(
     val animationId: Int = 0,
     val generalMessage: String = "",
 
-    val prescriptionObservation: String = "",
-
     val isLoading: Boolean = false,
 ): MavericksState {
     val saleId = activeServiceOrderResponse.saleId

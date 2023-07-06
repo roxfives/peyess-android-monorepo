@@ -33,6 +33,8 @@ data class FramesLandingState(
     val prescriptionResponseAsync: Async<LocalPrescriptionResponse> = Uninitialized,
     val prescriptionResponse: LocalPrescriptionDocument = LocalPrescriptionDocument(),
 
+    val prescriptionObservationInput: String = "",
+
     val loadFramesResponseAsync: Async<LocalFramesRepositoryResponse> = Uninitialized,
     val frames: FramesDocument = FramesDocument(),
 

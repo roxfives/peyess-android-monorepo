@@ -187,7 +187,6 @@
     <string name="title_degree">Graus da receita</string>
     <string name="title_addition">Adição</string>
     <string name="title_prism">Prisma</string>
-    <string name="title_observation">Observação</string>
 
     <string name="degree_spherical">Esférico</string>
     <string name="degree_cylindrical">Cilíndrico</string>
@@ -199,8 +198,6 @@
     <string name="prism_axis">Eixo</string>
 
     <string name="curiosities">Curiosidades</string>
-
-    <string name="observation_placeholder">Fotofobia: O paciente apresenta sensibilidade anormal à luz. Recomenda-se o uso de lentes especializadas com filtro de luz para melhorar o conforto visual.</string>
 
     <string name="dialog_select_prism_axis_title">Selecione a posição</string>
     <string name="dialog_select_prism_axis_ok">Selecionar</string>
@@ -250,6 +247,9 @@
     <!-- UI Component: Frames data   -->
     <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
     <string name="btn_cancel_frames">Cancelar</string>
+
+    <string name="title_observation">Observação para o laboratório</string>
+    <string name="observation_placeholder">Ex.: Aumentar 2mm na vertival; colorir confirme a amostra enviada; Aro do cliente vai para montagem quando as lentes chegarem.</string>
 
     <string name="ib_message_less_than_3_5">Armações mais planas possiveis (Evite Nylon)</string>
     <string name="ib_message_between_3_5_and_5">Armações mais planas</string>

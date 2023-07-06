@@ -60,8 +60,6 @@ fun EditPrescriptionDataScreen(
     val generalMessage by viewModel.collectAsState(EditPrescriptionDataState::generalMessage)
     val animationId by viewModel.collectAsState(EditPrescriptionDataState::animationId)
 
-    val observation by viewModel.collectAsState(EditPrescriptionDataState::observationInput)
-
     PrescriptionDataUI(
         modifier = modifier,
         isMessageLoading = isMessageLoading,
@@ -115,9 +113,6 @@ fun EditPrescriptionDataScreen(
         prismAxisPositionRight = prismAxisPositionRight,
         onPrismAxisLeftPicked = viewModel::setPrismPositionLeft,
         onPrismAxisRightPicked = viewModel::setPrismPositionRight,
-
-        observation = observation,
-        onObservationUpdate = viewModel::updateObservation,
 
         onNext = onNext,
         onShowSymptoms = { onShowSymptoms(saleId, serviceOrderId, prescriptionId) },

@@ -63,8 +63,6 @@ fun PrescriptionDataScreen(
     val isPrismAxisRightEnabled by viewModel.collectAsState(PrescriptionDataState::isPrismAxisRightEnabled)
     val isPrismAxisLeftEnabled by viewModel.collectAsState(PrescriptionDataState::isPrismAxisLeftEnabled)
 
-    val observation by viewModel.collectAsState(PrescriptionDataState::prescriptionObservation)
-
     if (isLoading) {
         PeyessProgressIndicatorInfinite()
     } else {
@@ -142,9 +140,6 @@ fun PrescriptionDataScreen(
 
             isPrismAxisRightEnabled = isPrismAxisRightEnabled,
             isPrismAxisLeftEnabled = isPrismAxisLeftEnabled,
-
-            observation = observation,
-            onObservationUpdate = viewModel::updateObservation,
         )
     }
 }

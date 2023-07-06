@@ -177,9 +177,6 @@ fun PrescriptionDataUI(
 
     prismAxisPositionRight: PrismPosition = PrismPosition.None,
     onPrismAxisRightPicked: (position: PrismPosition) -> Unit = {},
-
-    observation: String = stringResource(id = R.string.empty_string),
-    onObservationUpdate: (observation: String) -> Unit = {},
 ) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(animationId)
@@ -276,12 +273,6 @@ fun PrescriptionDataUI(
 
             prismAxisPositionRight = prismAxisPositionRight,
             onPrismAxisRightPicked = onPrismAxisRightPicked,
-        )
-
-        Spacer(modifier = Modifier.height(betweenSectionSpacer))
-        PrescriptionObservation(
-            observation = observation,
-            onObservationUpdate = onObservationUpdate,
         )
 
         Spacer(modifier = Modifier.height(betweenSectionSpacer))
@@ -542,90 +533,6 @@ private fun PrescriptionDegrees(
             enabled = hasPrism,
             axisEnabled = isPrismAxisLeftEnabled,
         )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun PrescriptionObservation(
-    modifier: Modifier = Modifier,
-    observation: String = "",
-    onObservationUpdate: (observation: String) -> Unit = {},
-) {
-    val minimumHeightState = remember { MinimumHeightState(24.dp) }
-    val density = LocalDensity.current
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        SectionTitle(title = stringResource(id = R.string.title_observation))
-        Spacer(modifier = Modifier.height(sectionTitleSpacer))
-
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top,
-        ) {
-            TextField(
-                modifier = modifier
-                    .minimumHeightModifier(minimumHeightState, density)
-                    .weight(0.8f)
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(8.dp),
-                    )
-                    .padding(horizontal = 24.dp),
-                value = observation,
-                onValueChange = onObservationUpdate,
-
-                textStyle = MaterialTheme.typography.body1,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = MaterialTheme.colors.surface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                ),
-
-                maxLines = 5,
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.observation_placeholder),
-                        style = MaterialTheme.typography.body1,
-                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                    )
-                },
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.None,
-                ),
-            )
-
-            AnimatedVisibility(
-                visible = observation.isNotEmpty(),
-                enter = fadeIn(),
-                exit = fadeOut(),
-            ) {
-                IconButton(
-                    modifier = Modifier.weight(0.2f),
-                    onClick = { onObservationUpdate("") },
-                ) {
-                    Icon(
-                        modifier = Modifier.border(
-                            width = 2.dp,
-                            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                            shape = CircleShape,
-                        ),
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = "",
-                        tint = MaterialTheme.colors.primary.copy(alpha = 0.3f),
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -1330,28 +1237,3 @@ private fun PrescriptionDegreesPreview() {
     }
 }
 
-@Preview
-@Composable
-private fun PrescriptionObservationEmptyPreview() {
-    SalesAppTheme {
-        PrescriptionObservation(
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PrescriptionObservationFilledPreview() {
-    SalesAppTheme {
-        PrescriptionObservation(
-            modifier = Modifier.fillMaxSize(),
-            observation = """
-                lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            """.trimIndent()
-        )
-    }
-}

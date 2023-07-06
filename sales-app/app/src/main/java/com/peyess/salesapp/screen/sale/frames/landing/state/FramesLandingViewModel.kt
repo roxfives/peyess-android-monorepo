@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FramesLandingViewModel @AssistedInject constructor(
@@ -49,6 +50,7 @@ class FramesLandingViewModel @AssistedInject constructor(
 
         onEach(FramesLandingState::prescriptionResponse) {
             updateFramesCurvatureAnimation(it)
+            updatePrescriptionObservation(it)
         }
 
         onAsync(FramesLandingState::prescriptionResponseAsync) {
@@ -149,6 +151,10 @@ class FramesLandingViewModel @AssistedInject constructor(
         )
     }
 
+    private fun updatePrescriptionObservation(prescription: LocalPrescriptionDocument) = setState {
+        copy(prescriptionObservationInput = prescription.observation)
+    }
+
     private fun loadPrescriptionData(serviceOrderId: String) {
         suspend {
             localPrescriptionRepository.getPrescriptionForServiceOrder(serviceOrderId)
@@ -229,6 +235,14 @@ class FramesLandingViewModel @AssistedInject constructor(
         }.execute(Dispatchers.IO) {
             copy(setFramesNewResponseAsync = it)
         }
+    }
+
+    fun onObservationUpdate(observation: String) = setState {
+        viewModelScope.launch {
+            localPrescriptionRepository.updatePrescriptionObservation(serviceOrderId, observation)
+        }
+
+        copy(prescriptionObservationInput = observation)
     }
 
     fun onNavigateToSetFrames() = setState {

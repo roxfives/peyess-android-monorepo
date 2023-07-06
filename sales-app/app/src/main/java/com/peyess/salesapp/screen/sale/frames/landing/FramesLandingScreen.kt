@@ -21,13 +21,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,8 +42,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,6 +76,8 @@ import com.peyess.salesapp.screen.sale.frames.landing.state.FramesLandingViewMod
 import com.peyess.salesapp.screen.sale.frames.landing.util.ParseParameters
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
+import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
+import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.theme.SalesAppTheme
 import com.peyess.salesapp.utils.screen.isHighResolution
 import com.peyess.salesapp.utils.screen.isScreenSizeLarge
@@ -116,6 +128,8 @@ fun FramesLandingScreen(
     val displayMeasureLeft by viewModel.collectAsState(FramesLandingState::displayMeasureLeft)
     val displayMeasureRight by viewModel.collectAsState(FramesLandingState::displayMeasureRight)
 
+    val observation by viewModel.collectAsState(FramesLandingState::prescriptionObservationInput)
+
     val isDiameterDiffAcceptable by viewModel
         .collectAsState(FramesLandingState::isDiameterDiffAcceptable)
 
@@ -160,6 +174,9 @@ fun FramesLandingScreen(
         displayMeasureLeft = displayMeasureLeft,
         displayMeasureRight = displayMeasureRight,
 
+        observation = observation,
+        onObservationUpdate = viewModel::onObservationUpdate,
+
         onNext = { onNext(isEditing) },
     )
 }
@@ -190,6 +207,9 @@ private fun FramesLandingScreenImpl(
 
     displayMeasureLeft: DisplayMeasure = DisplayMeasure(),
     displayMeasureRight: DisplayMeasure = DisplayMeasure(),
+
+    observation: String = stringResource(id = R.string.empty_string),
+    onObservationUpdate: (observation: String) -> Unit = {},
 
     onNext: () -> Unit = {},
 ) {
@@ -323,6 +343,29 @@ private fun FramesLandingScreenImpl(
             )
         }
 
+        Spacer(modifier = Modifier.height(32.dp))
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(id = R.string.title_observation),
+                style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+            )
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+
+        PrescriptionObservation(
+            observation = observation,
+            onObservationUpdate = onObservationUpdate,
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
         Spacer(modifier = Modifier.weight(1f))
@@ -604,26 +647,87 @@ private fun FramesMeasureButton(
                 style = MaterialTheme.typography.body1,
             )
         }
+    }
+}
 
-//        Row(
-//            horizontalArrangement = Arrangement.Center,
-//            verticalAlignment = Alignment.CenterVertically,
-//        ) {
-//            Icon(
-//                imageVector = Icons.Filled.Diameter,
-//                contentDescription = "",
-//            )
-//
-//            Text(
-//                text = diameter,
-//                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
-//            )
-//
-//            Text(
-//                text = stringResource(id = R.string.mm),
-//                style = MaterialTheme.typography.body1
-//            )
-//        }
+
+@Composable
+private fun PrescriptionObservation(
+    modifier: Modifier = Modifier,
+    observation: String = "",
+    onObservationUpdate: (observation: String) -> Unit = {},
+) {
+    val minimumHeightState = remember { MinimumHeightState(24.dp) }
+    val density = LocalDensity.current
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top,
+        ) {
+            TextField(
+                modifier = modifier
+                    .minimumHeightModifier(minimumHeightState, density)
+                    .weight(0.8f)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(8.dp),
+                    )
+                    .padding(horizontal = 24.dp),
+                value = observation,
+                onValueChange = onObservationUpdate,
+
+                textStyle = MaterialTheme.typography.body1,
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = MaterialTheme.colors.surface,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
+
+                maxLines = 5,
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.observation_placeholder),
+                        style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    )
+                },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.None,
+                ),
+            )
+
+            AnimatedVisibility(
+                visible = observation.isNotEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                IconButton(
+                    modifier = Modifier.weight(0.2f),
+                    onClick = { onObservationUpdate("") },
+                ) {
+                    Icon(
+                        modifier = Modifier.border(
+                            width = 2.dp,
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                            shape = CircleShape,
+                        ),
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = "",
+                        tint = MaterialTheme.colors.primary.copy(alpha = 0.3f),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -642,5 +746,22 @@ private fun FramesInputPreview(
 ) {
     SalesAppTheme {
         FramesInput()
+    }
+}
+
+
+@Preview
+@Composable
+private fun PrescriptionObservationFilledPreview() {
+    SalesAppTheme {
+        PrescriptionObservation(
+            modifier = Modifier.fillMaxSize(),
+            observation = """
+                lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            """.trimIndent()
+        )
     }
 }

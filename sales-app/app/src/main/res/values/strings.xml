@@ -91,6 +91,9 @@
     <string name="home_btn_visual_acuity_title">Acuidade visual</string>
     <string name="home_btn_visual_acuity_subtitle">Para perto</string>
 
+    <string name="home_btn_demo_title">Exibição</string>
+    <string name="home_btn_demo_subtitle">Visualizar tipos de lentes</string>
+
     <string name="home_btn_clients_title">Novo cliente</string>
     <string name="home_btn_no_clients_subtitle">Sem clientes cadastrados</string>
     <string name="home_btn_clients_subtitle">%1$d clientes</string>

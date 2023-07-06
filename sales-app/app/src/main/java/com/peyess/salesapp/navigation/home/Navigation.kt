@@ -58,6 +58,10 @@ fun buildHomeNavGraph(
 
                 navHostController.navigate(route)
             },
+
+            onViewDemo = {
+                navHostController.navigate(SalesAppScreens.Demonstration.name)
+            }
         )
     }
 

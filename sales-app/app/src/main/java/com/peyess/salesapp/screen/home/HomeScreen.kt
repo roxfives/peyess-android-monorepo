@@ -35,6 +35,8 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ViewComfy
+import androidx.compose.material.icons.filled.ViewModule
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -137,6 +139,7 @@ fun HomeScreen(
     onAddClient: (clientId: String) -> Unit = {},
     onStartVisualAcuity: () -> Unit = {},
     onOpenProductsTable: () -> Unit = {},
+    onViewDemo: () -> Unit = {},
 ) {
     val firstStepViewModel: FirstTimeViewModel = mavericksActivityViewModel()
     val secondStepViewModel: SecondStepViewModel = mavericksActivityViewModel()
@@ -281,6 +284,7 @@ fun HomeScreen(
 
         canShowProductsTable = canStartSale,
         onOpenProductsTable = onOpenProductsTable,
+        onViewDemo = onViewDemo,
     )
 }
 
@@ -312,6 +316,7 @@ private fun HomeScreenImpl(
 
     canShowProductsTable: Boolean = false,
     onOpenProductsTable: () -> Unit = {},
+    onViewDemo: () -> Unit = {},
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -348,6 +353,7 @@ private fun HomeScreenImpl(
 
             canShowProductsTable = canShowProductsTable,
             onOpenProductsTable = onOpenProductsTable,
+            onViewDemo = onViewDemo,
         )
 
         Spacer(modifier = Modifier.height(sectionSpacerHeight))
@@ -522,6 +528,7 @@ private fun ButtonsPanel(
 
     canShowProductsTable: Boolean = false,
     onOpenProductsTable: () -> Unit = {},
+    onViewDemo: () -> Unit = {},
 ) {
     Column(
         modifier = modifier.widthIn(buttonPanelMinWidth, buttonPanelMaxWidth),
@@ -633,22 +640,8 @@ private fun ButtonsPanel(
                     state = minimumWidthState,
                     density = density,
                 ),
-                title = if (hasProductsTableUpdateFailed) {
-                    stringResource(id = R.string.home_btn_products_title_failed)
-                } else if (isUpdatingProductsTable) {
-                    stringResource(id = R.string.home_btn_products_title_updating)
-                } else {
-                    stringResource(id = R.string.home_btn_products_title)
-                },
-
-                subtitle = if (hasProductsTableUpdateFailed) {
-                    stringResource(id = R.string.home_btn_products_subtitle_failed)
-                } else if (isUpdatingProductsTable) {
-                    stringResource(id = R.string.home_btn_products_subtitle_updating)
-                } else {
-                    stringResource(id = R.string.home_btn_products_subtitle)
-                },
-
+                title = stringResource(id = R.string.home_btn_products_title),
+                subtitle = stringResource(id = R.string.home_btn_products_subtitle_failed),
                 icon = {
                     if (hasProductsTableUpdateFailed) {
                         Icon(
@@ -669,6 +662,32 @@ private fun ButtonsPanel(
 
                 enabled = canShowProductsTable,
                 onClick = onOpenProductsTable,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(buttonPanelSpacerHeight))
+
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            HomeScreenButton(
+                modifier = Modifier.minimumWidthModifier(
+                    state = minimumWidthState,
+                    density = density,
+                ),
+                title = stringResource(id = R.string.home_btn_demo_title),
+                subtitle = stringResource(id = R.string.home_btn_demo_subtitle),
+
+                icon = {
+                    Icon(
+                        modifier = Modifier.size(buttonIconSize),
+                        imageVector = Icons.Filled.ViewModule,
+                        contentDescription = "",
+                    )
+                },
+
+                onClick = onViewDemo,
             )
         }
     }

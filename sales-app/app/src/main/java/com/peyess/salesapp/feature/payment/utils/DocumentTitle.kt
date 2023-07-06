@@ -1,4 +1,4 @@
-package com.peyess.salesapp.screen.sale.payment.utils
+package com.peyess.salesapp.feature.payment.utils
 
 import androidx.annotation.StringRes
 import com.peyess.salesapp.R

@@ -72,10 +72,10 @@ import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.feature.payment.model.Client
 import com.peyess.salesapp.feature.payment.model.Payment
 import com.peyess.salesapp.feature.payment.model.PaymentMethod
-import com.peyess.salesapp.screen.sale.payment.utils.legalIdPlaceholder
-import com.peyess.salesapp.screen.sale.payment.utils.legalIdTitle
-import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentPlaceholder
-import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentTitle
+import com.peyess.salesapp.feature.payment.utils.legalIdPlaceholder
+import com.peyess.salesapp.feature.payment.utils.legalIdTitle
+import com.peyess.salesapp.feature.payment.utils.methodDocumentPlaceholder
+import com.peyess.salesapp.feature.payment.utils.methodDocumentTitle
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
@@ -98,7 +98,6 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
-import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter

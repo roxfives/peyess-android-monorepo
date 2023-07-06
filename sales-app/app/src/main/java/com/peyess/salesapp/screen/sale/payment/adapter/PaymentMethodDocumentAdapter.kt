@@ -22,5 +22,6 @@ fun PaymentMethodDocument.toPaymentMethod(): PaymentMethod {
         dueDateMode = dueDateMode,
         dueDateDefault = dueDateDefault,
         dueDateMax = dueDateMax,
+        hasLegalId = hasLegalId,
     )
 }

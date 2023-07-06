@@ -30,4 +30,6 @@ data class PaymentMethod(
     val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
     val dueDateDefault: Int = 0,
     val dueDateMax: Int = 0,
+
+    val hasLegalId: Boolean = false,
 )

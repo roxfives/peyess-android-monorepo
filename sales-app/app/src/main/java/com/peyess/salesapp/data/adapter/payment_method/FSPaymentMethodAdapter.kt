@@ -24,5 +24,6 @@ fun FSPaymentMethod.toPaymentMethodDocument(id: String): PaymentMethodDocument {
         dueDateMode = PaymentDueDateMode.fromName(dueDateMode),
         dueDateDefault = dueDateDefault,
         dueDateMax = dueDateMax,
+        hasLegalId = hasLegalId,
     )
 }

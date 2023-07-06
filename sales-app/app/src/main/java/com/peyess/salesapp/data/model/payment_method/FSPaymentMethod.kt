@@ -83,6 +83,11 @@ data class FSPaymentMethod(
 
     @Keep
     @JvmField
+    @PropertyName("has_legal_id")
+    val hasLegalId: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("doc_version")
     val doc_version: Int = 0,
 

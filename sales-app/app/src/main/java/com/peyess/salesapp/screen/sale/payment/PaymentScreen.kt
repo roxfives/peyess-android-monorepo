@@ -83,6 +83,9 @@ fun PaymentScreen(
         dueDate = payment.dueDate,
         onDueDateChanged = viewModel::onDueDateChanged,
 
+        legalId = payment.legalId,
+        onLegalIdChanged = viewModel::onLegalIdChanged,
+
         activePaymentMethod = activePaymentMethod,
         payment = payment,
         onTotalPaidChanged = viewModel::onTotalPaidChange,

@@ -72,6 +72,8 @@ import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.feature.payment.model.Client
 import com.peyess.salesapp.feature.payment.model.Payment
 import com.peyess.salesapp.feature.payment.model.PaymentMethod
+import com.peyess.salesapp.screen.sale.payment.utils.legalIdPlaceholder
+import com.peyess.salesapp.screen.sale.payment.utils.legalIdTitle
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentPlaceholder
 import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentTitle
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
@@ -147,6 +149,9 @@ fun PaymentUI(
     dueDate: ZonedDateTime = ZonedDateTime.now(),
     onDueDateChanged: (date: ZonedDateTime) -> Unit = {},
 
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+
     activePaymentMethod: PaymentMethod? = null,
     payment: Payment = Payment(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
@@ -195,6 +200,9 @@ fun PaymentUI(
 
             dueDate = dueDate,
             onDueDateChanged = onDueDateChanged,
+
+            legalId = legalId,
+            onLegalIdChanged = onLegalIdChanged,
 
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
@@ -336,6 +344,9 @@ private fun PaymentView(
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
 
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+
     payment: Payment = Payment(),
     onTotalPaidChanged: (value: Double) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
@@ -439,6 +450,11 @@ private fun PaymentView(
 
                 dueDate = dueDate,
                 onDueDateChanged = onDueDateChanged,
+
+
+
+                legalId = legalId,
+                onLegalIdChanged = onLegalIdChanged,
             )
         }
     }
@@ -469,6 +485,9 @@ private fun PaymentCard(
 
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
+
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -570,6 +589,35 @@ private fun PaymentCard(
         }
 
         AnimatedVisibility(
+            visible = paymentMethod?.hasLegalId ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            val title = stringResource(id = legalIdTitle(paymentMethod?.type))
+            val placeholder = stringResource(id = legalIdPlaceholder(paymentMethod?.type))
+
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(title)
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    LegalIdInput(
+                        placeholder = placeholder,
+
+                        legalId = legalId,
+                        onLegalIdChanged = onLegalIdChanged,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
             visible = paymentMethod?.hasDocument ?: false,
             enter = scaleIn(),
             exit = scaleOut(),
@@ -644,6 +692,39 @@ fun MethodDocumentInput(
 
         value = methodDocument,
         onValueChange = onMethodDocumentUpdate,
+
+        placeholder = { Text(text = placeholder) },
+        label = { /*TODO*/ },
+
+        isError = false,
+        errorMessage = "",
+
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { softKeyboardController?.hide() }
+        )
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun LegalIdInput(
+    modifier: Modifier = Modifier,
+
+    placeholder: String = "",
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+) {
+    val softKeyboardController = LocalSoftwareKeyboardController.current
+
+    PeyessOutlinedTextField(
+        modifier = modifier,
+
+        value = legalId,
+        onValueChange = onLegalIdChanged,
 
         placeholder = { Text(text = placeholder) },
         label = { /*TODO*/ },

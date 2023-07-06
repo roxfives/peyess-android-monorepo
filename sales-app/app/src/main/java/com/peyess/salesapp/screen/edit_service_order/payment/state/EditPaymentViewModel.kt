@@ -537,6 +537,20 @@ class EditPaymentViewModel @AssistedInject constructor(
         copy(paymentInput = payment)
     }
 
+    fun onLegalIdChanged(legalId: String) = setState {
+        val payment = paymentInput.copy(
+           legalId = legalId,
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            localPaymentRepository.updateLegalId(
+                paymentId = paymentId,
+                legalId = legalId,
+            )
+        }
+        copy(paymentInput = payment)
+    }
+
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
         val maxInstallments = paymentInput.installments
             .coerceAtMost(method.maxInstallments)
@@ -563,6 +577,7 @@ class EditPaymentViewModel @AssistedInject constructor(
                 dueDatePeriod = update.dueDatePeriod,
                 dueDate = update.dueDateMode.dueDateAfter(update.dueDatePeriod),
             )
+            localPaymentRepository.updateHasLegalId(paymentId, method.hasLegalId)
         }
         copy(paymentInput = update)
     }

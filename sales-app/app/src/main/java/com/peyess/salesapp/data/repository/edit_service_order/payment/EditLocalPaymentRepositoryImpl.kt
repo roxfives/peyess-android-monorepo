@@ -285,6 +285,32 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun updateLegalId(
+        paymentId: Long,
+        legalId: String
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        editLocalPaymentDao.updateLegalId(paymentId, legalId)
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment legalId for sale $paymentId",
+            throwable = it,
+        )
+    }
+
+    override suspend fun updateHasLegalId(
+        paymentId: Long,
+        hasLegalId: Boolean
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        val hasLegalIdAsInt = if (hasLegalId) 1 else 0
+
+        editLocalPaymentDao.updateHasLegalId(paymentId, hasLegalIdAsInt)
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment hasLegalId for sale $paymentId",
+            throwable = it,
+        )
+    }
+
     override suspend fun deletePaymentsForSale(
         saleId: String,
     ): EditLocalPaymentDeleteResponse = Either.catch {

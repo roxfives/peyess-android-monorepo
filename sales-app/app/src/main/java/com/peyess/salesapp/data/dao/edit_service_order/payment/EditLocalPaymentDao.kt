@@ -138,6 +138,20 @@ interface EditLocalPaymentDao {
     )
 
     @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET legal_id = :legalId
+        WHERE id = :paymentId
+    """)
+    suspend fun updateLegalId(paymentId: Long, legalId: String)
+
+    @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET has_legal_id = :hasLegalId
+        WHERE id = :paymentId
+    """)
+    suspend fun updateHasLegalId(paymentId: Long, hasLegalId: Int)
+
+    @Query("""
         DELETE FROM ${EditLocalPaymentEntity.tableName}
         WHERE sale_id = :saleId
     """)

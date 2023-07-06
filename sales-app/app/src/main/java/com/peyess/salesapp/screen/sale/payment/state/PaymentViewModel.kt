@@ -513,6 +513,8 @@ class PaymentViewModel @AssistedInject constructor(
                 methodType = methodType,
                 methodName = methodName,
 
+                hasLegalId = defaultMethod.hasLegalId,
+
                 dueDatePeriod = defaultMethod.dueDateDefault,
                 dueDateMode = defaultMethod.dueDateMode,
                 dueDate = defaultMethod.dueDateMode.dueDateAfter(defaultMethod.dueDateDefault),
@@ -611,9 +613,19 @@ class PaymentViewModel @AssistedInject constructor(
             methodName = method.name,
             installments = maxInstallments,
 
+            hasLegalId = method.hasLegalId,
+
             dueDateMode = method.dueDateMode,
             dueDatePeriod = method.dueDateDefault,
             dueDate = method.dueDateMode.dueDateAfter(period = method.dueDateDefault),
+        )
+
+        copy(paymentInput = update)
+    }
+
+    fun onLegalIdChanged(legalId: String) = setState {
+        val update = paymentInput.copy(
+            legalId = legalId,
         )
 
         copy(paymentInput = update)

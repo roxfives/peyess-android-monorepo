@@ -65,6 +65,9 @@ fun EditPaymentScreen(
 
         methodDocument = payment.document,
 
+        legalId = payment.legalId,
+        onLegalIdChanged = viewModel::onLegalIdChanged,
+
         onDueDateChanged = viewModel::onDueDateChanged,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
         onMethodDocumentUpdate = viewModel::onDocumentChanged,

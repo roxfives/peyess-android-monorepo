@@ -48,6 +48,9 @@ interface EditLocalPaymentRepository {
     suspend fun updateCardFlagName(paymentId: Long, cardFlagName: String): EditLocalPaymentUpdateResponse
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri): EditLocalPaymentUpdateResponse
 
+    suspend fun updateLegalId(paymentId: Long, legalId: String): EditLocalPaymentUpdateResponse
+    suspend fun updateHasLegalId(paymentId: Long, hasLegalId: Boolean): EditLocalPaymentUpdateResponse
+
     suspend fun updateDueDateData(
         paymentId: Long,
         dueDateMode: PaymentDueDateMode,

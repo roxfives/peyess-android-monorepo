@@ -25,3 +25,27 @@ fun methodDocumentPlaceholder(type: String?): Int {
         else -> R.string.empty_string
     }
 }
+
+@StringRes
+fun legalIdTitle(type: String?): Int {
+    val methodType = PaymentMethodType.fromName(type ?: "")
+
+    return when (methodType) {
+        PaymentMethodType.Credit,
+        PaymentMethodType.CreditFull,
+        PaymentMethodType.Debit -> R.string.payment_legal_id_card
+        else -> R.string.empty_string
+    }
+}
+
+@StringRes
+fun legalIdPlaceholder(type: String?): Int {
+    val methodType = PaymentMethodType.fromName(type ?: "")
+
+    return when (methodType) {
+        PaymentMethodType.Credit,
+        PaymentMethodType.CreditFull,
+        PaymentMethodType.Debit -> R.string.payment_legal_id_card
+        else -> R.string.empty_string
+    }
+}

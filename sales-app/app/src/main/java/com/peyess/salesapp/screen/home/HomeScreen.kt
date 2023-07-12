@@ -641,7 +641,14 @@ private fun ButtonsPanel(
                     density = density,
                 ),
                 title = stringResource(id = R.string.home_btn_products_title),
-                subtitle = stringResource(id = R.string.home_btn_products_subtitle_failed),
+                subtitle = if (hasProductsTableUpdateFailed) {
+                    stringResource(id = R.string.home_btn_sale_subtitle_failed)
+                } else if (isUpdatingProductsTable) {
+                    stringResource(id = R.string.home_btn_sale_subtitle_updating)
+                } else {
+                    stringResource(id = R.string.home_btn_products_subtitle)
+                },
+
                 icon = {
                     if (hasProductsTableUpdateFailed) {
                         Icon(

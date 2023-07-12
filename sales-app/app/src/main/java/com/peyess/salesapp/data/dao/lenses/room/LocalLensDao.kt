@@ -161,6 +161,11 @@ interface LocalLensDao {
     suspend fun addLensDetails(entity: LocalLensDetailsCrossRef)
 
     @Query("""
+        SELECT COUNT(id) FROM ${LocalLensEntity.tableName}
+    """)
+    suspend fun totalLenses(): Int
+
+    @Query("""
         SELECT * FROM ${LocalLensTypeCategoryEntity.tableName}
     """)
     suspend fun lensTypeCategories(): List<LocalLensTypeCategoryEntity>

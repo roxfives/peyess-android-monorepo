@@ -83,7 +83,11 @@ typealias TechsResponse = Either<LocalLensRepositoryException, List<LocalLensesT
 
 typealias MaterialsResponse = Either<LocalLensRepositoryException, List<LocalLensesMaterialSimplified>>
 
+typealias TotalLensesResponse = Either<LocalLensRepositoryException, Int>
+
 interface LocalLensesRepository {
+    suspend fun totalLenses(): TotalLensesResponse
+
     suspend fun addFamily(family: LocalLensFamilyDocument)
 
     suspend fun addDescription(description: LocalLensDescriptionDocument)

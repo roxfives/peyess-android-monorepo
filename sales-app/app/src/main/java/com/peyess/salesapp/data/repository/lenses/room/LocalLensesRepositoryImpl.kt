@@ -79,6 +79,15 @@ import javax.inject.Inject
 class LocalLensesRepositoryImpl @Inject constructor(
     private val localLensDao: LocalLensDao,
 ): LocalLensesRepository {
+    override suspend fun totalLenses(): TotalLensesResponse = Either.catch {
+        localLensDao.totalLenses()
+    }.mapLeft {
+        val errorMessage = "Error while fetching total lenses: ${it.message}"
+        Timber.e(errorMessage, it)
+
+        Unexpected(errorMessage, it)
+    }
+
     override suspend fun addFamily(family: LocalLensFamilyDocument) {
         val entity = family.toLocalLensFamilyEntity()
 

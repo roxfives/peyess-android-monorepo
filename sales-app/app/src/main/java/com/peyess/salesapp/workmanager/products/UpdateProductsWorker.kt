@@ -323,14 +323,14 @@ class UpdateProductsWorker @AssistedInject constructor(
         Timber.i("verifyDownloadedProducts: Verifying downloaded products...")
 
         val totalLocalLenses = localLensesRepository.totalLenses().bind()
-        val lensesStats = productStatsRepository.fetchLensStats().bind()
+        val totalRemoteLenses = storeLensesRepository.totalLensesEnabled().bind()
 
-        if (totalLocalLenses != lensesStats.totalEnabled) {
+        if (totalLocalLenses != totalRemoteLenses) {
             val errorMessage =
-                "local lenses ($totalLocalLenses) and remote lenses (${lensesStats.totalEnabled}) do not match"
+                "local lenses ($totalLocalLenses) and remote lenses (${totalRemoteLenses}) do not match"
             Timber.e("verifyDownloadedProducts: $errorMessage")
         }
-        totalLocalLenses == lensesStats.totalEnabled
+        totalLocalLenses == totalRemoteLenses
     }
 
     override suspend fun doWork(): Result {

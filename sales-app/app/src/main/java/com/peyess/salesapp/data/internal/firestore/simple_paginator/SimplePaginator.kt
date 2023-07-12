@@ -44,6 +44,8 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
     private suspend fun queryFirstPage(): Either<FirestoreError, QuerySnapshot> =
         Either.catch {
             hasDownloadedTheFirstPage = true
+            hasFinished = false
+            latestPage = null
 
             query.limit(config.initialPageSize.toLong())
                 .get()

@@ -26,6 +26,10 @@ class StoreLensesRepositoryImpl @Inject constructor(
 
     override val queryFields = StoreLensesQueryFields()
 
+    override fun resetPagination() {
+        paginator?.resetPagination()
+    }
+
     override suspend fun paginateData(
         query: PeyessQuery,
         config: SimplePaginatorConfig,

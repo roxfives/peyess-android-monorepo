@@ -13,4 +13,6 @@ interface ReadOnlyRepository<F: Any> {
     ): Either<RepositoryError, List<F>>
 
     suspend fun getById(id: String): Either<ReadError, F>
+
+    fun resetPagination()
 }

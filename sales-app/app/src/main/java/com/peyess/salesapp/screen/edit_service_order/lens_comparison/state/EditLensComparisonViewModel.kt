@@ -679,8 +679,6 @@ class EditLensComparisonViewModel @AssistedInject constructor(
 
             pickedProductRepository.addProductPicked(picked)
         }
-
-//        copy(hasPickedProduct = true)
     }
 
     @AssistedFactory

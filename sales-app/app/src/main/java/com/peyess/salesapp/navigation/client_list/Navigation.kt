@@ -175,6 +175,7 @@ fun buildPickClientListNavGraph(
                         val route = buildEditServiceOrderRoute(
                             saleId = saleId,
                             serviceOrderId = serviceOrderId,
+                            reloadFromServer = false,
                         )
 
                         navHostController.navigate(route) {

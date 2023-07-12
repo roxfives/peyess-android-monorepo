@@ -20,18 +20,22 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.EditServiceOr
 
 const val serviceOrderIdParam = "serviceOrderId"
 const val saleIdParam = "saleId"
+const val reloadFromServerParam = "reloadFromServer"
 
 val editServiceOrderRoute = SalesAppScreens.EditServiceOrder.name +
         "/{$saleIdParam}" +
-        "/{$serviceOrderIdParam}"
+        "/{$serviceOrderIdParam}" +
+        "/{$reloadFromServerParam}"
 
 fun buildEditServiceOrderRoute(
     saleId: String,
     serviceOrderId: String,
+    reloadFromServer: Boolean,
 ): String {
     return SalesAppScreens.EditServiceOrder.name +
             "/$saleId" +
-            "/$serviceOrderId"
+            "/$serviceOrderId" +
+            "/$reloadFromServer"
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -45,6 +49,7 @@ fun buildEditServiceOrderNavGraph(
         arguments = listOf(
             navArgument(saleIdParam) { type = NavType.StringType },
             navArgument(serviceOrderIdParam) { type = NavType.StringType },
+            navArgument(reloadFromServerParam) { type = NavType.BoolType },
         ),
         enterTransition = editServiceOrderEnterTransition(),
         exitTransition = editServiceOrderExitTransition(),

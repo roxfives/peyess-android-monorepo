@@ -48,6 +48,7 @@ import kotlin.math.abs
 data class EditServiceOrderState(
     val serviceOrderId: String = "",
     val saleId: String = "",
+    val shouldFetchFromServer: Boolean = false,
 
     val serviceOrderFetchResponseAsync: Async<ServiceOrderFetchResponse> = Uninitialized,
     val currentPurchase: PurchaseDocument = PurchaseDocument(),

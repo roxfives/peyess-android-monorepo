@@ -77,6 +77,7 @@ fun buildHomeNavGraph(
                 val route = buildEditServiceOrderRoute(
                     saleId = saleId,
                     serviceOrderId = serviceOrderId,
+                    reloadFromServer = true,
                 )
 
                 navHostController.navigate(route)

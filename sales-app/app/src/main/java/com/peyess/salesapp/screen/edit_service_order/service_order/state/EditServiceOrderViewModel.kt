@@ -95,9 +95,11 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onEach(
             EditServiceOrderState::saleId,
             EditServiceOrderState::serviceOrderId,
-        ) { purchaseId, serviceOrderId ->
-            if (purchaseId.isNotBlank() && serviceOrderId.isNotBlank()) {
-                fetchServiceOrder(serviceOrderId, purchaseId)
+            EditServiceOrderState::successfullyFetchedServiceOrder,
+            EditServiceOrderState::shouldFetchFromServer,
+        ) { purchaseId, serviceOrderId, hasAlreadyFetched, shouldFetchFromServer ->
+            if (!hasAlreadyFetched && purchaseId.isNotBlank() && serviceOrderId.isNotBlank()) {
+                fetchServiceOrder(serviceOrderId, purchaseId, shouldFetchFromServer)
             }
         }
 
@@ -181,9 +183,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onAsync(EditServiceOrderState::feeResponseAsync) { processFeeResponse(it) }
     }
 
-    private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String) {
+    private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String, forceReload: Boolean) {
         suspend {
-            serviceOrderFetcher.fetchFullSale(serviceOrderId, purchaseId)
+            serviceOrderFetcher.fetchFullSale(serviceOrderId, purchaseId, forceReload)
         }.execute(Dispatchers.IO) {
             copy(serviceOrderFetchResponseAsync = it)
         }
@@ -560,6 +562,10 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
     fun onServiceOrderIdChanged(serviceOrderId: String) = setState {
         copy(serviceOrderId = serviceOrderId)
+    }
+
+    fun onReloadFromServerChanged(reloadFromServer: Boolean) = setState {
+        copy(shouldFetchFromServer = reloadFromServer)
     }
 
     suspend fun pictureForClient(clientId: String): Uri {

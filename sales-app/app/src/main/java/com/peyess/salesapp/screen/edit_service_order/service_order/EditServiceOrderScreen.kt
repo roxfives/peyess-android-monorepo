@@ -71,6 +71,7 @@ fun EditServiceOrderScreen(
         navController = navHostController,
         onUpdateSaleId = viewModel::onSaleIdChanged,
         onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
+        onUpdateReloadFromServer = viewModel::onReloadFromServerChanged,
     )
 
     val saleId by viewModel.collectAsState(EditServiceOrderState::saleId)

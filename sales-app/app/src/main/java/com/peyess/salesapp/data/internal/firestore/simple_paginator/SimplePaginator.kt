@@ -2,10 +2,12 @@ package com.peyess.salesapp.data.internal.firestore.simple_paginator
 
 import arrow.core.Either
 import arrow.core.continuations.either
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.Source
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.FirestoreError
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.Unexpected
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.error.toFirestoreError
@@ -48,7 +50,7 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
             latestPage = null
 
             query.limit(config.initialPageSize.toLong())
-                .get()
+                .get(Source.SERVER)
                 .await()
         }.mapLeft {
             if (it is FirebaseFirestoreException) {
@@ -72,7 +74,7 @@ abstract class SimpleCollectionPaginator<out F: Any> constructor(
                 // This cast is necessary, otherwise the query sill always return empty
                 .startAfter(latestPage as DocumentSnapshot)
                 .limit(config.pageSize.toLong())
-                .get()
+                .get(Source.SERVER)
                 .await()
         }.mapLeft {
             if (it is FirebaseFirestoreException) {

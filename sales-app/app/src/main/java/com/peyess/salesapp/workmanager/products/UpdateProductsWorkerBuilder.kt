@@ -1,6 +1,7 @@
 package com.peyess.salesapp.workmanager.products
 
 import android.content.Context
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -9,6 +10,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.peyess.salesapp.workmanager.utils.isWorkRunningOrEnqueued
+import java.util.concurrent.TimeUnit
 
 suspend fun enqueueProductUpdateWorker(
     context: Context,
@@ -38,7 +40,11 @@ suspend fun enqueueProductUpdateWorker(
         uploadWorkRequest = OneTimeWorkRequestBuilder<UpdateProductsWorker>()
             .setInputData(inputData)
             .setConstraints(constraints)
-            .build()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS,
+            ).build()
 
         WorkManager
             .getInstance(context)

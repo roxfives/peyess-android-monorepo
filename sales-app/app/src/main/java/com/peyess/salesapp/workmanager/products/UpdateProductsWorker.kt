@@ -7,6 +7,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
@@ -42,6 +44,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.data.room.database.ProductsDatabase
+import com.peyess.salesapp.repository.stats.ProductStatsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +64,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val storeLensesRepository: StoreLensesRepository,
     private val localLensesRepository: LocalLensesRepository,
+    private val productStatsRepository: ProductStatsRepository,
     // TODO: Create specific repository and remove this dependency
     private val lensTypeDao: LensTypeCategoryDao,
 ): CoroutineWorker(context, workerParams) {
@@ -315,6 +319,20 @@ class UpdateProductsWorker @AssistedInject constructor(
         )
     }
 
+    private suspend fun isLocalDownloadComplete() = either {
+        Timber.i("verifyDownloadedProducts: Verifying downloaded products...")
+
+        val totalLocalLenses = localLensesRepository.totalLenses().bind()
+        val lensesStats = productStatsRepository.fetchLensStats().bind()
+
+        if (totalLocalLenses != lensesStats.totalEnabled) {
+            val errorMessage =
+                "local lenses ($totalLocalLenses) and remote lenses (${lensesStats.totalEnabled}) do not match"
+            Timber.e("verifyDownloadedProducts: $errorMessage")
+        }
+        totalLocalLenses == lensesStats.totalEnabled
+    }
+
     override suspend fun doWork(): Result {
        Timber.i("doWork: Starting product update")
 
@@ -330,6 +348,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
 
             if (avoidUpdate) {
+                Timber.i("doWork: Avoiding update: isUpdating = $isUpdating, needsUpdate = $needsUpdate")
                 return@withContext Result.success()
             }
 
@@ -346,24 +365,52 @@ class UpdateProductsWorker @AssistedInject constructor(
             val query = buildQuery()
 
             Timber.i("doWork: Downloading and updating products...")
+            storeLensesRepository.resetPagination()
             val response = downloadAndPopulateProducts(query)
 
             Timber.i("doWork: Finished update with response $response")
             return@withContext if (response.isLeft()) {
                 Timber.w("doWork: Failed to update products table: ${response.left()}")
-                Result.retry()
-            } else {
-                Timber.i("doWork: Update finished successfully: ${response.right()}")
                 productsTableStateRepository.update(
                     productsTableStatus.copy(
-                        hasUpdated = true,
-                        hasUpdateFailed = false,
+                        hasUpdated = false,
+                        hasUpdateFailed = true,
                         isUpdating = false,
                     )
                 )
-                dismissNotification()
 
-                Result.success()
+                Result.retry()
+            } else {
+                val isDownloadComplete = isLocalDownloadComplete()
+
+                isDownloadComplete.fold(
+                    ifLeft = { Result.retry() },
+
+                    ifRight = {
+                        if (it) {
+                            Timber.i("doWork: Update finished successfully: ${response.right()}")
+                            productsTableStateRepository.update(
+                                productsTableStatus.copy(
+                                    hasUpdated = true,
+                                    hasUpdateFailed = false,
+                                    isUpdating = false,
+                                )
+                            )
+                            dismissNotification()
+                            Result.success()
+                        } else {
+                            Timber.w("doWork: Failed to update products table, the download is incomplete")
+                            productsTableStateRepository.update(
+                                productsTableStatus.copy(
+                                    hasUpdated = false,
+                                    hasUpdateFailed = true,
+                                    isUpdating = false,
+                                )
+                            )
+                            Result.retry()
+                        }
+                    }
+                )
             }
         }
 
@@ -371,7 +418,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     }
 
     companion object {
-        const val pageLimit = 300
+        const val pageLimit = 500
 
         const val workerTag = "TAG_UpdateProductsWorker"
     }

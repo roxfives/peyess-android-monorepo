@@ -671,6 +671,7 @@
     <string name="fs_col_card_flags">payment_card</string>
     <string name="fs_col_discount_groups">optical_stores/%1$s/local_optical_product_discount_groups</string>
     <string name="fs_col_payment_methods">optical_stores/%1$s/local_optical_payment_method</string>
+    <string name="fs_col_stats">stats</string>
 
     <!--  Firestore documents  -->
     <string name="fs_doc_client">clients/%1$s</string>
@@ -680,6 +681,7 @@
     <string name="fs_doc_store_lens">optical_stores/%1$s/local_optical_lenses/%2$s</string>
     <string name="fs_doc_payment_method">optical_stores/%1$s/local_optical_payment_method/%2$s</string>
     <string name="fs_doc_prescription">/optical_stores/%1$s/local_optical_prescription/%2$s</string>
+    <string name="fs_doc_lens_stats">lenses</string>
 
     <!-- Firestore field   -->
     <string name="fs_field_collaborators_account_status">status</string>

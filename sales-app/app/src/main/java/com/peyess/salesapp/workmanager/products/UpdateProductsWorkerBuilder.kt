@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 suspend fun enqueueProductUpdateWorker(
     context: Context,
     workPolicy: ExistingWorkPolicy = ExistingWorkPolicy.REPLACE,
+    executeRightAway: Boolean = false,
     forceExecution: Boolean = false,
 ) {
     val workTag = UpdateProductsWorker.workerTag
@@ -37,15 +38,19 @@ suspend fun enqueueProductUpdateWorker(
             .setRequiresStorageNotLow(false)
             .build()
 
-        uploadWorkRequest = OneTimeWorkRequestBuilder<UpdateProductsWorker>()
+        val uploadWorkRequestBuilder = OneTimeWorkRequestBuilder<UpdateProductsWorker>()
             .setInputData(inputData)
             .setConstraints(constraints)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
                 OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS,
-            ).build()
+            )
+        if (!executeRightAway) {
+            uploadWorkRequestBuilder.setInitialDelay(5, TimeUnit.SECONDS)
+        }
 
+        uploadWorkRequest = uploadWorkRequestBuilder.build()
         WorkManager
             .getInstance(context)
             .enqueueUniqueWork(

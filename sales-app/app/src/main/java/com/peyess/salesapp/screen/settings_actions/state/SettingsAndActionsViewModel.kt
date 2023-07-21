@@ -45,6 +45,7 @@ class SettingsAndActionViewModel @AssistedInject constructor(
             context = salesApplication as Context,
             workPolicy = ExistingWorkPolicy.REPLACE,
             forceExecution = true,
+            executeRightAway = true,
         )
     }
 

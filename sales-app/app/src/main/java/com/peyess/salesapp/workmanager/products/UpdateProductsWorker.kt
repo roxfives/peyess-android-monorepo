@@ -34,6 +34,7 @@ import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
+import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -379,12 +380,12 @@ class UpdateProductsWorker @AssistedInject constructor(
                     )
                 )
 
-                Result.retry()
+                Result.failure()
             } else {
                 val isDownloadComplete = isLocalDownloadComplete()
 
                 isDownloadComplete.fold(
-                    ifLeft = { Result.retry() },
+                    ifLeft = { Result.failure() },
 
                     ifRight = {
                         if (it) {
@@ -407,7 +408,7 @@ class UpdateProductsWorker @AssistedInject constructor(
                                     isUpdating = false,
                                 )
                             )
-                            Result.retry()
+                            Result.failure()
                         }
                     }
                 )

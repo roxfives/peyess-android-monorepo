@@ -18,6 +18,7 @@ import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
+import com.peyess.salesapp.data.model.measuring.MeasuringDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
@@ -184,6 +185,7 @@ class ServiceOrderUploader constructor(
             clientName = so.clientName,
             salespersonUid = so.salespersonUid,
 
+            serviceOrder = so,
             prescriptionEntity = prescriptionEntity,
         )
 
@@ -314,6 +316,7 @@ class ServiceOrderUploader constructor(
             lHorizontalBridgeHoop = measuringLeft.fixedHorizontalBridgeHoop,
             lHorizontalHoop = measuringLeft.fixedHHoop,
             lVerticalHoop = measuringLeft.fixedVHoop,
+            lBridgeHoop = measuringLeft.fixedHorizontalBridgeHoop,
 
             rIpd = measuringRight.fixedIpd,
             rBridge = measuringRight.fixedBridge,
@@ -322,6 +325,7 @@ class ServiceOrderUploader constructor(
             rHorizontalBridgeHoop = measuringRight.fixedHorizontalBridgeHoop,
             rHorizontalHoop = measuringRight.fixedHHoop,
             rVerticalHoop = measuringRight.fixedVHoop,
+            rBridgeHoop = measuringRight.fixedHorizontalBridgeHoop,
         )
     }
 
@@ -809,13 +813,14 @@ class ServiceOrderUploader constructor(
             updated = now,
         )
 
+
         serviceOrder = addClientData(serviceOrder).bind()
 
         serviceOrder = addSalespersonData(serviceOrder)
 
-        serviceOrder = addPrescriptionData(serviceOrder, uploadPartialData)
-
         serviceOrder = addPositioningData(serviceOrder, uploadPartialData)
+
+        serviceOrder = addPrescriptionData(serviceOrder, uploadPartialData)
 
         serviceOrder = addProductsData(serviceOrder).bind()
 

@@ -1,7 +1,6 @@
 package com.peyess.salesapp.features.edit_service_order.updater.adapter
 
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
 import com.peyess.salesapp.features.pdf.service_order.model.ServiceOrder
 import java.time.ZonedDateTime
@@ -82,6 +81,7 @@ fun ServiceOrderUpdateDocument.toServiceOrder(
         rPrismPos = rPrismPos,
         lIpd = lIpd,
         lBridge = lBridge,
+        lBridgeHoop = lBridgeHoop,
         lDiameter = lDiameter,
         lHe = lHe,
         lHorizontalBridgeHoop = lHorizontalBridgeHoop,
@@ -89,6 +89,7 @@ fun ServiceOrderUpdateDocument.toServiceOrder(
         lVerticalHoop = lVerticalHoop,
         rIpd = rIpd,
         rBridge = rBridge,
+        rBridgeHoop = rBridgeHoop,
         rDiameter = rDiameter,
         rHe = rHe,
         rHorizontalBridgeHoop = rHorizontalBridgeHoop,

@@ -383,6 +383,10 @@ data class FSServiceOrder(
     val lBridge: Double = 0.0,
     @Keep
     @JvmField
+    @PropertyName("l_bridge_hoop")
+    val lBridgeHoop: Double = 0.0,
+    @Keep
+    @JvmField
     @PropertyName("l_diameter")
     val lDiameter: Double = 0.0,
     @Keep
@@ -410,6 +414,10 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("r_bridge")
     val rBridge: Double = 0.0,
+    @Keep
+    @JvmField
+    @PropertyName("r_bridge_hoop")
+    val rBridgeHoop: Double = 0.0,
     @Keep
     @JvmField
     @PropertyName("r_diameter")

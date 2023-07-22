@@ -86,6 +86,7 @@ data class ServiceOrder(
 
     val lIpd: Double = 0.0,
     val lBridge: Double = 0.0,
+    val lBridgeHoop: Double = 0.0,
     val lDiameter: Double = 0.0,
     val lHe: Double = 0.0,
     val lHorizontalBridgeHoop: Double = 0.0,
@@ -93,6 +94,7 @@ data class ServiceOrder(
     val lVerticalHoop: Double = 0.0,
     val rIpd: Double = 0.0,
     val rBridge: Double = 0.0,
+    val rBridgeHoop: Double = 0.0,
     val rDiameter: Double = 0.0,
     val rHe: Double = 0.0,
     val rHorizontalBridgeHoop: Double = 0.0,

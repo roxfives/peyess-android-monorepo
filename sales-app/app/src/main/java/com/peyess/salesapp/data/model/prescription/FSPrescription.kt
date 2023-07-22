@@ -96,6 +96,31 @@ data class FSPrescription(
     val lIpd: Double = 0.0,
     @JvmField
     @Keep
+    @PropertyName("l_bridge")
+    val lBridge: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_bridge_hoop")
+    val lBridgeHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_h_hoop")
+    val lHHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_he")
+    val lHe: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_v_hoop")
+    val lVHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_diamter")
+    val lDiameter: Double = 0.0,
+
+    @JvmField
+    @Keep
     @PropertyName("l_cylinder")
     val lCylinder: Double = 0.0,
     @JvmField
@@ -127,6 +152,31 @@ data class FSPrescription(
     @Keep
     @PropertyName("r_ipd")
     val rIpd: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_bridge")
+    val rBridge: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_bridge_hoop")
+    val rBridgeHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_h_hoop")
+    val rHHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_he")
+    val rHe: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_v_hoop")
+    val rVHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_diamter")
+    val rDiameter: Double = 0.0,
+
     @JvmField
     @Keep
     @PropertyName("r_cylinder")

@@ -21,6 +21,7 @@ import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
@@ -269,6 +270,7 @@ class ServiceOrderUpdater @Inject constructor(
         update.copy(
             lIpd = measurings.first.fixedIpd,
             lBridge = measurings.first.fixedBridge,
+            lBridgeHoop = measurings.first.fixedHorizontalBridgeHoop,
             lDiameter = measurings.first.fixedDiameter,
             lHe = measurings.first.fixedHe,
             lHorizontalBridgeHoop = measurings.first.fixedHorizontalBridgeHoop,
@@ -277,6 +279,7 @@ class ServiceOrderUpdater @Inject constructor(
 
             rIpd = measurings.second.fixedIpd,
             rBridge = measurings.second.fixedBridge,
+            rBridgeHoop = measurings.second.fixedHorizontalBridgeHoop,
             rDiameter = measurings.second.fixedDiameter,
             rHe = measurings.second.fixedHe,
             rHorizontalBridgeHoop = measurings.second.fixedHorizontalBridgeHoop,
@@ -697,6 +700,7 @@ class ServiceOrderUpdater @Inject constructor(
 
     private suspend fun generatePrescriptionData(
         serviceOrderId: String,
+        serviceOrder: ServiceOrderDocument,
     ): GeneratePrescriptionDataResponse = either {
         val collaboratorUid = authenticationRepository.fetchCurrentUserId()
 
@@ -730,6 +734,7 @@ class ServiceOrderUpdater @Inject constructor(
             localPrescription.toPrescriptionUpdateDocument(
                 client = user,
                 collaboratorUid = collaboratorUid,
+                serviceOrder = serviceOrder,
                 updated = ZonedDateTime.now(),
             ),
         )
@@ -936,7 +941,7 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }.bind()
 
-        val (prescriptionPicture, prescriptionUpdate) = generatePrescriptionData(serviceOrderId)
+        val (prescriptionPicture, prescriptionUpdate) = generatePrescriptionData(serviceOrderId, currentServiceOrder)
             .mapLeft {
                 UpdateSaleError.Unexpected(
                     description = it.description,

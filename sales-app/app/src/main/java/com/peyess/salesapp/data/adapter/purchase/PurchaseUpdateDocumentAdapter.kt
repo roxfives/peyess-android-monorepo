@@ -13,7 +13,7 @@ import com.peyess.salesapp.utils.time.toTimestamp
 fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
     return FSPurchaseUpdate(
         clientUids = clientUids,
-        clients = clients.map { it.toFSDenormalizedClient() },
+        clients = clients.mapValues { it.value.toFSDenormalizedClient() },
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,

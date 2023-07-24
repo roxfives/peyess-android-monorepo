@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 
 data class PurchaseUpdateDocument(
     val clientUids: List<String> = emptyList(),
-    val clients: List<DenormalizedClientDocument> = emptyList(),
+    val clients: Map<String, DenormalizedClientDocument> = emptyMap(),
 
     val responsibleUid: String = "",
     val responsibleDocument: String = "",

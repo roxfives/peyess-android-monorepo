@@ -16,7 +16,7 @@ data class PurchaseDocument(
     val storeIds: List<String> = emptyList(),
 
     val clientUids: List<String> = emptyList(),
-    val clients: List<DenormalizedClientDocument> = emptyList(),
+    val clients: Map<String, DenormalizedClientDocument> = emptyMap(),
 
     val responsibleUid: String = "",
     val responsibleDocument: String = "",

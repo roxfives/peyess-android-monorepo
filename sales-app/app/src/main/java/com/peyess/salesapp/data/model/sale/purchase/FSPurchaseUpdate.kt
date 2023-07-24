@@ -17,7 +17,7 @@ data class FSPurchaseUpdate(
     @Keep
     @JvmField
     @PropertyName("clients")
-    val clients: List<FSDenormalizedClient> = emptyList(),
+    val clients: Map<String, FSDenormalizedClient> = emptyMap(),
 
     @Keep
     @JvmField

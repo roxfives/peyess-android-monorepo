@@ -693,13 +693,13 @@ class ServiceOrderUploader constructor(
 
             storeId = storeId,
             storeIds = listOf(storeId),
-            clientUids = listOf(serviceOrder.id),
-            clients = listOf(
-                DenormalizedClientDocument(
+            clientUids = listOf(serviceOrder.clientUid),
+            clients = mapOf(
+                serviceOrder.id to DenormalizedClientDocument(
                     uid = serviceOrder.clientUid,
                     document = serviceOrder.clientDocument,
                     name = serviceOrder.clientName,
-                ),
+                )
             ),
 
             responsibleDocument = serviceOrder.responsibleDocument,

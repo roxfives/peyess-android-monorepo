@@ -549,13 +549,13 @@ class ServiceOrderUpdater @Inject constructor(
         }
 
         PurchaseUpdateDocument(
-            clientUids = listOf(serviceOrderId),
-            clients = listOf(
-                DenormalizedClientDocument(
+            clientUids = listOf(serviceOrder.clientUid),
+            clients = mapOf(
+                serviceOrderId to DenormalizedClientDocument(
                     uid = serviceOrder.clientUid,
                     document = serviceOrder.clientDocument,
                     name = serviceOrder.clientName,
-                ),
+                )
             ),
 
             responsibleDocument = serviceOrder.responsibleDocument,

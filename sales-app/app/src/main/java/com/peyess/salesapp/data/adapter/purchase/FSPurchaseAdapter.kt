@@ -23,7 +23,9 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         storeIds = storeIds,
 
         clientUids = clientUids,
-        clients = clients.map { it.toDenormalizedClientDocument() },
+        clients = clients.mapValues {
+            it.value.toDenormalizedClientDocument()
+        },
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,

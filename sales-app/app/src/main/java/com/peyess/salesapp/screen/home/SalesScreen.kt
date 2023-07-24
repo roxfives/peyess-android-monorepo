@@ -271,7 +271,7 @@ private fun PurchaseCard(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val client = remember {
-        purchase.clients.firstOrNull() ?: DenormalizedClientDocument()
+        purchase.clients.entries.firstOrNull()?.value ?: DenormalizedClientDocument()
     }
 
     val coroutineScope = rememberCoroutineScope()

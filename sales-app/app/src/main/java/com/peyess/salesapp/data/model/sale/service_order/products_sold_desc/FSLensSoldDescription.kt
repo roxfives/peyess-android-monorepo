@@ -69,6 +69,10 @@ data class FSLensSoldDescription(
     @JvmField
     @PropertyName("alt_height_desc")
     val altHeightDesc: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("alt_height_value")
+    val altHeightValue: Double = 0.0,
 
     @Keep
     @JvmField

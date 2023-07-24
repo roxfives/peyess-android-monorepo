@@ -39,6 +39,7 @@ fun StoreLensWithDetailsDocument.toDescription(
         withAltHeight = hasAltHeight,
         altHeightId = altHeight?.id ?: "",
         altHeightDesc = altHeight?.nameDisplay ?: "",
+        altHeightValue = altHeight?.value ?: 0.0,
 
         withTreatment = withTreatment,
         withColoring = withColoring,

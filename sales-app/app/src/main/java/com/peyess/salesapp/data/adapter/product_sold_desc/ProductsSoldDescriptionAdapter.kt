@@ -24,6 +24,7 @@ fun LensSoldDescriptionDocument.toFSLensSoldDescription(): FSLensSoldDescription
         withAltHeight = withAltHeight,
         altHeightId = altHeightId,
         altHeightDesc = altHeightDesc,
+        altHeightValue = altHeightValue,
 
         withTreatment = withTreatment,
         withColoring = withColoring,

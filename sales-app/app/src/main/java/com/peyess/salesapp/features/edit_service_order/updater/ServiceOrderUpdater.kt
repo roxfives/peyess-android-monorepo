@@ -15,6 +15,7 @@ import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
 import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
+import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
@@ -76,6 +77,7 @@ import java.math.RoundingMode
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.math.max
 
 private typealias FetchClientDataResponse = Either<GenerateSaleDataError, LocalClientDocument>
 
@@ -216,13 +218,14 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val prescription =
-            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId).mapLeft {
-                    GenerateSaleDataError.Unexpected(
-                        description = it.description,
-                        throwable = it.error,
-                    )
-                }.bind()
+        val prescription = editPrescriptionRepository
+            .prescriptionByServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
 
         update.copy(
             prescriptionId = prescription.id,
@@ -292,13 +295,14 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val productPicked =
-            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId).mapLeft {
-                    GenerateSaleDataError.Unexpected(
-                        description = it.description,
-                        it.error,
-                    )
-                }.bind()
+        val productPicked = editProductPickedRepository
+            .productPickedForServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
 
         val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
                 GenerateSaleDataError.Unexpected(
@@ -390,6 +394,7 @@ class ServiceOrderUpdater @Inject constructor(
             }
         }
 
+        val withHeight = max(update.lHe, update.rHe)
         update.copy(
             samePurchaseSo = listOf(serviceOrderId),
 
@@ -403,6 +408,7 @@ class ServiceOrderUpdater @Inject constructor(
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -421,6 +427,7 @@ class ServiceOrderUpdater @Inject constructor(
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -654,6 +661,15 @@ class ServiceOrderUpdater @Inject constructor(
             updatedBy = collaboratorUid,
             updateAllowedBy = collaboratorUid,
         )
+
+        val prescription = editPrescriptionRepository
+            .prescriptionByServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
 
         serviceOrderUpdate = addClientData(serviceOrderId, serviceOrderUpdate).bind()
         serviceOrderUpdate = addPrescriptionData(serviceOrderId, serviceOrderUpdate).bind()

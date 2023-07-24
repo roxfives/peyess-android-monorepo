@@ -23,6 +23,7 @@ data class LensSoldDescriptionDocument(
 
     val withAltHeight: Boolean = false,
     val altHeightId: String = "",
+    val altHeightDesc: String = "",
 
     val withTreatment: Boolean = false,
     val withColoring: Boolean = false,

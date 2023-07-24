@@ -82,6 +82,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.abs
+import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -523,6 +524,7 @@ class ServiceOrderUploader constructor(
             }
         }
 
+        val withHeight = max(so.lHe, so.rHe)
         so.copy(
             samePurchaseSo = listOf(so.id),
 
@@ -535,6 +537,7 @@ class ServiceOrderUploader constructor(
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
@@ -552,6 +555,7 @@ class ServiceOrderUploader constructor(
                     withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
                     accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
                 ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,

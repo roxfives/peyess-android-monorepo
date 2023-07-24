@@ -249,7 +249,11 @@ class UpdateProductsWorker @AssistedInject constructor(
 
     private fun clearAllProducts() {
         Timber.i("clearAllProducts: Clearing all current local products")
-        productsDatabase.clearAllTables()
+        Either.catch {
+            productsDatabase.clearAllTables()
+        }.mapLeft {
+            Timber.e("clearAllProducts: Failed to clear all tables: ${it.message}", it)
+        }
     }
 
     private fun createNotification() {
@@ -380,6 +384,7 @@ class UpdateProductsWorker @AssistedInject constructor(
                     )
                 )
 
+                dismissNotification()
                 Result.failure()
             } else {
                 val isDownloadComplete = isLocalDownloadComplete()
@@ -408,6 +413,7 @@ class UpdateProductsWorker @AssistedInject constructor(
                                     isUpdating = false,
                                 )
                             )
+                            dismissNotification()
                             Result.failure()
                         }
                     }

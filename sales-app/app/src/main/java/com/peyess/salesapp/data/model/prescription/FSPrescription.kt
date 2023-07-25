@@ -116,7 +116,7 @@ data class FSPrescription(
     val lVHoop: Double = 0.0,
     @JvmField
     @Keep
-    @PropertyName("l_diamter")
+    @PropertyName("l_diameter")
     val lDiameter: Double = 0.0,
 
     @JvmField
@@ -174,7 +174,7 @@ data class FSPrescription(
     val rVHoop: Double = 0.0,
     @JvmField
     @Keep
-    @PropertyName("r_diamter")
+    @PropertyName("r_diameter")
     val rDiameter: Double = 0.0,
 
     @JvmField

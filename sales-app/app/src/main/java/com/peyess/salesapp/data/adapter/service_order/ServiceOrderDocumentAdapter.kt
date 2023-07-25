@@ -15,6 +15,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         storeId = storeId,
         storeIds = storeIds,
         salespersonUid = salespersonUid,
+        salespersonName = salespersonName,
         clientUid = clientUid,
         clientDocument = clientDocument,
         clientName = clientName,

@@ -32,10 +32,15 @@ data class FSServiceOrder(
     @JvmField
     @PropertyName("store_ids")
     val storeIds: List<String> = emptyList(),
+
     @Keep
     @JvmField
     @PropertyName("salesperson_uid")
     val salespersonUid: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("salesperson_name")
+    val salespersonName: String = "",
 
     @Keep
     @JvmField

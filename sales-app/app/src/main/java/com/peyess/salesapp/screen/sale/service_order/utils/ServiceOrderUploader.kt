@@ -425,7 +425,7 @@ class ServiceOrderUploader constructor(
 
         return so.copy(
             salespersonUid = user!!.id,
-//            salespersonName = user!!.name,
+            salespersonName = user!!.name,
 
             soldBy = user!!.id,
             measureConfirmedBy = user!!.id,
@@ -730,6 +730,7 @@ class ServiceOrderUploader constructor(
             witnessZipcode = serviceOrder.witnessZipcode,
 
             salespersonUid = serviceOrder.salespersonUid,
+            salespersonName = serviceOrder.salespersonName,
 
             isDiscountOverall = true,
             overallDiscount = DiscountDescriptionDocument(

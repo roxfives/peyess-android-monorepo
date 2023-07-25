@@ -13,6 +13,7 @@ data class ServiceOrderDocument(
     val storeIds: List<String> = emptyList(),
 
     val salespersonUid: String = "",
+    val salespersonName: String = "",
 
     val clientUid: String = "",
     val clientDocument: String = "",

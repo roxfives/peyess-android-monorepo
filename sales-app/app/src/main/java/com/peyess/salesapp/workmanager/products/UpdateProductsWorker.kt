@@ -425,7 +425,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     }
 
     companion object {
-        const val pageLimit = 500
+        const val pageLimit = 100
 
         const val workerTag = "TAG_UpdateProductsWorker"
     }

@@ -1,5 +1,6 @@
 package com.peyess.salesapp.model.store
 
+import java.time.ZonedDateTime
 import java.util.Date
 
 data class OpticalStore(
@@ -17,7 +18,7 @@ data class OpticalStore(
 
     val reasonBanned: String = "",
 
-    val opening: String = "",
+    val opening: ZonedDateTime = ZonedDateTime.now(),
 
     val directorUid: String = "",
 

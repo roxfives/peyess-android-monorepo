@@ -5,7 +5,7 @@ plugins {
 android {
     defaultConfig {
         applicationId = "com.peyess.salesapp"
-        versionCode = 5
-        versionName = "0.0.43"
+        versionCode = 6
+        versionName = "0.0.44"
     }
 }

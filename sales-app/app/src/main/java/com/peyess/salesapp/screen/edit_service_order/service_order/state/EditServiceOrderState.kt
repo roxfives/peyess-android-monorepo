@@ -240,8 +240,8 @@ data class EditServiceOrderState(
 
         val feeAsPercentage = when (fee.method) {
             PaymentFeeCalcMethod.None -> 0.0
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole -> fee.value / (fullPrice * (1 - discountAsPercentage))
+            PaymentFeeCalcMethod.Percentage -> fee.value.toDouble()
+            PaymentFeeCalcMethod.Whole -> fee.value.toDouble() / (fullPrice * (1 - discountAsPercentage))
         }
 
         return fullPrice * (1 - discountAsPercentage) * (1 + feeAsPercentage)

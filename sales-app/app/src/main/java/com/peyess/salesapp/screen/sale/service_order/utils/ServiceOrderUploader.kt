@@ -593,8 +593,8 @@ class ServiceOrderUploader constructor(
         val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
         val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
         val totalFee = when (fee?.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Percentage -> fee.value.toDouble()
+            PaymentFeeCalcMethod.Whole ->  fee.value.toDouble() / priceWithDiscount
             PaymentFeeCalcMethod.None, null -> 0.0
         }
 
@@ -654,7 +654,9 @@ class ServiceOrderUploader constructor(
         val totalPaid = if (payments.isEmpty()) {
             0.0
         } else {
-            payments.map { it.value }.reduce { acc, payment -> acc + payment }
+            payments.map { it.value }
+                .ifEmpty { listOf(0.0) }
+                .reduce { acc, payment -> acc + payment }
         }
         val totalLeft = BigDecimal(abs((finalPrice - totalPaid)))
             .setScale(2, RoundingMode.HALF_EVEN)
@@ -740,7 +742,7 @@ class ServiceOrderUploader constructor(
             ),
             paymentFee = FeeDescriptionDocument(
                 method = feeDocument?.method ?: PaymentFeeCalcMethod.Percentage,
-                value = BigDecimal(feeDocument?.value ?: 0.0),
+                value = feeDocument?.value ?: BigDecimal.ZERO,
             ),
 
             fullPrice = fullPrice,

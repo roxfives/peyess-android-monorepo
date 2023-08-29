@@ -345,7 +345,7 @@ class ServiceOrderFetcher @Inject constructor(
         return PaymentFeeDocument(
             saleId = purchaseDocument.id,
             method = PaymentFeeCalcMethod.Percentage,
-            value = purchaseDocument.totalFee,
+            value = purchaseDocument.totalFee.toBigDecimal(),
         )
     }
 

@@ -7,6 +7,6 @@ fun PaymentFeeDocument.toEditPaymentFeeEntity(): EditPaymentFeeEntity {
     return EditPaymentFeeEntity(
         saleId = saleId,
         method = method,
-        value = value,
+        value = value.toDouble(),
     )
 }

@@ -1,6 +1,8 @@
 package com.peyess.salesapp.features.pdf.service_order
 
 import android.content.Context
+import com.peyess.salesapp.data.adapter.purchase.fee.toFSFeeDescription
+import com.peyess.salesapp.data.adapter.purchase.fee.toPaymentFeeDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
@@ -18,6 +20,7 @@ import com.peyess.salesapp.features.pdf.service_order.model.Purchase
 import com.peyess.salesapp.features.pdf.service_order.model.ServiceOrder
 import com.peyess.salesapp.features.pdf.utils.printValue
 import timber.log.Timber
+import java.math.BigDecimal
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
 
@@ -114,7 +117,6 @@ fun buildHtml(
         clientZipCode = serviceOrder.responsibleZipcode,
     )
 
-    // TODO: add clientBirthday to ServiceOrder
     val productData = generateProductData(
         soHid = serviceOrder.hid,
 
@@ -185,7 +187,7 @@ fun buildHtml(
 
     val eyeSets = mutableListOf<ProductSoldEyeSetDocument>()
     eyeSets.add(serviceOrder.leftProducts)
-    eyeSets.add(serviceOrder.leftProducts)
+    eyeSets.add(serviceOrder.rightProducts)
 
     val framesSet = mutableListOf<ProductSoldFramesDescriptionDocument>()
     if (!serviceOrder.hasOwnFrames) {
@@ -203,9 +205,9 @@ fun buildHtml(
         misc = miscSet,
 
         salesPersonName = collaboratorName,
-        priceWithoutDiscount = purchase.fullPrice,
-        discount = purchase.totalDiscount,
-        fee = purchase.totalFee,
+        priceWithoutDiscount = BigDecimal("${purchase.fullPrice}"),
+        discount = purchase.overallDiscount,
+        fee = purchase.paymentFee.toPaymentFeeDocument(),
     )
 
     val paymentSection = buildPaymentSection(

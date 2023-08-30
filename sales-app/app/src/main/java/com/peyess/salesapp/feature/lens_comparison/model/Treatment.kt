@@ -1,9 +1,11 @@
 package com.peyess.salesapp.feature.lens_comparison.model
 
+import java.math.BigDecimal
+
 data class Treatment(
     val id: String = "",
     val brand: String = "",
-    val price: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
     val design: String = "",
     val isColoringRequired: Boolean = false,
     val isEnabled: Boolean = false,

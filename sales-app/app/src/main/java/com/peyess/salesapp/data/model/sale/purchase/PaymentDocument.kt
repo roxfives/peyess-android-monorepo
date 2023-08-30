@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.sale.purchase
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.typing.sale.PaymentMethodType
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class PaymentDocument(
@@ -10,7 +11,7 @@ data class PaymentDocument(
 
     val methodName: PaymentMethodType = PaymentMethodType.Unknown,
     val methodId: String = "",
-    val amount: Double = 0.0,
+    val amount: BigDecimal = BigDecimal.ZERO,
     val installments: Int = 0,
     val currency: String = "BRL",
     val document: String = "",

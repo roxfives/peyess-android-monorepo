@@ -14,6 +14,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.e
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.UpdatePaymentDiscountError
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import kotlinx.coroutines.flow.map
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class EditPaymentDiscountRepositoryImpl @Inject constructor(
@@ -72,9 +73,9 @@ class EditPaymentDiscountRepositoryImpl @Inject constructor(
 
     override suspend fun updateValue(
         saleId: String,
-        value: Double,
+        value: BigDecimal,
     ): EditPaymentDiscountUpdateResponse = Either.catch {
-        paymentDiscountDao.updateValue(saleId, value)
+        paymentDiscountDao.updateValue(saleId, value.toDouble())
     }.mapLeft {
         UpdatePaymentDiscountError.Unexpected(
             description = "Error while updating discount value for sale $saleId",

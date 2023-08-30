@@ -5,6 +5,7 @@ import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class PurchaseUpdateDocument(
@@ -42,12 +43,12 @@ data class PurchaseUpdateDocument(
     val overallDiscount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
     val paymentFee: FeeDescriptionDocument = FeeDescriptionDocument(),
     val discountServiceOrder: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
-    val fullPrice: Double = 0.0,
-    val finalPrice: Double = 0.0,
-    val leftToPay: Double = 0.0,
-    val totalPaid: Double = 0.0,
-    val totalDiscount: Double = 0.0,
-    val totalFee: Double = 0.0,
+    val fullPrice: BigDecimal = BigDecimal.ZERO,
+    val finalPrice: BigDecimal = BigDecimal.ZERO,
+    val leftToPay: BigDecimal = BigDecimal.ZERO,
+    val totalPaid: BigDecimal = BigDecimal.ZERO,
+    val totalDiscount: BigDecimal = BigDecimal.ZERO,
+    val totalFee: BigDecimal = BigDecimal.ZERO,
 
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),

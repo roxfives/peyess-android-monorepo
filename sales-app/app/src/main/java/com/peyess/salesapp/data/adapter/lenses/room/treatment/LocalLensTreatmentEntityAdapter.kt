@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.lenses.room.treatment
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentPriceDBView
+import java.math.BigDecimal
 
 fun LocalLensTreatmentPriceDBView.toLocalLensTreatmentDocument(
     explanations: List<String>,
@@ -21,7 +22,7 @@ fun LocalLensTreatmentPriceDBView.toLocalLensTreatmentDocument(
         supplier = supplier,
         warning = warning,
 
-        price = price,
+        price = price.toBigDecimal(),
 
         explanations = explanations,
     )

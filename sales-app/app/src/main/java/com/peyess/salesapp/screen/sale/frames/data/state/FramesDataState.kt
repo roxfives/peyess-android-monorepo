@@ -12,6 +12,7 @@ import com.peyess.salesapp.data.repository.local_sale.prescription.LocalPrescrip
 import com.peyess.salesapp.screen.sale.frames.data.model.Frames
 import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.typing.frames.FramesType
+import java.math.BigDecimal
 
 data class FramesDataState(
     val serviceOrderId: String = "",
@@ -32,7 +33,7 @@ data class FramesDataState(
     val designInput: String = "",
     val infoInput: String = "",
     val referenceInput: String = "",
-    val valueInput: Double = 0.0,
+    val valueInput: BigDecimal = BigDecimal.ZERO,
     val tagCodeInput: String = "",
     val framesTypeInput: FramesType = FramesType.None,
 

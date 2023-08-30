@@ -4,6 +4,7 @@ import androidx.annotation.RawRes
 import com.peyess.salesapp.data.model.local_sale.lens_comparison.LensComparisonEntity
 import com.peyess.salesapp.feature.lens_comparison.utils.animationFromCategory
 import com.peyess.salesapp.feature.lens_comparison.utils.bigAnimationFromCategory
+import java.math.BigDecimal
 
 data class IndividualComparison(
     val id: Int = 0,
@@ -15,7 +16,7 @@ data class IndividualComparison(
     val coloringComparison: ColoringComparison = ColoringComparison(),
     val treatmentComparison: TreatmentComparison = TreatmentComparison(),
 ) {
-    val finalPriceDifference = lensComparison.priceDifference +
+    val finalPriceDifference: BigDecimal = lensComparison.priceDifference +
             coloringComparison.priceDifference(
                 lensComparison.addOriginalColoringPrice,
                 lensComparison.addPickedColoringPrice,
@@ -39,7 +40,7 @@ data class IndividualComparison(
                 lensComparison.pickedAdditionalTreatment,
             )
 
-    val isPriceBad = finalPriceDifference < 0
+    val isPriceBad = finalPriceDifference < BigDecimal.ZERO
 
     @RawRes
     val animationId = animationFromCategory(lensComparison.pickedLens.materialCategory, prescription)

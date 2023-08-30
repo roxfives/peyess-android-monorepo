@@ -86,7 +86,7 @@ private typealias PartialSaleDataUpdateResponse =
 
 private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, PurchaseUpdateDocument>
 
-private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
+private typealias CalculateValueResponse = Either<GenerateSaleDataError, BigDecimal>
 
 private typealias AddPictureToUploadResponse = Either<AddPictureToUploadError, Long>
 
@@ -343,7 +343,7 @@ class ServiceOrderUpdater @Inject constructor(
         val framesValue = if (frames.areFramesNew) {
             frames.value
         } else {
-            0.0
+            BigDecimal.ZERO
         }
 
         var total = lens.price + framesValue
@@ -353,7 +353,7 @@ class ServiceOrderUpdater @Inject constructor(
 
             // TODO: refactor to remove identification by name
             if (
-                lens.priceAddColoring > 0
+                lens.priceAddColoring > BigDecimal.ZERO
                 && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                 && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
@@ -376,7 +376,7 @@ class ServiceOrderUpdater @Inject constructor(
             total += treatment.price
 
             if (
-                lens.priceAddTreatment > 0
+                lens.priceAddTreatment > BigDecimal.ZERO
                 && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
                 && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
@@ -458,16 +458,16 @@ class ServiceOrderUpdater @Inject constructor(
         when (discount.discountMethod) {
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
             DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
-            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.None -> BigDecimal.ZERO
         }
     }
 
     private suspend fun calculateFee(
         saleId: String,
-        discount: Double,
+        discount: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): CalculateValueResponse = either {
-        val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
+        val priceWithDiscount = serviceOrder.fullPrice * (BigDecimal.ONE - discount)
         val fee = paymentFeeRepository.paymentFeeForSale(saleId).mapLeft {
             GenerateSaleDataError.Unexpected(
                 description = it.description,
@@ -476,17 +476,17 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         when (fee.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value.toDouble()
-            PaymentFeeCalcMethod.Whole -> fee.value.toDouble() / priceWithDiscount
-            PaymentFeeCalcMethod.None -> 0.0
+            PaymentFeeCalcMethod.Percentage -> fee.value
+            PaymentFeeCalcMethod.Whole -> fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.None -> BigDecimal.ZERO
         }
     }
 
     private suspend fun createPurchase(
         serviceOrderId: String,
         saleId: String,
-        discount: Double,
-        fee: Double,
+        discount: BigDecimal,
+        fee: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): UpdatePurchaseResponse = either {
         val discountDocument = discountRepository.discountForSale(saleId).mapLeft {
@@ -503,7 +503,7 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
+        val finalPrice = fullPrice * (BigDecimal.ONE - discount) * (BigDecimal.ONE + fee)
 
         val payments = editPaymentRepository.paymentsForSale(saleId).mapLeft {
                 GenerateSaleDataError.Unexpected(
@@ -513,14 +513,14 @@ class ServiceOrderUpdater @Inject constructor(
             }.bind()
 
         val totalPaid = if (payments.isEmpty()) {
-            0.0
+            BigDecimal.ZERO
         } else {
             payments.map { it.value }
-                .ifEmpty { listOf(0.0) }
-                .reduce { acc, payment -> acc + payment }
+                .ifEmpty { listOf(BigDecimal.ZERO) }
+                .reduce(BigDecimal::add)
         }
-        val totalLeft =
-            BigDecimal(abs((finalPrice - totalPaid))).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+        val totalLeft = (finalPrice - totalPaid).abs()
+            .setScale(2, RoundingMode.HALF_EVEN)
 
         val store = authenticationRepository.loadCurrentStore().mapLeft {
             GenerateSaleDataError.Unexpected(
@@ -590,9 +590,8 @@ class ServiceOrderUpdater @Inject constructor(
             isDiscountOverall = true,
             overallDiscount = DiscountDescriptionDocument(
                 method = discountDocument.discountMethod,
-                value = BigDecimal(discountDocument.overallDiscountValue),
-
-                ),
+                value = discountDocument.overallDiscountValue,
+            ),
             paymentFee = FeeDescriptionDocument(
                 method = feeDocument.method,
                 value = feeDocument.value,

@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.adapter.products_sold.toProductSoldEyeSetDocumen
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.math.BigDecimal
 
 
 fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
@@ -64,8 +65,8 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         purchaseId = purchaseId,
         payerUids = payerUids,
         payerDocuments = payerDocuments,
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
+        fullPrice = fullPrice.toBigDecimal(),
+        finalPrice = finalPrice.toBigDecimal(),
         observation = observation,
         hasOwnFrames = hasOwnFrames,
         leftProducts = leftProducts.toProductSoldEyeSetDocument(),

@@ -1,14 +1,9 @@
 package com.peyess.salesapp.data.model.edit_service_order.payment
 
 import android.net.Uri
-import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.PropertyName
-import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import java.time.ZonedDateTime
 
@@ -34,15 +29,6 @@ data class EditLocalPaymentEntity(
     @ColumnInfo(name = "sale_id")
     val saleId: String = "",
 
-    // TODO: Normalize data for clients and (maybe) payment method
-//    @ColumnInfo(name = "client_id")
-//    val clientId: String = "",
-//    @ColumnInfo(name = "client_document")
-//    val clientDocument: String = "",
-//    @ColumnInfo(name = "client_name")
-//    val clientName: String = "",
-//    @ColumnInfo(name = "client_address")
-//    val clientAddress: String = "",
     @ColumnInfo(name = "client_id", index = true)
     val clientId: String = "",
 

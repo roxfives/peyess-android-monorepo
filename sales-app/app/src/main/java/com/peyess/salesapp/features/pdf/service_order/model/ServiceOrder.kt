@@ -3,6 +3,7 @@ package com.peyess.salesapp.features.pdf.service_order.model
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class ServiceOrder(
@@ -104,8 +105,8 @@ data class ServiceOrder(
     val measureConfirmedBy: String = "",
     val discountAllowedBy: String = "",
 
-    val fullPrice:  Double = 0.0,
-    val finalPrice:  Double = 0.0,
+    val fullPrice:  BigDecimal = BigDecimal.ZERO,
+    val finalPrice:  BigDecimal = BigDecimal.ZERO,
 
     val observation:  String = "",
 

@@ -1,9 +1,11 @@
 package com.peyess.salesapp.data.model.lens.room.treatment
 
+import java.math.BigDecimal
+
 data class LocalLensTreatmentDocument(
     val id: String = "",
     val brand: String = "",
-    val price: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
     val design: String = "",
     val isColoringRequired: Boolean = false,
     val isEnabled: Boolean = false,

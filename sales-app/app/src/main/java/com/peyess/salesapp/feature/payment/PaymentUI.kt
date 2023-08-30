@@ -126,7 +126,7 @@ fun PaymentUI(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     isClientLoading: Boolean = false,
     client: Client = Client(),
-    toBePaid: Double = 0.0,
+    toBePaid: BigDecimal = BigDecimal.ZERO,
 
     areCardFlagsLoading: Boolean = false,
     cardFlags: List<CardFlagDocument> = emptyList(),
@@ -153,7 +153,7 @@ fun PaymentUI(
 
     activePaymentMethod: PaymentMethod? = null,
     payment: Payment = Payment(),
-    onTotalPaidChanged: (value: Double) -> Unit = {},
+    onTotalPaidChanged: (value: BigDecimal) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 
     onDone: () -> Unit = {},
@@ -225,7 +225,7 @@ fun PaymentUI(
             },
 
             isLoadingConstraints = isClientLoading || areCardFlagsLoading || arePaymentMethodsLoading,
-            canGoNext = payment.value > 0.0,
+            canGoNext = payment.value > BigDecimal.ZERO,
             onNext = onDone,
         )
     }
@@ -237,7 +237,7 @@ private fun ClientView(
 
     isClientLoading: Boolean = false,
     client: Client,
-    toBePaid: Double = 0.0,
+    toBePaid: BigDecimal = BigDecimal.ZERO,
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val density = LocalDensity.current
@@ -347,7 +347,7 @@ private fun PaymentView(
     onLegalIdChanged: (value: String) -> Unit = {},
 
     payment: Payment = Payment(),
-    onTotalPaidChanged: (value: Double) -> Unit = {},
+    onTotalPaidChanged: (value: BigDecimal) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 ) {
     AnimatedVisibility(
@@ -472,8 +472,8 @@ private fun PaymentCard(
     cardFlagName: String = "",
     onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
 
-    total: Double = 0.0,
-    onTotalChanged: (value: Double) -> Unit = {},
+    total: BigDecimal = BigDecimal.ZERO,
+    onTotalChanged: (value: BigDecimal) -> Unit = {},
 
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
@@ -490,8 +490,7 @@ private fun PaymentCard(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val curPriceInput = BigDecimal(total)
-        .setScale(2, RoundingMode.HALF_EVEN)
+    val curPriceInput = total.setScale(2, RoundingMode.HALF_EVEN)
 
     Column(
         modifier = modifier,
@@ -509,13 +508,10 @@ private fun PaymentCard(
             value = currencyDigitsOnlyOrEmpty(curPriceInput),
             onValueChange = {
                 val value = try {
-                    BigDecimal(it)
-                        .setScale(2, RoundingMode.DOWN)
-                        .divide(BigDecimal(100))
-                        .toDouble()
+                    BigDecimal(it).divide(BigDecimal(100))
                 } catch (t: Throwable) {
                     Timber.e(t, "Failed to parse $it")
-                    0.0
+                    BigDecimal.ZERO
                 }
 
                 onTotalChanged(value)
@@ -1060,7 +1056,7 @@ private fun ClientViewPreview() {
         ClientView(
             modifier = Modifier.fillMaxWidth(),
             client = Client(name = "Nome Um Pouco Longo"),
-            toBePaid = 1200.0,
+            toBePaid = BigDecimal("1200"),
         )
     }
 }

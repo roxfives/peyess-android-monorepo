@@ -5,9 +5,12 @@ import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescrip
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrderUpdate
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
+import com.peyess.salesapp.utils.extentions.roundToDouble
 import com.peyess.salesapp.utils.time.toTimestamp
 
-fun ServiceOrderUpdateDocument.toFSServiceOrderUpdate(): FSServiceOrderUpdate {
+fun ServiceOrderUpdateDocument.toFSServiceOrderUpdate(
+    roundValues: Boolean = false,
+): FSServiceOrderUpdate {
     return FSServiceOrderUpdate(
         clientUid = clientUid,
         clientDocument = clientDocument,
@@ -95,8 +98,8 @@ fun ServiceOrderUpdateDocument.toFSServiceOrderUpdate(): FSServiceOrderUpdate {
         rVerticalHoop = rVerticalHoop,
         measureConfirmedBy = measureConfirmedBy,
         discountAllowedBy = discountAllowedBy,
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
+        fullPrice = fullPrice.roundToDouble(roundValues),
+        finalPrice = finalPrice.roundToDouble(roundValues),
         observation = observation,
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,

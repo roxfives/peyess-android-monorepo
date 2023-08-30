@@ -410,7 +410,7 @@ private fun LensComparisonCard(
 
             AnimatedVisibility(
                 modifier = Modifier.weight(1f),
-                visible = individualComparison.finalPriceDifference != 0.0,
+                visible = individualComparison.finalPriceDifference != BigDecimal.ZERO,
                 enter = scaleIn(),
                 exit = scaleOut(),
             ) {
@@ -535,16 +535,14 @@ private fun LensComparisonCard(
                     .background(color = MaterialTheme.colors.primary.copy(alpha = 0.3f))
                     .clickable { onSelectComparison() },
             ) {
-                val pricePerMonth = BigDecimal("${individualComparison.finalPrice}")
+                val pricePerMonth = individualComparison.finalPrice
                     .setScale(3, RoundingMode.HALF_EVEN)
-                    .divide(BigDecimal("10"), RoundingMode.HALF_EVEN)
+                    .divide(BigDecimal.TEN, RoundingMode.HALF_EVEN)
                     .setScale(2, RoundingMode.FLOOR)
-
 
                 PriceTag(
                     modifier = Modifier.align(Alignment.Center),
-                    pricePerMonth = NumberFormat.getCurrencyInstance()
-                        .format(pricePerMonth)
+                    pricePerMonth = NumberFormat.getCurrencyInstance().format(pricePerMonth)
                 )
 
                 Icon(
@@ -612,8 +610,8 @@ private fun PriceDifference(
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.h6,
     isPriceBad: Boolean = false,
-    priceDiff: Double = 2500.0,
-    installments: Double = 10.0,
+    priceDiff: BigDecimal = BigDecimal("2500.0"),
+    installments: BigDecimal = BigDecimal("10.0"),
 ) {
     val color = if (isPriceBad) {
         // TODO: add color to app theme
@@ -628,9 +626,9 @@ private fun PriceDifference(
         ""
     }
 
-    val pricePerMonth = BigDecimal("${abs(priceDiff)}")
+    val pricePerMonth = priceDiff.abs()
         .setScale(3, RoundingMode.HALF_EVEN)
-        .divide(BigDecimal("$installments"), RoundingMode.HALF_EVEN)
+        .divide(installments, RoundingMode.HALF_EVEN)
         .setScale(2, RoundingMode.FLOOR)
 
     priceTag += NumberFormat.getCurrencyInstance()
@@ -652,7 +650,7 @@ private fun PriceTag(
     style: TextStyle = MaterialTheme.typography.h6,
     color: Color = MaterialTheme.colors.primary,
     pricePerMonth: String = "",
-    installments: Double = 10.0,
+    installments: BigDecimal = BigDecimal("10.0"),
 ) {
     Box(modifier = modifier) {
         Text(
@@ -699,7 +697,7 @@ private fun LensComparisonCardPreview() {
                         designName = "DuraVIsion BlueProtect",
                         materialName = "1.60",
                         techName = "SmartLife",
-                        price = 1500.0,
+                        price = BigDecimal("1500.0"),
                     ),
                     pickedLens = Lens(
                         supplierName = "Zeiss",
@@ -707,18 +705,30 @@ private fun LensComparisonCardPreview() {
                         designName = "DuraVIsion BlueProtect",
                         materialName = "1.60",
                         techName = "SmartLife",
-                        price = 1700.8,
-                    )
+                        price = BigDecimal("1700.8"),
+                    ),
                 ),
 
                 treatmentComparison = TreatmentComparison(
-                    originalTreatment = Treatment(brand = "Incolor", price = 0.0),
-                    pickedTreatment = Treatment(brand = "Marrom 85%", price = 100.0),
+                    originalTreatment = Treatment(
+                        brand = "Incolor",
+                        price = BigDecimal("0.0"),
+                    ),
+                    pickedTreatment = Treatment(
+                        brand = "Marrom 85%",
+                        price = BigDecimal("100.0"),
+                    ),
                 ),
 
                 coloringComparison = ColoringComparison(
-                    originalColoring = Coloring(brand = "Incolor", price = 0.0),
-                    pickedColoring = Coloring(brand = "Antirreflexo", price = 10.0)
+                    originalColoring = Coloring(
+                        brand = "Incolor",
+                        price = BigDecimal("0.0"),
+                    ),
+                    pickedColoring = Coloring(
+                        brand = "Antirreflexo",
+                        price = BigDecimal("10.0"),
+                    ),
                 )
             )
         )

@@ -19,6 +19,7 @@ import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import timber.log.Timber
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.inject.Inject
 
@@ -53,7 +54,9 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     override suspend fun totalPaid(
         saleId: String,
     ): EditLocalPaymentFetchTotalResponse = Either.catch {
-        editLocalPaymentDao.totalPaid(saleId) ?: 0.0
+        val total = editLocalPaymentDao.totalPaid(saleId)
+
+        total?.toBigDecimal() ?: BigDecimal.ZERO
     }.mapLeft {
         ReadLocalPaymentError.Unexpected(
             description = "Error while fetching total paid for sale $saleId",
@@ -63,7 +66,11 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
     override fun streamTotalPaid(saleId: String): EditLocalPaymentStreamTotalResponse {
         return editLocalPaymentDao.streamTotalPaid(saleId)
-            .map { (it ?: 0.0).right() }
+            .map {
+                val result = it?.toBigDecimal() ?: BigDecimal.ZERO
+
+                result.right()
+            }
     }
 
     override suspend fun paymentsForSale(
@@ -208,9 +215,9 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
     override suspend fun updateValue(
         paymentId: Long,
-        value: Double,
+        value: BigDecimal,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateValue(paymentId, value)
+        editLocalPaymentDao.updateValue(paymentId, value.toDouble())
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
             description = "Error while updating payment value for sale $paymentId",

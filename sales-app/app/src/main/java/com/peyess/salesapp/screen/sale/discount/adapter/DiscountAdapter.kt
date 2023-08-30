@@ -26,6 +26,6 @@ fun Discount.toOverallDiscountDocument(saleId: String): OverallDiscountDocument 
     return OverallDiscountDocument(
         saleId = saleId,
         discountMethod = method,
-        overallDiscountValue = value
+        overallDiscountValue = value,
     )
 }

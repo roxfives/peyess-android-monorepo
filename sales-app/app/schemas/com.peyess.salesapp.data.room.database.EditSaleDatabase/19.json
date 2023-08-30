@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 17,
-    "identityHash": "70461b7c456109e7a4f814487a3a5557",
+    "version": 19,
+    "identityHash": "6d1c1db590a3ec71f5a8d302e02f6958",
     "entities": [
       {
         "tableName": "edit_sale",
@@ -262,7 +262,7 @@
       },
       {
         "tableName": "edit_sale_payment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `sale_id` TEXT NOT NULL, `client_id` TEXT NOT NULL, `method_id` TEXT NOT NULL, `method_name` TEXT NOT NULL, `method_type` TEXT NOT NULL, `value` TEXT NOT NULL, `installments` INTEGER NOT NULL, `document` TEXT NOT NULL, `has_legal_id` INTEGER NOT NULL, `legal_id` TEXT NOT NULL, `card_flag_name` TEXT NOT NULL, `card_flag_icon` TEXT NOT NULL, `due_date_mode` TEXT NOT NULL, `due_date_period` INTEGER NOT NULL, `due_date` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `uuid` TEXT NOT NULL, `sale_id` TEXT NOT NULL, `client_id` TEXT NOT NULL, `method_id` TEXT NOT NULL, `method_name` TEXT NOT NULL, `method_type` TEXT NOT NULL, `value` REAL NOT NULL, `installments` INTEGER NOT NULL, `document` TEXT NOT NULL, `has_legal_id` INTEGER NOT NULL, `legal_id` TEXT NOT NULL, `card_flag_name` TEXT NOT NULL, `card_flag_icon` TEXT NOT NULL, `due_date_mode` TEXT NOT NULL, `due_date_period` INTEGER NOT NULL, `due_date` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -309,7 +309,7 @@
           {
             "fieldPath": "value",
             "columnName": "value",
-            "affinity": "TEXT",
+            "affinity": "REAL",
             "notNull": true
           },
           {
@@ -1047,7 +1047,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '70461b7c456109e7a4f814487a3a5557')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d1c1db590a3ec71f5a8d302e02f6958')"
     ]
   }
 }

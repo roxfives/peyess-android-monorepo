@@ -145,7 +145,7 @@ private fun buildProductList(
             ProductDescription(
                 productCode = "",
                 quantity = set.lenses.units,
-                priceWithoutDiscount = BigDecimal(set.lenses.price),
+                priceWithoutDiscount = set.lenses.price,
                 discount = lensDiscount,
                 description = set.lenses.nameDisplay,
                 fee = lensFee,
@@ -164,7 +164,7 @@ private fun buildProductList(
                 ProductDescription(
                     productCode = "",
                     quantity = set.lenses.units,
-                    priceWithoutDiscount = BigDecimal(it.price),
+                    priceWithoutDiscount = it.price,
                     discount = lensAccessoryDiscount,
                     description = it.nameDisplay,
                     fee = lensAccessoryFee,
@@ -182,7 +182,7 @@ private fun buildProductList(
                 ProductDescription(
                     productCode = "",
                     quantity = set.colorings.units,
-                    priceWithoutDiscount = BigDecimal(set.colorings.price),
+                    priceWithoutDiscount = set.colorings.price,
                     discount = coloringsDiscount,
                     description = set.colorings.nameDisplay,
                     fee = coloringsFee,
@@ -201,7 +201,7 @@ private fun buildProductList(
                     ProductDescription(
                         productCode = "",
                         quantity = set.colorings.units,
-                        priceWithoutDiscount = BigDecimal(it.price),
+                        priceWithoutDiscount = it.price,
                         discount = coloringAccessoryDiscount,
                         description = it.nameDisplay,
                         fee = coloringAccessoryFee,
@@ -219,7 +219,7 @@ private fun buildProductList(
                 ProductDescription(
                     productCode = "",
                     quantity = set.treatments.units,
-                    priceWithoutDiscount = BigDecimal(set.treatments.price),
+                    priceWithoutDiscount = set.treatments.price,
                     discount = treatmentsDiscount,
                     description = set.treatments.nameDisplay,
                     fee = treatmentsFee,
@@ -238,7 +238,7 @@ private fun buildProductList(
                     ProductDescription(
                         productCode = "",
                         quantity = set.treatments.units,
-                        priceWithoutDiscount = BigDecimal(it.price),
+                        priceWithoutDiscount = it.price,
                         discount = treatmentAccessoryDiscount,
                         description = it.nameDisplay,
                         fee = treatmentAccessoryFee,
@@ -260,7 +260,7 @@ private fun buildProductList(
             ProductDescription(
                 productCode = "",
                 quantity = framesItem.units,
-                priceWithoutDiscount = BigDecimal(framesItem.price),
+                priceWithoutDiscount = framesItem.price,
                 discount = framesDiscount,
                 description = framesItem.nameDisplay,
                 fee = framesFee,
@@ -279,7 +279,7 @@ private fun buildProductList(
                 ProductDescription(
                     productCode = "",
                     quantity = framesItem.units,
-                    priceWithoutDiscount = BigDecimal(framesAccessory.price),
+                    priceWithoutDiscount = framesAccessory.price,
                     discount = framesAccessoryDiscount,
                     description = framesAccessory.nameDisplay,
                     fee = framesAccessoryFee,
@@ -300,7 +300,7 @@ private fun buildProductList(
             ProductDescription(
                 productCode = "",
                 quantity = it.units,
-                priceWithoutDiscount = BigDecimal(it.price),
+                priceWithoutDiscount = it.price,
                 discount = miscDiscount,
                 description = it.nameDisplay,
                 fee = miscFee,

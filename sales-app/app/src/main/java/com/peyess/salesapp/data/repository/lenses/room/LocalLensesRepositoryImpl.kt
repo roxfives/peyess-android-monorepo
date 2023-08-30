@@ -74,6 +74,7 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
 import com.peyess.salesapp.data.utils.query.adapter.toSqlQuery
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import timber.log.Timber
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class LocalLensesRepositoryImpl @Inject constructor(
@@ -215,12 +216,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addColoringToLens(coloringId: String, lensId: String, price: Double) {
+    override suspend fun addColoringToLens(coloringId: String, lensId: String, price: BigDecimal) {
         localLensDao.addLensColoringCrossRef(
             LocalLensColoringCrossRef(
                 lensId = lensId,
                 coloringId = coloringId,
-                price = price,
+                price = price.toDouble(),
             )
         )
     }
@@ -260,12 +261,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: Double) {
+    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: BigDecimal) {
         localLensDao.addLensTreatmentCrossRef(
             LocalLensTreatmentCrossRef(
                 lensId = lensId,
                 treatmentId = treatmentId,
-                price = price,
+                price = price.toDouble(),
             )
         )
     }

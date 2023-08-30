@@ -6,7 +6,7 @@ import java.math.BigDecimal
 data class PaymentFeeDocument(
     val saleId: String = "",
     val method: PaymentFeeCalcMethod = PaymentFeeCalcMethod.None,
-    val value: BigDecimal = BigDecimal("0"),
+    val value: BigDecimal = BigDecimal.ZERO,
 )
 
 fun PaymentFeeDocument.toWholeFormat(
@@ -29,7 +29,7 @@ fun PaymentFeeDocument.toWholeFormat(
         is PaymentFeeCalcMethod.None -> {
             return copy(
                 method = PaymentFeeCalcMethod.Whole,
-                value = BigDecimal("0")
+                value = BigDecimal.ZERO,
             )
         }
     }

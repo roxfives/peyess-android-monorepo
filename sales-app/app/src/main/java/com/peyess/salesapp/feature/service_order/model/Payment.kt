@@ -2,6 +2,7 @@ package com.peyess.salesapp.feature.service_order.model
 
 import android.net.Uri
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class Payment(
@@ -18,7 +19,7 @@ data class Payment(
     val methodName: String = "",
     val methodType: String = "unknown",
 
-    val value: Double = 0.0,
+    val value: BigDecimal = BigDecimal.ZERO,
     val installments: Int = 1,
     val document: String = "",
 

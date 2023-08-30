@@ -334,7 +334,7 @@ class ServiceOrderFetcher @Inject constructor(
     ): OverallDiscountDocument {
         return OverallDiscountDocument(
             saleId = purchaseDocument.id,
-            overallDiscountValue = purchaseDocument.overallDiscount.value.toDouble(),
+            overallDiscountValue = purchaseDocument.overallDiscount.value,
             discountMethod = purchaseDocument.overallDiscount.method,
         )
     }
@@ -345,7 +345,7 @@ class ServiceOrderFetcher @Inject constructor(
         return PaymentFeeDocument(
             saleId = purchaseDocument.id,
             method = PaymentFeeCalcMethod.Percentage,
-            value = purchaseDocument.totalFee.toBigDecimal(),
+            value = purchaseDocument.totalFee,
         )
     }
 

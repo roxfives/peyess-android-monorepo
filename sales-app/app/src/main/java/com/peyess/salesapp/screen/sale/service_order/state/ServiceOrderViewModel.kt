@@ -82,6 +82,7 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.random.Random
@@ -522,10 +523,10 @@ class ServiceOrderViewModel @AssistedInject constructor(
             totalToPay += treatment.price
         }
 
-        if (coloring.price > 0) {
+        if (coloring.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddColoring
         }
-        if (treatment.price > 0) {
+        if (treatment.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddTreatment
         }
 

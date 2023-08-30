@@ -11,7 +11,7 @@ fun FSLensTreatment.toStoreLensTreatmentDocument(
         id = id,
         brand = brand,
         cost = cost,
-        price = price,
+        price = price.toBigDecimal(),
         design = design,
         explanations = explanations,
         isColoringRequired = isColoringRequired,

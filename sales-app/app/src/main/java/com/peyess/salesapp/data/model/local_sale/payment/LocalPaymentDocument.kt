@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.local_sale.payment
 import android.net.Uri
 import com.google.firebase.Timestamp
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class LocalPaymentDocument(
@@ -23,7 +24,7 @@ data class LocalPaymentDocument(
     val hasLegalId: Boolean = false,
     val legalId: String = "",
 
-    val value: Double = 0.0,
+    val value: BigDecimal = BigDecimal.ZERO,
     val installments: Int = 1,
     val document: String = "",
     val cardFlagName: String = "",

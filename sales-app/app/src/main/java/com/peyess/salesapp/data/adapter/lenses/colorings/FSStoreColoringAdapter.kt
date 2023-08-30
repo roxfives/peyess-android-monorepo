@@ -10,8 +10,8 @@ fun FSStoreLensColoring.toStoreColoringAdapter(
     return StoreLensColoringDocument(
         id = id,
         brand = brand,
-        cost = cost,
-        price = price,
+        cost = cost.toBigDecimal(),
+        price = price.toBigDecimal(),
         design = design,
         display = display,
         explanations = explanations,

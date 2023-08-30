@@ -6,7 +6,7 @@ import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSAc
 fun FSAccessoryItem.toAccessoryItemDocument(): AccessoryItemDocument {
     return AccessoryItemDocument(
         nameDisplay = nameDisplay,
-        price = price,
+        price = price.toBigDecimal(),
         discount = discount.toDiscountDescriptionDocument(),
     )
 }

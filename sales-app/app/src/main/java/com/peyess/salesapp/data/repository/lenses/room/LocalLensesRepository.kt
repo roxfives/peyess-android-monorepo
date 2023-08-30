@@ -29,6 +29,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import java.math.BigDecimal
 
 
 typealias LensesTypesResponse = Either<LocalLensRepositoryException, List<StoreLensTypeDocument>>
@@ -118,7 +119,7 @@ interface LocalLensesRepository {
 
     suspend fun addColoring(coloring: LocalLensColoringDocument)
 
-    suspend fun addColoringToLens(coloringId: String, lensId: String, price: Double)
+    suspend fun addColoringToLens(coloringId: String, lensId: String, price: BigDecimal)
 
     suspend fun getColoringsForLens(lensId: String): ColoringsResponse
 
@@ -126,7 +127,7 @@ interface LocalLensesRepository {
 
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
-    suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: Double)
+    suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: BigDecimal)
 
     suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse
 

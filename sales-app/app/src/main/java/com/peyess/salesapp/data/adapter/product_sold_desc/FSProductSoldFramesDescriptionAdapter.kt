@@ -7,7 +7,7 @@ import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSPr
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 
 fun FSProductSoldFramesDescription
-        .toProductSoldFramesDescriptionDocument(): ProductSoldFramesDescriptionDocument {
+    .toProductSoldFramesDescriptionDocument(): ProductSoldFramesDescriptionDocument {
     return ProductSoldFramesDescriptionDocument(
         id = id,
         design = design,
@@ -18,7 +18,7 @@ fun FSProductSoldFramesDescription
         style = style,
         type = FramesType.toFramesType(type),
         units = units,
-        price = price,
+        price = price.toBigDecimal(),
         discount = discount.toDiscountDescriptionDocument(),
         accessoriesPerUnit = accessoryPerUnit.map { it.toAccessoryItemDocument() },
     )

@@ -97,6 +97,7 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import com.vanpra.composematerialdialogs.title
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 import kotlin.math.max
@@ -164,8 +165,8 @@ fun ServiceOrderUI(
     measureRight: Measuring = Measuring(),
 
     canAddNewPayment: Boolean = false,
-    totalPaid: Double = 0.0,
-    finalPrice: Double = 0.0,
+    totalPaid: BigDecimal = BigDecimal.ZERO,
+    finalPrice: BigDecimal = BigDecimal.ZERO,
     isPaymentLoading: Boolean = false,
     payments: List<Payment> = emptyList(),
     onAddPayment: () -> Unit = {},
@@ -1410,8 +1411,8 @@ private fun ProductsSection(
             .minimumWidthModifier(state = minimumPriceWidthState, density = density)
 
         val coloringPrice = if (lens.isColoringDiscounted || lens.isColoringIncluded) {
-            0.0
-        } else if (lens.priceAddColoring > 0
+            BigDecimal.ZERO
+        } else if (lens.priceAddColoring > BigDecimal.ZERO
             && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
             && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel") {
             coloring.price + lens.priceAddColoring
@@ -1420,8 +1421,8 @@ private fun ProductsSection(
         }
 
         val treatmentPrice = if (lens.isTreatmentDiscounted || lens.isTreatmentIncluded) {
-            0.0
-        } else if (lens.priceAddTreatment > 0
+            BigDecimal.ZERO
+        } else if (lens.priceAddTreatment > BigDecimal.ZERO
             && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
             && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel") {
             treatment.price + lens.priceAddTreatment
@@ -1471,7 +1472,7 @@ private fun ProductsSection(
         SubSectionTitle(title = "Olho esquerdo")
         Spacer(modifier = Modifier.size(productSpacerSize))
         LensCard(
-            lensEntity = lens,
+            lensModel = lens,
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
@@ -1502,7 +1503,7 @@ private fun ProductsSection(
         SubSectionTitle(title = "Olho direito")
         Spacer(modifier = Modifier.size(productSpacerSize))
         LensCard(
-            lensEntity = lens,
+            lensModel = lens,
             minPriceModifier = minimumPriceModifier,
             minTitleModifier = minimumTitleModifier,
         )
@@ -1575,7 +1576,7 @@ private fun LensCard(
     modifier: Modifier = Modifier,
     minTitleModifier: Modifier = Modifier,
     minPriceModifier: Modifier = Modifier,
-    lensEntity: Lens = Lens(),
+    lensModel: Lens = Lens(),
 ) {
     Row(
         modifier = modifier.padding(horizontal = 16.dp),
@@ -1593,7 +1594,7 @@ private fun LensCard(
 
         Text(
             modifier = Modifier.weight(1f),
-            text = lensEntity.name,
+            text = lensModel.name,
             style = MaterialTheme.typography.body1
                 .copy(textAlign = TextAlign.Start)
         )
@@ -1602,7 +1603,7 @@ private fun LensCard(
 
         Text(
             modifier = minPriceModifier,
-            text = "R$ %.2f".format(lensEntity.price / 2f),
+            text = "R$ %.2f".format(lensModel.price / BigDecimal("2")),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1642,7 +1643,8 @@ private fun ColoringCard(
         // TODO: change suggestedPrice to price
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(coloringEntity.price / 2f),
+            text = NumberFormat.getCurrencyInstance()
+                .format(coloringEntity.price / BigDecimal("2")),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1681,7 +1683,8 @@ private fun TreatmentCard(
 
         Text(
             modifier = minPriceModifier,
-            text = NumberFormat.getCurrencyInstance().format(treatmentEntity.price / 2f),
+            text = NumberFormat.getCurrencyInstance()
+                .format(treatmentEntity.price / BigDecimal("2")),
             style = MaterialTheme.typography.body1
                 .copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Start),
         )
@@ -1773,8 +1776,8 @@ private fun PaymentSection(
     canUpdate: Boolean = false,
 
     canAddNewPayment: Boolean = false,
-    totalPaid: Double = 0.0,
-    totalToPay: Double = 0.0,
+    totalPaid: BigDecimal = BigDecimal.ZERO,
+    totalToPay: BigDecimal = BigDecimal.ZERO,
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 
@@ -2121,12 +2124,12 @@ private fun LensCardPreview() {
     SalesAppTheme {
         LensCard(
             modifier = Modifier.fillMaxWidth(),
-            lensEntity =  Lens(
+            lensModel =  Lens(
                 brandName = "Família",
                 designName = "Descrição",
                 techName = "Tecnologia",
                 materialName = "Material",
-                price = 1250.0,
+                price = BigDecimal("1250"),
             )
         )
     }
@@ -2141,7 +2144,7 @@ private fun ColoringCardPreview() {
             coloringEntity = Coloring(
                 brand = "Família",
                 design = "Descrição",
-                price = 1250.0,
+                price = BigDecimal("1250"),
             )
         )
     }
@@ -2156,7 +2159,7 @@ private fun TreatmentCardPreview() {
             treatmentEntity = Treatment(
                 brand = "Família",
                 design = "Descrição",
-                price = 1250.0,
+                price = BigDecimal("1250"),
             )
         )
     }
@@ -2172,7 +2175,7 @@ private fun FramesCardPreview() {
                 design = "Descrição",
                 reference = "Referência",
                 tagCode = "XXXXXX",
-                value = 450.0,
+                value = BigDecimal("450"),
             )
         )
     }
@@ -2184,8 +2187,8 @@ private fun ProductsSectionPreview() {
     SalesAppTheme {
         ProductsSection(
             lens = Lens(
-                priceAddColoring = 20.0,
-                priceAddTreatment = 20.0,
+                priceAddColoring = BigDecimal("20"),
+                priceAddTreatment = BigDecimal("20"),
             ),
 
             frames = Frames(

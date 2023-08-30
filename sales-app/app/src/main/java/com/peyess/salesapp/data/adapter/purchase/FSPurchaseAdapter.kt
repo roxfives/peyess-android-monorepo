@@ -13,6 +13,7 @@ import com.peyess.salesapp.typing.sale.PurchaseState
 import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.math.BigDecimal
 
 fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
     return PurchaseDocument(
@@ -64,13 +65,13 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
             it.value.toPurchaseProductsDiscountDocument()
         },
 
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
-        leftToPay = leftToPay,
-        totalPaid = totalPaid,
+        fullPrice = fullPrice.toBigDecimal(),
+        finalPrice = finalPrice.toBigDecimal(),
+        leftToPay = leftToPay.toBigDecimal(),
+        totalPaid = totalPaid.toBigDecimal(),
 
-        totalDiscount = totalDiscount,
-        totalFee = totalFee,
+        totalDiscount = totalDiscount.toBigDecimal(),
+        totalFee = totalFee.toBigDecimal(),
 
         state = PurchaseState.fromName(state),
 

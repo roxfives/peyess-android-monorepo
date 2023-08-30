@@ -6,6 +6,7 @@ import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.LensSoldDescriptionDocument
+import java.math.BigDecimal
 import kotlin.math.max
 
 fun StoreLensWithDetailsDocument.toDescription(
@@ -25,7 +26,7 @@ fun StoreLensWithDetailsDocument.toDescription(
         id = id,
         units = 1,
         nameDisplay = name,
-        price = price / 2.0,
+        price = price / BigDecimal("2"),
         discount = DiscountDescriptionDocument(),
 
         accessoryPerUnit = accessoriesPerUnit,

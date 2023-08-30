@@ -41,6 +41,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.model.Service
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
+import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -107,8 +108,8 @@ data class EditServiceOrderState(
     val hasSaleUpdateFailed: Boolean = false,
 ): MavericksState {
     val totalPaid = payments.map { p -> p.value }
-        .reduceOrNull { acc, value -> acc + value }
-        ?: 0.0
+        .ifEmpty { listOf(BigDecimal.ZERO) }
+        .reduce(BigDecimal::add)
 
     val successfullyFetchedServiceOrder = serviceOrderFetchResponseAsync is Success
             && serviceOrderFetchResponseAsync.invoke().isRight()
@@ -165,7 +166,7 @@ data class EditServiceOrderState(
 
     val coloring = Pair(lens, coloringResponse).let {
         if (lens.isColoringDiscounted || lens.isColoringIncluded) {
-            coloringResponse.copy(price = 0.0)
+            coloringResponse.copy(price = BigDecimal.ZERO)
         } else {
             coloringResponse
         }
@@ -173,7 +174,7 @@ data class EditServiceOrderState(
 
     val treatment = Pair(lens, treatmentResponse).let {
         if (lens.isTreatmentDiscounted || lens.isTreatmentIncluded) {
-            treatmentResponse.copy(price = 0.0)
+            treatmentResponse.copy(price = BigDecimal.ZERO)
         } else {
             treatmentResponse
         }
@@ -186,7 +187,7 @@ data class EditServiceOrderState(
                 if (it.areFramesNew) {
                     it.value
                 } else {
-                    0.0
+                    BigDecimal.ZERO
                 }
             }
     val finalPrice = calculateFinalPrice(fullPrice, discount, fee)
@@ -208,42 +209,41 @@ data class EditServiceOrderState(
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumIntegerDigits = 1
 
-        val missing = abs(finalPrice - totalPaid)
-
+        val missing = (finalPrice - totalPaid).abs()
         "Deseja finalizar a compra no valor de ${currencyFormatter.format(finalPrice)}" +
                 " com o saldo à receber de ${currencyFormatter.format(missing)}"
     }
 
     private fun calculatePriceWithDiscount(
-        fullPrice: Double,
+        fullPrice: BigDecimal,
         discount: OverallDiscountDocument,
-    ): Double {
+    ): BigDecimal {
         val discountAsPercentage = when (discount.discountMethod) {
-            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.None -> BigDecimal.ZERO
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
             DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
         }
 
-        return fullPrice * (1 - discountAsPercentage)
+        return fullPrice * (BigDecimal.ONE - discountAsPercentage)
     }
 
     private fun calculateFinalPrice(
-        fullPrice: Double,
+        fullPrice: BigDecimal,
         discount: OverallDiscountDocument,
         fee: PaymentFeeDocument
-    ): Double {
+    ): BigDecimal {
         val discountAsPercentage = when (discount.discountMethod) {
-            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.None -> BigDecimal.ZERO
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
             DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
         }
 
         val feeAsPercentage = when (fee.method) {
-            PaymentFeeCalcMethod.None -> 0.0
-            PaymentFeeCalcMethod.Percentage -> fee.value.toDouble()
-            PaymentFeeCalcMethod.Whole -> fee.value.toDouble() / (fullPrice * (1 - discountAsPercentage))
+            PaymentFeeCalcMethod.None -> BigDecimal.ZERO
+            PaymentFeeCalcMethod.Percentage -> fee.value
+            PaymentFeeCalcMethod.Whole -> fee.value / (fullPrice * (BigDecimal.ONE - discountAsPercentage))
         }
 
-        return fullPrice * (1 - discountAsPercentage) * (1 + feeAsPercentage)
+        return fullPrice * (BigDecimal.ONE - discountAsPercentage) * (BigDecimal.ONE + feeAsPercentage)
     }
 }

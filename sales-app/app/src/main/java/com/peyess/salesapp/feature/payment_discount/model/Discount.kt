@@ -1,17 +1,16 @@
 package com.peyess.salesapp.feature.payment_discount.model
 
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
-
-private const val defaultDiscountValue = 0.0
+import java.math.BigDecimal
 
 data class Discount(
     val method: DiscountCalcMethod = DiscountCalcMethod.None,
-    val percentValue: Double = 0.0,
-    val wholeValue: Double = 0.0,
+    val percentValue: BigDecimal = BigDecimal.ZERO,
+    val wholeValue: BigDecimal = BigDecimal.ZERO,
 ) {
-    val value = when (method) {
+    val value: BigDecimal = when (method) {
         DiscountCalcMethod.Percentage -> percentValue
         DiscountCalcMethod.Whole -> wholeValue
-        DiscountCalcMethod.None -> defaultDiscountValue
+        DiscountCalcMethod.None -> BigDecimal.ZERO
     }
 }

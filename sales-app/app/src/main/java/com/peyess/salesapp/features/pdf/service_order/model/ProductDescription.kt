@@ -10,7 +10,7 @@ data class ProductDescription(
     val productCode: String = "",
     val quantity: Int = 0,
     val description: String = "",
-    val priceWithoutDiscount: BigDecimal = BigDecimal("0"),
+    val priceWithoutDiscount: BigDecimal = BigDecimal.ZERO,
     val discount: DiscountDescriptionDocument = DiscountDescriptionDocument(),
     val fee: PaymentFeeDocument = PaymentFeeDocument(),
 ) {

@@ -56,6 +56,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
@@ -348,10 +350,10 @@ class EditPaymentViewModel @AssistedInject constructor(
             totalToPay += treatment.price
         }
 
-        if (coloring.price > 0) {
+        if (coloring.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddColoring
         }
-        if (treatment.price > 0) {
+        if (treatment.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddTreatment
         }
 
@@ -408,8 +410,8 @@ class EditPaymentViewModel @AssistedInject constructor(
     }
 
     private fun updateTotalLeftToPay(
-        totalToPay: Double,
-        totalPaid: Double,
+        totalToPay: BigDecimal,
+        totalPaid: BigDecimal,
         discount: OverallDiscount,
         paymentFee: PaymentFee,
     ) = setState {
@@ -419,18 +421,24 @@ class EditPaymentViewModel @AssistedInject constructor(
         copy(totalLeftToPay = total - totalPaid)
     }
 
-    private fun calculateTotalWithDiscount(totalToPay: Double, discount: OverallDiscount): Double {
+    private fun calculateTotalWithDiscount(
+        totalToPay: BigDecimal,
+        discount: OverallDiscount,
+    ): BigDecimal {
         return when (discount.discountMethod) {
             DiscountCalcMethod.None -> totalToPay
-            DiscountCalcMethod.Percentage -> totalToPay * (1.0 - discount.overallDiscountValue)
+            DiscountCalcMethod.Percentage -> totalToPay * (BigDecimal.ONE - discount.overallDiscountValue)
             DiscountCalcMethod.Whole -> totalToPay - discount.overallDiscountValue
         }
     }
 
-    private fun calculatePaymentWithFee(totalToPay: Double, paymentFee: PaymentFee): Double {
+    private fun calculatePaymentWithFee(
+        totalToPay: BigDecimal,
+        paymentFee: PaymentFee,
+    ): BigDecimal {
         return when (paymentFee.method) {
             PaymentFeeCalcMethod.None -> totalToPay
-            PaymentFeeCalcMethod.Percentage -> totalToPay * (1.0 + paymentFee.value)
+            PaymentFeeCalcMethod.Percentage -> totalToPay * (BigDecimal.ONE + paymentFee.value)
             PaymentFeeCalcMethod.Whole -> totalToPay + paymentFee.value
         }
     }
@@ -462,9 +470,11 @@ class EditPaymentViewModel @AssistedInject constructor(
         copy(serviceOrderId = serviceOrderId)
     }
 
-    fun onTotalPaidChange(value: Double) = setState {
-        val paid = value.coerceAtMost(paymentInput.value + totalLeftToPay)
-            .coerceAtLeast(0.0)
+    fun onTotalPaidChange(value: BigDecimal) = setState {
+        val maxPayment = paymentInput.value + totalLeftToPay
+        val paid = value.coerceAtMost(maxPayment)
+            .coerceAtLeast(BigDecimal.ZERO)
+            .setScale(2, RoundingMode.HALF_EVEN)
         val update = paymentInput.copy(value = paid)
 
         viewModelScope.launch(Dispatchers.IO) { localPaymentRepository.updateValue(paymentId, paid) }

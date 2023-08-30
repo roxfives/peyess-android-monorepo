@@ -205,7 +205,7 @@ fun buildHtml(
         misc = miscSet,
 
         salesPersonName = collaboratorName,
-        priceWithoutDiscount = BigDecimal("${purchase.fullPrice}"),
+        priceWithoutDiscount = purchase.fullPrice,
         discount = purchase.overallDiscount,
         fee = purchase.paymentFee.toPaymentFeeDocument(),
     )

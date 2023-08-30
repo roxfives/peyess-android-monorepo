@@ -1,9 +1,11 @@
 package com.peyess.salesapp.feature.payment.model
 
+import java.math.BigDecimal
+
 data class Treatment(
     val id: String = "",
     val brand: String = "",
-    val price: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
     val isColoringRequired: Boolean = false,
     val design: String = "",
     val observation: String = "",

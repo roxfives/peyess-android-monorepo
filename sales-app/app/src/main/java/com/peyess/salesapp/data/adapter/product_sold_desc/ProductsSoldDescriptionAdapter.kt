@@ -4,13 +4,16 @@ import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSAccess
 import com.peyess.salesapp.data.adapter.purchase.discount.description.toFSDiscountDescription
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSLensSoldDescription
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.LensSoldDescriptionDocument
+import com.peyess.salesapp.utils.extentions.roundToDouble
 
-fun LensSoldDescriptionDocument.toFSLensSoldDescription(): FSLensSoldDescription {
+fun LensSoldDescriptionDocument.toFSLensSoldDescription(
+    roundValues: Boolean = false,
+): FSLensSoldDescription {
     return FSLensSoldDescription(
         id = id,
         units = units,
         nameDisplay = nameDisplay,
-        price = price,
+        price = price.roundToDouble(roundValues),
         discount = discount.toFSDiscountDescription(),
 
         isDiscounted = isDiscounted,

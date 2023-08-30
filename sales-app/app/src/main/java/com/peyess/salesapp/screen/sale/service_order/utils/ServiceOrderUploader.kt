@@ -473,7 +473,7 @@ class ServiceOrderUploader constructor(
         val framesValue = if (frames.areFramesNew) {
             frames.value
         } else {
-            0.0
+            BigDecimal.ZERO
         }
 
         var total = lens.price + framesValue
@@ -483,7 +483,7 @@ class ServiceOrderUploader constructor(
 
             // TODO: refactor to remove identification by name
             if (
-                lens.priceAddColoring > 0
+                lens.priceAddColoring > BigDecimal.ZERO
                 && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                 && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
@@ -506,7 +506,7 @@ class ServiceOrderUploader constructor(
             treatment = treatment.copy(price = treatment.price + lens.priceAddTreatment)
 
             if (
-                lens.priceAddTreatment > 0
+                lens.priceAddTreatment > BigDecimal.ZERO
                 && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
                 && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
@@ -574,12 +574,12 @@ class ServiceOrderUploader constructor(
     private suspend fun calculateDiscount(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
-    ): Double {
+    ): BigDecimal {
         val discount = discountRepository.getDiscountForSale(saleId)
         val totalDiscount = when (discount?.discountMethod) {
             DiscountCalcMethod.Percentage -> discount.overallDiscountValue
             DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
-            DiscountCalcMethod.None, null -> 0.0
+            DiscountCalcMethod.None, null -> BigDecimal.ZERO
         }
 
         return totalDiscount
@@ -587,15 +587,15 @@ class ServiceOrderUploader constructor(
 
     private suspend fun calculateFee(
         saleId: String,
-        discount: Double,
+        discount: BigDecimal,
         serviceOrder: ServiceOrderDocument,
-    ): Double {
-        val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
+    ): BigDecimal {
+        val priceWithDiscount = serviceOrder.fullPrice * (BigDecimal.ONE - discount)
         val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
         val totalFee = when (fee?.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value.toDouble()
-            PaymentFeeCalcMethod.Whole ->  fee.value.toDouble() / priceWithDiscount
-            PaymentFeeCalcMethod.None, null -> 0.0
+            PaymentFeeCalcMethod.Percentage -> fee.value
+            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.None, null -> BigDecimal.ZERO
         }
 
         return totalFee
@@ -624,8 +624,8 @@ class ServiceOrderUploader constructor(
 
     private suspend fun createPurchase(
         saleId: String,
-        discount: Double,
-        fee: Double,
+        discount: BigDecimal,
+        fee: BigDecimal,
         serviceOrder: ServiceOrderDocument,
     ): PurchaseCreationResponse = either {
         purchaseId = saleId
@@ -635,7 +635,7 @@ class ServiceOrderUploader constructor(
         val feeDocument = paymentFeeRepository.getPaymentFeeForSale(saleId)
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
+        val finalPrice = fullPrice * (BigDecimal.ONE - discount) * (BigDecimal.ONE + fee)
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {
@@ -652,15 +652,14 @@ class ServiceOrderUploader constructor(
             }.bind()
 
         val totalPaid = if (payments.isEmpty()) {
-            0.0
+            BigDecimal.ZERO
         } else {
             payments.map { it.value }
-                .ifEmpty { listOf(0.0) }
-                .reduce { acc, payment -> acc + payment }
+                .ifEmpty { listOf(BigDecimal.ZERO) }
+                .reduce(BigDecimal::add)
         }
-        val totalLeft = BigDecimal(abs((finalPrice - totalPaid)))
+        val totalLeft = (finalPrice - totalPaid).abs()
             .setScale(2, RoundingMode.HALF_EVEN)
-            .toDouble()
 
         val store = authenticationRepository.loadCurrentStore().mapLeft {
             PurchaseCreationFailed(
@@ -737,7 +736,7 @@ class ServiceOrderUploader constructor(
             isDiscountOverall = true,
             overallDiscount = DiscountDescriptionDocument(
                 method = discountDocument?.discountMethod ?: DiscountCalcMethod.Percentage,
-                value = BigDecimal(discountDocument?.overallDiscountValue ?: 0.0),
+                value = discountDocument?.overallDiscountValue ?: BigDecimal.ZERO,
 
             ),
             paymentFee = FeeDescriptionDocument(

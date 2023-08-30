@@ -10,7 +10,7 @@ fun FSProductSoldDescription.toProductSoldDescriptionDocument(): ProductSoldDesc
         id = id,
         units = units,
         nameDisplay = nameDisplay,
-        price = price,
+        price = price.toBigDecimal(),
         discount = discount.toDiscountDescriptionDocument(),
 
         isDiscounted = isDiscounted,

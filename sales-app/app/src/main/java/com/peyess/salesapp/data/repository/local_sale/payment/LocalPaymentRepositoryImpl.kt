@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class LocalPaymentRepositoryImpl @Inject constructor(
@@ -66,8 +67,11 @@ class LocalPaymentRepositoryImpl @Inject constructor(
 
     override fun watchTotalPayment(saleId: String): Flow<LocalPaymentTotalResponse> {
         return localPaymentDao.watchTotalPayment(saleId)
-            .map { (it ?: 0.0).right() }
-            .catch<LocalPaymentTotalResponse> {
+            .map {
+                val value = it?.toBigDecimal() ?: BigDecimal.ZERO
+
+                value.right()
+            }.catch<LocalPaymentTotalResponse> {
                 Timber.e(
                     message = "Error while watching total payment for sale $saleId: ${it.message}",
                     t = it,
@@ -98,7 +102,7 @@ class LocalPaymentRepositoryImpl @Inject constructor(
     override suspend fun totalPaymentForSale(
         saleId: String,
     ): LocalPaymentTotalResponse = Either.catch {
-        localPaymentDao.totalPaymentForSale(saleId) ?: 0.0
+        localPaymentDao.totalPaymentForSale(saleId)?.toBigDecimal() ?: BigDecimal.ZERO
     }.mapLeft {
         Unexpected(
             description = it.message ?: "",

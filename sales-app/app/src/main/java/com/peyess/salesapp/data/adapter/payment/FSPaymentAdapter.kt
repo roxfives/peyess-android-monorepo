@@ -6,6 +6,7 @@ import com.peyess.salesapp.typing.sale.FinancialInstitutionType
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.typing.sale.PaymentMethodType
 import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 fun FSPayment.toPaymentDocument(): PaymentDocument {
@@ -14,7 +15,7 @@ fun FSPayment.toPaymentDocument(): PaymentDocument {
 
         methodName = PaymentMethodType.fromName(method),
         methodId = methodId,
-        amount = amount,
+        amount = amount.toBigDecimal(),
         installments = installments,
         currency = currency,
         document = document,

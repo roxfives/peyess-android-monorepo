@@ -51,6 +51,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.math.RoundingMode
 
 const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 
@@ -179,7 +180,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addColoringToLens(
                 lensId = lensId,
                 coloringId = it.id,
-                price = it.price,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }
@@ -197,7 +198,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
-                price = it.price,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }
@@ -214,7 +215,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
-                price = it.price,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }

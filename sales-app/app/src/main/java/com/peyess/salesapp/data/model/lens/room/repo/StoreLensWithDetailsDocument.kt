@@ -1,6 +1,7 @@
 package com.peyess.salesapp.data.model.lens.room.repo
 
 import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class StoreLensWithDetailsDocument(
@@ -32,9 +33,9 @@ data class StoreLensWithDetailsDocument(
     val isLocalEnabled: Boolean = true,
     val reasonLocalDisabled: String = "",
 
-    val price: Double = 0.0,
-    val priceAddColoring: Double = 0.0,
-    val priceAddTreatment: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
+    val priceAddColoring: BigDecimal = BigDecimal.ZERO,
+    val priceAddTreatment: BigDecimal = BigDecimal.ZERO,
 
     val isEditable: Boolean = false,
 

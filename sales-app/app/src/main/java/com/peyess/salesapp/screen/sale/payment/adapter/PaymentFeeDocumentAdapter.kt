@@ -7,6 +7,6 @@ fun PaymentFeeDocument.toPaymentFee(): PaymentFee {
     return PaymentFee(
         saleId = saleId,
         method = method,
-        value = value.toDouble(),
+        value = value,
     )
 }

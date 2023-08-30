@@ -36,10 +36,10 @@ fun EditPaymentDiscountScreen(
     DiscountScreenUI(
         modifier = modifier,
         selectedMethod = currentDiscount.method,
-        discountValue = BigDecimal(currentDiscount.value),
+        discountValue = currentDiscount.value,
         originalPrice = originalPrice,
         pricePreview = pricePreview,
-        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it.toDouble()) },
+        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it) },
         onChangeDiscountMethod = viewModel::onChangeDiscountMethod,
         onDone = onDone,
     )

@@ -3,16 +3,17 @@ package com.peyess.salesapp.screen.sale.service_order.adapter
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 fun LocalLensTreatmentDocument.toDescription(
     isIncluded: Boolean,
     isDiscounted: Boolean,
 ): ProductSoldDescriptionDocument {
-    // TODO: update to local price
     val price = if (isDiscounted || isIncluded) {
-        0.0
+        BigDecimal.ZERO
     } else {
-        price / 2.0
+        price / BigDecimal("2")
     }
 
     return ProductSoldDescriptionDocument(

@@ -4,6 +4,7 @@ import com.peyess.salesapp.data.model.sale.purchase.FSPayment
 import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.utils.time.toTimestamp
+import java.math.RoundingMode
 
 fun PaymentDocument.toFSPayment(): FSPayment {
     return FSPayment(
@@ -11,7 +12,7 @@ fun PaymentDocument.toFSPayment(): FSPayment {
 
         method = methodName.toName(),
         methodId = methodId,
-        amount = amount,
+        amount = amount.setScale(2, RoundingMode.HALF_EVEN).toDouble(),
         installments = installments,
         currency = currency,
         document = document,

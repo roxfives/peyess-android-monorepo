@@ -1,10 +1,12 @@
 package com.peyess.salesapp.data.model.lens.treatment
 
+import java.math.BigDecimal
+
 data class StoreLensTreatmentDocument(
     val id: String = "",
     val brand: String = "",
     val cost: Double = 0.0,
-    val price: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
     val design: String = "",
     val explanations: List<String> = emptyList(),
     val isColoringRequired: Boolean = false,

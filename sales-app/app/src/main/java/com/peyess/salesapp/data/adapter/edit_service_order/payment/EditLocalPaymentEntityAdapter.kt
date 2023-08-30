@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.edit_service_order.payment
 
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
 import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
+import java.math.BigDecimal
 
 fun EditLocalPaymentEntity.toLocalPaymentDocument(
     clientDocument: String,
@@ -22,7 +23,7 @@ fun EditLocalPaymentEntity.toLocalPaymentDocument(
         methodName = methodName,
 
         methodType = methodType,
-        value = value,
+        value = value.toBigDecimal(),
         installments = installments,
         document = document,
 

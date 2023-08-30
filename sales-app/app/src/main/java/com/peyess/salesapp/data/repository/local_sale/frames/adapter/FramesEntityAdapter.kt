@@ -9,7 +9,7 @@ fun FramesEntity.toFramesDocument(): FramesDocument {
         areFramesNew = areFramesNew,
         design = design,
         reference = reference,
-        value = value,
+        value = value.toBigDecimal(),
         tagCode = tagCode,
         type = type,
         framesInfo = framesInfo,

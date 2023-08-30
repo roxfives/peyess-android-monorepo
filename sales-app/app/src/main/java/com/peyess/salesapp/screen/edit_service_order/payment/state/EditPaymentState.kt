@@ -27,6 +27,7 @@ import com.peyess.salesapp.feature.payment.model.Payment
 import com.peyess.salesapp.feature.payment.model.PaymentFee
 import com.peyess.salesapp.feature.payment.model.PaymentMethod
 import com.peyess.salesapp.feature.payment.model.Treatment
+import java.math.BigDecimal
 
 data class EditPaymentState(
     val paymentId: Long = 0L,
@@ -69,9 +70,9 @@ data class EditPaymentState(
     val cardFlags: List<CardFlagDocument> = emptyList(),
 
     val totalPaymentResponseAsync: Async<EditLocalPaymentFetchTotalResponse> = Uninitialized,
-    val totalToPay: Double = 0.0,
-    val totalPaid: Double = 0.0,
-    val totalLeftToPay: Double = 0.0,
+    val totalToPay: BigDecimal = BigDecimal.ZERO,
+    val totalPaid: BigDecimal = BigDecimal.ZERO,
+    val totalLeftToPay: BigDecimal = BigDecimal.ZERO,
 ): MavericksState {
     val isClientLoading = clientResponseAsync is Loading
     val areCardFlagsLoading = cardFlagsAsync is Loading

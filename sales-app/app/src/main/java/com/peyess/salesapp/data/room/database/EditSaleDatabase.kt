@@ -25,7 +25,6 @@ import com.peyess.salesapp.data.model.edit_service_order.prescription.EditPrescr
 import com.peyess.salesapp.data.model.edit_service_order.product_picked.EditProductPickedEntity
 import com.peyess.salesapp.data.model.edit_service_order.sale.EditSaleEntity
 import com.peyess.salesapp.data.model.edit_service_order.service_order.EditServiceOrderEntity
-import com.peyess.salesapp.data.model.local_client.LocalClientEntity
 import com.peyess.salesapp.data.room.converter.ConverterClientRole
 import com.peyess.salesapp.data.room.converter.ConverterEye
 import com.peyess.salesapp.data.room.converter.ConverterFramesType
@@ -53,7 +52,7 @@ import com.peyess.salesapp.data.room.converter.ConverterZonedDateTime
         EditClientPickedEntity::class,
     ],
 
-    version = 17,
+    version = 19,
 )
 @TypeConverters(
     ConverterUri::class,

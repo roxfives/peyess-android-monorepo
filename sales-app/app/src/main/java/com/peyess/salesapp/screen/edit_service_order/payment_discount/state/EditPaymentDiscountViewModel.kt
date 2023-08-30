@@ -99,13 +99,12 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
         val preview = when (discount.method) {
             DiscountCalcMethod.Percentage ->
                 fullPrice.multiply(
-                    BigDecimal(1.0 - discount.value)
+                    (BigDecimal.ONE - discount.value)
                         .setScale(4, RoundingMode.HALF_EVEN),
                 )
             DiscountCalcMethod.Whole ->
                 fullPrice.minus(
-                    BigDecimal(discount.value)
-                        .setScale(2, RoundingMode.HALF_EVEN),
+                    discount.value.setScale(2, RoundingMode.HALF_EVEN),
                 )
             DiscountCalcMethod.None ->
                 fullPrice
@@ -126,7 +125,6 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
             DiscountCalcMethod.Percentage -> {
                 val maxDiscount = discountGroup.general
                     .maxValueAsPercentage(price)
-                    .toDouble()
 
                 val limited = discount.percentValue
                     .coerceAtMost(maxDiscount)
@@ -137,7 +135,6 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
             DiscountCalcMethod.Whole -> {
                 val maxDiscount = discountGroup.general
                     .maxValueAsWhole(price)
-                    .toDouble()
 
                 val limited = discount.wholeValue
                     .coerceAtMost(maxDiscount)
@@ -155,20 +152,22 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
         copy(fullPrice = value)
     }
 
-    fun onChangeDiscountValue(value: Double) = setState {
+    fun onChangeDiscountValue(value: BigDecimal) = setState {
+        val updatedValue = value.setScale(4, RoundingMode.HALF_EVEN)
+
         val discount = when(currentDiscount.method) {
             DiscountCalcMethod.Percentage ->
-                currentDiscount.copy(percentValue = value)
+                currentDiscount.copy(percentValue = updatedValue)
             DiscountCalcMethod.Whole ->
-                currentDiscount.copy(wholeValue = value)
+                currentDiscount.copy(wholeValue = updatedValue)
             DiscountCalcMethod.None ->
                 currentDiscount.copy()
         }
 
         val update = limitToMaxDiscount(
-            discount,
-            discountGroup,
-            fullPrice,
+            discount = discount,
+            discountGroup = discountGroup,
+            price = fullPrice,
         )
         viewModelScope.launch(Dispatchers.IO) {
             discountRepository.updateValue(saleId, update.value)

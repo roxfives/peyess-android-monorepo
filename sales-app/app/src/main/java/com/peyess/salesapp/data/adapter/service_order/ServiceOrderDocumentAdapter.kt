@@ -6,9 +6,12 @@ import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.utils.extentions.roundToDouble
 import com.peyess.salesapp.utils.time.toTimestamp
 
-fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
+fun ServiceOrderDocument.toFSServiceOrder(
+    roundValues: Boolean = true,
+): FSServiceOrder {
     return FSServiceOrder(
         id = id,
         hid = hid,
@@ -115,8 +118,8 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         discountAllowedBy = discountAllowedBy,
         docVersion = 0,
         isEditable = true,
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
+        fullPrice = fullPrice.roundToDouble(roundValues),
+        finalPrice = finalPrice.roundToDouble(roundValues),
         observation = observation,
         created = created.toTimestamp(),
         createdBy = createdBy,

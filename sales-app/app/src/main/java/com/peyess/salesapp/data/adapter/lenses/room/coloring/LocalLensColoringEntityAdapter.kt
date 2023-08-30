@@ -2,6 +2,7 @@ package com.peyess.salesapp.data.adapter.lenses.room.coloring
 
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringPriceDBView
+import java.math.BigDecimal
 
 fun LocalLensColoringPriceDBView.toLocalLensColoringDocument(
     explanations: List<String>,
@@ -23,7 +24,7 @@ fun LocalLensColoringPriceDBView.toLocalLensColoringDocument(
         type = type,
         warning = warning,
 
-        price = price,
+        price = price.toBigDecimal(),
 
         explanations = explanations,
     )

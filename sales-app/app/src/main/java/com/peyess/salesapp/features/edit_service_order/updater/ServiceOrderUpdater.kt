@@ -511,6 +511,7 @@ class ServiceOrderUpdater @Inject constructor(
             payments.map { it.value }
                 .ifEmpty { listOf(BigDecimal.ZERO) }
                 .reduce(BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_EVEN)
         }
         val totalLeft = (finalPrice - totalPaid).abs()
             .setScale(2, RoundingMode.HALF_EVEN)

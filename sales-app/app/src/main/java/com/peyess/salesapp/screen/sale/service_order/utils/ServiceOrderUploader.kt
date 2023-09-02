@@ -18,15 +18,12 @@ import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
 import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
-import com.peyess.salesapp.data.model.measuring.MeasuringDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -41,7 +38,6 @@ import com.peyess.salesapp.data.repository.prescription.PrescriptionRepository
 import com.peyess.salesapp.data.room.database.ActiveSalesDatabase
 import com.peyess.salesapp.typing.general.Eye
 import com.peyess.salesapp.feature.lens_suggestion.model.toMeasuring
-import com.peyess.salesapp.features.edit_service_order.updater.error.GenerateSaleDataError
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddClientError
 import com.peyess.salesapp.screen.sale.service_order.utils.error.AddProductError
@@ -81,7 +77,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
@@ -571,30 +566,30 @@ class ServiceOrderUploader constructor(
         )
     }
 
-    private suspend fun calculateDiscount(
+    private suspend fun calculateDiscountAsWhole(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
     ): BigDecimal {
         val discount = discountRepository.getDiscountForSale(saleId)
         val totalDiscount = when (discount?.discountMethod) {
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue * serviceOrder.fullPrice
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
             DiscountCalcMethod.None, null -> BigDecimal.ZERO
         }
 
         return totalDiscount
     }
 
-    private suspend fun calculateFee(
+    private suspend fun calculateFeeAsWhole(
         saleId: String,
-        discount: BigDecimal,
+        discountAsWhole: BigDecimal,
         serviceOrder: ServiceOrderDocument,
     ): BigDecimal {
-        val priceWithDiscount = serviceOrder.fullPrice * (BigDecimal.ONE - discount)
+        val priceWithDiscount = serviceOrder.fullPrice - discountAsWhole
         val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
         val totalFee = when (fee?.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Percentage -> fee.value * priceWithDiscount
+            PaymentFeeCalcMethod.Whole ->  fee.value
             PaymentFeeCalcMethod.None, null -> BigDecimal.ZERO
         }
 
@@ -624,8 +619,8 @@ class ServiceOrderUploader constructor(
 
     private suspend fun createPurchase(
         saleId: String,
-        discount: BigDecimal,
-        fee: BigDecimal,
+        discountAsWhole: BigDecimal,
+        feeAsWhole: BigDecimal,
         serviceOrder: ServiceOrderDocument,
     ): PurchaseCreationResponse = either {
         purchaseId = saleId
@@ -635,7 +630,7 @@ class ServiceOrderUploader constructor(
         val feeDocument = paymentFeeRepository.getPaymentFeeForSale(saleId)
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (BigDecimal.ONE - discount) * (BigDecimal.ONE + fee)
+        val finalPrice = fullPrice - discountAsWhole + feeAsWhole
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {
@@ -750,8 +745,8 @@ class ServiceOrderUploader constructor(
             leftToPay = totalLeft,
             totalPaid = totalPaid,
 
-            totalDiscount = discount,
-            totalFee = fee,
+            totalDiscount = discountAsWhole,
+            totalFee = feeAsWhole,
 
             state = PurchaseState.PendingConfirmation,
 
@@ -830,13 +825,13 @@ class ServiceOrderUploader constructor(
 
         serviceOrder = addProductsData(serviceOrder).bind()
 
-        val discount = calculateDiscount(localSaleId, serviceOrder)
-        val fee = calculateFee(localSaleId, discount, serviceOrder)
+        val discount = calculateDiscountAsWhole(localSaleId, serviceOrder)
+        val fee = calculateFeeAsWhole(localSaleId, discount, serviceOrder)
 
         var purchase = createPurchase(
             saleId = localSaleId,
-            discount = discount,
-            fee = fee,
+            discountAsWhole = discount,
+            feeAsWhole = fee,
             serviceOrder = serviceOrder,
         ).bind()
 

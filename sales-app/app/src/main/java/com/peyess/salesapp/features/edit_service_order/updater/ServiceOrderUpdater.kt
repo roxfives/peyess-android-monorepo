@@ -2,8 +2,6 @@ package com.peyess.salesapp.features.edit_service_order.updater
 
 import android.content.Context
 import android.net.Uri
-import android.webkit.URLUtil
-import androidx.core.net.toFile
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.flatMap
@@ -15,17 +13,14 @@ import com.peyess.salesapp.data.model.local_client.LocalClientDocument
 import com.peyess.salesapp.data.model.management_picture_upload.PictureUploadDocument
 import com.peyess.salesapp.data.model.measuring.MeasuringUpdateDocument
 import com.peyess.salesapp.data.model.positioning.PositioningUpdateDocument
-import com.peyess.salesapp.data.model.prescription.PrescriptionDocument
 import com.peyess.salesapp.data.model.prescription.PrescriptionUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.AccessoryItemDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
@@ -62,7 +57,6 @@ import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
 import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
-import com.peyess.salesapp.screen.sale.service_order.utils.error.PurchaseCreationFailed
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
@@ -76,7 +70,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.ZonedDateTime
 import javax.inject.Inject
-import kotlin.math.abs
 import kotlin.math.max
 
 private typealias FetchClientDataResponse = Either<GenerateSaleDataError, LocalClientDocument>
@@ -444,7 +437,7 @@ class ServiceOrderUpdater @Inject constructor(
         )
     }
 
-    private suspend fun calculateDiscount(
+    private suspend fun calculateDiscountAsWhole(
         saleId: String,
         serviceOrder: ServiceOrderUpdateDocument,
     ): CalculateValueResponse = either {
@@ -456,18 +449,18 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         when (discount.discountMethod) {
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue * serviceOrder.fullPrice
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
             DiscountCalcMethod.None -> BigDecimal.ZERO
         }
     }
 
-    private suspend fun calculateFee(
+    private suspend fun calculateFeeAsWhole(
         saleId: String,
-        discount: BigDecimal,
+        discountAsWhole: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): CalculateValueResponse = either {
-        val priceWithDiscount = serviceOrder.fullPrice * (BigDecimal.ONE - discount)
+        val priceWithDiscount = serviceOrder.fullPrice - discountAsWhole
         val fee = paymentFeeRepository.paymentFeeForSale(saleId).mapLeft {
             GenerateSaleDataError.Unexpected(
                 description = it.description,
@@ -476,8 +469,8 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         when (fee.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole -> fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Percentage -> fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Whole -> fee.value
             PaymentFeeCalcMethod.None -> BigDecimal.ZERO
         }
     }
@@ -485,8 +478,8 @@ class ServiceOrderUpdater @Inject constructor(
     private suspend fun createPurchase(
         serviceOrderId: String,
         saleId: String,
-        discount: BigDecimal,
-        fee: BigDecimal,
+        discountAsWhole: BigDecimal,
+        feeAsWhole: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): UpdatePurchaseResponse = either {
         val discountDocument = discountRepository.discountForSale(saleId).mapLeft {
@@ -503,7 +496,7 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (BigDecimal.ONE - discount) * (BigDecimal.ONE + fee)
+        val finalPrice = fullPrice - discountAsWhole + feeAsWhole
 
         val payments = editPaymentRepository.paymentsForSale(saleId).mapLeft {
                 GenerateSaleDataError.Unexpected(
@@ -603,8 +596,8 @@ class ServiceOrderUpdater @Inject constructor(
             leftToPay = totalLeft,
             totalPaid = totalPaid,
 
-            totalDiscount = discount,
-            totalFee = fee,
+            totalDiscount = discountAsWhole,
+            totalFee = feeAsWhole,
 
             payerUids = payments.map { it.clientId }.distinct(),
             payerDocuments = payments.map { it.clientDocument }.distinct(),
@@ -677,14 +670,14 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderUpdate = addPositioningData(serviceOrderId, serviceOrderUpdate).bind()
         serviceOrderUpdate = addProductsData(serviceOrderId, serviceOrderUpdate).bind()
 
-        val discount = calculateDiscount(localServiceOrder.saleId, serviceOrderUpdate).bind()
-        val fee = calculateFee(localServiceOrder.saleId, discount, serviceOrderUpdate).bind()
+        val discount = calculateDiscountAsWhole(localServiceOrder.saleId, serviceOrderUpdate).bind()
+        val fee = calculateFeeAsWhole(localServiceOrder.saleId, discount, serviceOrderUpdate).bind()
 
         var purchaseUpdate = createPurchase(
             saleId = localServiceOrder.saleId,
             serviceOrderId = serviceOrderId,
-            discount = discount,
-            fee = fee,
+            discountAsWhole = discount,
+            feeAsWhole = fee,
             serviceOrder = serviceOrderUpdate,
         ).mapLeft {
             GenerateSaleDataError.Unexpected(

@@ -42,6 +42,7 @@ import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.PurchaseState
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -218,13 +219,13 @@ data class EditServiceOrderState(
         fullPrice: BigDecimal,
         discount: OverallDiscountDocument,
     ): BigDecimal {
-        val discountAsPercentage = when (discount.discountMethod) {
+        val discountAsWhole = when (discount.discountMethod) {
             DiscountCalcMethod.None -> BigDecimal.ZERO
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue * fullPrice
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
         }
 
-        return fullPrice * (BigDecimal.ONE - discountAsPercentage)
+        return fullPrice - discountAsWhole
     }
 
     private fun calculateFinalPrice(
@@ -232,18 +233,18 @@ data class EditServiceOrderState(
         discount: OverallDiscountDocument,
         fee: PaymentFeeDocument
     ): BigDecimal {
-        val discountAsPercentage = when (discount.discountMethod) {
+        val discountAsWhole = when (discount.discountMethod) {
             DiscountCalcMethod.None -> BigDecimal.ZERO
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / fullPrice
+            DiscountCalcMethod.Percentage -> fullPrice * discount.overallDiscountValue
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
         }
 
-        val feeAsPercentage = when (fee.method) {
+        val feeAsWhole = when (fee.method) {
             PaymentFeeCalcMethod.None -> BigDecimal.ZERO
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole -> fee.value / (fullPrice * (BigDecimal.ONE - discountAsPercentage))
+            PaymentFeeCalcMethod.Percentage -> discountAsWhole * fee.value
+            PaymentFeeCalcMethod.Whole -> fee.value
         }
 
-        return fullPrice * (BigDecimal.ONE - discountAsPercentage) * (BigDecimal.ONE + feeAsPercentage)
+        return fullPrice - discountAsWhole + feeAsWhole
     }
 }

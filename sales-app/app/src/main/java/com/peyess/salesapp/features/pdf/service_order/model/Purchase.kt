@@ -7,6 +7,7 @@ import com.peyess.salesapp.data.model.sale.purchase.PurchaseProductsDiscountDocu
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.ZonedDateTime
 
 data class Purchase(
@@ -72,5 +73,6 @@ data class Purchase(
     val updatedBy: String = "",
     val updateAllowedBy: String = "",
 ) {
-    val isPaymentFull = totalPaid >= finalPrice
+    val isPaymentFull = totalPaid.setScale(2, RoundingMode.HALF_EVEN) >=
+            finalPrice.setScale(2, RoundingMode.HALF_EVEN)
 }

@@ -42,7 +42,9 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
     init {
         loadDiscountGroup()
 
-        onEach(EditPaymentDiscountState::saleId) { loadDiscount(it) }
+        onEach(EditPaymentDiscountState::saleId) {
+            loadDiscount(it)
+        }
         onEach(EditPaymentDiscountState::currentDiscount) { calculatePricePreview(it) }
 
         onAsync(EditPaymentDiscountState::discountGroupDocumentAsync) {
@@ -56,8 +58,7 @@ class EditPaymentDiscountViewModel @AssistedInject constructor(
             val uid = authenticationRepository.fetchCurrentUserId()
             val collaborator = collaboratorsRepository.getById(uid)
 
-            discountGroupRepository
-                .getById(collaborator?.storeDiscountGroup ?: "")
+            discountGroupRepository.getById(collaborator?.storeDiscountGroup ?: "")
         }.execute {
             copy(discountGroupDocumentAsync = it)
         }

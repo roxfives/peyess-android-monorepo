@@ -222,7 +222,7 @@
     <string name="dialog_curiosities_title">Sintomas e curiosidades</string>
     <string name="dialog_symptoms">Sintomas</string>
 
-    <string name="mike_refractive_errors_base">%s, você tem %s.\n\nContinue para ver sintomas comuns e curiosidades sobre o assunto</string>
+    <string name="mike_refractive_errors_base">%1$s, você tem %2$s.\n\nContinue para ver sintomas comuns e curiosidades sobre o assunto</string>
     <string name="mike_refractive_errors_none">Legal %s, você faz parte de uma privilegiada porcentagem no Brasil. Atualmente no país mais de 35 milhões de pessoas sofrem de algum problema de visão.\n\nContinue para ver mais curiosidades sobre o assunto.</string>
     <string name="mike_refractive_errors_right_eye">%s no olho direito</string>
     <string name="mike_refractive_errors_left_eye">%s no olho esquerdo</string>
@@ -248,7 +248,7 @@
     <string name="presbyopia_info">A presbiopia “vista cansada”, deve-se a perda da capacidade dos olhos de focarem para perto e ocorre normalmente após os 40 anos de idade</string>
 
     <!-- UI Component: Frames data   -->
-    <string name="mike_frames_landing_screen_message">%s, escolha %s pois elas se adequam melhor ao seu “Grau”. %s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
+    <string name="mike_frames_landing_screen_message">%1$s, escolha %2$s pois elas se adequam melhor ao seu “Grau”. %3$s lhe ajudará a escolher modelos belíssimos e modernos para você!</string>
     <string name="btn_cancel_frames">Cancelar</string>
 
     <string name="title_observation">Observação para o laboratório</string>
@@ -495,7 +495,7 @@
     <string name="payment_due_period_single_pay">Vencimento do pagamento: </string>
 
     <!-- UI Component: Anamnesis   -->
-    <string name="mike_anamnesis_intro_message">%s, eu e %s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>
+    <string name="mike_anamnesis_intro_message">%1$s, eu e %2$s precisamos saber um pouco mais sobre o seu dia a dia para oferecer lentes totalmente personalizadas às suas necessidades!</string>
 
     <string name="anamnesis_first_step_yes">Sim</string>
     <string name="anamnesis_first_step_no">Não</string>

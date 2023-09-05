@@ -270,15 +270,11 @@ private fun PurchaseCard(
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
-    val client = remember {
-        purchase.clients.entries.firstOrNull()?.value ?: DenormalizedClientDocument()
-    }
-
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            val picture = pictureForClient(client.uid)
+            val picture = pictureForClient(purchase.responsibleUid)
 
             pictureUri.value = picture
         }
@@ -337,7 +333,7 @@ private fun PurchaseCard(
                 verticalArrangement = Arrangement.Top,
             ) {
                 Text(
-                    text = client.name,
+                    text = purchase.responsibleName,
                     style = MaterialTheme.typography.subtitle1
                         .copy(fontWeight = FontWeight.Bold),
                 )

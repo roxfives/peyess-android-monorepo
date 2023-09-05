@@ -6,7 +6,9 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 
 @Keep
 @IgnoreExtraProperties
@@ -37,7 +39,7 @@ data class FSPurchase(
     @Keep
     @JvmField
     @PropertyName("clients")
-    val clients: List<FSDenormalizedClient> = emptyList(),
+    val clients: Map<String, FSDenormalizedClient> = emptyMap(),
 
     @Keep
     @JvmField
@@ -203,6 +205,15 @@ data class FSPurchase(
 
     @Keep
     @JvmField
+    @PropertyName("sync_state")
+    val syncState: String = PurchaseSyncState.Unknown.toName(),
+    @Keep
+    @JvmField
+    @PropertyName("reason_sync_failed")
+    val reasonSyncFailed: String = PurchaseReasonSyncFailure.None.toName(),
+
+    @Keep
+    @JvmField
     @PropertyName("payer_uids")
     val payerUids: List<String> = emptyList(),
     @Keep
@@ -247,6 +258,21 @@ data class FSPurchase(
     @JvmField
     @PropertyName("legal_version")
     val legalVersion: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("finished_at")
+    val finishedAt: Timestamp = Timestamp.now(),
+
+    @Keep
+    @JvmField
+    @PropertyName("days_to_take_from_store")
+    val daysToTakeFromStore: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("has_product_with_pending_check")
+    val hasProductWithPendingCheck: Boolean = false,
 
     @Keep
     @JvmField

@@ -191,8 +191,7 @@ fun CreateServiceOrderScreen(
             onAddPaymentFee = {
                 onAddPaymentFee(
                     saleId,
-                    BigDecimal(totalToPayWithDiscount)
-                        .setScale(2, RoundingMode.HALF_EVEN),
+                    totalToPayWithDiscount.setScale(2, RoundingMode.HALF_EVEN),
                 )
             },
             onDeletePayment = viewModel::deletePayment,
@@ -200,7 +199,7 @@ fun CreateServiceOrderScreen(
             onAddDiscount = {
                 onAddDiscount(
                     saleId,
-                    BigDecimal(totalToPay).setScale(2, RoundingMode.HALF_EVEN),
+                    totalToPay.setScale(2, RoundingMode.HALF_EVEN),
                 )
             },
 

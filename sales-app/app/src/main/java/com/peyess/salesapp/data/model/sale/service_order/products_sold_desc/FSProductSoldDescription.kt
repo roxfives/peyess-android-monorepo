@@ -8,7 +8,6 @@ import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDisco
 @Keep
 @IgnoreExtraProperties
 data class FSProductSoldDescription(
-
     @Keep
     @JvmField
     @PropertyName("id")
@@ -43,4 +42,18 @@ data class FSProductSoldDescription(
     @JvmField
     @PropertyName("discount")
     val discount: FSDiscountDescription = FSDiscountDescription(),
+
+    @Keep
+    @JvmField
+    @PropertyName("accessory_per_unit")
+    val accessoryPerUnit: List<FSAccessoryItem> = emptyList(),
+
+    @Keep
+    @JvmField
+    @PropertyName("supplier_id")
+    val supplierId: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("supplier_name")
+    val supplierName: String = "",
 )

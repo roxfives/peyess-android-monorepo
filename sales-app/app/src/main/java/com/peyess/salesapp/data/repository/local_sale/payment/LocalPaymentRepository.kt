@@ -5,10 +5,11 @@ import com.peyess.salesapp.data.model.local_sale.payment.LocalPaymentDocument
 import com.peyess.salesapp.data.repository.local_sale.payment.error.LocalPaymentReadError
 import com.peyess.salesapp.data.repository.local_sale.payment.error.LocalPaymentWriteError
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 
 typealias LocalPaymentResponse = Either<LocalPaymentReadError, List<LocalPaymentDocument>>
 typealias SinglePaymentResponse = Either<LocalPaymentReadError, LocalPaymentDocument>
-typealias LocalPaymentTotalResponse = Either<LocalPaymentReadError, Double>
+typealias LocalPaymentTotalResponse = Either<LocalPaymentReadError, BigDecimal>
 typealias LocalPaymentWriteResult = Either<LocalPaymentWriteError, Long>
 typealias LocalPaymentUpdateResult = Either<LocalPaymentWriteError, Unit>
 typealias LocalPaymentDeleteResult = Either<LocalPaymentWriteError, Unit>

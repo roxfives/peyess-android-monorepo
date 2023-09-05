@@ -14,6 +14,7 @@ fun LocalPaymentDocument.toPayment(): Payment {
         clientId = clientId,
         clientDocument = clientDocument,
         clientName = clientName,
+
         clientAddress = clientAddress,
 
         methodId = methodId,
@@ -25,21 +26,36 @@ fun LocalPaymentDocument.toPayment(): Payment {
         document = document,
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon,
+
+        dueDateMode = dueDateMode,
+        dueDatePeriod = dueDatePeriod,
+        dueDate = dueDate,
     )
 }
 
 fun LocalPaymentDocument.toPaymentDocument(): PaymentDocument {
     return PaymentDocument(
+        uuid = uuid,
+
         methodName = PaymentMethodType.fromName(methodType),
         methodId = methodId,
         amount = value,
         installments = installments,
         document = document,
         financialInst = FinancialInstitutionType.fromName("bank"),
+
+        hasLegalId = hasLegalId,
+        legalId = legalId,
+
         cardFlagName = cardFlagName,
         cardFlagIcon = cardFlagIcon.toString(),
+
         payerUid = clientId,
         payerDocument = clientDocument,
         payerName = clientName,
+
+        dueDateMode = dueDateMode,
+        dueDatePeriod = dueDatePeriod,
+        dueDate = dueDate,
     )
 }

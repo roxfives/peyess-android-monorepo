@@ -1,6 +1,7 @@
 package com.peyess.salesapp.feature.payment.model
 
 import com.peyess.salesapp.data.model.payment_method.PaymentCardFlagDesc
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 
 data class PaymentMethod(
     val id: String = "",
@@ -24,4 +25,11 @@ data class PaymentMethod(
     val hasDocument: Boolean = false,
 
     val cardFlags: List<PaymentCardFlagDesc> = emptyList(),
+
+    val dueDateCanEdit: Boolean = false,
+    val dueDateMode: PaymentDueDateMode = PaymentDueDateMode.None,
+    val dueDateDefault: Int = 0,
+    val dueDateMax: Int = 0,
+
+    val hasLegalId: Boolean = false,
 )

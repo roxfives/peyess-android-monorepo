@@ -68,11 +68,11 @@ data class FSPrescription(
 
     @JvmField
     @Keep
-    @PropertyName("lens_type_category_id")
+    @PropertyName("lens_category_id")
     val lensTypeCategoryId: String = "",
     @JvmField
     @Keep
-    @PropertyName("lens_type_category")
+    @PropertyName("lens_category")
     val lensTypeCategory: String = LensTypeCategoryName.None.toName(),
 
     @JvmField
@@ -94,6 +94,31 @@ data class FSPrescription(
     @Keep
     @PropertyName("l_ipd")
     val lIpd: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_bridge")
+    val lBridge: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_bridge_hoop")
+    val lBridgeHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_h_hoop")
+    val lHHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_he")
+    val lHe: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_v_hoop")
+    val lVHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("l_diameter")
+    val lDiameter: Double = 0.0,
+
     @JvmField
     @Keep
     @PropertyName("l_cylinder")
@@ -129,6 +154,31 @@ data class FSPrescription(
     val rIpd: Double = 0.0,
     @JvmField
     @Keep
+    @PropertyName("r_bridge")
+    val rBridge: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_bridge_hoop")
+    val rBridgeHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_h_hoop")
+    val rHHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_he")
+    val rHe: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_v_hoop")
+    val rVHoop: Double = 0.0,
+    @JvmField
+    @Keep
+    @PropertyName("r_diameter")
+    val rDiameter: Double = 0.0,
+
+    @JvmField
+    @Keep
     @PropertyName("r_cylinder")
     val rCylinder: Double = 0.0,
     @JvmField
@@ -155,6 +205,11 @@ data class FSPrescription(
     @Keep
     @PropertyName("r_prism_pos")
     val rPrismPos: String = "",
+
+    @JvmField
+    @Keep
+    @PropertyName("observation")
+    val observation: String = "",
 
     @Keep
     @JvmField

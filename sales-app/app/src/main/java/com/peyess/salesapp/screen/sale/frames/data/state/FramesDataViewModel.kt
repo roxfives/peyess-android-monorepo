@@ -29,6 +29,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 
 private typealias  FramesDataMavericksAssistedVMFactory =
         AssistedViewModelFactory<FramesDataViewModel, FramesDataState>
@@ -200,7 +201,7 @@ class FramesDataViewModel @AssistedInject constructor(
         copy(frames = update, referenceInput = value)
     }
 
-    fun onFramesValueChanged(value: Double) = setState {
+    fun onFramesValueChanged(value: BigDecimal) = setState {
         val update = frames.copy(value = value)
 
         updateFrames(update)

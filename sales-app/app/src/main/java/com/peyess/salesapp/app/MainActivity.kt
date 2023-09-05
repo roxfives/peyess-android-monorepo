@@ -89,6 +89,7 @@ class MainActivity: ComponentActivity() {
         enqueueProductUpdateWorker(
             context = applicationContext,
             workPolicy = ExistingWorkPolicy.KEEP,
+            executeRightAway = false,
         )
     }
 

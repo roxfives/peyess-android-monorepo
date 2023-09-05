@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 64,
-    "identityHash": "f22b9df6c3462bc1dc175f5e1356547e",
+    "identityHash": "2909d1f5caf9db292d4fbafb87a260e9",
     "entities": [
       {
         "tableName": "active_sales",
@@ -94,7 +94,7 @@
       },
       {
         "tableName": "local_prescription",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `so_id` TEXT NOT NULL, `picture_uri` TEXT NOT NULL, `professional_name` TEXT NOT NULL, `professional_id` TEXT NOT NULL, `is_copy` INTEGER NOT NULL, `local_date` INTEGER NOT NULL, `spherical_left` REAL NOT NULL, `spherical_right` REAL NOT NULL, `cylindrical_left` REAL NOT NULL, `cylindrical_right` REAL NOT NULL, `axis_left` REAL NOT NULL, `axis_right` REAL NOT NULL, `has_addition` INTEGER NOT NULL, `addition_left` REAL NOT NULL, `addition_right` REAL NOT NULL, `lens_type_category_id` TEXT NOT NULL, `lens_type_category` TEXT NOT NULL, `has_prism` INTEGER NOT NULL, `prism_degree_left` REAL NOT NULL, `prism_degree_right` REAL NOT NULL, `prism_axis_left` REAL NOT NULL, `prism_axis_right` REAL NOT NULL, `prism_position_left` TEXT NOT NULL, `prism_position_right` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `so_id` TEXT NOT NULL, `picture_uri` TEXT NOT NULL, `professional_name` TEXT NOT NULL, `professional_id` TEXT NOT NULL, `is_copy` INTEGER NOT NULL, `local_date` INTEGER NOT NULL, `spherical_left` REAL NOT NULL, `spherical_right` REAL NOT NULL, `cylindrical_left` REAL NOT NULL, `cylindrical_right` REAL NOT NULL, `axis_left` REAL NOT NULL, `axis_right` REAL NOT NULL, `has_addition` INTEGER NOT NULL, `addition_left` REAL NOT NULL, `addition_right` REAL NOT NULL, `lens_type_category_id` TEXT NOT NULL, `lens_type_category` TEXT NOT NULL, `has_prism` INTEGER NOT NULL, `prism_degree_left` REAL NOT NULL, `prism_degree_right` REAL NOT NULL, `prism_axis_left` REAL NOT NULL, `prism_axis_right` REAL NOT NULL, `prism_position_left` TEXT NOT NULL, `prism_position_right` TEXT NOT NULL, `observation` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -243,6 +243,12 @@
           {
             "fieldPath": "prismPositionRight",
             "columnName": "prism_position_right",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observation",
+            "columnName": "observation",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -894,7 +900,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f22b9df6c3462bc1dc175f5e1356547e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2909d1f5caf9db292d4fbafb87a260e9')"
     ]
   }
 }

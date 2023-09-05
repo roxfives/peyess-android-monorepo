@@ -58,6 +58,10 @@ fun buildHomeNavGraph(
 
                 navHostController.navigate(route)
             },
+
+            onViewDemo = {
+                navHostController.navigate(SalesAppScreens.Demonstration.name)
+            }
         )
     }
 
@@ -73,6 +77,7 @@ fun buildHomeNavGraph(
                 val route = buildEditServiceOrderRoute(
                     saleId = saleId,
                     serviceOrderId = serviceOrderId,
+                    reloadFromServer = true,
                 )
 
                 navHostController.navigate(route)

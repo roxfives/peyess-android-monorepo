@@ -1,9 +1,11 @@
 package com.peyess.salesapp.data.model.lens.room.coloring
 
+import java.math.BigDecimal
+
 data class LocalLensColoringDocument(
     val id: String = "",
     val brand: String = "",
-    val price: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
     val design: String = "",
     val hasMedical: Boolean = false,
     val isEnabled: Boolean = false,
@@ -13,6 +15,7 @@ data class LocalLensColoringDocument(
     val priority: Double = 0.0,
     val shippingTime: Double = 0.0,
     val specialty: String = "",
+    val supplierId: String = "",
     val supplier: String = "",
     val type: String = "",
     val warning: String = "",

@@ -52,12 +52,17 @@ import com.peyess.salesapp.repository.sale.SaleRepository
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 private typealias ViewModelFactory = AssistedViewModelFactory<PaymentViewModel, PaymentState>
 private typealias MavericksVMFactory = MavericksViewModelFactory<PaymentViewModel, PaymentState>
@@ -243,9 +248,9 @@ class PaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadColoringPicked(coloringId: String) {
+    private fun loadColoringPicked(lensId: String, coloringId: String) {
         suspend {
-            localLensesRepository.getColoringById(coloringId)
+            localLensesRepository.getColoringById(lensId, coloringId)
         }.execute(Dispatchers.IO) {
             copy(coloringResponseAsync = it)
         }
@@ -265,9 +270,9 @@ class PaymentViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadTreatmentPicked(treatmentId: String) {
+    private fun loadTreatmentPicked(lensId: String, treatmentId: String) {
         suspend {
-            localLensesRepository.getTreatmentById(treatmentId)
+            localLensesRepository.getTreatmentById(lensId, treatmentId)
         }.execute(Dispatchers.IO) {
             copy(treatmentResponseAsync = it)
         }
@@ -345,8 +350,8 @@ class PaymentViewModel @AssistedInject constructor(
 
     private fun loadProducts(productsPicked: ProductPickedDocument){
         loadLensPicked(productsPicked.lensId)
-        loadColoringPicked(productsPicked.coloringId)
-        loadTreatmentPicked(productsPicked.treatmentId)
+        loadColoringPicked(productsPicked.lensId, productsPicked.coloringId)
+        loadTreatmentPicked(productsPicked.lensId, productsPicked.treatmentId)
     }
 
     private fun processPaymentResponse(response: SinglePaymentResponse) = setState {
@@ -402,10 +407,10 @@ class PaymentViewModel @AssistedInject constructor(
             totalToPay += treatment.price
         }
 
-        if (coloring.price > 0) {
+        if (coloring.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddColoring
         }
-        if (treatment.price > 0) {
+        if (treatment.price > BigDecimal.ZERO) {
             totalToPay += lens.priceAddTreatment
         }
 
@@ -428,18 +433,24 @@ class PaymentViewModel @AssistedInject constructor(
         }
     }
 
-    private fun calculateTotalWithDiscount(totalToPay: Double, discount: OverallDiscount): Double {
+    private fun calculateTotalWithDiscount(
+        totalToPay: BigDecimal,
+        discount: OverallDiscount,
+    ): BigDecimal {
         return when (discount.discountMethod) {
             DiscountCalcMethod.None -> totalToPay
-            DiscountCalcMethod.Percentage -> totalToPay * (1.0 - discount.overallDiscountValue)
+            DiscountCalcMethod.Percentage -> totalToPay * (BigDecimal.ONE - discount.overallDiscountValue)
             DiscountCalcMethod.Whole -> totalToPay - discount.overallDiscountValue
         }
     }
 
-    private fun calculatePaymentWithFee(totalToPay: Double, paymentFee: PaymentFee): Double {
+    private fun calculatePaymentWithFee(
+        totalToPay: BigDecimal,
+        paymentFee: PaymentFee,
+    ): BigDecimal {
         return when (paymentFee.method) {
             PaymentFeeCalcMethod.None -> totalToPay
-            PaymentFeeCalcMethod.Percentage -> totalToPay * (1.0 + paymentFee.value)
+            PaymentFeeCalcMethod.Percentage -> totalToPay * (BigDecimal.ONE + paymentFee.value)
             PaymentFeeCalcMethod.Whole -> totalToPay + paymentFee.value
         }
     }
@@ -475,8 +486,8 @@ class PaymentViewModel @AssistedInject constructor(
     }
 
     private fun updateTotalLeftToPay(
-        totalToPay: Double,
-        totalPaid: Double,
+        totalToPay: BigDecimal,
+        totalPaid: BigDecimal,
         discount: OverallDiscount,
         paymentFee: PaymentFee,
     ) = setState {
@@ -509,6 +520,12 @@ class PaymentViewModel @AssistedInject constructor(
                 methodId = methodId,
                 methodType = methodType,
                 methodName = methodName,
+
+                hasLegalId = defaultMethod.hasLegalId,
+
+                dueDatePeriod = defaultMethod.dueDateDefault,
+                dueDateMode = defaultMethod.dueDateMode,
+                dueDate = defaultMethod.dueDateMode.dueDateAfter(defaultMethod.dueDateDefault),
             )
 
             setState {
@@ -544,9 +561,10 @@ class PaymentViewModel @AssistedInject constructor(
         copy(serviceOrderId = serviceOrderId)
     }
 
-    fun onTotalPaidChange(value: Double) = setState {
-        val paid = value.coerceAtMost(paymentInput.value + totalLeftToPay)
-            .coerceAtLeast(0.0)
+    fun onTotalPaidChange(value: BigDecimal) = setState {
+        val maxPayment = paymentInput.value + totalLeftToPay
+        val paid = value.coerceAtMost(maxPayment)
+            .coerceAtLeast(BigDecimal.ZERO)
         val update = paymentInput.copy(value = paid)
 
         copy(paymentInput = update)
@@ -583,6 +601,17 @@ class PaymentViewModel @AssistedInject constructor(
         copy(paymentInput = payment)
     }
 
+    fun onDueDateChanged(date: ZonedDateTime) = setState {
+        val totalDays = ChronoUnit.DAYS.between(date, ZonedDateTime.now()).toInt()
+        val payment = paymentInput.copy(
+            dueDateMode = PaymentDueDateMode.Day,
+            dueDatePeriod = totalDays,
+            dueDate = date,
+        )
+
+        copy(paymentInput = payment)
+    }
+
     fun onPaymentMethodChanged(method: PaymentMethod) = setState {
         val maxInstallments = paymentInput.installments
             .coerceAtMost(method.maxInstallments)
@@ -592,6 +621,20 @@ class PaymentViewModel @AssistedInject constructor(
             methodType = method.type,
             methodName = method.name,
             installments = maxInstallments,
+
+            hasLegalId = method.hasLegalId,
+
+            dueDateMode = method.dueDateMode,
+            dueDatePeriod = method.dueDateDefault,
+            dueDate = method.dueDateMode.dueDateAfter(period = method.dueDateDefault),
+        )
+
+        copy(paymentInput = update)
+    }
+
+    fun onLegalIdChanged(legalId: String) = setState {
+        val update = paymentInput.copy(
+            legalId = legalId,
         )
 
         copy(paymentInput = update)

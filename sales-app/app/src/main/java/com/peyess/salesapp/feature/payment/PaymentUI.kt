@@ -1,5 +1,6 @@
 package com.peyess.salesapp.feature.payment
 
+import android.app.DatePickerDialog
 import androidx.compose.ui.unit.dp
 
 import android.net.Uri
@@ -71,8 +72,11 @@ import com.peyess.salesapp.data.model.sale.card_flags.CardFlagDocument
 import com.peyess.salesapp.feature.payment.model.Client
 import com.peyess.salesapp.feature.payment.model.Payment
 import com.peyess.salesapp.feature.payment.model.PaymentMethod
-import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentPlaceholder
-import com.peyess.salesapp.screen.sale.payment.utils.methodDocumentTitle
+import com.peyess.salesapp.feature.payment.utils.legalIdPlaceholder
+import com.peyess.salesapp.feature.payment.utils.legalIdTitle
+import com.peyess.salesapp.feature.payment.utils.methodDocumentPlaceholder
+import com.peyess.salesapp.feature.payment.utils.methodDocumentTitle
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import com.peyess.salesapp.ui.annotated_string.annotatedStringResource
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
@@ -94,6 +98,9 @@ import timber.log.Timber
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.NumberFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 private val pictureSize = 220.dp
 private const val pictureSizePx = 220
@@ -119,7 +126,7 @@ fun PaymentUI(
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
     isClientLoading: Boolean = false,
     client: Client = Client(),
-    toBePaid: Double = 0.0,
+    toBePaid: BigDecimal = BigDecimal.ZERO,
 
     areCardFlagsLoading: Boolean = false,
     cardFlags: List<CardFlagDocument> = emptyList(),
@@ -138,9 +145,15 @@ fun PaymentUI(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (date: ZonedDateTime) -> Unit = {},
+
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+
     activePaymentMethod: PaymentMethod? = null,
     payment: Payment = Payment(),
-    onTotalPaidChanged: (value: Double) -> Unit = {},
+    onTotalPaidChanged: (value: BigDecimal) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 
     onDone: () -> Unit = {},
@@ -184,6 +197,12 @@ fun PaymentUI(
             onIncreaseInstallments = onIncreaseInstallments,
             onDecreaseInstallments = onDecreaseInstallments,
 
+            dueDate = dueDate,
+            onDueDateChanged = onDueDateChanged,
+
+            legalId = legalId,
+            onLegalIdChanged = onLegalIdChanged,
+
             payment = payment,
             onTotalPaidChanged = onTotalPaidChanged,
             onPaymentMethodChanged = onPaymentMethodChanged,
@@ -206,7 +225,7 @@ fun PaymentUI(
             },
 
             isLoadingConstraints = isClientLoading || areCardFlagsLoading || arePaymentMethodsLoading,
-            canGoNext = payment.value > 0.0,
+            canGoNext = payment.value > BigDecimal.ZERO,
             onNext = onDone,
         )
     }
@@ -218,7 +237,7 @@ private fun ClientView(
 
     isClientLoading: Boolean = false,
     client: Client,
-    toBePaid: Double = 0.0,
+    toBePaid: BigDecimal = BigDecimal.ZERO,
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
     val density = LocalDensity.current
@@ -318,11 +337,17 @@ private fun PaymentView(
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (value: ZonedDateTime) -> Unit = {},
+
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
 
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+
     payment: Payment = Payment(),
-    onTotalPaidChanged: (value: Double) -> Unit = {},
+    onTotalPaidChanged: (value: BigDecimal) -> Unit = {},
     onPaymentMethodChanged: (method: PaymentMethod) -> Unit = {},
 ) {
     AnimatedVisibility(
@@ -421,6 +446,14 @@ private fun PaymentView(
                 installments = installments,
                 onIncreaseInstallments = onIncreaseInstallments,
                 onDecreaseInstallments = onDecreaseInstallments,
+
+                dueDate = dueDate,
+                onDueDateChanged = onDueDateChanged,
+
+
+
+                legalId = legalId,
+                onLegalIdChanged = onLegalIdChanged,
             )
         }
     }
@@ -439,21 +472,25 @@ private fun PaymentCard(
     cardFlagName: String = "",
     onCardFlagChanged: (cardFlagIcon: Uri, cardFlagName: String) -> Unit = { _, _ -> },
 
-    total: Double = 0.0,
-    onTotalChanged: (value: Double) -> Unit = {},
+    total: BigDecimal = BigDecimal.ZERO,
+    onTotalChanged: (value: BigDecimal) -> Unit = {},
 
     installments: Int = 1,
     onIncreaseInstallments: (value: Int) -> Unit = {},
     onDecreaseInstallments: (value: Int) -> Unit = {},
 
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onDueDateChanged: (value: ZonedDateTime) -> Unit = {},
+
     methodDocument: String = "",
     onMethodDocumentUpdate: (value: String) -> Unit = {},
+
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val curPriceInput = BigDecimal(total)
-        .setScale(2, RoundingMode.HALF_EVEN)
-//        .multiply(BigDecimal(100))
+    val curPriceInput = total.setScale(2, RoundingMode.HALF_EVEN)
 
     Column(
         modifier = modifier,
@@ -471,19 +508,14 @@ private fun PaymentCard(
             value = currencyDigitsOnlyOrEmpty(curPriceInput),
             onValueChange = {
                 val value = try {
-                    BigDecimal(it)
-                        .setScale(2, RoundingMode.DOWN)
-                        .divide(BigDecimal(100))
-                        .toDouble()
+                    BigDecimal(it).divide(BigDecimal(100))
                 } catch (t: Throwable) {
                     Timber.e(t, "Failed to parse $it")
-                    0.0
+                    BigDecimal.ZERO
                 }
 
                 onTotalChanged(value)
             },
-//            label = { Text(stringResource(id = R.string.frames_value)) },
-//            placeholder = { Text(stringResource(id = R.string.frames_value)) },
             visualTransformation = CurrencyVisualTransformation(fixedCursorAtTheEnd = false),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
@@ -516,6 +548,65 @@ private fun PaymentCard(
                         value = installments,
                         onIncrease = onIncreaseInstallments,
                         onDecrease = onDecreaseInstallments,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = paymentMethod?.dueDateCanEdit ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (installments > 1) {
+                        Text(stringResource(id = R.string.payment_due_period_installment))
+                    } else {
+                        Text(stringResource(id = R.string.payment_due_period_single_pay))
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    DueDatePeriodInput(
+                        mode = paymentMethod?.dueDateMode ?: PaymentDueDateMode.Month,
+                        maxDuePeriod = paymentMethod?.dueDateMax ?: 1,
+                        dueDate = dueDate,
+                        onSetDueDate = onDueDateChanged,
+                    )
+                }
+            }
+        }
+
+        AnimatedVisibility(
+            visible = paymentMethod?.hasLegalId ?: false,
+            enter = scaleIn(),
+            exit = scaleOut(),
+        ) {
+            val title = stringResource(id = legalIdTitle(paymentMethod?.type))
+            val placeholder = stringResource(id = legalIdPlaceholder(paymentMethod?.type))
+
+            Column {
+                Spacer(modifier = Modifier.height(paymentDataSpacerHeight))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(title)
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    LegalIdInput(
+                        placeholder = placeholder,
+
+                        legalId = legalId,
+                        onLegalIdChanged = onLegalIdChanged,
                     )
                 }
             }
@@ -596,6 +687,39 @@ fun MethodDocumentInput(
 
         value = methodDocument,
         onValueChange = onMethodDocumentUpdate,
+
+        placeholder = { Text(text = placeholder) },
+        label = { /*TODO*/ },
+
+        isError = false,
+        errorMessage = "",
+
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done,
+        ),
+        keyboardActions = KeyboardActions(
+            onDone = { softKeyboardController?.hide() }
+        )
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun LegalIdInput(
+    modifier: Modifier = Modifier,
+
+    placeholder: String = "",
+    legalId: String = "",
+    onLegalIdChanged: (value: String) -> Unit = {},
+) {
+    val softKeyboardController = LocalSoftwareKeyboardController.current
+
+    PeyessOutlinedTextField(
+        modifier = modifier,
+
+        value = legalId,
+        onValueChange = onLegalIdChanged,
 
         placeholder = { Text(text = placeholder) },
         label = { /*TODO*/ },
@@ -839,6 +963,84 @@ private fun InstallmentsInput(
     }
 }
 
+@Composable
+fun DueDatePeriodInput(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    mode: PaymentDueDateMode = PaymentDueDateMode.None,
+    maxDuePeriod: Int = 1,
+    dueDate: ZonedDateTime = ZonedDateTime.now(),
+    onSetDueDate: (date: ZonedDateTime) -> Unit = {},
+) {
+    val context = LocalContext.current
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            R.style.Theme_SalesApp_DatePicker,
+            { _, year, month, dayOfMonth ->
+                onSetDueDate(
+                    ZonedDateTime.of(
+                        year,
+                        month + 1,
+                        dayOfMonth,
+                        23,
+                        59,
+                        59,
+                        999999999,
+                        ZoneId.systemDefault(),
+                    ))
+            },
+            dueDate.year,
+            dueDate.monthValue - 1,
+            dueDate.dayOfMonth,
+        )
+    }
+
+    datePickerDialog.datePicker.minDate = ZonedDateTime.now().toInstant().toEpochMilli()
+    datePickerDialog.datePicker.maxDate = if (mode is PaymentDueDateMode.Day) {
+        ZonedDateTime.now().plusDays(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+    } else {
+        ZonedDateTime.now().plusMonths(maxDuePeriod.toLong()).toInstant().toEpochMilli()
+    }
+
+    Row(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = if (enabled) {
+                    MaterialTheme.colors.primary.copy(alpha = 0.5f)
+                } else {
+                    Color.Gray.copy(alpha = 0.5f)
+                },
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(2.dp)
+            .clickable(enabled = enabled) { datePickerDialog.show() },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.size(16.dp))
+
+        Text(
+            text = dueDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+            color = if (enabled) {
+                MaterialTheme.colors.primary.copy(alpha = 0.5f)
+            } else {
+                Color.Gray.copy(alpha = 0.5f)
+            }
+        )
+
+        Spacer(modifier = Modifier.size(16.dp))
+
+        IconButton(
+            enabled = enabled,
+            onClick = { datePickerDialog.show() }
+        ) {
+            Icon(imageVector = Icons.Filled.Edit, contentDescription = "")
+        }
+    }
+}
+
 @Preview
 @Composable
 private fun PaymentCardPreview() {
@@ -854,7 +1056,7 @@ private fun ClientViewPreview() {
         ClientView(
             modifier = Modifier.fillMaxWidth(),
             client = Client(name = "Nome Um Pouco Longo"),
-            toBePaid = 1200.0,
+            toBePaid = BigDecimal("1200"),
         )
     }
 }

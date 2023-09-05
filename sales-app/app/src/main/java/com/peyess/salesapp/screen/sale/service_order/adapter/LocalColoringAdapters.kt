@@ -1,10 +1,9 @@
 package com.peyess.salesapp.data.adapter.products
 
-import com.peyess.salesapp.dao.products.room.local_coloring.LocalColoringEntity
-import com.peyess.salesapp.dao.products.room.local_coloring.name
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
+import java.math.BigDecimal
 
 fun LocalLensColoringDocument.toDescription(
     isIncluded: Boolean,
@@ -12,9 +11,9 @@ fun LocalLensColoringDocument.toDescription(
 ): ProductSoldDescriptionDocument {
     // TODO: update to local price
     val price = if (isDiscounted || isIncluded) {
-        0.0
+        BigDecimal.ZERO
     } else {
-        price / 2.0
+        price / BigDecimal("2")
     }
 
     return ProductSoldDescriptionDocument(
@@ -26,5 +25,10 @@ fun LocalLensColoringDocument.toDescription(
 
         isIncluded = isIncluded,
         isDiscounted = isDiscounted,
+
+        accessoryPerUnit = emptyList(),
+
+        supplierId = supplierId,
+        supplierName = supplier,
     )
 }

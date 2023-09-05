@@ -2,9 +2,9 @@ package com.peyess.salesapp.data.adapter.lenses
 
 import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensCompleteWithAltHeight
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import java.math.BigDecimal
 
-fun LocalLensCompleteWithAltHeight
-        .toStoreLensWithDetailsDocument(): StoreLensWithDetailsDocument {
+fun LocalLensCompleteWithAltHeight.toStoreLensWithDetailsDocument(): StoreLensWithDetailsDocument {
     return StoreLensWithDetailsDocument(
         id = lens.id,
         priority = lens.priority,
@@ -28,9 +28,9 @@ fun LocalLensCompleteWithAltHeight
         reasonDisabled = lens.reasonDisabled,
         isLocalEnabled = lens.isLocalEnabled,
         reasonLocalDisabled = lens.reasonLocalDisabled,
-        price = lens.price,
-        priceAddColoring = lens.priceAddColoring,
-        priceAddTreatment = lens.priceAddTreatment,
+        price = lens.price.toBigDecimal(),
+        priceAddColoring = lens.priceAddColoring.toBigDecimal(),
+        priceAddTreatment = lens.priceAddTreatment.toBigDecimal(),
         isEditable = lens.isEditable,
         created = lens.created,
         updated = lens.updated,

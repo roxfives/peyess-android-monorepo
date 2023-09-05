@@ -3,6 +3,8 @@ package com.peyess.salesapp.feature.prescription.prescription_data
 import androidx.annotation.RawRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
@@ -27,6 +29,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -37,9 +41,12 @@ import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Assistant
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,8 +58,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,7 +81,9 @@ import com.peyess.salesapp.constants.minPrismDegree
 import com.peyess.salesapp.typing.prescription.PrismPosition
 import com.peyess.salesapp.ui.component.footer.PeyessStepperFooter
 import com.peyess.salesapp.ui.component.mike.MikeBubbleRight
+import com.peyess.salesapp.ui.component.modifier.MinimumHeightState
 import com.peyess.salesapp.ui.component.modifier.MinimumWidthState
+import com.peyess.salesapp.ui.component.modifier.minimumHeightModifier
 import com.peyess.salesapp.ui.component.modifier.minimumWidthModifier
 import com.peyess.salesapp.ui.holdable
 import com.peyess.salesapp.ui.theme.SalesAppTheme
@@ -1223,3 +1236,4 @@ private fun PrescriptionDegreesPreview() {
         PrescriptionDegrees(modifier = Modifier.fillMaxSize())
     }
 }
+

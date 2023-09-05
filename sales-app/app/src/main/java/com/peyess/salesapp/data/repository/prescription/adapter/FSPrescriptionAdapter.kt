@@ -41,6 +41,7 @@ fun FSPrescription.toPrescriptionDocument(): PrescriptionDocument {
         rPrismAxis = rPrismAxis,
         rPrismDegree = rPrismDegree,
         rPrismPos = PrismPosition.toPrism(rPrismPos),
+        observation = observation,
         docVersion = docVersion,
         isEditable = isEditable,
         created = created.toZonedDateTime(),

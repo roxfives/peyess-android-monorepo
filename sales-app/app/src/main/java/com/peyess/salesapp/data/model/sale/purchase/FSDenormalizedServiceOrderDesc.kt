@@ -33,4 +33,14 @@ data class FSDenormalizedServiceOrderDesc(
     @JvmField
     @PropertyName("misc")
     val miscProducts: List<FSProductSoldDescription> = emptyList(),
+
+    @Keep
+    @JvmField
+    @PropertyName("observation")
+    val observation: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("prescription_id")
+    val prescriptionId: String = "",
 )

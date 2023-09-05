@@ -35,6 +35,13 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
         pd = pd,
 
         lIpd = lIpd,
+        lBridge = lBridge,
+        lBridgeHoop = lBridgeHoop,
+        lHHoop = lHHoop,
+        lHe = lHe,
+        lVHoop = lVHoop,
+        lDiameter = lDiameter,
+
         lCylinder = lCylinder,
         lSpherical = lSpherical,
         lAxisDegree = lAxisDegree,
@@ -44,6 +51,13 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
         lPrismPos = lPrismPos.toName(),
 
         rIpd = rIpd,
+        rBridge = rBridge,
+        rBridgeHoop = rBridgeHoop,
+        rHHoop = rHHoop,
+        rHe = rHe,
+        rVHoop = rVHoop,
+        rDiameter = rDiameter,
+
         rCylinder = rCylinder,
         rSpherical = rSpherical,
         rAxisDegree = rAxisDegree,
@@ -51,6 +65,8 @@ fun PrescriptionDocument.toFSPrescription(): FSPrescription {
         rPrismAxis = rPrismAxis,
         rPrismDegree = rPrismDegree,
         rPrismPos = rPrismPos.toName(),
+
+        observation = observation,
 
         docVersion = docVersion,
         isEditable = isEditable,

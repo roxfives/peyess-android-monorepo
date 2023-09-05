@@ -74,11 +74,21 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryMinMaxField
 import com.peyess.salesapp.data.utils.query.adapter.toSqlQuery
 import com.peyess.salesapp.utils.room.MappingPagingSource
 import timber.log.Timber
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class LocalLensesRepositoryImpl @Inject constructor(
     private val localLensDao: LocalLensDao,
 ): LocalLensesRepository {
+    override suspend fun totalLenses(): TotalLensesResponse = Either.catch {
+        localLensDao.totalLenses()
+    }.mapLeft {
+        val errorMessage = "Error while fetching total lenses: ${it.message}"
+        Timber.e(errorMessage, it)
+
+        Unexpected(errorMessage, it)
+    }
+
     override suspend fun addFamily(family: LocalLensFamilyDocument) {
         val entity = family.toLocalLensFamilyEntity()
 
@@ -206,17 +216,21 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addColoringToLens(coloringId: String, lensId: String) {
+    override suspend fun addColoringToLens(coloringId: String, lensId: String, price: BigDecimal) {
         localLensDao.addLensColoringCrossRef(
             LocalLensColoringCrossRef(
                 lensId = lensId,
                 coloringId = coloringId,
+                price = price.toDouble(),
             )
         )
     }
 
-    override suspend fun getColoringById(coloringId: String): SingleColoringResponse = Either.catch {
-        val entity = localLensDao.getColoringById(coloringId)
+    override suspend fun getColoringById(
+        lensId: String,
+        coloringId: String,
+    ): SingleColoringResponse = Either.catch {
+        val entity = localLensDao.getColoringById(lensId, coloringId)
 
         entity?.coloring
             ?.toLocalLensColoringDocument(
@@ -247,11 +261,12 @@ class LocalLensesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String) {
+    override suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: BigDecimal) {
         localLensDao.addLensTreatmentCrossRef(
             LocalLensTreatmentCrossRef(
                 lensId = lensId,
                 treatmentId = treatmentId,
+                price = price.toDouble(),
             )
         )
     }
@@ -274,9 +289,10 @@ class LocalLensesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getTreatmentById(
+        lensId: String,
         treatmentId: String,
     ): SingleTreatmentResponse = Either.catch {
-        val entity = localLensDao.getTreatmentById(treatmentId)
+        val entity = localLensDao.getTreatmentById(lensId, treatmentId)
 
         entity?.treatment
             ?.toLocalLensTreatmentDocument(

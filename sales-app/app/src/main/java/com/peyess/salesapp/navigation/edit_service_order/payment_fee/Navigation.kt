@@ -11,6 +11,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.edit_service_order.payment_fee.EditPaymentFeeScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import java.math.BigDecimal
 
 const val saleIdParam = "saleId"
 const val fullPriceParam = "fullPriceArgument"
@@ -21,7 +22,7 @@ private val editPaymentFeeRoute = SalesAppScreens.EditPaymentFee.name +
 
 fun buildEditPaymentFeeRoute(
     saleId: String,
-    fullPrice: Double,
+    fullPrice: BigDecimal,
 ): String {
     return "${SalesAppScreens.EditPaymentFee.name}/$saleId/$fullPrice"
 }

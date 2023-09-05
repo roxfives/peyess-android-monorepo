@@ -14,10 +14,10 @@ buildscript {
         set("mavericks_version", "2.7.0")
         set("arrow_version", "1.1.3")
 
-        set("firebase_bom", "31.1.1")
+        set("firebase_bom", "32.1.1")
         set("coil_version", "2.2.0")
         set("data_store", "1.0.0")
-        set("android_crypto", "1.0.0")
+        set("android_crypto", "1.1.0-alpha06")
         set("room_version", "2.4.3")
         set("work_version", "2.7.1")
         set("camerax_version", "1.2.0")

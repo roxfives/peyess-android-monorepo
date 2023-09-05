@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.peyess.salesapp.BuildConfig
 import com.peyess.salesapp.R
 import com.peyess.salesapp.screen.settings_actions.state.SettingsAndActionState
 import com.peyess.salesapp.screen.settings_actions.state.SettingsAndActionViewModel
@@ -69,6 +70,8 @@ private fun SettingsAndActionsScreenImpl(
 ) {
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ActionTile(
             actionIcon = { 
@@ -89,6 +92,14 @@ private fun SettingsAndActionsScreenImpl(
             isActionRunning = isUpdatingProductsTable,
             onRunAction = onUpdateProductsTable,
             onCancelAction = onCancelProductsUpdate,
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            modifier = Modifier.padding(listButtonPadding),
+            text = "Build version: ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.caption,
         )
     }
 }

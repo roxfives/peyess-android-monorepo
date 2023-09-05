@@ -3,6 +3,7 @@ package com.peyess.salesapp.data.model.sale.service_order
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class ServiceOrderDocument(
@@ -13,6 +14,7 @@ data class ServiceOrderDocument(
     val storeIds: List<String> = emptyList(),
 
     val salespersonUid: String = "",
+    val salespersonName: String = "",
 
     val clientUid: String = "",
     val clientDocument: String = "",
@@ -74,8 +76,8 @@ data class ServiceOrderDocument(
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),
 
-    val fullPrice: Double = 0.0,
-    val finalPrice: Double = 0.0,
+    val fullPrice: BigDecimal = BigDecimal.ZERO,
+    val finalPrice: BigDecimal = BigDecimal.ZERO,
 
     val observation: String = "",
 
@@ -121,6 +123,7 @@ data class ServiceOrderDocument(
 
     val lIpd: Double = 0.0,
     val lBridge: Double = 0.0,
+    val lBridgeHoop: Double = 0.0,
     val lDiameter: Double = 0.0,
     val lHe: Double = 0.0,
     val lHorizontalBridgeHoop: Double = 0.0,
@@ -129,6 +132,7 @@ data class ServiceOrderDocument(
 
     val rIpd: Double = 0.0,
     val rBridge: Double = 0.0,
+    val rBridgeHoop: Double = 0.0,
     val rDiameter: Double = 0.0,
     val rHe: Double = 0.0,
     val rHorizontalBridgeHoop: Double = 0.0,

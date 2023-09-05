@@ -88,6 +88,9 @@ data class PrescriptionEntity(
     val prismPositionLeft: PrismPosition = PrismPosition.None,
     @ColumnInfo(name = "prism_position_right")
     val prismPositionRight: PrismPosition = PrismPosition.None,
+
+    @ColumnInfo(name = "observation")
+    val observation: String = "",
 ) {
     companion object {
         const val tableName = "local_prescription"

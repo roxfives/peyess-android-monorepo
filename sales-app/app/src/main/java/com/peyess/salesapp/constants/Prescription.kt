@@ -16,8 +16,8 @@ const val minAxis = 0.0
 const val maxAxis = 180.0
 
 const val stepAddition = defaultStep
-const val minAddition = 0.75
-const val maxAddition = 4.5
+const val minAddition = 0.5
+const val maxAddition = 6.0
 
 const val stepPrismDegree = 1.0
 const val minPrismDegree = 1.0

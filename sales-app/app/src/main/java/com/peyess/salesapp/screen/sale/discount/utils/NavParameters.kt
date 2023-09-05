@@ -5,6 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import com.peyess.salesapp.navigation.sale.discount.fullPriceArgumentName
 import com.peyess.salesapp.navigation.sale.discount.saleIdArgumentName
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 @Composable
 fun parseParameterSaleId(
@@ -28,6 +29,6 @@ fun parseParameterFullPrice(
     val fullPriceStr = args?.getString(fullPriceArgumentName, "0")
 
     if (!fullPriceStr.isNullOrBlank()) {
-        onUpdate(BigDecimal(fullPriceStr).setScale(2))
+        onUpdate(BigDecimal(fullPriceStr).setScale(2, RoundingMode.HALF_EVEN))
     }
 }

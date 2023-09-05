@@ -306,6 +306,7 @@ class ServiceOrderFetcher @Inject constructor(
     ): List<LocalPaymentDocument> {
         return purchaseDocument.payments.map {
             LocalPaymentDocument(
+                uuid = it.uuid,
                 saleId = purchaseDocument.id,
                 value = it.amount,
                 clientId = it.payerUid,
@@ -314,8 +315,16 @@ class ServiceOrderFetcher @Inject constructor(
                 methodType = it.methodName.toName(),
                 installments = it.installments,
                 document = it.document,
+
+                hasLegalId = it.hasLegalId,
+                legalId = it.legalId,
+
                 cardFlagName = it.cardFlagName,
                 cardFlagIcon = Uri.parse(it.cardFlagIcon),
+
+                dueDate = it.dueDate,
+                dueDateMode = it.dueDateMode,
+                dueDatePeriod = it.dueDatePeriod,
             )
         }
     }
@@ -325,7 +334,7 @@ class ServiceOrderFetcher @Inject constructor(
     ): OverallDiscountDocument {
         return OverallDiscountDocument(
             saleId = purchaseDocument.id,
-            overallDiscountValue = purchaseDocument.overallDiscount.value.toDouble(),
+            overallDiscountValue = purchaseDocument.overallDiscount.value,
             discountMethod = purchaseDocument.overallDiscount.method,
         )
     }
@@ -414,6 +423,7 @@ class ServiceOrderFetcher @Inject constructor(
             prismAxisRight = prescriptionDocument.rPrismAxis,
             prismPositionLeft = prescriptionDocument.lPrismPos,
             prismPositionRight = prescriptionDocument.rPrismPos,
+            observation = prescriptionDocument.observation,
         )
     }
 
@@ -758,7 +768,7 @@ class ServiceOrderFetcher @Inject constructor(
     suspend fun fetchFullSale(
         serviceOrderId: String,
         purchaseId: String,
-        forceReload: Boolean = false,
+        forceReload: Boolean = true,
     ): ServiceOrderFetchResponse = either {
         val saleExists = saleExistsLocally(purchaseId).bind()
 
@@ -782,7 +792,7 @@ class ServiceOrderFetcher @Inject constructor(
         }
         val witness = serviceOrder.witnessUid.ifBlank { null }?.let { fetchClient(it).bind() }
         val payers = purchase.payerUids.filter {
-            it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
+            it.isNotBlank() && it !in listOfNotNull(client, responsible, witness).map { c -> c.id }
         }.map { fetchClient(it).bind() }
 
         val prescription = fetchPrescription(serviceOrder.prescriptionId).bind()

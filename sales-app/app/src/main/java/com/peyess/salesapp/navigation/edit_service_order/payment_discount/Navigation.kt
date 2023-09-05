@@ -11,6 +11,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.peyess.salesapp.navigation.SalesAppScreens
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.EditPaymentDiscountScreen
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import java.math.BigDecimal
 
 const val saleIdParam = "saleId"
 const val fullPriceParam = "fullPriceArgument"
@@ -21,7 +22,7 @@ private val editPaymentDiscountRoute = SalesAppScreens.EditPaymentDiscount.name 
 
 fun buildEditPaymentDiscountRoute(
     saleId: String,
-    fullPrice: Double,
+    fullPrice: BigDecimal,
 ): String {
     return "${SalesAppScreens.EditPaymentDiscount.name}/$saleId/$fullPrice"
 }

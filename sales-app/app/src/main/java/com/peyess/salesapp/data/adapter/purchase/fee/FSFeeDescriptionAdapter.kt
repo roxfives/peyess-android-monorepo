@@ -8,6 +8,6 @@ import java.math.BigDecimal
 fun FSFeeDescription.toFeeDescriptionDocument(): FeeDescriptionDocument {
     return FeeDescriptionDocument(
         method = PaymentFeeCalcMethod.fromName(method),
-        value = BigDecimal(value),
+        value = value.toBigDecimal(),
     )
 }

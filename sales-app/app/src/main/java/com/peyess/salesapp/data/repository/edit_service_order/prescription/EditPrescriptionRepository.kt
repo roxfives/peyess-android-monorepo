@@ -118,4 +118,9 @@ interface EditPrescriptionRepository {
     suspend fun deletePrescriptionForServiceOrder(
         serviceOrderId: String,
     ): EditPrescriptionDeleteResponse
+
+    suspend fun updateObservation(
+        id: String,
+        observation: String,
+    ): EditPrescriptionUpdateResponse
 }

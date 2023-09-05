@@ -1,29 +1,32 @@
 package com.peyess.salesapp.feature.lens_comparison.model
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.ceil
 
 data class ColoringComparison(
     val originalColoring: Coloring = Coloring(),
     val pickedColoring: Coloring = Coloring(),
 ) {
-    val priceDifference = ceil(pickedColoring.price - originalColoring.price)
+    val priceDifference : BigDecimal = (pickedColoring.price - originalColoring.price)
+        .setScale(0, RoundingMode.CEILING)
     val finalPrice = pickedColoring.price
 
     fun priceDifference(
         withOriginal: Boolean,
         withPicked: Boolean,
-        additionalOriginal: Double,
-        additionalPicked: Double,
-    ): Double {
-        val picked = if (withPicked) { pickedColoring.price } else { 0.0 }
-        val original = if (withOriginal) { originalColoring.price } else { 0.0 }
+        additionalOriginal: BigDecimal,
+        additionalPicked: BigDecimal,
+    ): BigDecimal {
+        val picked = if (withPicked) { pickedColoring.price } else { BigDecimal.ZERO }
+        val original = if (withOriginal) { originalColoring.price } else { BigDecimal.ZERO }
 
         // TODO: remove hardcoded string
         val addOriginal = if(
             originalColoring.name.trim() == "Indisponível"
             || originalColoring.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additionalOriginal
         }
@@ -31,21 +34,22 @@ data class ColoringComparison(
             pickedColoring.name.trim() == "Indisponível"
             || pickedColoring.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additionalPicked
         }
 
-        return ceil(picked + addPicked - original - addOriginal)
+        return (picked + addPicked - original - addOriginal)
+            .setScale(0, RoundingMode.CEILING)
     }
 
-    fun finalPrice(addPrice: Boolean, additional: Double): Double {
+    fun finalPrice(addPrice: Boolean, additional: BigDecimal): BigDecimal {
         // TODO: remove hardcoded string
         val add = if(
             pickedColoring.name.trim() == "Indisponível"
             || pickedColoring.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additional
         }
@@ -53,7 +57,7 @@ data class ColoringComparison(
         return if (addPrice) {
             pickedColoring.price + add
         } else {
-            0.0
+            BigDecimal.ZERO
         }
     }
 }

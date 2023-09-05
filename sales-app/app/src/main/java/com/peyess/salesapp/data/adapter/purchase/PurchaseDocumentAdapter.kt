@@ -8,11 +8,12 @@ import com.peyess.salesapp.data.adapter.purchase.fee.toFSFeeDescription
 import com.peyess.salesapp.data.adapter.service_order.toFSDenormalizedServiceOrderDesc
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
-import com.peyess.salesapp.data.model.sale.purchase.fee.FSFeeDescription
+import com.peyess.salesapp.utils.extentions.roundToDouble
 import com.peyess.salesapp.utils.time.toTimestamp
 
-fun PurchaseDocument.toFSPurchase(): FSPurchase {
+fun PurchaseDocument.toFSPurchase(
+    roundValues: Boolean = true,
+): FSPurchase {
     return FSPurchase(
         id = id,
         hid = hid,
@@ -21,7 +22,7 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         storeId = storeId,
 
         clientUids = clientUids,
-        clients = clients.map { it.toFSDenormalizedClient() },
+        clients = clients.mapValues { it.value.toFSDenormalizedClient() },
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
@@ -60,13 +61,17 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
             it.value.toFSPurchaseProductsDiscount()
         },
 
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
-        leftToPay = leftToPay,
-        totalPaid = totalPaid,
-        totalDiscount = totalDiscount,
-        totalFee = totalFee,
+        fullPrice = fullPrice.roundToDouble(roundValues),
+        finalPrice = finalPrice.roundToDouble(roundValues),
+        leftToPay = leftToPay.roundToDouble(roundValues),
+        totalPaid = totalPaid.roundToDouble(roundValues),
+        totalDiscount = totalDiscount.roundToDouble(roundValues),
+        totalFee = totalFee.roundToDouble(roundValues),
+
         state = state.toName(),
+
+        syncState = syncState.toName(),
+        reasonSyncFailed = reasonSyncFailed.toName(),
 
         payerUids = payerUids,
         payerDocuments = payerDocuments,
@@ -82,6 +87,10 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         legalText = legalText,
         legalVersion = legalVersion,
 
+        finishedAt = finishedAt.toTimestamp(),
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
+
         created = created.toTimestamp(),
         createdBy = createdBy,
         createAllowedBy = createAllowedBy,
@@ -91,3 +100,4 @@ fun PurchaseDocument.toFSPurchase(): FSPurchase {
         updateAllowedBy = updateAllowedBy,
     )
 }
+

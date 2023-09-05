@@ -3,9 +3,11 @@ package com.peyess.salesapp.data.dao.lenses
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
+import com.google.firebase.firestore.AggregateSource
 import com.peyess.salesapp.R
 import com.peyess.salesapp.app.SalesApplication
 import com.peyess.salesapp.data.dao.internal.firestore.FetchCollectionResponse
+import com.peyess.salesapp.data.dao.lenses.error.TotalLensesEnabledError
 import com.peyess.salesapp.data.dao.lenses.utils.StoreLensCollectionPaginator
 import com.peyess.salesapp.data.model.lens.FSStoreLocalLens
 import com.peyess.salesapp.data.internal.firestore.simple_paginator.SimplePaginatorConfig
@@ -23,6 +25,36 @@ class StoreLensesDaoImpl @Inject constructor(
     val salesApplication: SalesApplication,
     val firebaseManager: FirebaseManager,
 ): StoreLensesDao {
+    override suspend fun totalLensesEnabled(): TotalLensesEnabledResponse = either {
+        val firestore = firebaseManager.storeFirestore
+        ensureNotNull(firestore) {
+            TotalLensesEnabledError.DatabaseUnavailable()
+        }
+
+        val storeId = firebaseManager.currentStore?.uid ?: ""
+        ensure(storeId.isNotBlank()) {
+            TotalLensesEnabledError.StoreNotFound()
+        }
+
+        Either.catch {
+            val lensesCollectionPath = salesApplication
+                .stringResource(R.string.fs_col_lenses)
+                .format(storeId)
+
+            val snap = firestore
+                .collection(lensesCollectionPath)
+                .whereEqualTo(
+                    salesApplication.stringResource(R.string.fs_field_lens_enabled),
+                    true,
+                ).count()
+                .get(AggregateSource.SERVER)
+                .await()
+
+            snap.count.toInt()
+        }.mapLeft {
+            TotalLensesEnabledError.Unexpected(throwable = it)
+        }.bind()
+    }
 
     override suspend fun simpleCollectionPaginator(
         query: PeyessQuery,

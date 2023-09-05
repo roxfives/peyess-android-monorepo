@@ -8,9 +8,12 @@ import com.peyess.salesapp.data.adapter.purchase.fee.toFeeDescriptionDocument
 import com.peyess.salesapp.data.adapter.service_order.toDenormalizedServiceOrderDescDocument
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchase
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.math.BigDecimal
 
 fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
     return PurchaseDocument(
@@ -21,7 +24,9 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         storeIds = storeIds,
 
         clientUids = clientUids,
-        clients = clients.map { it.toDenormalizedClientDocument() },
+        clients = clients.mapValues {
+            it.value.toDenormalizedClientDocument()
+        },
 
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
@@ -60,15 +65,19 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
             it.value.toPurchaseProductsDiscountDocument()
         },
 
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
-        leftToPay = leftToPay,
-        totalPaid = totalPaid,
+        fullPrice = fullPrice.toBigDecimal(),
+        finalPrice = finalPrice.toBigDecimal(),
+        leftToPay = leftToPay.toBigDecimal(),
+        totalPaid = totalPaid.toBigDecimal(),
 
-        totalDiscount = totalDiscount,
-        totalFee = totalFee,
+        totalDiscount = totalDiscount.toBigDecimal(),
+        totalFee = totalFee.toBigDecimal(),
 
         state = PurchaseState.fromName(state),
+
+        syncState = PurchaseSyncState.fromName(syncState),
+        reasonSyncFailed = PurchaseReasonSyncFailure.fromName(reasonSyncFailed),
+
         payerUids = payerUids,
         payerDocuments = payerDocuments,
         payments = payments.map { it.toPaymentDocument() },
@@ -82,6 +91,10 @@ fun FSPurchase.toPurchaseDocument(): PurchaseDocument {
         isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
+
+        finishedAt = finishedAt.toZonedDateTime(),
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
 
         created = created.toZonedDateTime(),
         createdBy = createdBy,

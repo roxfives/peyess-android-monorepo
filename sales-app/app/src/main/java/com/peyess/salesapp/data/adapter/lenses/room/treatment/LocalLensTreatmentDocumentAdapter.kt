@@ -7,7 +7,6 @@ fun LocalLensTreatmentDocument.toLocalLensTreatmentEntity(): LocalLensTreatmentE
     return LocalLensTreatmentEntity(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         isEnabled = isEnabled,
         isLocalEnabled = isLocalEnabled,
@@ -15,6 +14,7 @@ fun LocalLensTreatmentDocument.toLocalLensTreatmentEntity(): LocalLensTreatmentE
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         warning = warning,
     )

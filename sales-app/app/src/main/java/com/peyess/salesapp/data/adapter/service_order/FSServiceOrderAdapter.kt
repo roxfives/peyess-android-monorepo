@@ -3,13 +3,10 @@ package com.peyess.salesapp.data.adapter.service_order
 import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldDescriptionDocument
 import com.peyess.salesapp.data.adapter.product_sold_desc.toProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.data.adapter.products_sold.toProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldFramesDescriptionDocument
 import com.peyess.salesapp.utils.time.toZonedDateTime
+import java.math.BigDecimal
 
 
 fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
@@ -19,6 +16,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         storeId = storeId,
         storeIds = storeIds,
         salespersonUid = salespersonUid,
+        salespersonName = salespersonName,
         clientUid = clientUid,
         clientDocument = clientDocument,
         clientName = clientName,
@@ -67,8 +65,8 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         purchaseId = purchaseId,
         payerUids = payerUids,
         payerDocuments = payerDocuments,
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
+        fullPrice = fullPrice.toBigDecimal(),
+        finalPrice = finalPrice.toBigDecimal(),
         observation = observation,
         hasOwnFrames = hasOwnFrames,
         leftProducts = leftProducts.toProductSoldEyeSetDocument(),
@@ -102,6 +100,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         rMeasuringId = rMeasuringId,
         lIpd = lIpd,
         lBridge = lBridge,
+        lBridgeHoop = lBridgeHoop,
         lDiameter = lDiameter,
         lHe = lHe,
         lHorizontalBridgeHoop = lHorizontalBridgeHoop,
@@ -109,6 +108,7 @@ fun FSServiceOrder.toServiceOrderDocument(): ServiceOrderDocument {
         lVerticalHoop = lVerticalHoop,
         rIpd = rIpd,
         rBridge = rBridge,
+        rBridgeHoop = rBridgeHoop,
         rDiameter = rDiameter,
         rHe = rHe,
         rHorizontalBridgeHoop = rHorizontalBridgeHoop,

@@ -47,6 +47,8 @@ import com.peyess.salesapp.data.dao.local_sale.positioning.PositioningDao
 import com.peyess.salesapp.data.dao.local_sale.lens_comparison.LensComparisonDao
 import com.peyess.salesapp.data.dao.local_sale.payment.LocalPaymentDao
 import com.peyess.salesapp.dao.sale.product_picked.ProductPickedDao
+import com.peyess.salesapp.dao.stats.LensStatsDao
+import com.peyess.salesapp.dao.stats.LensStatsDaoImpl
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDao
 import com.peyess.salesapp.data.dao.address_lookup.AddressLookupDaoImpl
 import com.peyess.salesapp.data.dao.card_flag.CardFlagDao
@@ -87,6 +89,8 @@ import com.peyess.salesapp.data.room.database.EditSaleDatabase
 import com.peyess.salesapp.data.room.database.LocalClientDatabase
 import com.peyess.salesapp.data.room.database.PictureUploadDatabase
 import com.peyess.salesapp.firebase.FirebaseManager
+import com.peyess.salesapp.repository.stats.ProductStatsRepository
+import com.peyess.salesapp.repository.stats.ProductStatsRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -575,5 +579,27 @@ object DaoModule {
         editSaleDatabase: EditSaleDatabase,
     ): EditClientPickedDao {
         return editSaleDatabase.editClientPickedDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLensStatsDao(
+        firebaseManager: FirebaseManager,
+        salesApplication: SalesApplication,
+    ): LensStatsDao {
+        return LensStatsDaoImpl(
+            firebaseManager = firebaseManager,
+            salesApplication = salesApplication,
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideProductStatsRepository(
+        lensStatsDao: LensStatsDao,
+    ): ProductStatsRepository {
+        return ProductStatsRepositoryImpl(
+            lensStatsDao = lensStatsDao,
+        )
     }
 }

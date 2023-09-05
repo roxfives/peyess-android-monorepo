@@ -48,8 +48,14 @@ fun FSPurchaseUpdate.toMappingUpdate(): Map<String, Any> {
         "is_legal_custom" to isLegalCustom,
         "legal_text" to legalText,
         "legal_version" to legalVersion,
+        "state" to state,
+        "sync_state" to syncState,
+        "reason_sync_failed" to reasonSyncFailed,
         "updated" to updated,
         "updated_by" to updatedBy,
         "update_allowed_by" to updateAllowedBy,
+        "finished_at" to finishedAt,
+        "days_to_take_from_store" to daysToTakeFromStore,
+        "has_product_with_pending_check" to hasProductWithPendingCheck,
     )
 }

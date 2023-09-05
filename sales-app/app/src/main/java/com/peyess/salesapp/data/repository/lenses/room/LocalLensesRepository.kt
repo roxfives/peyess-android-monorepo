@@ -29,6 +29,7 @@ import com.peyess.salesapp.data.model.lens.room.repo.StoreLensTypeDocument
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
 import com.peyess.salesapp.data.utils.query.PeyessQuery
+import java.math.BigDecimal
 
 
 typealias LensesTypesResponse = Either<LocalLensRepositoryException, List<StoreLensTypeDocument>>
@@ -83,7 +84,11 @@ typealias TechsResponse = Either<LocalLensRepositoryException, List<LocalLensesT
 
 typealias MaterialsResponse = Either<LocalLensRepositoryException, List<LocalLensesMaterialSimplified>>
 
+typealias TotalLensesResponse = Either<LocalLensRepositoryException, Int>
+
 interface LocalLensesRepository {
+    suspend fun totalLenses(): TotalLensesResponse
+
     suspend fun addFamily(family: LocalLensFamilyDocument)
 
     suspend fun addDescription(description: LocalLensDescriptionDocument)
@@ -114,19 +119,19 @@ interface LocalLensesRepository {
 
     suspend fun addColoring(coloring: LocalLensColoringDocument)
 
-    suspend fun addColoringToLens(coloringId: String, lensId: String)
+    suspend fun addColoringToLens(coloringId: String, lensId: String, price: BigDecimal)
 
     suspend fun getColoringsForLens(lensId: String): ColoringsResponse
 
-    suspend fun getColoringById(coloringId: String): SingleColoringResponse
+    suspend fun getColoringById(lensId: String, coloringId: String): SingleColoringResponse
 
     suspend fun addTreatment(treatment: LocalLensTreatmentDocument)
 
-    suspend fun addTreatmentToLens(treatmentId: String, lensId: String)
+    suspend fun addTreatmentToLens(treatmentId: String, lensId: String, price: BigDecimal)
 
     suspend fun getTreatmentsForLens(lensId: String): TreatmentsResponse
 
-    suspend fun getTreatmentById(treatmentId: String): SingleTreatmentResponse
+    suspend fun getTreatmentById(lensId: String, treatmentId: String): SingleTreatmentResponse
 
     suspend fun addAlternativeHeight(alternativeHeight: StoreLensAltHeightDocument)
 

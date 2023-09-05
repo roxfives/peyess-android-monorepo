@@ -1,13 +1,20 @@
 package com.peyess.salesapp.data.model.sale.purchase
 
 import androidx.annotation.Keep
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
 import com.peyess.salesapp.typing.sale.FinancialInstitutionType
+import java.time.ZonedDateTime
 
 @Keep
 @IgnoreExtraProperties
 data class FSPayment(
+    @Keep
+    @JvmField
+    @PropertyName("uuid")
+    val uuid: String = "",
+
     @Keep
     @JvmField
     @PropertyName("method")
@@ -36,6 +43,16 @@ data class FSPayment(
     @JvmField
     @PropertyName("financial_inst")
     val financialInst: String = FinancialInstitutionType.None.toName(), // FinantialInstitutionType
+
+    @Keep
+    @JvmField
+    @PropertyName("has_legal_id")
+    val hasLegalId: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("legal_id")
+    val legalId: String = "",
+
     @Keep
     @JvmField
     @PropertyName("card_flag_name")
@@ -57,4 +74,17 @@ data class FSPayment(
     @JvmField
     @PropertyName("payer_name")
     val payerName: String = "",
+
+    @Keep
+    @JvmField
+    @PropertyName("due_date_mode")
+    val dueDateMode: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("due_date_period")
+    val dueDatePeriod: Int = 0,
+    @Keep
+    @JvmField
+    @PropertyName("due_date")
+    val dueDate: Timestamp = Timestamp.now(),
 )

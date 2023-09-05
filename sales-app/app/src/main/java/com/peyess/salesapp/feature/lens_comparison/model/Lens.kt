@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.lens_comparison.model
 
+import java.math.BigDecimal
+
 data class Lens(
     val id: String = "",
 
@@ -23,9 +25,9 @@ data class Lens(
     val observation: String = "",
     val warning: String = "",
 
-    val price: Double = 0.0,
-    val priceAddColoring: Double = 0.0,
-    val priceAddTreatment: Double = 0.0,
+    val price: BigDecimal = BigDecimal.ZERO,
+    val priceAddColoring: BigDecimal = BigDecimal.ZERO,
+    val priceAddTreatment: BigDecimal = BigDecimal.ZERO,
 
     val brandId: String = "",
     val designId: String = "",

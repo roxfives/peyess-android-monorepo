@@ -3,6 +3,7 @@ package com.peyess.salesapp.utils.file
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.webkit.URLUtil
 import timber.log.Timber
 import java.io.File
 import java.time.ZonedDateTime
@@ -61,8 +62,3 @@ fun createPrintFile(context: Context): File {
         storageDir,
     )
 }
-
-
-//fun createMeasureFile(context: Context, prefix: String): File {
-//
-//}

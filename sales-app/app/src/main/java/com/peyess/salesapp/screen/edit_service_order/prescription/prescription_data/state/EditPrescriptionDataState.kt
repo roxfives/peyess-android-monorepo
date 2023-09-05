@@ -5,15 +5,11 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.Uninitialized
-import com.peyess.salesapp.dao.sale.active_so.ActiveSOEntity
 import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
 import com.peyess.salesapp.feature.prescription.model.PrescriptionData
 import com.peyess.salesapp.feature.prescription.utils.animationFor
-import com.peyess.salesapp.feature.prescription.utils.messageFor
-import com.peyess.salesapp.repository.sale.ActiveServiceOrderResponse
 import com.peyess.salesapp.typing.lens.LensTypeCategoryName
 import com.peyess.salesapp.typing.prescription.PrismPosition
 
@@ -28,8 +24,13 @@ data class EditPrescriptionDataState(
     val prescriptionResponseAsync: Async<EditPrescriptionFetchResponse> = Uninitialized,
     val prescriptionResponse: PrescriptionData = PrescriptionData(),
 
+    val prescriptionForObservationResponseAsync: Async<EditPrescriptionFetchResponse> = Uninitialized,
+    val observationResponse: String = "",
+
     val mikeMessageAmetropies: String = "",
     val generalMessage: String = "",
+
+//    val observationInput: String = "",
 ): MavericksState {
     val isLoading = prescriptionResponseAsync is Loading
 
@@ -79,4 +80,6 @@ data class EditPrescriptionDataState(
     val hasAstigmatismRight = cylindricalRight < 0;
     val hasPresbyopiaRight = lensTypeCategoryName == LensTypeCategoryName.Near
             || lensTypeCategoryName == LensTypeCategoryName.Multi
+
+    val observationInput = prescriptionResponse.observation
 }

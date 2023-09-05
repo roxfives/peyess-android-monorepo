@@ -54,4 +54,9 @@ data class FSProductSoldFramesDescription(
     @JvmField
     @PropertyName("discount")
     val discount: FSDiscountDescription = FSDiscountDescription(),
+
+    @Keep
+    @JvmField
+    @PropertyName("accessory_per_unit")
+    val accessoryPerUnit: List<FSAccessoryItem> = emptyList(),
 )

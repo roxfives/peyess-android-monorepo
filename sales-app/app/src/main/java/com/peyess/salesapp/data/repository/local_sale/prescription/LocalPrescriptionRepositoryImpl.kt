@@ -91,6 +91,21 @@ class LocalPrescriptionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun updatePrescriptionObservation(
+        serviceOrderId: String,
+        observation: String
+    ): LocalPrescriptionUpdateResponse = Either.catch {
+        localPrescriptionDao.updateObservation(
+            serviceOrderId = serviceOrderId,
+            observation = observation,
+        )
+    }.mapLeft {
+        Unexpected(
+            description = "Unexpected error while updating prescription for service order $serviceOrderId",
+            error = it,
+        )
+    }
+
     override fun streamPrescriptionForServiceOrderExists(
         soId: String,
     ): LocalPrescriptionStreamExistsResponse {

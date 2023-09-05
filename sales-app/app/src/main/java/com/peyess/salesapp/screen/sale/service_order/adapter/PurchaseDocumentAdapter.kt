@@ -50,6 +50,8 @@ fun PurchaseDocument.toPurchase(): Purchase {
         soPreviews = soPreviews,
         legalText = legalText,
         legalVersion = legalVersion,
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
         updated = updated,
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,

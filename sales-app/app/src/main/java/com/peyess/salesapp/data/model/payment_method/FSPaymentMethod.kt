@@ -66,6 +66,28 @@ data class FSPaymentMethod(
 
     @Keep
     @JvmField
+    @PropertyName("due_date_can_edit")
+    val dueDateCanEdit: Boolean = false,
+    @Keep
+    @JvmField
+    @PropertyName("due_date_mode")
+    val dueDateMode: String = "",
+    @Keep
+    @JvmField
+    @PropertyName("due_date_default")
+    val dueDateDefault: Int = 0,
+    @Keep
+    @JvmField
+    @PropertyName("due_date_max")
+    val dueDateMax: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("has_legal_id")
+    val hasLegalId: Boolean = false,
+
+    @Keep
+    @JvmField
     @PropertyName("doc_version")
     val doc_version: Int = 0,
 

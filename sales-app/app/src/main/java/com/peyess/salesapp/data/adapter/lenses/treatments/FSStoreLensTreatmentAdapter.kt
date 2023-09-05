@@ -5,12 +5,13 @@ import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
 
 fun FSLensTreatment.toStoreLensTreatmentDocument(
     id: String,
+    supplierId: String,
 ): StoreLensTreatmentDocument {
     return StoreLensTreatmentDocument(
         id = id,
         brand = brand,
         cost = cost,
-        price = price,
+        price = price.toBigDecimal(),
         design = design,
         explanations = explanations,
         isColoringRequired = isColoringRequired,
@@ -21,6 +22,7 @@ fun FSLensTreatment.toStoreLensTreatmentDocument(
         shippingTime = shippingTime,
         specialty = specialty,
         suggestedPrice = suggestedPrice,
+        supplierId = supplierId,
         supplier = supplier,
         warning = warning,
     )

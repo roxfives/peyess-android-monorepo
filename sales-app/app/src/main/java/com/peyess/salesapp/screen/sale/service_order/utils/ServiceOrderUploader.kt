@@ -16,7 +16,7 @@ import com.peyess.salesapp.data.adapter.measuring.toMeasuringDocument
 import com.peyess.salesapp.data.adapter.positioning.toPositioningDocument
 import com.peyess.salesapp.data.adapter.prescription.prescriptionFrom
 import com.peyess.salesapp.data.adapter.products.toDescription
-import com.peyess.salesapp.screen.sale.service_order.utils.adapter.toDescription
+import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.data.adapter.service_order.toPreview
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
@@ -24,7 +24,6 @@ import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.client.error.ClientNotFound
 import com.peyess.salesapp.data.repository.discount.OverallDiscountRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -63,7 +62,9 @@ import com.peyess.salesapp.screen.sale.service_order.adapter.toPurchase
 import com.peyess.salesapp.screen.sale.service_order.adapter.toServiceOrder
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
 import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.typing.sale.SOState
 import com.peyess.salesapp.utils.string.removeDiacritics
 import kotlinx.coroutines.flow.filterNotNull
@@ -76,7 +77,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import kotlin.math.abs
+import kotlin.math.max
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -180,6 +181,7 @@ class ServiceOrderUploader constructor(
             clientName = so.clientName,
             salespersonUid = so.salespersonUid,
 
+            serviceOrder = so,
             prescriptionEntity = prescriptionEntity,
         )
 
@@ -310,6 +312,7 @@ class ServiceOrderUploader constructor(
             lHorizontalBridgeHoop = measuringLeft.fixedHorizontalBridgeHoop,
             lHorizontalHoop = measuringLeft.fixedHHoop,
             lVerticalHoop = measuringLeft.fixedVHoop,
+            lBridgeHoop = measuringLeft.fixedHorizontalBridgeHoop,
 
             rIpd = measuringRight.fixedIpd,
             rBridge = measuringRight.fixedBridge,
@@ -318,6 +321,7 @@ class ServiceOrderUploader constructor(
             rHorizontalBridgeHoop = measuringRight.fixedHorizontalBridgeHoop,
             rHorizontalHoop = measuringRight.fixedHHoop,
             rVerticalHoop = measuringRight.fixedVHoop,
+            rBridgeHoop = measuringRight.fixedHorizontalBridgeHoop,
         )
     }
 
@@ -416,7 +420,7 @@ class ServiceOrderUploader constructor(
 
         return so.copy(
             salespersonUid = user!!.id,
-//            salespersonName = user!!.name,
+            salespersonName = user!!.name,
 
             soldBy = user!!.id,
             measureConfirmedBy = user!!.id,
@@ -444,13 +448,13 @@ class ServiceOrderUploader constructor(
             .mapLeft { LensNotFound(it.description, it.error) }
             .bind()
 
-        val coloring = localLensesRepository
-            .getColoringById(productPicked.coloringId)
+        var coloring = localLensesRepository
+            .getColoringById(productPicked.lensId, productPicked.coloringId)
             .mapLeft { ColoringNotFound(it.description, it.error) }
             .bind()
 
-        val treatment = localLensesRepository
-            .getTreatmentById(productPicked.treatmentId)
+        var treatment = localLensesRepository
+            .getTreatmentById(productPicked.lensId, productPicked.treatmentId)
             .mapLeft { TreatmentNotFound(it.description, it.error) }
             .bind()
 
@@ -459,12 +463,12 @@ class ServiceOrderUploader constructor(
             .mapLeft { FramesNotFound(it.description, it.error) }
             .bind()
 
-        val misc = mutableListOf<ProductSoldDescriptionDocument>()
+//        val lensAccessories = mutableListOf<AccessoryItemDocument>()
 
         val framesValue = if (frames.areFramesNew) {
             frames.value
         } else {
-            0.0
+            BigDecimal.ZERO
         }
 
         var total = lens.price + framesValue
@@ -474,50 +478,62 @@ class ServiceOrderUploader constructor(
 
             // TODO: refactor to remove identification by name
             if (
-                lens.priceAddColoring > 0
+                lens.priceAddColoring > BigDecimal.ZERO
                 && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                 && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
                 total += lens.priceAddColoring
-
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
-                        nameDisplay = "Adicional por coloração",
-                        price = lens.priceAddColoring,
-                    )
-                )
+                coloring = coloring.copy(price = coloring.price + lens.priceAddColoring)
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por coloração",
+//                        price = BigDecimal(lens.priceAddColoring).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble(),
+//                    )
+//                )
             }
         }
 
         // TODO: refactor to remove identification by name
         if (!lens.isTreatmentIncluded && !lens.isTreatmentDiscounted) {
             total += treatment.price
+            treatment = treatment.copy(price = treatment.price + lens.priceAddTreatment)
 
             if (
-                lens.priceAddTreatment > 0
+                lens.priceAddTreatment > BigDecimal.ZERO
                 && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
                 && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
                 total += lens.priceAddTreatment
 
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
-                        nameDisplay = "Adicional por tratamento",
-                        price = lens.priceAddTreatment,
-                    )
-                )
+
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por tratamento",
+//                        price = BigDecimal(lens.priceAddTreatment).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble(),
+//                    )
+//                )
             }
         }
 
+        val withHeight = max(so.lHe, so.rHe)
         so.copy(
             samePurchaseSo = listOf(so.id),
 
             fullPrice = total,
             hasOwnFrames = !frames.areFramesNew,
             leftProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,
@@ -528,7 +544,14 @@ class ServiceOrderUploader constructor(
                 ),
             ),
             rightProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,
@@ -539,35 +562,35 @@ class ServiceOrderUploader constructor(
                 ),
             ),
             framesProducts = frames.toDescription(),
-            miscProducts = misc,
+            miscProducts = emptyList(),
         )
     }
 
-    private suspend fun calculateDiscount(
+    private suspend fun calculateDiscountAsWhole(
         saleId: String,
         serviceOrder: ServiceOrderDocument,
-    ): Double {
+    ): BigDecimal {
         val discount = discountRepository.getDiscountForSale(saleId)
         val totalDiscount = when (discount?.discountMethod) {
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
-            DiscountCalcMethod.None, null -> 0.0
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue * serviceOrder.fullPrice
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
+            DiscountCalcMethod.None, null -> BigDecimal.ZERO
         }
 
         return totalDiscount
     }
 
-    private suspend fun calculateFee(
+    private suspend fun calculateFeeAsWhole(
         saleId: String,
-        discount: Double,
+        discountAsWhole: BigDecimal,
         serviceOrder: ServiceOrderDocument,
-    ): Double {
-        val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
+    ): BigDecimal {
+        val priceWithDiscount = serviceOrder.fullPrice - discountAsWhole
         val fee = paymentFeeRepository.getPaymentFeeForSale(saleId)
         val totalFee = when (fee?.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole ->  fee.value / priceWithDiscount
-            PaymentFeeCalcMethod.None, null -> 0.0
+            PaymentFeeCalcMethod.Percentage -> fee.value * priceWithDiscount
+            PaymentFeeCalcMethod.Whole ->  fee.value
+            PaymentFeeCalcMethod.None, null -> BigDecimal.ZERO
         }
 
         return totalFee
@@ -596,8 +619,8 @@ class ServiceOrderUploader constructor(
 
     private suspend fun createPurchase(
         saleId: String,
-        discount: Double,
-        fee: Double,
+        discountAsWhole: BigDecimal,
+        feeAsWhole: BigDecimal,
         serviceOrder: ServiceOrderDocument,
     ): PurchaseCreationResponse = either {
         purchaseId = saleId
@@ -607,7 +630,7 @@ class ServiceOrderUploader constructor(
         val feeDocument = paymentFeeRepository.getPaymentFeeForSale(saleId)
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
+        val finalPrice = fullPrice - discountAsWhole + feeAsWhole
 
         val storeId = firebaseManager.currentStore?.uid
         ensureNotNull(storeId) {
@@ -624,13 +647,42 @@ class ServiceOrderUploader constructor(
             }.bind()
 
         val totalPaid = if (payments.isEmpty()) {
-            0.0
+            BigDecimal.ZERO
         } else {
-            payments.map { it.value }.reduce { acc, payment -> acc + payment }
+            payments.map { it.value }
+                .ifEmpty { listOf(BigDecimal.ZERO) }
+                .reduce(BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_EVEN)
         }
-        val totalLeft = BigDecimal(abs((finalPrice - totalPaid)))
+        val totalLeft = (finalPrice - totalPaid).abs()
             .setScale(2, RoundingMode.HALF_EVEN)
-            .toDouble()
+
+        val store = authenticationRepository.loadCurrentStore().mapLeft {
+            PurchaseCreationFailed(
+                description = "Store not found",
+                error = it.error,
+            )
+        }.bind()
+
+        val productPicked = saleRepository.productPicked(serviceOrder.id).mapLeft {
+            PurchaseCreationFailed(
+                description = "Product picked not found",
+                error = it.error,
+            )
+        }.bind()
+
+        val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
+            PurchaseCreationFailed(
+                description = "Store not found",
+                error = it.error,
+            )
+        }.bind()
+
+        val daysToTakeFromStore = if (lens.needsCheck) {
+            store.daysToTakeFromStore + store.additionalCheckDays
+        } else {
+            store.daysToTakeFromStore
+        }
 
         PurchaseDocument(
             id = id,
@@ -638,13 +690,13 @@ class ServiceOrderUploader constructor(
 
             storeId = storeId,
             storeIds = listOf(storeId),
-            clientUids = listOf(serviceOrder.id),
-            clients = listOf(
-                DenormalizedClientDocument(
+            clientUids = listOf(serviceOrder.clientUid),
+            clients = mapOf(
+                serviceOrder.id to DenormalizedClientDocument(
                     uid = serviceOrder.clientUid,
                     document = serviceOrder.clientDocument,
                     name = serviceOrder.clientName,
-                ),
+                )
             ),
 
             responsibleDocument = serviceOrder.responsibleDocument,
@@ -675,16 +727,17 @@ class ServiceOrderUploader constructor(
             witnessZipcode = serviceOrder.witnessZipcode,
 
             salespersonUid = serviceOrder.salespersonUid,
+            salespersonName = serviceOrder.salespersonName,
 
             isDiscountOverall = true,
             overallDiscount = DiscountDescriptionDocument(
                 method = discountDocument?.discountMethod ?: DiscountCalcMethod.Percentage,
-                value = BigDecimal(discountDocument?.overallDiscountValue ?: 0.0),
+                value = discountDocument?.overallDiscountValue ?: BigDecimal.ZERO,
 
             ),
             paymentFee = FeeDescriptionDocument(
                 method = feeDocument?.method ?: PaymentFeeCalcMethod.Percentage,
-                value = BigDecimal(feeDocument?.value ?: 0.0),
+                value = feeDocument?.value ?: BigDecimal.ZERO,
             ),
 
             fullPrice = fullPrice,
@@ -693,10 +746,13 @@ class ServiceOrderUploader constructor(
             leftToPay = totalLeft,
             totalPaid = totalPaid,
 
-            totalDiscount = discount,
-            totalFee = fee,
+            totalDiscount = discountAsWhole,
+            totalFee = feeAsWhole,
 
             state = PurchaseState.PendingConfirmation,
+
+            syncState = PurchaseSyncState.NotSynced,
+            reasonSyncFailed = PurchaseReasonSyncFailure.None,
 
             payerUids = payments.map { it.clientId }.distinct(),
             payerDocuments = payments.map { it.clientDocument }.distinct(),
@@ -714,6 +770,10 @@ class ServiceOrderUploader constructor(
             // TODO: load legal text + version and add it here
             legalText = "", // serviceOrder.legal_text,
             legalVersion = "", // serviceOrder.legal_version,
+
+            finishedAt = serviceOrder.updated,
+            daysToTakeFromStore = daysToTakeFromStore,
+            hasProductWithPendingCheck = lens.needsCheck,
 
             created = serviceOrder.created,
             createdBy = serviceOrder.createdBy,
@@ -755,23 +815,24 @@ class ServiceOrderUploader constructor(
             updated = now,
         )
 
+
         serviceOrder = addClientData(serviceOrder).bind()
 
         serviceOrder = addSalespersonData(serviceOrder)
 
-        serviceOrder = addPrescriptionData(serviceOrder, uploadPartialData)
-
         serviceOrder = addPositioningData(serviceOrder, uploadPartialData)
+
+        serviceOrder = addPrescriptionData(serviceOrder, uploadPartialData)
 
         serviceOrder = addProductsData(serviceOrder).bind()
 
-        val discount = calculateDiscount(localSaleId, serviceOrder)
-        val fee = calculateFee(localSaleId, discount, serviceOrder)
+        val discount = calculateDiscountAsWhole(localSaleId, serviceOrder)
+        val fee = calculateFeeAsWhole(localSaleId, discount, serviceOrder)
 
         var purchase = createPurchase(
             saleId = localSaleId,
-            discount = discount,
-            fee = fee,
+            discountAsWhole = discount,
+            feeAsWhole = fee,
             serviceOrder = serviceOrder,
         ).bind()
 

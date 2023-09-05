@@ -15,9 +15,12 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment.error.Inse
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.ReadLocalPaymentError
 import com.peyess.salesapp.data.repository.edit_service_order.payment.error.UpdateLocalPaymentError
 import com.peyess.salesapp.navigation.edit_service_order.service_order.editServiceOrderRoute
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import timber.log.Timber
+import java.math.BigDecimal
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 private const val attemptThreshold = 10L
@@ -51,7 +54,9 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     override suspend fun totalPaid(
         saleId: String,
     ): EditLocalPaymentFetchTotalResponse = Either.catch {
-        editLocalPaymentDao.totalPaid(saleId) ?: 0.0
+        val total = editLocalPaymentDao.totalPaid(saleId)
+
+        total?.toBigDecimal() ?: BigDecimal.ZERO
     }.mapLeft {
         ReadLocalPaymentError.Unexpected(
             description = "Error while fetching total paid for sale $saleId",
@@ -61,7 +66,11 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
     override fun streamTotalPaid(saleId: String): EditLocalPaymentStreamTotalResponse {
         return editLocalPaymentDao.streamTotalPaid(saleId)
-            .map { (it ?: 0.0).right() }
+            .map {
+                val result = it?.toBigDecimal() ?: BigDecimal.ZERO
+
+                result.right()
+            }
     }
 
     override suspend fun paymentsForSale(
@@ -206,9 +215,9 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
 
     override suspend fun updateValue(
         paymentId: Long,
-        value: Double,
+        value: BigDecimal,
     ): EditLocalPaymentUpdateResponse = Either.catch {
-        editLocalPaymentDao.updateValue(paymentId, value)
+        editLocalPaymentDao.updateValue(paymentId, value.toDouble())
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
             description = "Error while updating payment value for sale $paymentId",
@@ -260,6 +269,51 @@ class EditLocalPaymentRepositoryImpl @Inject constructor(
     }.mapLeft {
         UpdateLocalPaymentError.Unexpected(
             description = "Error while updating payment cardFlagIcon for sale $paymentId",
+            throwable = it,
+        )
+    }
+
+    override suspend fun updateDueDateData(
+        paymentId: Long,
+        dueDateMode: PaymentDueDateMode,
+        dueDatePeriod: Int,
+        dueDate: ZonedDateTime,
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        editLocalPaymentDao.updateDaysToDueDate(
+            paymentId,
+            dueDateMode,
+            dueDatePeriod,
+            dueDate,
+        )
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment days to due date for sale $paymentId",
+            throwable = it,
+        )
+    }
+
+    override suspend fun updateLegalId(
+        paymentId: Long,
+        legalId: String
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        editLocalPaymentDao.updateLegalId(paymentId, legalId)
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment legalId for sale $paymentId",
+            throwable = it,
+        )
+    }
+
+    override suspend fun updateHasLegalId(
+        paymentId: Long,
+        hasLegalId: Boolean
+    ): EditLocalPaymentUpdateResponse = Either.catch {
+        val hasLegalIdAsInt = if (hasLegalId) 1 else 0
+
+        editLocalPaymentDao.updateHasLegalId(paymentId, hasLegalIdAsInt)
+    }.mapLeft {
+        UpdateLocalPaymentError.Unexpected(
+            description = "Error while updating payment hasLegalId for sale $paymentId",
             throwable = it,
         )
     }

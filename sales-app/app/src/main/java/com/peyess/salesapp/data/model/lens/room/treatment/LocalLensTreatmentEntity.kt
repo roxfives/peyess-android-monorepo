@@ -13,9 +13,6 @@ data class LocalLensTreatmentEntity(
     @ColumnInfo(name = "brand")
     val brand: String = "",
 
-    @ColumnInfo(name = "price")
-    val price: Double = 0.0,
-
     @ColumnInfo(name = "design")
     val design: String = "",
 
@@ -39,6 +36,9 @@ data class LocalLensTreatmentEntity(
 
     @ColumnInfo(name = "specialty")
     val specialty: String = "",
+
+    @ColumnInfo(name = "supplier_id")
+    val supplierId: String = "",
 
     @ColumnInfo(name = "supplier")
     val supplier: String = "",

@@ -8,9 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,11 +26,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,9 +66,9 @@ import com.peyess.salesapp.app.state.MainViewModel
 import com.peyess.salesapp.app.state.PurchaseStream
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseDocument
-import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
+import com.peyess.salesapp.screen.home.dialog.ConfirmFinishSaleDialog
 import com.peyess.salesapp.screen.home.utils.PurchaseBadge
-import com.peyess.salesapp.screen.home.utils.actionButtonTitle
+import com.peyess.salesapp.screen.home.utils.canFinishFromState
 import com.peyess.salesapp.screen.home.utils.displayName
 import com.peyess.salesapp.screen.sale.anamnesis.fifth_step_sports.state.FifthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.first_step_first_time.state.FirstTimeViewModel
@@ -73,8 +76,10 @@ import com.peyess.salesapp.screen.sale.anamnesis.fourth_step_pain.state.FourthSt
 import com.peyess.salesapp.screen.sale.anamnesis.second_step_glass_usage.state.SecondStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.sixth_step_time.state.SixthStepViewModel
 import com.peyess.salesapp.screen.sale.anamnesis.third_step_sun_light.state.ThirdStepViewModel
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import com.peyess.salesapp.ui.theme.SalesAppTheme
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
@@ -115,6 +120,8 @@ fun SalesScreen(
     val serviceOrderList by viewModel.collectAsState(MainAppState::purchaseListStream)
 
     val isGeneratingPdfFor by viewModel.collectAsState(MainAppState::isGeneratingPdfFor)
+
+    val finishingSales by viewModel.collectAsState(MainAppState::finishingSales)
 
     if (hasCreatedSale) {
         LaunchedEffect(Unit) {
@@ -171,6 +178,11 @@ fun SalesScreen(
                 )
             },
 
+            finishingSales = finishingSales,
+            onFinishingSale = viewModel::finishSale,
+
+            onSyncRetry = viewModel::retrySyncSale,
+
             onEditServiceOrder = { saleId, serviceOrderId ->
                 onEditServiceOrder(saleId, serviceOrderId)
             }
@@ -194,6 +206,11 @@ fun SaleList(
 
     onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
 
+    finishingSales: List<String> = emptyList(),
+    onFinishingSale: (saleId: String) -> Unit = {},
+
+    onSyncRetry: (saleId: String) -> Unit = {},
+
     onStartNewSale: () -> Unit = {},
 ) {
     val serviceOrders = serviceOrderList.collectAsLazyPagingItems()
@@ -202,40 +219,6 @@ fun SaleList(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp),
     ) {
-//        item {
-//            OutlinedButton(
-//                modifier = Modifier
-//                    .padding(horizontal = SalesAppTheme.dimensions.grid_1_5)
-//                    .fillMaxWidth()
-//                    .height(buttonHeight),
-//                shape = MaterialTheme.shapes.large,
-//                enabled = !isUpdatingProducts,
-//                onClick = onStartNewSale,
-//            ) {
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.Start,
-//                    verticalAlignment = Alignment.CenterVertically,
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .padding(horizontal = SalesAppTheme.dimensions.grid_3)
-//                            .background(color = MaterialTheme.colors.primary.copy(alpha = 0.5f)),
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Add,
-//                            tint = MaterialTheme.colors.onPrimary,
-//                            contentDescription = "",
-//                        )
-//                    }
-//
-//                    Text(
-//                        text = stringResource(id = R.string.btn_make_new_sale),
-//                        style = MaterialTheme.typography.body1,
-//                    )
-//                }
-//            }
-//        }
 
         item {
             if (isServiceOrderListLoading) {
@@ -247,7 +230,7 @@ fun SaleList(
 
         items(serviceOrders.itemCount) { index ->
             serviceOrders[index]?.let {
-                ServiceOrderCard(
+                PurchaseCard(
                     modifier = Modifier
                         .padding(SalesAppTheme.dimensions.grid_1_5)
                         .fillMaxWidth(),
@@ -257,9 +240,11 @@ fun SaleList(
                     isGeneratingPdf = isGeneratingPdfFor.first
                             && isGeneratingPdfFor.second == it.id,
                     onGenerateSalePdf = onGenerateSalePdf,
-
-                    canEditServiceOrder = !isUpdatingProducts,
-                    onEditServiceOrder = onEditServiceOrder,
+                    
+                    isFinishingSale = finishingSales.contains(it.id),
+                    onFinishingSale = onFinishingSale,
+                    onEditSale = onEditServiceOrder,
+                    onSyncRetry = onSyncRetry,
                 )
             }
         }
@@ -271,27 +256,25 @@ fun SaleList(
 }
 
 @Composable
-private fun ServiceOrderCard(
+private fun PurchaseCard(
     modifier: Modifier = Modifier,
     purchase: PurchaseDocument = PurchaseDocument(),
 
     onGenerateSalePdf: (purchase: PurchaseDocument) -> Unit = {},
     isGeneratingPdf: Boolean = false,
 
-    canEditServiceOrder: Boolean = true,
-    onEditServiceOrder: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    isFinishingSale: Boolean = false,
+    onEditSale: (saleId: String, serviceOrderId: String) -> Unit = { _, _ -> },
+    onFinishingSale: (saleId: String) -> Unit = {},
+    onSyncRetry: (saleId: String) -> Unit = {},
 
     pictureForClient: suspend (clientId: String) -> Uri = { Uri.EMPTY },
 ) {
-    val client = remember {
-        purchase.clients.firstOrNull() ?: DenormalizedClientDocument()
-    }
-
     val coroutineScope = rememberCoroutineScope()
     val pictureUri = remember { mutableStateOf(Uri.EMPTY) }
     LaunchedEffect(Unit) {
         coroutineScope.launch(Dispatchers.IO) {
-            val picture = pictureForClient(client.uid)
+            val picture = pictureForClient(purchase.responsibleUid)
 
             pictureUri.value = picture
         }
@@ -350,7 +333,7 @@ private fun ServiceOrderCard(
                 verticalArrangement = Arrangement.Top,
             ) {
                 Text(
-                    text = client.name,
+                    text = purchase.responsibleName,
                     style = MaterialTheme.typography.subtitle1
                         .copy(fontWeight = FontWeight.Bold),
                 )
@@ -387,22 +370,212 @@ private fun ServiceOrderCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AnimatedVisibility(
-                visible = canEditServiceOrder,
+                visible = isFinishingSale,
                 enter = fadeIn(),
                 exit = fadeOut(),
-            ){
-                Button(
-                    onClick = {
-                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+            ) {
+                CircularProgressIndicator()
+            }
 
-                        onEditServiceOrder(purchase.id, serviceOrderId)
-                    },
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.Syncing,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = purchase.state.actionButtonTitle())
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.purchase_sync_status_syncing),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.SyncSuccessful,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = Icons.Filled.CheckCircle,
+                        tint = Color.hsl(116f, 0.46f, 0.486f),
+                        contentDescription = "",
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.purchase_sync_status_sync_successful),
+                        style = MaterialTheme.typography.caption
+                            .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = purchase.syncState == PurchaseSyncState.SyncFailed,
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = Icons.Filled.Cancel,
+                            tint = MaterialTheme.colors.error,
+                            contentDescription = "",
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.purchase_sync_status_sync_failed),
+                            style = MaterialTheme.typography.caption
+                                .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        IconButton(
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
+                            onClick = { onSyncRetry(purchase.id) },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Sync,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.primary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_sync_retry),
+                            style = MaterialTheme.typography.caption
+                                .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(
+                visible = purchase.state.canFinishFromState(),
+                enter = fadeIn(),
+                exit = fadeOut(),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+//                        val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+                        val dialogState = rememberMaterialDialogState()
+                        ConfirmFinishSaleDialog(
+                            dialogState = dialogState,
+                            onConfirmFinish = { onFinishingSale(purchase.id) },
+                            onCancelFinish = { dialogState.hide() }
+                        )
+
+                        IconButton(
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Transparent,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
+                            onClick = { dialogState.show() },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.primary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_finish_sale),
+                            style = MaterialTheme.typography
+                                .caption.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        IconButton(
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                )
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colors.primary,
+                                    shape = CircleShape,
+                                ),
+                            onClick = {
+                                val serviceOrderId = purchase.soIds.firstOrNull() ?: "not-found"
+                                onEditSale(purchase.id, serviceOrderId)
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "",
+                                tint = MaterialTheme.colors.onPrimary,
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.sales_edit_sale),
+                            style = MaterialTheme.typography.caption.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
 
             AnimatedVisibility(
                 visible = isGeneratingPdf,
@@ -439,7 +612,7 @@ private fun SalesPreview() {
 @Composable
 private fun ServiceOrderCardPreview() {
     SalesAppTheme {
-        ServiceOrderCard(
+        PurchaseCard(
             modifier = Modifier.fillMaxWidth(),
             purchase = PurchaseDocument()
         )

@@ -66,31 +66,15 @@ data class PrescriptionDataState(
 
     val hasHypermetropiaLeft =  sphericalLeft > 0
             && lensTypeCategoryName !is LensTypeCategoryName.Near
-//            && lensTypeCategoryName is Success
-//            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
     val hasMyopiaLeft = sphericalLeft < 0;
     val hasAstigmatismLeft = cylindricalLeft < 0;
     val hasPresbyopiaLeft = lensTypeCategoryName is LensTypeCategoryName.Near
             || lensTypeCategoryName is LensTypeCategoryName.Multi
 
-//        lensTypeCategoryName is Success
-//            && (
-//                lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
-//                || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
-//            )
-
     val hasHypermetropiaRight =  sphericalRight > 0
             && lensTypeCategoryName !is LensTypeCategoryName.Near
-//            && lensTypeCategoryName is Success
-//            && lensTypeCategoryName.invoke() !is LensTypeCategoryName.Near
     val hasMyopiaRight = sphericalRight < 0;
     val hasAstigmatismRight = cylindricalRight < 0;
     val hasPresbyopiaRight = lensTypeCategoryName is LensTypeCategoryName.Near
             || lensTypeCategoryName is LensTypeCategoryName.Multi
-
-//        lensTypeCategoryName is Success
-//            && (
-//            lensTypeCategoryName.invoke() is LensTypeCategoryName.Near
-//                    || lensTypeCategoryName.invoke() is LensTypeCategoryName.Multi
-//            )
 }

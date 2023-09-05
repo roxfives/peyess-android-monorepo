@@ -61,6 +61,7 @@ import kotlinx.coroutines.withContext
 import org.nvest.html_to_pdf.HtmlToPdfConvertor
 import timber.log.Timber
 import java.io.File
+import java.util.UUID
 
 private typealias EditServiceOrderFactory =
         AssistedViewModelFactory<EditServiceOrderViewModel, EditServiceOrderState>
@@ -94,9 +95,11 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onEach(
             EditServiceOrderState::saleId,
             EditServiceOrderState::serviceOrderId,
-        ) { purchaseId, serviceOrderId ->
-            if (purchaseId.isNotBlank() && serviceOrderId.isNotBlank()) {
-                fetchServiceOrder(serviceOrderId, purchaseId)
+            EditServiceOrderState::successfullyFetchedServiceOrder,
+            EditServiceOrderState::shouldFetchFromServer,
+        ) { purchaseId, serviceOrderId, hasAlreadyFetched, shouldFetchFromServer ->
+            if (!hasAlreadyFetched && purchaseId.isNotBlank() && serviceOrderId.isNotBlank()) {
+                fetchServiceOrder(serviceOrderId, purchaseId, shouldFetchFromServer)
             }
         }
 
@@ -131,8 +134,8 @@ class EditServiceOrderViewModel @AssistedInject constructor(
 
         onEach(EditServiceOrderState::productPicked) {
             loadLens(it.lensId)
-            loadColoring(it.coloringId)
-            loadTreatment(it.treatmentId)
+            loadColoring(it.lensId, it.coloringId)
+            loadTreatment(it.lensId, it.treatmentId)
         }
 
         onEach(EditServiceOrderState::hasSaleDataUpdateFailed) { updateSaleFailureStatus(it) }
@@ -180,9 +183,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         onAsync(EditServiceOrderState::feeResponseAsync) { processFeeResponse(it) }
     }
 
-    private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String) {
+    private fun fetchServiceOrder(serviceOrderId: String, purchaseId: String, forceReload: Boolean) {
         suspend {
-            serviceOrderFetcher.fetchFullSale(serviceOrderId, purchaseId)
+            serviceOrderFetcher.fetchFullSale(serviceOrderId, purchaseId, forceReload)
         }.execute(Dispatchers.IO) {
             copy(serviceOrderFetchResponseAsync = it)
         }
@@ -400,9 +403,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadColoring(coloringId: String) {
+    private fun loadColoring(lensId: String, coloringId: String) {
         suspend {
-            localLensesRepository.getColoringById(coloringId)
+            localLensesRepository.getColoringById(lensId, coloringId)
         }.execute(Dispatchers.IO) {
             copy(coloringResponseAsync = it)
         }
@@ -420,9 +423,9 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         )
     }
 
-    private fun loadTreatment(treatmentId: String) {
+    private fun loadTreatment(lensId: String, treatmentId: String) {
         suspend {
-            localLensesRepository.getTreatmentById(treatmentId)
+            localLensesRepository.getTreatmentById(lensId, treatmentId)
         }.execute(Dispatchers.IO) {
             copy(treatmentResponseAsync = it)
         }
@@ -561,6 +564,10 @@ class EditServiceOrderViewModel @AssistedInject constructor(
         copy(serviceOrderId = serviceOrderId)
     }
 
+    fun onReloadFromServerChanged(reloadFromServer: Boolean) = setState {
+        copy(shouldFetchFromServer = reloadFromServer)
+    }
+
     suspend fun pictureForClient(clientId: String): Uri {
         return Either.catch {
             clientRepository.pictureForClient(clientId)
@@ -575,6 +582,7 @@ class EditServiceOrderViewModel @AssistedInject constructor(
     fun createPayment(onAdded: (id: Long) -> Unit) = withState {
         viewModelScope.launch(Dispatchers.IO) {
             val payment = Payment(
+                uuid = UUID.randomUUID().toString(),
                 saleId = it.saleId,
             )
 

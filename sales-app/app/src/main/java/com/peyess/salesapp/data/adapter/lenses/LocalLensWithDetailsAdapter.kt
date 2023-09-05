@@ -4,6 +4,7 @@ import com.peyess.salesapp.data.adapter.lenses.alt_height.toStoreLensAltHeightDo
 import com.peyess.salesapp.data.adapter.lenses.disponibilities.toStoreLensDisponibilityDocument
 import com.peyess.salesapp.data.model.lens.room.dao.embedded.LocalLensWithDetails
 import com.peyess.salesapp.data.model.lens.room.repo.StoreLensWithDetailsDocument
+import java.math.BigDecimal
 
 fun LocalLensWithDetails.toStoreLensWithDetailsDocument(): StoreLensWithDetailsDocument {
     return StoreLensWithDetailsDocument(
@@ -29,9 +30,9 @@ fun LocalLensWithDetails.toStoreLensWithDetailsDocument(): StoreLensWithDetailsD
         reasonDisabled = lens.reasonDisabled,
         isLocalEnabled = lens.isLocalEnabled,
         reasonLocalDisabled = lens.reasonLocalDisabled,
-        price = lens.price,
-        priceAddColoring = lens.priceAddColoring,
-        priceAddTreatment = lens.priceAddTreatment,
+        price = lens.price.toBigDecimal(),
+        priceAddColoring = lens.priceAddColoring.toBigDecimal(),
+        priceAddTreatment = lens.priceAddTreatment.toBigDecimal(),
         isEditable = lens.isEditable,
         created = lens.created,
         updated = lens.updated,

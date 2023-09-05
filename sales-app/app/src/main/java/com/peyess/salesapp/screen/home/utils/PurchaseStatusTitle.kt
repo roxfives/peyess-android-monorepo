@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -65,38 +67,38 @@ fun PurchaseState.PurchaseBadge() {
     return when (this) {
         is PurchaseState.PendingConfirmation ->
             PurchaseBadgeImpl(
-                borderColor = Color.Yellow,
-                backgroundColor = Color.Yellow,
+                borderColor = Color(0, 150, 136),
+                backgroundColor = Color(0, 150, 136),
             )
 
         is PurchaseState.Confirmed ->
             PurchaseBadgeImpl(
-                borderColor = Color.Blue,
-                backgroundColor = Color.Blue,
+                borderColor = Color(89, 159, 197),
+                backgroundColor = Color(89, 159, 197),
             )
 
         is PurchaseState.Failed ->
             PurchaseBadgeImpl(
-                borderColor = Color.Red,
-                backgroundColor = Color.Red,
+                borderColor = MaterialTheme.colors.error,
+                backgroundColor = MaterialTheme.colors.error,
             )
 
         is PurchaseState.Cancelled ->
+            PurchaseBadgeImpl(
+                borderColor = Color(160, 91, 17),
+                backgroundColor = Color(160, 91, 17),
+            )
+
+        is PurchaseState.Unknown ->
             PurchaseBadgeImpl(
                 borderColor = Color.DarkGray,
                 backgroundColor = Color.DarkGray,
             )
 
-        is PurchaseState.Unknown ->
-            PurchaseBadgeImpl(
-                borderColor = Color.Gray,
-                backgroundColor = Color.Gray,
-            )
-
         is PurchaseState.FinishedSuccessfully ->
             PurchaseBadgeImpl(
-                borderColor = Color.Green,
-                backgroundColor = Color.Green,
+                borderColor = Color(41, 109, 43),
+                backgroundColor = Color(41, 109, 43),
             )
     }
 }
@@ -110,12 +112,25 @@ private fun PurchaseBadgeImpl(
         modifier = Modifier
             .size(8.dp)
             .border(
-                shape = RoundedCornerShape(100),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = borderColor,
-                ),
+                width = 1.dp,
+                shape = CircleShape,
+                color = borderColor,
             )
-            .background(color = backgroundColor)
+            .background(
+                color = backgroundColor,
+                shape = CircleShape,
+            )
     )
+}
+
+
+@Composable
+fun PurchaseState.canFinishFromState(): Boolean {
+    return when (this) {
+        is PurchaseState.Confirmed,
+        is PurchaseState.Cancelled,
+        is PurchaseState.Unknown,
+        is PurchaseState.FinishedSuccessfully, -> false
+        else -> true
+    }
 }

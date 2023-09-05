@@ -64,7 +64,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             .shareIn(
                 scope = repositoryScope,
                 started = SharingStarted.WhileSubscribed(),
-                replay = 1,
+                replay = 0,
             )
     }
 

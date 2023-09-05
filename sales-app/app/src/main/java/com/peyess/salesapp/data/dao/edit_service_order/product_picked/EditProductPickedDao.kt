@@ -2,14 +2,14 @@ package com.peyess.salesapp.data.dao.edit_service_order.product_picked
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy.REPLACE
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.peyess.salesapp.data.model.edit_service_order.product_picked.EditProductPickedEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EditProductPickedDao {
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addProductPicked(productPicked: EditProductPickedEntity)
 
     @Query("""

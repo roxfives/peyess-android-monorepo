@@ -149,8 +149,8 @@ private fun FramesDataScreenImpl(
 
     valueHasError: Boolean = false,
     valueErrorMessage: String = "",
-    value: Double = 0.0,
-    onValueChange: (value: Double) -> Unit = {},
+    value: BigDecimal = BigDecimal.ZERO,
+    onValueChange: (value: BigDecimal) -> Unit = {},
 
     tagCodeHasError: Boolean = false,
     tagCodeErrorMessage: String = "",
@@ -167,8 +167,7 @@ private fun FramesDataScreenImpl(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val curPriceInput = BigDecimal(value)
-        .setScale(2, RoundingMode.HALF_EVEN)
+    val curPriceInput = value.setScale(2, RoundingMode.HALF_EVEN)
 //        .multiply(BigDecimal(100))
 //        .toBigInteger()
 
@@ -281,11 +280,10 @@ private fun FramesDataScreenImpl(
                     val value = try {
                         BigDecimal(it)
                             .setScale(2, RoundingMode.DOWN)
-                            .divide(BigDecimal(100))
-                            .toDouble()
+                            .divide(BigDecimal("100"))
                     } catch (t: Throwable) {
                         Timber.e(t, "Failed to parse $it")
-                        0.0
+                        BigDecimal.ZERO
                     }
 
                     onValueChange(value)
@@ -364,7 +362,7 @@ fun SetFramesScreenPreview() {
 
             valueHasError = false,
             valueErrorMessage = "",
-            value = 11122.0,
+            value = BigDecimal("11122"),
             onValueChange = {},
 
             tagCodeHasError = false,

@@ -56,12 +56,12 @@ fun DiscountScreen(
         modifier = modifier.fillMaxSize(),
 
         selectedMethod = discount.method,
-        discountValue = BigDecimal(discount.value),
+        discountValue = discount.value,
         originalPrice = originalPrice,
         pricePreview = pricePreview,
 
         onChangeDiscountMethod = viewModel::onChangeDiscountMethod,
-        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it.toDouble()) },
+        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it) },
 
         onDone = viewModel::onFinished,
     )

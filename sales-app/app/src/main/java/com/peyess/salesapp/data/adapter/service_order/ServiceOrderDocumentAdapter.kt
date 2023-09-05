@@ -4,21 +4,21 @@ import com.peyess.salesapp.data.adapter.product_sold_desc.toFSProductSoldFramesD
 import com.peyess.salesapp.data.adapter.product_sold_desc.toFSSoldProductDescription
 import com.peyess.salesapp.data.adapter.products_sold.toFSProductSoldEyeSet
 import com.peyess.salesapp.data.model.sale.purchase.DenormalizedServiceOrderDescDocument
-import com.peyess.salesapp.data.model.sale.purchase.discount.description.FSDiscountDescription
 import com.peyess.salesapp.data.model.sale.service_order.FSServiceOrder
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold.FSProductSoldEyeSet
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldDescription
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.FSProductSoldFramesDescription
+import com.peyess.salesapp.utils.extentions.roundToDouble
 import com.peyess.salesapp.utils.time.toTimestamp
 
-fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
+fun ServiceOrderDocument.toFSServiceOrder(
+    roundValues: Boolean = true,
+): FSServiceOrder {
     return FSServiceOrder(
         id = id,
         hid = hid,
         storeId = storeId,
         storeIds = storeIds,
         salespersonUid = salespersonUid,
+        salespersonName = salespersonName,
         clientUid = clientUid,
         clientDocument = clientDocument,
         clientName = clientName,
@@ -99,6 +99,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         rMeasuringId = rMeasuringId,
         lIpd = lIpd,
         lBridge = lBridge,
+        lBridgeHoop = lBridgeHoop,
         lDiameter = lDiameter,
         lHe = lHe,
         lHorizontalBridgeHoop = lHorizontalBridgeHoop,
@@ -106,6 +107,7 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         lVerticalHoop = lVerticalHoop,
         rIpd = rIpd,
         rBridge = rBridge,
+        rBridgeHoop = rBridgeHoop,
         rDiameter = rDiameter,
         rHe = rHe,
         rHorizontalBridgeHoop = rHorizontalBridgeHoop,
@@ -116,8 +118,8 @@ fun ServiceOrderDocument.toFSServiceOrder(): FSServiceOrder {
         discountAllowedBy = discountAllowedBy,
         docVersion = 0,
         isEditable = true,
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
+        fullPrice = fullPrice.roundToDouble(roundValues),
+        finalPrice = finalPrice.roundToDouble(roundValues),
         observation = observation,
         created = created.toTimestamp(),
         createdBy = createdBy,
@@ -138,5 +140,8 @@ fun ServiceOrderDocument.toPreview(): DenormalizedServiceOrderDescDocument {
         framesProducts = framesProducts,
 
         miscProducts = miscProducts,
+
+        observation = observation,
+        prescriptionId = prescriptionId,
     )
 }

@@ -8,6 +8,7 @@ import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.e
 import com.peyess.salesapp.data.repository.edit_service_order.payment_discount.error.UpdatePaymentDiscountError
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 
 typealias EditPaymentDiscountInsertResponse = Either<InsertPaymentDiscountError, Unit>
 
@@ -27,7 +28,7 @@ interface EditPaymentDiscountRepository {
     fun streamDiscountForSale(saleId: String): EditPaymentDiscountStreamResponse
 
     suspend fun updateMethod(saleId: String, method: DiscountCalcMethod): EditPaymentDiscountUpdateResponse
-    suspend fun updateValue(saleId: String, value: Double): EditPaymentDiscountUpdateResponse
+    suspend fun updateValue(saleId: String, value: BigDecimal): EditPaymentDiscountUpdateResponse
 
     suspend fun deletePaymentDiscountForSale(saleId: String): EditPaymentDiscountDeleteResponse
 }

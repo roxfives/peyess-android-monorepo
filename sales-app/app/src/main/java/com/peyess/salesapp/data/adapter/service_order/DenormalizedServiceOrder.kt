@@ -16,5 +16,8 @@ fun DenormalizedServiceOrderDescDocument.toFSDenormalizedServiceOrderDesc(): FSD
         framesProducts = framesProducts.toFSProductSoldFramesDescription(),
 
         miscProducts = miscProducts.map { it.toFSSoldProductDescription() },
+
+        observation = observation,
+        prescriptionId = prescriptionId,
     )
 }

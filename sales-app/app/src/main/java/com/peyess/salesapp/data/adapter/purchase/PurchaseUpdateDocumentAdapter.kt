@@ -8,12 +8,15 @@ import com.peyess.salesapp.data.adapter.purchase.fee.toFSFeeDescription
 import com.peyess.salesapp.data.adapter.service_order.toFSDenormalizedServiceOrderDesc
 import com.peyess.salesapp.data.model.sale.purchase.FSPurchaseUpdate
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
+import com.peyess.salesapp.utils.extentions.roundToDouble
 import com.peyess.salesapp.utils.time.toTimestamp
 
-fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
+fun PurchaseUpdateDocument.toFSPurchaseUpdate(
+    roundValues: Boolean = true,
+): FSPurchaseUpdate {
     return FSPurchaseUpdate(
         clientUids = clientUids,
-        clients = clients.map { it.toFSDenormalizedClient() },
+        clients = clients.mapValues { it.value.toFSDenormalizedClient() },
         responsibleUid = responsibleUid,
         responsibleDocument = responsibleDocument,
         responsibleName = responsibleName,
@@ -45,12 +48,12 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
         discountServiceOrder = discountServiceOrder.mapValues {
             it.value.toFSPurchaseProductsDiscount()
         },
-        fullPrice = fullPrice,
-        finalPrice = finalPrice,
-        leftToPay = leftToPay,
-        totalPaid = totalPaid,
-        totalDiscount = totalDiscount,
-        totalFee = totalFee,
+        fullPrice = fullPrice.roundToDouble(roundValues),
+        finalPrice = finalPrice.roundToDouble(roundValues),
+        leftToPay = leftToPay.roundToDouble(roundValues),
+        totalPaid = totalPaid.roundToDouble(roundValues),
+        totalDiscount = totalDiscount.roundToDouble(roundValues),
+        totalFee = totalFee.roundToDouble(roundValues),
         payerUids = payerUids,
         payerDocuments = payerDocuments,
         payments = payments.map { it.toFSPayment() },
@@ -58,6 +61,16 @@ fun PurchaseUpdateDocument.toFSPurchaseUpdate(): FSPurchaseUpdate {
         isLegalCustom = isLegalCustom,
         legalText = legalText,
         legalVersion = legalVersion,
+
+        state = state.toName(),
+
+        syncState = syncState.toName(),
+        reasonSyncFailed = reasonSyncFailed.toName(),
+
+        finishedAt = finishedAt.toTimestamp(),
+        daysToTakeFromStore = daysToTakeFromStore,
+        hasProductWithPendingCheck = hasProductWithPendingCheck,
+
         updated = updated.toTimestamp(),
         updatedBy = updatedBy,
         updateAllowedBy = updateAllowedBy,

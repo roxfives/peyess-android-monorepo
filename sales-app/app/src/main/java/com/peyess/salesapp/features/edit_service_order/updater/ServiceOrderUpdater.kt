@@ -2,8 +2,6 @@ package com.peyess.salesapp.features.edit_service_order.updater
 
 import android.content.Context
 import android.net.Uri
-import android.webkit.URLUtil
-import androidx.core.net.toFile
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.flatMap
@@ -20,9 +18,9 @@ import com.peyess.salesapp.data.model.sale.purchase.DenormalizedClientDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseUpdateDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
+import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderDocument
 import com.peyess.salesapp.data.model.sale.service_order.ServiceOrderUpdateDocument
 import com.peyess.salesapp.data.model.sale.service_order.products_sold.ProductSoldEyeSetDocument
-import com.peyess.salesapp.data.model.sale.service_order.products_sold_desc.ProductSoldDescriptionDocument
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.EditClientPickedRepository
 import com.peyess.salesapp.data.repository.edit_service_order.client_picked.error.ReadClientPickedError
 import com.peyess.salesapp.data.repository.edit_service_order.frames.EditFramesDataRepository
@@ -58,17 +56,21 @@ import com.peyess.salesapp.repository.auth.AuthenticationRepository
 import com.peyess.salesapp.repository.service_order.ServiceOrderRepository
 import com.peyess.salesapp.screen.edit_service_order.service_order.adapter.toMeasuring
 import com.peyess.salesapp.screen.sale.service_order.adapter.toPaymentDocument
-import com.peyess.salesapp.screen.sale.service_order.utils.adapter.toDescription
+import com.peyess.salesapp.screen.sale.service_order.adapter.toDescription
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
 import com.peyess.salesapp.typing.sale.ClientRole
+import com.peyess.salesapp.typing.sale.PurchaseReasonSyncFailure
+import com.peyess.salesapp.typing.sale.PurchaseState
+import com.peyess.salesapp.typing.sale.PurchaseSyncState
+import com.peyess.salesapp.utils.file.isLocalFile
 import com.peyess.salesapp.utils.string.removeDiacritics
 import com.peyess.salesapp.workmanager.picture_upload.enqueuePictureUploadManagerWorker
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.ZonedDateTime
 import javax.inject.Inject
-import kotlin.math.abs
+import kotlin.math.max
 
 private typealias FetchClientDataResponse = Either<GenerateSaleDataError, LocalClientDocument>
 
@@ -77,7 +79,7 @@ private typealias PartialSaleDataUpdateResponse =
 
 private typealias UpdatePurchaseResponse = Either<GenerateSaleDataError, PurchaseUpdateDocument>
 
-private typealias CalculateValueResponse = Either<GenerateSaleDataError, Double>
+private typealias CalculateValueResponse = Either<GenerateSaleDataError, BigDecimal>
 
 private typealias AddPictureToUploadResponse = Either<AddPictureToUploadError, Long>
 
@@ -209,15 +211,17 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val prescription =
-            editPrescriptionRepository.prescriptionByServiceOrder(serviceOrderId).mapLeft {
-                    GenerateSaleDataError.Unexpected(
-                        description = it.description,
-                        throwable = it.error,
-                    )
-                }.bind()
+        val prescription = editPrescriptionRepository
+            .prescriptionByServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
 
         update.copy(
+            prescriptionId = prescription.id,
             isCopy = prescription.isCopy,
             professionalName = prescription.professionalName,
             professionalId = prescription.professionalId,
@@ -262,6 +266,7 @@ class ServiceOrderUpdater @Inject constructor(
         update.copy(
             lIpd = measurings.first.fixedIpd,
             lBridge = measurings.first.fixedBridge,
+            lBridgeHoop = measurings.first.fixedHorizontalBridgeHoop,
             lDiameter = measurings.first.fixedDiameter,
             lHe = measurings.first.fixedHe,
             lHorizontalBridgeHoop = measurings.first.fixedHorizontalBridgeHoop,
@@ -270,6 +275,7 @@ class ServiceOrderUpdater @Inject constructor(
 
             rIpd = measurings.second.fixedIpd,
             rBridge = measurings.second.fixedBridge,
+            rBridgeHoop = measurings.second.fixedHorizontalBridgeHoop,
             rDiameter = measurings.second.fixedDiameter,
             rHe = measurings.second.fixedHe,
             rHorizontalBridgeHoop = measurings.second.fixedHorizontalBridgeHoop,
@@ -282,13 +288,14 @@ class ServiceOrderUpdater @Inject constructor(
         serviceOrderId: String,
         update: ServiceOrderUpdateDocument,
     ): PartialSaleDataUpdateResponse = either {
-        val productPicked =
-            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId).mapLeft {
-                    GenerateSaleDataError.Unexpected(
-                        description = it.description,
-                        it.error,
-                    )
-                }.bind()
+        val productPicked = editProductPickedRepository
+            .productPickedForServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
 
         val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
                 GenerateSaleDataError.Unexpected(
@@ -297,14 +304,20 @@ class ServiceOrderUpdater @Inject constructor(
                 )
             }.bind()
 
-        val coloring = localLensesRepository.getColoringById(productPicked.coloringId).mapLeft {
+        var coloring = localLensesRepository.getColoringById(
+            productPicked.lensId,
+            productPicked.coloringId,
+        ).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
                 )
             }.bind()
 
-        val treatment = localLensesRepository.getTreatmentById(productPicked.treatmentId).mapLeft {
+        var treatment = localLensesRepository.getTreatmentById(
+            productPicked.lensId,
+            productPicked.treatmentId,
+        ).mapLeft {
                 GenerateSaleDataError.Unexpected(
                     description = it.description,
                     it.error,
@@ -318,12 +331,12 @@ class ServiceOrderUpdater @Inject constructor(
                 )
             }.bind()
 
-        val misc = mutableListOf<ProductSoldDescriptionDocument>()
+//        val lensAccessories = mutableListOf<AccessoryItemDocument>()
 
         val framesValue = if (frames.areFramesNew) {
             frames.value
         } else {
-            0.0
+            BigDecimal.ZERO
         }
 
         var total = lens.price + framesValue
@@ -333,19 +346,21 @@ class ServiceOrderUpdater @Inject constructor(
 
             // TODO: refactor to remove identification by name
             if (
-                lens.priceAddColoring > 0
+                lens.priceAddColoring > BigDecimal.ZERO
                 && coloring.name.trim().lowercase().removeDiacritics() != "incolor"
                 && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
                 total += lens.priceAddColoring
+                coloring = coloring.copy(price = coloring.price + lens.priceAddColoring)
 
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
-                        nameDisplay = "Adicional por coloração",
-                        price = lens.priceAddColoring,
-                    )
-                )
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por coloração",
+//                        price = BigDecimal(lens.priceAddColoring).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble()
+//                    )
+//                )
             }
         }
 
@@ -354,22 +369,25 @@ class ServiceOrderUpdater @Inject constructor(
             total += treatment.price
 
             if (
-                lens.priceAddTreatment > 0
+                lens.priceAddTreatment > BigDecimal.ZERO
                 && treatment.name.trim().lowercase().removeDiacritics() != "incolor"
                 && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel"
             ) {
                 total += lens.priceAddTreatment
+                treatment = treatment.copy(price = treatment.price + lens.priceAddTreatment)
 
-                misc.add(
-                    ProductSoldDescriptionDocument(
-                        units = 1,
-                        nameDisplay = "Adicional por tratamento",
-                        price = lens.priceAddTreatment,
-                    )
-                )
+//                lensAccessories.add(
+//                    AccessoryItemDocument(
+//                        nameDisplay = "Adicional por tratamento",
+//                        price = BigDecimal(lens.priceAddTreatment).divide(
+//                            BigDecimal(2), 2, RoundingMode.HALF_EVEN
+//                        ).toDouble(),
+//                    )
+//                )
             }
         }
 
+        val withHeight = max(update.lHe, update.rHe)
         update.copy(
             samePurchaseSo = listOf(serviceOrderId),
 
@@ -377,7 +395,14 @@ class ServiceOrderUpdater @Inject constructor(
             hasOwnFrames = !frames.areFramesNew,
 
             leftProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,
@@ -389,7 +414,14 @@ class ServiceOrderUpdater @Inject constructor(
             ),
 
             rightProducts = ProductSoldEyeSetDocument(
-                lenses = lens.toDescription(),
+                lenses = lens.toDescription(
+                    withTreatment = treatment.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && treatment.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    withColoring = coloring.name.trim().lowercase().removeDiacritics() != "incolor"
+                            && coloring.name.trim().lowercase().removeDiacritics() != "indisponivel",
+                    accessoriesPerUnit = emptyList(),
+                    withHeight = withHeight,
+                ),
                 colorings = coloring.toDescription(
                     isDiscounted = lens.isColoringDiscounted,
                     isIncluded = lens.isColoringIncluded,
@@ -401,11 +433,11 @@ class ServiceOrderUpdater @Inject constructor(
             ),
 
             framesProducts = frames.toDescription(),
-            miscProducts = misc,
+            miscProducts = emptyList(),
         )
     }
 
-    private suspend fun calculateDiscount(
+    private suspend fun calculateDiscountAsWhole(
         saleId: String,
         serviceOrder: ServiceOrderUpdateDocument,
     ): CalculateValueResponse = either {
@@ -417,18 +449,18 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         when (discount.discountMethod) {
-            DiscountCalcMethod.Percentage -> discount.overallDiscountValue
-            DiscountCalcMethod.Whole -> discount.overallDiscountValue / serviceOrder.fullPrice
-            DiscountCalcMethod.None -> 0.0
+            DiscountCalcMethod.Percentage -> discount.overallDiscountValue * serviceOrder.fullPrice
+            DiscountCalcMethod.Whole -> discount.overallDiscountValue
+            DiscountCalcMethod.None -> BigDecimal.ZERO
         }
     }
 
-    private suspend fun calculateFee(
+    private suspend fun calculateFeeAsWhole(
         saleId: String,
-        discount: Double,
+        discountAsWhole: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): CalculateValueResponse = either {
-        val priceWithDiscount = serviceOrder.fullPrice * (1.0 - discount)
+        val priceWithDiscount = serviceOrder.fullPrice - discountAsWhole
         val fee = paymentFeeRepository.paymentFeeForSale(saleId).mapLeft {
             GenerateSaleDataError.Unexpected(
                 description = it.description,
@@ -437,21 +469,19 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         when (fee.method) {
-            PaymentFeeCalcMethod.Percentage -> fee.value
-            PaymentFeeCalcMethod.Whole -> fee.value / priceWithDiscount
-            PaymentFeeCalcMethod.None -> 0.0
+            PaymentFeeCalcMethod.Percentage -> fee.value / priceWithDiscount
+            PaymentFeeCalcMethod.Whole -> fee.value
+            PaymentFeeCalcMethod.None -> BigDecimal.ZERO
         }
     }
 
     private suspend fun createPurchase(
         serviceOrderId: String,
         saleId: String,
-        discount: Double,
-        fee: Double,
+        discountAsWhole: BigDecimal,
+        feeAsWhole: BigDecimal,
         serviceOrder: ServiceOrderUpdateDocument,
     ): UpdatePurchaseResponse = either {
-        val id = saleId
-
         val discountDocument = discountRepository.discountForSale(saleId).mapLeft {
             GenerateSaleDataError.Unexpected(
                 description = it.description,
@@ -466,7 +496,7 @@ class ServiceOrderUpdater @Inject constructor(
         }.bind()
 
         val fullPrice = serviceOrder.fullPrice
-        val finalPrice = fullPrice * (1.0 - discount) * (1.0 + fee)
+        val finalPrice = fullPrice - discountAsWhole + feeAsWhole
 
         val payments = editPaymentRepository.paymentsForSale(saleId).mapLeft {
                 GenerateSaleDataError.Unexpected(
@@ -476,21 +506,52 @@ class ServiceOrderUpdater @Inject constructor(
             }.bind()
 
         val totalPaid = if (payments.isEmpty()) {
-            0.0
+            BigDecimal.ZERO
         } else {
-            payments.map { it.value }.reduce { acc, payment -> acc + payment }
+            payments.map { it.value }
+                .ifEmpty { listOf(BigDecimal.ZERO) }
+                .reduce(BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_EVEN)
         }
-        val totalLeft =
-            BigDecimal(abs((finalPrice - totalPaid))).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+        val totalLeft = (finalPrice - totalPaid).abs()
+            .setScale(2, RoundingMode.HALF_EVEN)
+
+        val store = authenticationRepository.loadCurrentStore().mapLeft {
+            GenerateSaleDataError.Unexpected(
+                description = "Store not found",
+                throwable = it.error,
+            )
+        }.bind()
+
+        val productPicked =
+            editProductPickedRepository.productPickedForServiceOrder(serviceOrderId).mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    it.error,
+                )
+            }.bind()
+
+        val lens = localLensesRepository.getLensById(productPicked.lensId).mapLeft {
+            GenerateSaleDataError.Unexpected(
+                description = it.description,
+                it.error,
+            )
+        }.bind()
+
+        val daysToTakeFromStore = if (lens.needsCheck) {
+            store.daysToTakeFromStore + store.additionalCheckDays
+        } else {
+            store.daysToTakeFromStore
+        }
 
         PurchaseUpdateDocument(
-            clientUids = listOf(serviceOrderId),
-            clients = listOf(
-                DenormalizedClientDocument(
+            clientUids = listOf(serviceOrder.clientUid),
+            clients = mapOf(
+                serviceOrderId to DenormalizedClientDocument(
                     uid = serviceOrder.clientUid,
                     document = serviceOrder.clientDocument,
                     name = serviceOrder.clientName,
-                ),
+                )
             ),
 
             responsibleDocument = serviceOrder.responsibleDocument,
@@ -523,12 +584,11 @@ class ServiceOrderUpdater @Inject constructor(
             isDiscountOverall = true,
             overallDiscount = DiscountDescriptionDocument(
                 method = discountDocument.discountMethod,
-                value = BigDecimal(discountDocument.overallDiscountValue),
-
-                ),
+                value = discountDocument.overallDiscountValue,
+            ),
             paymentFee = FeeDescriptionDocument(
                 method = feeDocument.method,
-                value = BigDecimal(feeDocument.value),
+                value = feeDocument.value,
             ),
 
             fullPrice = fullPrice,
@@ -537,8 +597,8 @@ class ServiceOrderUpdater @Inject constructor(
             leftToPay = totalLeft,
             totalPaid = totalPaid,
 
-            totalDiscount = discount,
-            totalFee = fee,
+            totalDiscount = discountAsWhole,
+            totalFee = feeAsWhole,
 
             payerUids = payments.map { it.clientId }.distinct(),
             payerDocuments = payments.map { it.clientDocument }.distinct(),
@@ -547,6 +607,15 @@ class ServiceOrderUpdater @Inject constructor(
             soPreviews = mapOf(
                 serviceOrderId to serviceOrder.toPreview()
             ),
+
+            state = PurchaseState.PendingConfirmation,
+
+            syncState = PurchaseSyncState.NotSynced,
+            reasonSyncFailed = PurchaseReasonSyncFailure.None,
+
+            finishedAt = serviceOrder.updated,
+            daysToTakeFromStore = daysToTakeFromStore,
+            hasProductWithPendingCheck = lens.needsCheck,
 
             updated = serviceOrder.updated,
             updatedBy = serviceOrder.updatedBy,
@@ -588,19 +657,28 @@ class ServiceOrderUpdater @Inject constructor(
             updateAllowedBy = collaboratorUid,
         )
 
+        val prescription = editPrescriptionRepository
+            .prescriptionByServiceOrder(serviceOrderId)
+            .mapLeft {
+                GenerateSaleDataError.Unexpected(
+                    description = it.description,
+                    throwable = it.error,
+                )
+            }.bind()
+
         serviceOrderUpdate = addClientData(serviceOrderId, serviceOrderUpdate).bind()
         serviceOrderUpdate = addPrescriptionData(serviceOrderId, serviceOrderUpdate).bind()
         serviceOrderUpdate = addPositioningData(serviceOrderId, serviceOrderUpdate).bind()
         serviceOrderUpdate = addProductsData(serviceOrderId, serviceOrderUpdate).bind()
 
-        val discount = calculateDiscount(localServiceOrder.saleId, serviceOrderUpdate).bind()
-        val fee = calculateFee(localServiceOrder.saleId, discount, serviceOrderUpdate).bind()
+        val discount = calculateDiscountAsWhole(localServiceOrder.saleId, serviceOrderUpdate).bind()
+        val fee = calculateFeeAsWhole(localServiceOrder.saleId, discount, serviceOrderUpdate).bind()
 
         var purchaseUpdate = createPurchase(
             saleId = localServiceOrder.saleId,
             serviceOrderId = serviceOrderId,
-            discount = discount,
-            fee = fee,
+            discountAsWhole = discount,
+            feeAsWhole = fee,
             serviceOrder = serviceOrderUpdate,
         ).mapLeft {
             GenerateSaleDataError.Unexpected(
@@ -633,6 +711,7 @@ class ServiceOrderUpdater @Inject constructor(
 
     private suspend fun generatePrescriptionData(
         serviceOrderId: String,
+        serviceOrder: ServiceOrderDocument,
     ): GeneratePrescriptionDataResponse = either {
         val collaboratorUid = authenticationRepository.fetchCurrentUserId()
 
@@ -666,6 +745,7 @@ class ServiceOrderUpdater @Inject constructor(
             localPrescription.toPrescriptionUpdateDocument(
                 client = user,
                 collaboratorUid = collaboratorUid,
+                serviceOrder = serviceOrder,
                 updated = ZonedDateTime.now(),
             ),
         )
@@ -872,7 +952,7 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }.bind()
 
-        val (prescriptionPicture, prescriptionUpdate) = generatePrescriptionData(serviceOrderId)
+        val (prescriptionPicture, prescriptionUpdate) = generatePrescriptionData(serviceOrderId, currentServiceOrder)
             .mapLeft {
                 UpdateSaleError.Unexpected(
                     description = it.description,
@@ -994,15 +1074,4 @@ class ServiceOrderUpdater @Inject constructor(
             )
         }
     }
-}
-
-fun Uri.isLocalFile(): Boolean {
-    val asString = this.toString()
-
-    return URLUtil.isValidUrl(asString)
-            && (URLUtil.isFileUrl(asString) || URLUtil.isContentUrl(asString))
-}
-
-fun Uri.isNotLocalFile(): Boolean {
-    return !isLocalFile()
 }

@@ -7,6 +7,6 @@ fun PaymentFeeEntity.toPaymentFeeDocument(): PaymentFeeDocument {
     return PaymentFeeDocument(
         saleId = saleId,
         method = method,
-        value = value,
+        value = value.toBigDecimal(),
     )
 }

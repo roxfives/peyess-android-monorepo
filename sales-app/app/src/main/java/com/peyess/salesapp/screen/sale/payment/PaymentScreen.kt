@@ -80,6 +80,12 @@ fun PaymentScreen(
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,
 
+        dueDate = payment.dueDate,
+        onDueDateChanged = viewModel::onDueDateChanged,
+
+        legalId = payment.legalId,
+        onLegalIdChanged = viewModel::onLegalIdChanged,
+
         activePaymentMethod = activePaymentMethod,
         payment = payment,
         onTotalPaidChanged = viewModel::onTotalPaidChange,

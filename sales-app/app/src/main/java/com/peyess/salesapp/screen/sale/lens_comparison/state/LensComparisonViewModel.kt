@@ -125,17 +125,17 @@ class LensComparisonViewModel @AssistedInject constructor(
             .bind()
 
         val originalColoring = localLensesRepository
-            .getColoringById(comparison.originalColoringId)
+            .getColoringById(comparison.originalLensId, comparison.originalColoringId)
             .bind()
         val comparisonColoring = localLensesRepository
-            .getColoringById(comparison.comparisonColoringId)
+            .getColoringById(comparison.comparisonLensId, comparison.comparisonColoringId)
             .bind()
 
         val originalTreatment = localLensesRepository
-            .getTreatmentById(comparison.originalTreatmentId)
+            .getTreatmentById(comparison.originalLensId, comparison.originalTreatmentId)
             .bind()
         val comparisonTreatment = localLensesRepository
-            .getTreatmentById(comparison.comparisonTreatmentId)
+            .getTreatmentById(comparison.comparisonLensId, comparison.comparisonTreatmentId)
             .bind()
 
         val lensComparison = LensComparison(
@@ -378,10 +378,26 @@ class LensComparisonViewModel @AssistedInject constructor(
             val originalColoring = individualComparison.coloringComparison.originalColoring
             val originalTreatment = individualComparison.treatmentComparison.originalTreatment
 
-            val pickedColoring = individualComparison.coloringComparison.pickedColoring
-            val pickedTreatment = individualComparison.treatmentComparison.pickedTreatment
-
             val pickedLens = lensPickResponse.lensPicked
+            val pickedTreatmentId = lensPickResponse.lensPicked.defaultTreatmentId
+
+            val colorings = localLensesRepository
+                .getColoringsForLens(pickedLens.id)
+            val pickedColoringId = colorings.fold(
+                ifLeft = { "" },
+                ifRight = {
+                    val index = it.indexOfFirst { c -> c.brand == "Incolor" || c.design == "Incolor" }
+
+                    if (index > 0) {
+                        it[index].id
+                    } else if (it.isNotEmpty()) {
+                        it[0].id
+                    } else {
+                        Timber.e("No coloring found for lens ${pickedLens.id}")
+                        ""
+                    }
+                },
+            )
 
             lensComparisonRepository.update(
                 lensComparison = LensComparisonDocument(
@@ -393,9 +409,9 @@ class LensComparisonViewModel @AssistedInject constructor(
                     originalTreatmentId = originalTreatment.id,
 
                     comparisonLensId = pickedLens.id,
-                    comparisonColoringId = pickedColoring.id,
-                    comparisonTreatmentId = pickedTreatment.id,
-                )
+                    comparisonColoringId = pickedColoringId,
+                    comparisonTreatmentId = pickedTreatmentId,
+                ),
             )
 
             loadComparisons(individualComparison.soId)
@@ -661,7 +677,7 @@ class LensComparisonViewModel @AssistedInject constructor(
     fun onPickTreatment(treatmentId: String, lensComparison: IndividualComparison) {
         suspend {
             localLensesRepository
-                .getTreatmentById(treatmentId)
+                .getTreatmentById(lensComparison.lensComparison.originalLens.id, treatmentId)
                 .map {
                     TreatmentPickResponse(
                         lensComparison = lensComparison,
@@ -676,7 +692,7 @@ class LensComparisonViewModel @AssistedInject constructor(
     fun onPickColoring(coloringId: String, lensComparison: IndividualComparison) {
         suspend {
             localLensesRepository
-                .getColoringById(coloringId)
+                .getColoringById(lensComparison.lensComparison.pickedLens.id, coloringId)
                 .map {
                     ColoringPickResponse(
                         lensComparison = lensComparison,

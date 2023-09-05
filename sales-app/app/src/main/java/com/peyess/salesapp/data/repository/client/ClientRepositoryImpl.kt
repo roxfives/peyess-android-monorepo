@@ -49,6 +49,10 @@ class ClientRepositoryImpl @Inject constructor(
 ): ClientRepository {
     private var paginator: SimpleCollectionPaginator<FSClient>? = null
 
+    override fun resetPagination() {
+        paginator?.resetPagination()
+    }
+
     override fun clients(): Flow<List<ClientDocument>> {
         return clientDao.clients()
     }

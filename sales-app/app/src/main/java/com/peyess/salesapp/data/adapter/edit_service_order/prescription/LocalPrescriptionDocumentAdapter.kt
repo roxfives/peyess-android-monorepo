@@ -30,5 +30,6 @@ fun LocalPrescriptionDocument.toEditPrescriptionEntity(): EditPrescriptionEntity
         prismAxisRight = prismAxisRight,
         prismPositionLeft = prismPositionLeft,
         prismPositionRight = prismPositionRight,
+        observation = observation,
     )
 }

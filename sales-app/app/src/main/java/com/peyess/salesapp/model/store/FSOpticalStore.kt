@@ -1,8 +1,10 @@
 package com.peyess.salesapp.model.store
 
 import androidx.annotation.Keep
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.google.firebase.firestore.PropertyName
+import com.peyess.salesapp.utils.time.toZonedDateTime
 import java.util.Date
 
 @IgnoreExtraProperties
@@ -40,7 +42,7 @@ data class FSOpticalStore(
     @Keep
     @JvmField
     @PropertyName("opening")
-    val opening: String = "",
+    val opening: Timestamp = Timestamp.now(),
 
     @Keep
     @JvmField
@@ -75,7 +77,12 @@ data class FSOpticalStore(
     @Keep
     @JvmField
     @PropertyName("days_to_take_from_store")
-    val daysToTakeFromStore: Float = 0f,
+    val daysToTakeFromStore: Int = 0,
+
+    @Keep
+    @JvmField
+    @PropertyName("additional_check_days")
+    val additionalCheckDays: Int = 0,
 
     @Keep
     @JvmField
@@ -187,7 +194,7 @@ fun FSOpticalStore.toDocument(id: String): OpticalStore {
         status = status,
         reasonDeactivated = reasonDeactivated,
         reasonBanned = reasonBanned,
-        opening = opening,
+        opening = opening.toZonedDateTime(),
         directorUid = directorUid,
         responsibleName = responsibleName,
         responsibleUid = responsibleUid,
@@ -195,6 +202,7 @@ fun FSOpticalStore.toDocument(id: String): OpticalStore {
         paymentMinSet = paymentMinSet,
         paymentTotalReceived = paymentTotalReceived,
         daysToTakeFromStore = daysToTakeFromStore,
+        additionalCheckDays = additionalCheckDays,
         hasCustomLegalText = hasCustomLegalText,
         isEnabled = isEnabled,
 

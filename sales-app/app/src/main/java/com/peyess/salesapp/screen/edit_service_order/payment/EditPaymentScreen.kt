@@ -52,6 +52,7 @@ fun EditPaymentScreen(
         toBePaid = totalLeftToPay,
 
         installments = payment.installments,
+        dueDate = payment.dueDate,
 
         arePaymentMethodsLoading = arePaymentMethodsLoading,
         paymentMethods = paymentMethods,
@@ -64,8 +65,12 @@ fun EditPaymentScreen(
 
         methodDocument = payment.document,
 
+        legalId = payment.legalId,
+        onLegalIdChanged = viewModel::onLegalIdChanged,
+
+        onDueDateChanged = viewModel::onDueDateChanged,
         onTotalPaidChanged = viewModel::onTotalPaidChange,
-        onMethodDocumentUpdate = viewModel::onMethodPaymentChanged,
+        onMethodDocumentUpdate = viewModel::onDocumentChanged,
         onCardFlagChanged = viewModel::onCardFlagChanged,
         onIncreaseInstallments = viewModel::onIncreaseInstallments,
         onDecreaseInstallments = viewModel::onDecreaseInstallments,

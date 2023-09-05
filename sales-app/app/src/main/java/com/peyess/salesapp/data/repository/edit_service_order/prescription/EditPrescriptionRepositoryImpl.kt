@@ -347,6 +347,19 @@ class EditPrescriptionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun updateObservation(
+        id: String,
+        observation: String
+    ): EditPrescriptionUpdateResponse = Either.catch {
+        prescriptionDao.updateObservation(id, observation)
+    }.mapLeft {
+        UpdatePrescriptionError.Unexpected(
+            description = "Error while updating prescription $id " +
+                    "with observation = $observation",
+            throwable = it,
+        )
+    }
+
     override suspend fun deletePrescriptionForServiceOrder(
         serviceOrderId: String,
     ): EditPrescriptionDeleteResponse = Either.catch {

@@ -9,13 +9,13 @@ fun PaymentFeeDocument.toPaymentFee(): PaymentFee {
         PaymentFeeCalcMethod.Percentage ->
             PaymentFee(
                 method = method,
-                percentValue = value,
+                percentValue = value.toDouble(),
             )
 
         PaymentFeeCalcMethod.Whole ->
             PaymentFee(
                 method = method,
-                wholeValue = value,
+                wholeValue = value.toDouble(),
             )
 
         PaymentFeeCalcMethod.None ->
@@ -27,6 +27,6 @@ fun PaymentFee.toPaymentFeeDocument(saleId: String): PaymentFeeDocument {
     return PaymentFeeDocument(
         saleId = saleId,
         method = method,
-        value = value
+        value = value.toBigDecimal(),
     )
 }

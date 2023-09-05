@@ -5,7 +5,7 @@ import androidx.room.Relation
 
 data class LocalLensTreatmentWithExplanationsEntity(
     @Embedded
-    val treatment: LocalLensTreatmentEntity = LocalLensTreatmentEntity(),
+    val treatment: LocalLensTreatmentPriceDBView = LocalLensTreatmentPriceDBView(),
 
     @Relation(
         parentColumn = "id",

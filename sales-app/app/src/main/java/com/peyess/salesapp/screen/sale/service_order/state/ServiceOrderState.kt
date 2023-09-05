@@ -41,6 +41,7 @@ import com.peyess.salesapp.repository.sale.ProductPickedResponse
 import com.peyess.salesapp.repository.sale.model.ProductPickedDocument
 import com.peyess.salesapp.typing.products.DiscountCalcMethod
 import com.peyess.salesapp.typing.products.PaymentFeeCalcMethod
+import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
@@ -90,10 +91,10 @@ data class ServiceOrderState(
     val paymentFeeAsync: Async<PaymentFeeRepositoryResponse> = Uninitialized,
     val paymentFee: PaymentFee = PaymentFee(),
 
-    val totalToPay: Double = 0.0,
-    val totalToPayWithDiscountAsync: Async<Double> = Uninitialized,
+    val totalToPay: BigDecimal = BigDecimal.ZERO,
+    val totalToPayWithDiscountAsync: Async<BigDecimal> = Uninitialized,
     val totalPaidAsync: Async<LocalPaymentTotalResponse> = Uninitialized,
-    val totalPaid: Double = 0.0,
+    val totalPaid: BigDecimal = BigDecimal.ZERO,
 
     val hidServiceOrder: String = "",
     val hidSale: String = "",
@@ -223,8 +224,7 @@ data class ServiceOrderState(
         currencyFormatter.maximumFractionDigits = 2
         currencyFormatter.minimumIntegerDigits = 1
 
-        val missing = abs(totalToPayWithFee - totalPaid)
-
+        val missing = (totalToPayWithFee - totalPaid).abs()
         "Deseja finalizar a compra no valor de ${currencyFormatter.format(totalToPayWithFee)}" +
                 " com o saldo à receber de ${currencyFormatter.format(missing)}"
     }
@@ -235,23 +235,23 @@ data class ServiceOrderState(
     val isServiceOrderPdfError = serviceOrderPdfAsync is Fail
 
     private fun calculatePriceWithFee(
-        price: Double,
+        price: BigDecimal,
         fee: PaymentFee,
-    ): Double {
+    ): BigDecimal {
         return when (fee.method) {
             PaymentFeeCalcMethod.None -> price
-            PaymentFeeCalcMethod.Percentage -> price * (1 + fee.value)
+            PaymentFeeCalcMethod.Percentage -> price * (BigDecimal.ONE + fee.value)
             PaymentFeeCalcMethod.Whole -> price + fee.value
         }
     }
 
     private fun calculateTotalToPayWithDiscount(
-        price: Double,
+        price: BigDecimal,
         discount: OverallDiscount,
-    ): Double {
+    ): BigDecimal {
         return when(discount.discountMethod) {
             DiscountCalcMethod.None -> price
-            DiscountCalcMethod.Percentage -> price * (1.0 - discount.overallDiscountValue)
+            DiscountCalcMethod.Percentage -> price * (BigDecimal.ONE - discount.overallDiscountValue)
             DiscountCalcMethod.Whole -> price - discount.overallDiscountValue
         }
     }

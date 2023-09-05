@@ -1,11 +1,13 @@
 package com.peyess.salesapp.data.model.lens.coloring
 
+import java.math.BigDecimal
+
 
 data class StoreLensColoringDocument(
     val id: String = "",
     val brand: String = "",
-    val cost: Double = 0.0,
-    val price: Double = 0.0,
+    val cost: BigDecimal = BigDecimal.ZERO,
+    val price: BigDecimal = BigDecimal.ZERO,
     val design: String = "",
     val display: List<String> = emptyList(),
     val explanations: List<String> = emptyList(),
@@ -18,6 +20,7 @@ data class StoreLensColoringDocument(
     val shippingTime: Double = 0.0,
     val specialty: String = "",
     val suggestedPrice: Double = 0.0,
+    val supplierId: String = "",
     val supplier: String = "",
     val type: String = "",
     val warning: String = "",

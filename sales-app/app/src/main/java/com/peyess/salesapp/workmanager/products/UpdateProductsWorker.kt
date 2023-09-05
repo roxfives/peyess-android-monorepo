@@ -7,6 +7,8 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import arrow.core.Either
+import arrow.core.continuations.either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
@@ -32,6 +34,7 @@ import com.peyess.salesapp.data.model.lens.alt_height.StoreLensAltHeightDocument
 import com.peyess.salesapp.data.model.lens.categories.LensTypeCategoryDao
 import com.peyess.salesapp.data.model.lens.coloring.StoreLensColoringDocument
 import com.peyess.salesapp.data.model.lens.treatment.StoreLensTreatmentDocument
+import com.peyess.salesapp.data.repository.internal.firestore.errors.RepositoryError
 import com.peyess.salesapp.data.repository.lenses.StoreLensResponse
 import com.peyess.salesapp.data.repository.lenses.StoreLensesRepository
 import com.peyess.salesapp.data.repository.lenses.room.LocalLensesRepository
@@ -42,11 +45,13 @@ import com.peyess.salesapp.data.utils.query.PeyessQueryOperation
 import com.peyess.salesapp.data.utils.query.buildQueryField
 import com.peyess.salesapp.data.utils.query.types.Order
 import com.peyess.salesapp.data.room.database.ProductsDatabase
+import com.peyess.salesapp.repository.stats.ProductStatsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.math.RoundingMode
 
 const val forceUpdateKey = "UpdateProductsWorker_forceUpdate"
 
@@ -61,6 +66,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     private val productsTableStateRepository: ProductsTableStateRepository,
     private val storeLensesRepository: StoreLensesRepository,
     private val localLensesRepository: LocalLensesRepository,
+    private val productStatsRepository: ProductStatsRepository,
     // TODO: Create specific repository and remove this dependency
     private val lensTypeDao: LensTypeCategoryDao,
 ): CoroutineWorker(context, workerParams) {
@@ -70,14 +76,18 @@ class UpdateProductsWorker @AssistedInject constructor(
                 "with ${docs.size} documents...")
 
         docs.forEach {
+            Timber.i("populateDatabase: Adding lens ${it.id}...", it)
             populateLensData(it)
 
+            Timber.i("populateDatabase: Adding coloring data for lens ${it.id}...")
             populateColoringData(it.id, it.colorings)
             addColoringsToLens(it.id, it.colorings)
 
+            Timber.i("populateDatabase: Adding treatment data for lens ${it.id}...")
             populateTreatmentData(it.id, it.treatments)
             addTreatmentsToLens(it.id, it.treatments)
 
+            Timber.i("populateDatabase: Adding alt height data for lens ${it.id}...")
             populateAlternativeData(it.id, it.altHeights)
             addAlternativeHeightsToLens(it.id, it.altHeights)
         }
@@ -170,6 +180,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addColoringToLens(
                 lensId = lensId,
                 coloringId = it.id,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }
@@ -187,6 +198,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }
@@ -203,6 +215,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             localLensesRepository.addTreatmentToLens(
                 lensId = lensId,
                 treatmentId = it.id,
+                price = it.price.setScale(2, RoundingMode.HALF_EVEN),
             )
         }
     }
@@ -237,7 +250,11 @@ class UpdateProductsWorker @AssistedInject constructor(
 
     private fun clearAllProducts() {
         Timber.i("clearAllProducts: Clearing all current local products")
-        productsDatabase.clearAllTables()
+        Either.catch {
+            productsDatabase.clearAllTables()
+        }.mapLeft {
+            Timber.e("clearAllProducts: Failed to clear all tables: ${it.message}", it)
+        }
     }
 
     private fun createNotification() {
@@ -308,6 +325,20 @@ class UpdateProductsWorker @AssistedInject constructor(
         )
     }
 
+    private suspend fun isLocalDownloadComplete() = either {
+        Timber.i("verifyDownloadedProducts: Verifying downloaded products...")
+
+        val totalLocalLenses = localLensesRepository.totalLenses().bind()
+        val totalRemoteLenses = storeLensesRepository.totalLensesEnabled().bind()
+
+        if (totalLocalLenses != totalRemoteLenses) {
+            val errorMessage =
+                "local lenses ($totalLocalLenses) and remote lenses (${totalRemoteLenses}) do not match"
+            Timber.e("verifyDownloadedProducts: $errorMessage")
+        }
+        totalLocalLenses == totalRemoteLenses
+    }
+
     override suspend fun doWork(): Result {
        Timber.i("doWork: Starting product update")
 
@@ -323,6 +354,7 @@ class UpdateProductsWorker @AssistedInject constructor(
             val avoidUpdate = isUpdating || (!forceUpdate && !needsUpdate)
 
             if (avoidUpdate) {
+                Timber.i("doWork: Avoiding update: isUpdating = $isUpdating, needsUpdate = $needsUpdate")
                 return@withContext Result.success()
             }
 
@@ -339,24 +371,54 @@ class UpdateProductsWorker @AssistedInject constructor(
             val query = buildQuery()
 
             Timber.i("doWork: Downloading and updating products...")
+            storeLensesRepository.resetPagination()
             val response = downloadAndPopulateProducts(query)
 
             Timber.i("doWork: Finished update with response $response")
             return@withContext if (response.isLeft()) {
                 Timber.w("doWork: Failed to update products table: ${response.left()}")
-                Result.retry()
-            } else {
-                Timber.i("doWork: Update finished successfully: ${response.right()}")
                 productsTableStateRepository.update(
                     productsTableStatus.copy(
-                        hasUpdated = true,
-                        hasUpdateFailed = false,
+                        hasUpdated = false,
+                        hasUpdateFailed = true,
                         isUpdating = false,
                     )
                 )
-                dismissNotification()
 
-                Result.success()
+                dismissNotification()
+                Result.failure()
+            } else {
+                val isDownloadComplete = isLocalDownloadComplete()
+
+                isDownloadComplete.fold(
+                    ifLeft = { Result.failure() },
+
+                    ifRight = {
+                        if (it) {
+                            Timber.i("doWork: Update finished successfully: ${response.right()}")
+                            productsTableStateRepository.update(
+                                productsTableStatus.copy(
+                                    hasUpdated = true,
+                                    hasUpdateFailed = false,
+                                    isUpdating = false,
+                                )
+                            )
+                            dismissNotification()
+                            Result.success()
+                        } else {
+                            Timber.w("doWork: Failed to update products table, the download is incomplete")
+                            productsTableStateRepository.update(
+                                productsTableStatus.copy(
+                                    hasUpdated = false,
+                                    hasUpdateFailed = true,
+                                    isUpdating = false,
+                                )
+                            )
+                            dismissNotification()
+                            Result.failure()
+                        }
+                    }
+                )
             }
         }
 
@@ -364,7 +426,7 @@ class UpdateProductsWorker @AssistedInject constructor(
     }
 
     companion object {
-        const val pageLimit = 300
+        const val pageLimit = 50
 
         const val workerTag = "TAG_UpdateProductsWorker"
     }

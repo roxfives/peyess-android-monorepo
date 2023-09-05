@@ -1,16 +1,15 @@
 package com.peyess.salesapp.data.adapter.lenses.room.coloring
 
 import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringDocument
-import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringEntity
+import com.peyess.salesapp.data.model.lens.room.coloring.LocalLensColoringPriceDBView
+import java.math.BigDecimal
 
-
-fun LocalLensColoringEntity.toLocalLensColoringDocument(
+fun LocalLensColoringPriceDBView.toLocalLensColoringDocument(
     explanations: List<String>,
 ): LocalLensColoringDocument {
     return LocalLensColoringDocument(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         hasMedical = hasMedical,
         isEnabled = isEnabled,
@@ -20,9 +19,12 @@ fun LocalLensColoringEntity.toLocalLensColoringDocument(
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         type = type,
         warning = warning,
+
+        price = price.toBigDecimal(),
 
         explanations = explanations,
     )

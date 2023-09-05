@@ -7,7 +7,6 @@ fun LocalLensColoringDocument.toLocalLensColoringEntity(): LocalLensColoringEnti
     return LocalLensColoringEntity(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         hasMedical = hasMedical,
         isEnabled = isEnabled,
@@ -17,6 +16,7 @@ fun LocalLensColoringDocument.toLocalLensColoringEntity(): LocalLensColoringEnti
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         type = type,
         warning = warning,

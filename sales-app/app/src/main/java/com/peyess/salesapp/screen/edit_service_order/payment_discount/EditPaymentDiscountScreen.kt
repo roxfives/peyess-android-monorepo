@@ -11,7 +11,6 @@ import com.peyess.salesapp.feature.payment_discount.DiscountScreenUI
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.EditPaymentDiscountState
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.state.EditPaymentDiscountViewModel
 import com.peyess.salesapp.screen.edit_service_order.payment_discount.utils.ParseParameters
-import java.math.BigDecimal
 
 @Composable
 fun EditPaymentDiscountScreen(
@@ -26,7 +25,6 @@ fun EditPaymentDiscountScreen(
         navController = navHostController,
         onUpdateSaleId = viewModel::setSaleId,
         onUpdateFullPrice = viewModel::setFullPrice,
-
     )
 
     val currentDiscount by viewModel.collectAsState(EditPaymentDiscountState::currentDiscount)
@@ -36,10 +34,10 @@ fun EditPaymentDiscountScreen(
     DiscountScreenUI(
         modifier = modifier,
         selectedMethod = currentDiscount.method,
-        discountValue = BigDecimal(currentDiscount.value),
+        discountValue = currentDiscount.value,
         originalPrice = originalPrice,
         pricePreview = pricePreview,
-        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it.toDouble()) },
+        onChangeDiscountValue = { viewModel.onChangeDiscountValue(it) },
         onChangeDiscountMethod = viewModel::onChangeDiscountMethod,
         onDone = onDone,
     )

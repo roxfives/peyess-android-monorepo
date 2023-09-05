@@ -38,6 +38,7 @@ import com.peyess.salesapp.screen.edit_service_order.service_order.state.EditSer
 import com.peyess.salesapp.screen.edit_service_order.service_order.utils.ParseParameters
 import com.peyess.salesapp.ui.component.progress.PeyessProgressIndicatorInfinite
 import timber.log.Timber
+import java.math.BigDecimal
 
 @Composable
 fun EditServiceOrderScreen(
@@ -59,8 +60,8 @@ fun EditServiceOrderScreen(
         saleId: String,
         serviceOrderId: String,
     ) -> Unit = { _, _, _, _ -> },
-    onAddPaymentFee: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
-    onAddDiscount: (saleId: String, fullPrice: Double) -> Unit = { _, _ -> },
+    onAddPaymentFee: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _ -> },
+    onAddDiscount: (saleId: String, fullPrice: BigDecimal) -> Unit = { _, _ -> },
     onDone: () -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -71,6 +72,7 @@ fun EditServiceOrderScreen(
         navController = navHostController,
         onUpdateSaleId = viewModel::onSaleIdChanged,
         onUpdateServiceOrderId = viewModel::onServiceOrderIdChanged,
+        onUpdateReloadFromServer = viewModel::onReloadFromServerChanged,
     )
 
     val saleId by viewModel.collectAsState(EditServiceOrderState::saleId)

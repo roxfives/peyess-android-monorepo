@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.lens_comparison.model
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.ceil
 
 data class LensComparison(
@@ -12,7 +14,8 @@ data class LensComparison(
     val pickedAdditionalColoring = pickedLens.priceAddColoring
     val pickedAdditionalTreatment = pickedLens.priceAddTreatment
 
-    val priceDifference = ceil(pickedLens.price - originalLens.price)
+    val priceDifference: BigDecimal = (pickedLens.price - originalLens.price)
+        .setScale(0, RoundingMode.CEILING);
     val finalPrice = pickedLens.price
 
     val addOriginalColoringPrice: Boolean = !originalLens.isColoringIncluded

@@ -96,16 +96,14 @@ class DiscountViewModel @AssistedInject constructor(
 
     private fun calculatePricePreview(discount: Discount) = setState {
         val preview = when (discount.method) {
-            DiscountCalcMethod.Percentage ->
-                originalPrice.multiply(
-                    BigDecimal(1.0 - discount.value)
-                        .setScale(4, RoundingMode.HALF_EVEN),
-                )
+            DiscountCalcMethod.Percentage -> {
+                val discountValue = (BigDecimal.ONE - discount.value)
+                    .setScale(4, RoundingMode.HALF_EVEN)
+
+                originalPrice * discountValue
+            }
             DiscountCalcMethod.Whole ->
-                originalPrice.minus(
-                    BigDecimal(discount.value)
-                        .setScale(2, RoundingMode.HALF_EVEN),
-                )
+                originalPrice - discount.value.setScale(2, RoundingMode.HALF_EVEN)
             DiscountCalcMethod.None ->
                 originalPrice
         }
@@ -123,9 +121,7 @@ class DiscountViewModel @AssistedInject constructor(
                 discount.copy()
 
             DiscountCalcMethod.Percentage -> {
-                val maxDiscount = discountGroup.general
-                    .maxValueAsPercentage(price)
-                    .toDouble()
+                val maxDiscount = discountGroup.general.maxValueAsPercentage(price)
 
                 val limited = discount.percentValue
                     .coerceAtMost(maxDiscount)
@@ -134,9 +130,7 @@ class DiscountViewModel @AssistedInject constructor(
             }
 
             DiscountCalcMethod.Whole -> {
-                val maxDiscount = discountGroup.general
-                    .maxValueAsWhole(price)
-                    .toDouble()
+                val maxDiscount = discountGroup.general.maxValueAsWhole(price)
 
                 val limited = discount.wholeValue
                     .coerceAtMost(maxDiscount)
@@ -154,7 +148,7 @@ class DiscountViewModel @AssistedInject constructor(
         copy(originalPrice = value)
     }
 
-    fun onChangeDiscountValue(value: Double) = setState {
+    fun onChangeDiscountValue(value: BigDecimal) = setState {
         val discount = when(currentDiscount.method) {
             DiscountCalcMethod.Percentage ->
                 currentDiscount.copy(percentValue = value)

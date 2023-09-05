@@ -25,7 +25,6 @@ import com.peyess.salesapp.constants.stepCylindrical
 import com.peyess.salesapp.constants.stepPrismAxis
 import com.peyess.salesapp.constants.stepPrismDegree
 import com.peyess.salesapp.constants.stepSpherical
-import com.peyess.salesapp.dao.sale.active_so.LocalServiceOrderDocument
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionFetchResponse
 import com.peyess.salesapp.data.repository.edit_service_order.prescription.EditPrescriptionRepository
 import com.peyess.salesapp.data.repository.edit_service_order.service_order.EditServiceOrderFetchResponse
@@ -66,6 +65,10 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
             mikeMessageAmetropie()
         }
 
+//        onEach(EditPrescriptionDataState::observationInput) {
+//            updateObservationForPrescription()
+//        }
+
         onAsync(EditPrescriptionDataState::serviceOrderResponseAsync) {
             processServiceOrderResponse(it)
         }
@@ -74,6 +77,23 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
             processPrescriptionResponse(it)
         }
     }
+
+//    private fun loadFirstObservationField(prescriptionId: String) {
+//        suspend {
+//            editPrescriptionRepository.prescriptionById(prescriptionId)
+//        }.execute(Dispatchers.IO) {
+//            copy(prescriptionForObservationResponseAsync = it)
+//        }
+//    }
+//
+//    private fun processFirstObservationFieldResponse(
+//        response: EditPrescriptionFetchResponse,
+//    ) = setState {
+//        response.fold(
+//            ifLeft = { copy(prescriptionForObservationResponseAsync = Fail(it.error)) },
+//            ifRight = { copy(observationInput = it.observation) },
+//        )
+//    }
 
     private fun loadServiceOrder(serviceOrderId: String) {
         editServiceOrderRepository
@@ -185,6 +205,15 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
 
         copy(mikeMessageAmetropies = message)
     }
+
+//    private fun updateObservationForPrescription() = withState {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            editPrescriptionRepository.updateObservation(
+//                it.prescriptionId,
+//                it.observationInput,
+//            )
+//        }
+//    }
 
     fun onSetSaleId(saleId: String) = setState {
         copy(saleId = saleId)
@@ -407,6 +436,17 @@ class EditPrescriptionDataViewModel @AssistedInject constructor(
             editPrescriptionRepository.updateHasPrism(
                 it.prescriptionId,
                 !it.prescriptionResponse.hasPrism,
+            )
+        }
+    }
+
+    fun updateObservation(observation: String) = withState {
+//        copy(observationInput = observation)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            editPrescriptionRepository.updateObservation(
+                it.prescriptionId,
+                observation,
             )
         }
     }

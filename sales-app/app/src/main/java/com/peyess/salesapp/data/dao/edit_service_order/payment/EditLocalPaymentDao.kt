@@ -7,7 +7,9 @@ import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Transaction
 import com.peyess.salesapp.data.model.edit_service_order.payment.EditLocalPaymentEntity
+import com.peyess.salesapp.typing.sale.PaymentDueDateMode
 import kotlinx.coroutines.flow.Flow
+import java.time.ZonedDateTime
 
 @Dao
 interface EditLocalPaymentDao {
@@ -120,6 +122,34 @@ interface EditLocalPaymentDao {
             WHERE id = :paymentId
         """)
     suspend fun updateCardFlagIcon(paymentId: Long, cardFlagIcon: Uri)
+
+    @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET due_date_mode = :dueDateMode, 
+            due_date_period = :dueDatePeriod,
+            due_date = :dueDate
+        WHERE id = :paymentId
+    """)
+    suspend fun updateDaysToDueDate(
+        paymentId: Long,
+        dueDateMode: PaymentDueDateMode,
+        dueDatePeriod: Int,
+        dueDate: ZonedDateTime,
+    )
+
+    @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET legal_id = :legalId
+        WHERE id = :paymentId
+    """)
+    suspend fun updateLegalId(paymentId: Long, legalId: String)
+
+    @Query("""
+        UPDATE ${EditLocalPaymentEntity.tableName}
+        SET has_legal_id = :hasLegalId
+        WHERE id = :paymentId
+    """)
+    suspend fun updateHasLegalId(paymentId: Long, hasLegalId: Int)
 
     @Query("""
         DELETE FROM ${EditLocalPaymentEntity.tableName}

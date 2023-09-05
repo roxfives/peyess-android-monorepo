@@ -6,13 +6,15 @@ import com.peyess.salesapp.data.model.sale.purchase.PaymentDocument
 import com.peyess.salesapp.data.model.sale.purchase.PurchaseProductsDiscountDocument
 import com.peyess.salesapp.data.model.sale.purchase.discount.description.DiscountDescriptionDocument
 import com.peyess.salesapp.data.model.sale.purchase.fee.FeeDescriptionDocument
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.ZonedDateTime
 
 data class Purchase(
     val hid: String = "",
 
     val clientUids: List<String> = emptyList(),
-    val clients: List<DenormalizedClientDocument> = emptyList(),
+    val clients: Map<String, DenormalizedClientDocument> = emptyMap(),
 
     val responsibleUid: String = "",
     val responsibleDocument: String = "",
@@ -47,12 +49,12 @@ data class Purchase(
     val paymentFee: FeeDescriptionDocument = FeeDescriptionDocument(),
     val discountServiceOrder: Map<String, PurchaseProductsDiscountDocument> = emptyMap(),
 
-    val fullPrice: Double = 0.0,
-    val finalPrice: Double = 0.0,
-    val leftToPay: Double = 0.0,
-    val totalPaid: Double = 0.0,
-    val totalDiscount: Double = 0.0,
-    val totalFee: Double = 0.0,
+    val fullPrice: BigDecimal = BigDecimal.ZERO,
+    val finalPrice: BigDecimal = BigDecimal.ZERO,
+    val leftToPay: BigDecimal = BigDecimal.ZERO,
+    val totalPaid: BigDecimal = BigDecimal.ZERO,
+    val totalDiscount: BigDecimal = BigDecimal.ZERO,
+    val totalFee: BigDecimal = BigDecimal.ZERO,
 
     val payerUids: List<String> = emptyList(),
     val payerDocuments: List<String> = emptyList(),
@@ -64,9 +66,13 @@ data class Purchase(
     val legalText: String = "",
     val legalVersion: String = "",
 
+    val hasProductWithPendingCheck: Boolean = false,
+    val daysToTakeFromStore: Int = 0,
+
     val updated: ZonedDateTime = ZonedDateTime.now(),
     val updatedBy: String = "",
     val updateAllowedBy: String = "",
 ) {
-    val isPaymentFull = totalPaid >= finalPrice
+    val isPaymentFull = totalPaid.setScale(2, RoundingMode.HALF_EVEN) >=
+            finalPrice.setScale(2, RoundingMode.HALF_EVEN)
 }

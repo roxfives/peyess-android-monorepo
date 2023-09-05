@@ -16,7 +16,7 @@ fun StoreLensWithDetailsDocument.toLensPickModel(
         specialty = specialtyName,
         group = groupName,
         supplier = supplierName,
-        price = BigDecimal(price),
+        price = price,
         observation = observation,
         warning = warning,
         hasFilterUv = hasFilterUv,

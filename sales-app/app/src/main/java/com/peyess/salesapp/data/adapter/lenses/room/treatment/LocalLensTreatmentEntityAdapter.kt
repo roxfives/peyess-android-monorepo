@@ -1,15 +1,15 @@
 package com.peyess.salesapp.data.adapter.lenses.room.treatment
 
 import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentDocument
-import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentEntity
+import com.peyess.salesapp.data.model.lens.room.treatment.LocalLensTreatmentPriceDBView
+import java.math.BigDecimal
 
-fun LocalLensTreatmentEntity.toLocalLensTreatmentDocument(
+fun LocalLensTreatmentPriceDBView.toLocalLensTreatmentDocument(
     explanations: List<String>,
 ): LocalLensTreatmentDocument {
     return LocalLensTreatmentDocument(
         id = id,
         brand = brand,
-        price = price,
         design = design,
         isEnabled = isEnabled,
         isLocalEnabled = isLocalEnabled,
@@ -18,8 +18,11 @@ fun LocalLensTreatmentEntity.toLocalLensTreatmentDocument(
         priority = priority,
         shippingTime = shippingTime,
         specialty = specialty,
+        supplierId = supplierId,
         supplier = supplier,
         warning = warning,
+
+        price = price.toBigDecimal(),
 
         explanations = explanations,
     )

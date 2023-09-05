@@ -1,5 +1,7 @@
 package com.peyess.salesapp.feature.lens_comparison.model
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.ceil
 
 data class TreatmentComparison(
@@ -9,18 +11,18 @@ data class TreatmentComparison(
     fun priceDifference(
         withOriginal: Boolean,
         withPicked: Boolean,
-        additionalOriginal: Double,
-        additionalPicked: Double,
-    ): Double {
-        val picked = if (withPicked) { pickedTreatment.price } else { 0.0 }
-        val original = if (withOriginal) { originalTreatment.price } else { 0.0 }
+        additionalOriginal: BigDecimal,
+        additionalPicked: BigDecimal,
+    ): BigDecimal {
+        val picked = if (withPicked) { pickedTreatment.price } else { BigDecimal.ZERO }
+        val original = if (withOriginal) { originalTreatment.price } else { BigDecimal.ZERO }
 
         // TODO: remove hardcoded string
         val addOriginal = if(
             originalTreatment.name.trim() == "Indisponível"
             || originalTreatment.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additionalOriginal
         }
@@ -28,21 +30,22 @@ data class TreatmentComparison(
             pickedTreatment.name.trim() == "Indisponível"
             || pickedTreatment.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additionalPicked
         }
 
-        return ceil(picked + addPicked - original - addOriginal)
+        return (picked + addPicked - original - addOriginal)
+            .setScale(0, RoundingMode.HALF_EVEN)
     }
 
-    fun finalPrice(addPrice: Boolean, additional: Double): Double {
+    fun finalPrice(addPrice: Boolean, additional: BigDecimal): BigDecimal {
         // TODO: remove hardcoded string
         val add = if(
             pickedTreatment.name.trim() == "Indisponível"
             || pickedTreatment.name.trim() == "Incolor"
         ) {
-            0.0
+            BigDecimal.ZERO
         } else {
             additional
         }
@@ -50,7 +53,7 @@ data class TreatmentComparison(
         return if (addPrice) {
             pickedTreatment.price + add
         } else {
-            0.0
+            BigDecimal.ZERO
         }
     }
 }

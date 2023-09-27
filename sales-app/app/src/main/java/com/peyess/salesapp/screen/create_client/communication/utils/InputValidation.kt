@@ -5,9 +5,9 @@ import com.peyess.salesapp.R
 
 @StringRes
 fun validateEmail(email: String): Int? {
-    if (email.isBlank()) {
-        return R.string.create_client_error_email_empty
-    }
+//    if (email.isBlank()) {
+//        return R.string.create_client_error_email_empty
+//    }
 
     return null
 }
